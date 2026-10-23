@@ -6,16 +6,16 @@
   const POS = { left: 560, center: 960, right: 1360 };
   const OFF = { left: -280, right: 2200 };
   const TIMES = { day: 0, sunset: 1, dusk: 2, night: 3 };
-  const MOODS = ['normal', 'happy', 'surprised', 'shy', 'sad', 'sleepy'];
+  const MOODS = ['normal', 'happy', 'surprised', 'shy', 'sad', 'sleepy', 'playful'];
   const SPEED = 290;            // walking speed, px per second
   const KS = 1.15;              // Ren scale (fixed)
   const feetY = x => 905 - 38 * Math.exp(-(((x - 960) / 240) ** 2));
 
   const HELP = [
-    'narrator: <text>', 'ren: <text>', 'ren (happy|surprised|shy|sad|sleepy): <text>',
+    'narrator: <text>', 'ren: <text>', 'ren (happy|surprised|shy|sad|sleepy|playful): <text>',
     'ren enters [from left|right] [to left|center|right]', 'ren walks to left|center|right', 'ren exits [to] left|right',
     'ren hops [twice]', 'ren waves', 'ren looks up|down|left|right|at you|at the star|at the heart', 'ren turns to you',
-    'ren tilts its head', 'ren feels happy|surprised|shy|sad|sleepy|normal', 'ren picks up the star', 'ren lets go of the star',
+    'ren tilts its head', 'ren feels happy|surprised|shy|sad|sleepy|playful|normal', 'ren picks up the star', 'ren lets go of the star',
     'ren raises its paws', 'ren lowers its paws', 'ren blinks',
     'star appears', 'star falls', 'star glows', 'star twinkles', 'star rises', 'star disappears',
     'hearts float up', 'heart floats down', 'sparkles', 'title card: <WORD>',
@@ -86,7 +86,7 @@
         }
         if (/^turns to (you|the viewer|the camera)$/.test(a)) return beat('look', { at: 'you' });
         if (/^tilts (its |his |her )?head$/.test(a)) return beat('tilt');
-        if ((k = a.match(/^(?:feels|looks|is) (happy|surprised|shy|sad|sleepy|normal|calm)$/))) return beat('mood', { mood: k[1] === 'calm' ? 'normal' : k[1] });
+        if ((k = a.match(/^(?:feels|looks|is) (happy|surprised|shy|sad|sleepy|playful|normal|calm)$/))) return beat('mood', { mood: k[1] === 'calm' ? 'normal' : k[1] });
         if (/^picks up (the )?star$/.test(a)) return beat('pickup');
         if (/^(holds (the )?star( close)?|hugs (the )?star)$/.test(a)) return beat('wait', { secs: 1.0 });
         if (/^(lets go of|releases|lets go|sets free) (the )?star$/.test(a)) return beat('star', { act: 'rises' });
