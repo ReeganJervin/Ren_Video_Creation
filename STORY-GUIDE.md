@@ -38,7 +38,7 @@ ren (surprised): Whoa! A little fallen star!
 |---|---|
 | `narrator: text` | The narrator reads the text. It also appears in a storybook caption box at the top |
 | `ren: text` | Ren says the text in a speech bubble, and its mouth moves |
-| `ren (happy): text` | Ren says it with a mood: `happy`, `surprised`, `shy`, `sad`, `sleepy`, `playful` (a wink with the tongue out) |
+| `ren (happy): text` | Ren says it with a mood: `happy`, `surprised`, `shy`, `sad`, `sleepy`, `playful` (a happy ^ ^ grin) |
 
 Keep each line under 160 characters. Write long speeches as several lines.
 

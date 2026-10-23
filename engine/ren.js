@@ -159,9 +159,12 @@
 
   // ---------- head ----------
   function drawEar(c, i, K) {
+    // when turned, the far ear slides in behind the head and sits a little lower
+    const far = Math.sign(K.f) === -i ? turnOf(K.f) : 0;
     c.save();
-    c.translate(i * 48 + K.f * 10, -48);
-    c.rotate(i * 0.3 + (i < 0 ? -K.earL : K.earR));
+    c.translate(i * 48 + K.f * 10 - i * 30 * far, -48 + 10 * far);
+    c.rotate(i * 0.3 + (i < 0 ? -K.earL : K.earR) - i * 0.12 * far);
+    c.scale(1 - 0.15 * far, 1 - 0.08 * far);
     const ear = () => path(c, () => { c.moveTo(-37, 14); c.bezierCurveTo(-39, -40, -20, -84, 2, -114); c.bezierCurveTo(24, -84, 40, -40, 37, 14); });
     // dark brown tip blending softly into the orange
     const g = c.createLinearGradient(0, -52, 0, -100);
@@ -179,50 +182,69 @@
     c.restore();
   }
 
-  // round head with fluffy cheek tufts and a little tuft on top
-  function headPath(c) {
+  // How far the head is turned into a three-quarter/side view: 0 below |f| = 0.3, 1 at |f| = 0.85.
+  const turnOf = f => clamp((Math.abs(f) - 0.3) / 0.55);
+  // Snout that pokes out past the head outline on the facing side when turned.
+  const snout = f => { const a = turnOf(f), s = Math.sign(f) || 1; return { a, x: s * (62 + 30 * a), rx: 16 + 16 * a, tip: s * (62 + 30 * a + 16 + 16 * a) }; };
+
+  // Round head with small orange cheek tufts and a little tuft on top. Below the eyes it is never
+  // wider than at eye level, apart from the tufts. The far tuft shrinks when the head turns.
+  const CHEEK = [[104, 14], [95, 22], [104, 32], [91, 40], [84, 48]];
+  function headPath(c, f) {
+    const a = turnOf(f), kR = f < 0 ? 1 - 0.8 * a : 1, kL = f > 0 ? 1 - 0.8 * a : 1;
+    const side = (k, s) => CHEEK.map(([x, y]) => [s * (90 + (x - 90) * k), y]);
+    const R = side(kR, 1), L = side(kL, -1).reverse(), lEnd = L.shift();
     c.beginPath();
-    c.moveTo(-92, 6);
+    c.moveTo(-92, 4);
     c.bezierCurveTo(-98, -48, -54, -84, 0, -84);
-    c.bezierCurveTo(54, -84, 98, -48, 92, 6);
-    tufts(c, [92, 6], [[108, 18], [98, 28], [110, 40], [92, 48], [96, 58], [74, 62]], 6, -1);
-    c.bezierCurveTo(46, 78, -46, 78, -74, 62);
-    tufts(c, [-74, 62], [[-96, 58], [-92, 48], [-110, 40], [-98, 28], [-108, 18], [-92, 6]], 6, -1);
+    c.bezierCurveTo(54, -84, 98, -48, 92, 4);
+    tufts(c, [92, 4], R, 5, -1);
+    c.bezierCurveTo(R[4][0] - 18, 66, 30, 78, 0, 78);
+    c.bezierCurveTo(-30, 78, lEnd[0] + 18, 66, lEnd[0], lEnd[1]);
+    tufts(c, lEnd, [...L, [-92, 4]], 5, -1);
     c.closePath();
     c.moveTo(-22, -70);
     tufts(c, [-22, -70], [[-12, -92], [-4, -82], [6, -98], [10, -84], [22, -92], [24, -70]], 4, -1);
     c.closePath();
+    if (a > 0) { const S = snout(f); c.moveTo(S.x + S.rx, 34); c.ellipse(S.x, 34, S.rx, 17, 0, 0, Math.PI * 2); c.closePath(); }
   }
 
+  // eyes: 'normal' | 'happy' (^ arcs) | 'wide' | 'sleepy' (closed) | 'shy' (glossy) | 'playful' (wink, for Yuki)
   function drawEye(c, ex, ey, i, K) {
-    const far = (i > 0 && K.f < 0) || (i < 0 && K.f > 0) ? Math.abs(K.f) : 0;
+    const far = Math.sign(K.f) === -i ? Math.abs(K.f) : 0;
     c.save(); c.translate(ex, ey);
-    c.scale((1 - 0.3 * far) * (1 + 0.1 * K.wide), 1 + 0.12 * K.wide);
+    c.scale((1 - 0.5 * far) * (1 + 0.1 * K.wide), 1 + 0.12 * K.wide);
     c.strokeStyle = C.line; c.lineCap = 'round';
     if (K.eyes === 'happy' || (K.eyes === 'playful' && i > 0)) {
-      c.lineWidth = 5; c.beginPath(); c.moveTo(-15, 6); c.quadraticCurveTo(0, -14, 15, 6); c.stroke();
+      c.lineWidth = 5; c.beginPath(); c.moveTo(-17, 7); c.quadraticCurveTo(0, -15, 17, 7); c.stroke();
       c.restore(); return;
     }
-    const open = (1 - K.blink) * (K.eyes === 'sleepy' ? 0.42 : 1);
-    if (open < 0.15) {
-      c.lineWidth = 4.5; c.beginPath(); c.moveTo(-15, 3); c.quadraticCurveTo(0, 9, 15, 3); c.stroke();
+    const open = 1 - K.blink;
+    if (K.eyes === 'sleepy' || open < 0.15) {
+      c.lineWidth = 4.5; c.beginPath(); c.moveTo(-17, 2); c.quadraticCurveTo(0, 13, 17, 2); c.stroke();
+      if (K.eyes === 'sleepy') { c.lineWidth = 3; c.beginPath(); c.moveTo(i * 16, 3); c.lineTo(i * 22, 0); c.stroke(); }
       c.restore(); return;
     }
-    if (K.eyes === 'sleepy') { c.lineWidth = 4; c.beginPath(); c.moveTo(-17, -22 * open + 2); c.quadraticCurveTo(0, -22 * open - 3, 17, -22 * open + 2); c.stroke(); }
     c.scale(1, open);
-    const lx = K.lookX * 4, ly = K.lookY * 4.5;
-    c.beginPath(); c.ellipse(0, 0, 17, 22, 0, 0, Math.PI * 2); c.fillStyle = C.eye; c.fill();
+    const lx = K.lookX * 4.5, ly = K.lookY * 5;
+    c.beginPath(); c.ellipse(0, 0, 19, 26, 0, 0, Math.PI * 2); c.fillStyle = C.eye; c.fill();
     c.save(); c.clip();
     // warm brown iris, lighter at the bottom
-    const g = c.createLinearGradient(0, -12 + ly, 0, 22 + ly);
+    const g = c.createLinearGradient(0, -14 + ly, 0, 26 + ly);
     g.addColorStop(0, C.irisT); g.addColorStop(1, C.irisB);
-    c.beginPath(); c.ellipse(lx * 0.8, 3 + ly, 14, 17, 0, 0, Math.PI * 2); c.fillStyle = g; c.fill();
-    c.beginPath(); c.ellipse(lx * 0.9, 1 + ly, 7.5, 9.5, 0, 0, Math.PI * 2); c.fillStyle = C.eye; c.fill();
+    c.beginPath(); c.ellipse(lx * 0.8, 3 + ly, 16, 20, 0, 0, Math.PI * 2); c.fillStyle = g; c.fill();
+    c.beginPath(); c.ellipse(lx * 0.9, 1 + ly, 8.5, 11, 0, 0, Math.PI * 2); c.fillStyle = C.eye; c.fill();
     c.restore();
     c.fillStyle = '#fff';
-    c.beginPath(); c.arc(-5.5 + lx * 0.6, -8.5 + ly * 0.6, 7.5 + K.wide * 1.2, 0, Math.PI * 2); c.fill();
-    c.beginPath(); c.arc(6 + lx, 8.5 + ly, 3.3, 0, Math.PI * 2); c.fill();
-    if (K.wide > 0.3) { c.beginPath(); c.arc(7 + lx, -9 + ly, 2.4, 0, Math.PI * 2); c.fill(); }
+    c.beginPath(); c.arc(-6 + lx * 0.6, -10 + ly * 0.6, 9.5 + K.wide * 1.2, 0, Math.PI * 2); c.fill();
+    c.beginPath(); c.arc(7 + lx, 10 + ly, 3.8, 0, Math.PI * 2); c.fill();
+    if (K.wide > 0.3) { c.beginPath(); c.arc(8 + lx, -10 + ly, 2.6, 0, Math.PI * 2); c.fill(); }
+    if (K.eyes === 'shy') {
+      // glossy, a little teary: a bright rim along the bottom and an extra sparkle
+      c.strokeStyle = 'rgba(255,255,255,0.8)'; c.lineWidth = 2.6;
+      c.beginPath(); c.ellipse(0, 0, 15, 21, 0, 0.25 * Math.PI, 0.75 * Math.PI); c.stroke();
+      c.beginPath(); c.arc(-8 + lx, 4 + ly, 2.4, 0, Math.PI * 2); c.fill();
+    }
     c.restore();
   }
 
@@ -240,6 +262,13 @@
       case 'o': c.beginPath(); c.ellipse(0, 9, 6, 8, 0, 0, Math.PI * 2); c.fillStyle = C.mouth; c.fill(); c.stroke(); break;
       case 'soft': c.beginPath(); c.moveTo(-10, 2); c.quadraticCurveTo(0, 10, 10, 2); c.stroke(); break;
       case 'frown': c.beginPath(); c.moveTo(-9, 7); c.quadraticCurveTo(0, -1, 9, 7); c.stroke(); break;
+      case 'tinyfrown': c.beginPath(); c.moveTo(-5, 7); c.quadraticCurveTo(0, 3, 5, 7); c.stroke(); break;
+      case 'yawn': {
+        path(c, () => c.ellipse(0, 9, 7, 9, 0, 0, Math.PI * 2));
+        c.fillStyle = C.mouth; c.fill();
+        c.save(); c.clip(); c.beginPath(); c.ellipse(0, 16, 6, 4, 0, 0, Math.PI * 2); c.fillStyle = C.tongue; c.fill(); c.restore();
+        c.stroke(); break;
+      }
       case 'tongue': {
         // small smile with the tongue poking out
         path(c, () => { c.moveTo(-1, 4); c.quadraticCurveTo(-1, 16, 6, 16); c.quadraticCurveTo(13, 16, 12, 4); });
@@ -257,41 +286,55 @@
     c.save();
     c.translate(0, -142); c.rotate(K.tilt); c.translate(f * 6, -68);
     drawEar(c, -1, K); drawEar(c, 1, K);
-    headPath(c); fillUnion(c, C.fur);
+    const S = snout(f), mx = f * 26 + (S.tip - 8 - f * 26) * S.a;   // muzzle centre slides out onto the snout
+    headPath(c, f); fillUnion(c, C.fur);
     c.save(); c.clip();
-    c.save(); c.translate(f * 20, -50); c.scale(1, 0.55);
-    const sh = c.createRadialGradient(0, 0, 0, 0, 0, 80);
-    sh.addColorStop(0, 'rgba(252,190,122,0.8)'); sh.addColorStop(1, 'rgba(252,190,122,0)');
-    c.fillStyle = sh; c.fillRect(-80, -80, 160, 160); c.restore();
+    // small soft sheen on the crown
+    c.save(); c.translate(f * 16, -56); c.scale(1, 0.6);
+    const sh = c.createRadialGradient(0, 0, 0, 0, 0, 44);
+    sh.addColorStop(0, 'rgba(252,192,128,0.45)'); sh.addColorStop(1, 'rgba(252,192,128,0)');
+    c.fillStyle = sh; c.fillRect(-44, -44, 88, 88); c.restore();
     if (f) { c.fillStyle = C.furD; c.globalAlpha = 0.3 * Math.abs(f); c.beginPath(); c.ellipse(-Math.sign(f) * 92, 0, 36, 90, 0, 0, Math.PI * 2); c.fill(); }
-    // cream cheeks, muzzle and chin
+    // cream only on the muzzle, chin and the inner/lower cheeks (fur-edged); the outer cheek tufts stay orange
     c.globalAlpha = 1; c.fillStyle = C.cream;
+    const my = f * 26 + (mx - f * 26) * 0.8, sx = f * 14 + (my - f * 26) * 0.45;
     c.beginPath();
-    c.moveTo(-130, 10); c.lineTo(-92 + f * 10, 12);
-    c.bezierCurveTo(-74 + f * 14, 34, -44 + f * 18, 38, -20 + f * 26, 22);
-    c.quadraticCurveTo(f * 28, 10, 20 + f * 26, 22);
-    c.bezierCurveTo(44 + f * 18, 38, 74 + f * 14, 34, 92 + f * 10, 12);
-    c.lineTo(130, 10); c.lineTo(130, 120); c.lineTo(-130, 120); c.closePath(); c.fill();
+    c.moveTo(-64 + sx, 78);
+    tufts(c, [-64 + sx, 78], [[-64 + sx, 56], [-56 + sx, 60], [-52 + sx, 46], [-44 + sx, 50], [-38 + sx, 40]], 3, -1);
+    c.bezierCurveTo(-30 + sx, 46, -24 + my, 44, -17 + my, 28);
+    c.quadraticCurveTo(my, 17, 17 + my, 28);
+    c.bezierCurveTo(24 + my, 44, 30 + sx, 46, 38 + sx, 40);
+    tufts(c, [38 + sx, 40], [[44 + sx, 50], [52 + sx, 46], [56 + sx, 60], [64 + sx, 56], [64 + sx, 78]], 3, -1);
+    c.lineTo(64 + sx, 120); c.lineTo(-64 + sx, 120); c.closePath(); c.fill();
+    if (S.a > 0.5) { c.beginPath(); c.ellipse(S.x + Math.sign(f) * 4, 40, S.rx, 12, 0, 0, Math.PI * 2); c.fill(); }
+    // shy: a blush band across the nose
+    if (K.blushBoost > 0.4) {
+      c.save(); c.translate(mx * 0.7, 28); c.scale(1, 0.28);
+      const bg = c.createRadialGradient(0, 0, 0, 0, 0, 80), ba = clamp((K.blushBoost - 0.4) * 1.4);
+      bg.addColorStop(0, `rgba(${C.blush},${0.55 * ba})`); bg.addColorStop(1, `rgba(${C.blush},0)`);
+      c.fillStyle = bg; c.fillRect(-80, -80, 160, 160); c.restore();
+    }
     c.restore();
     // cream eyebrow dots
     c.fillStyle = C.cream;
-    [-1, 1].forEach(i => { c.beginPath(); c.ellipse(i * 24 + f * 18, -38, 7.5, 4.5, i * 0.25, 0, Math.PI * 2); c.fill(); });
+    [-1, 1].forEach(i => { c.beginPath(); c.ellipse(i * 26 + f * 18, -42, 7.5, 4.5, i * 0.25, 0, Math.PI * 2); c.fill(); });
     // soft blush
     [-1, 1].forEach(i => {
-      const x = i * 56 + f * 16, y = 34, r = 20 + K.blushBoost * 8, a = clamp(0.5 + K.blushBoost * 0.6);
+      const x = i * 60 + f * 16, y = 38, r = 20 + K.blushBoost * 8, a = clamp(0.5 + K.blushBoost * 0.6);
       const g = c.createRadialGradient(x, y, 0, x, y, r);
       g.addColorStop(0, `rgba(${C.blush},${a})`); g.addColorStop(0.6, `rgba(${C.blush},${a * 0.6})`); g.addColorStop(1, `rgba(${C.blush},0)`);
       c.fillStyle = g; c.beginPath(); c.ellipse(x, y, r, r * 0.62, 0, 0, Math.PI * 2); c.fill();
     });
-    drawEye(c, -33 + f * 20, 4, -1, K);
-    drawEye(c, 33 + f * 20, 4, 1, K);
+    drawEye(c, -37 + f * 22, 2, -1, K);
+    drawEye(c, 37 + f * 22, 2, 1, K);
     if (K.brows > 0) {
+      // worried brows: inner ends raised
       c.save(); c.globalAlpha = K.brows; c.strokeStyle = C.line; c.lineWidth = 4; c.lineCap = 'round';
-      [-1, 1].forEach(i => { const bx = i * 33 + f * 20; c.beginPath(); c.moveTo(bx - i * 12, -31); c.lineTo(bx + i * 10, -23); c.stroke(); });
+      [-1, 1].forEach(i => { const bx = i * 37 + f * 20; c.beginPath(); c.moveTo(bx - i * 12, -38); c.lineTo(bx + i * 10, -30); c.stroke(); });
       c.restore();
     }
     // nose + mouth
-    c.save(); c.translate(f * 30, 22);
+    c.save(); c.translate(mx, 30);
     path(c, () => { c.moveTo(-7, -3); c.quadraticCurveTo(0, -6, 7, -3); c.quadraticCurveTo(4, 4, 0, 5); c.quadraticCurveTo(-4, 4, -7, -3); });
     c.fillStyle = C.eye; c.fill();
     c.fillStyle = 'rgba(255,255,255,0.6)'; c.beginPath(); c.ellipse(-2, -2.5, 2.2, 1.2, 0, 0, Math.PI * 2); c.fill();
@@ -301,13 +344,15 @@
   }
 
   function drawArm(c, i, ang, K) {
+    // resting arms hang along the sides with the paws by the hips; folded in (holding) they are shorter
+    const len = 64 - 16 * clamp(-ang / 1.2);
     c.save();
-    c.translate(i * 40 + K.f * 4, -120);
+    c.translate(i * 44 + K.f * 4, -122);
     c.rotate(i < 0 ? ang : -ang);
     // dark brown paw fading into the orange
-    const g = c.createLinearGradient(0, -4, 0, 44);
-    g.addColorStop(0, C.fur); g.addColorStop(0.5, C.fur); g.addColorStop(0.8, C.paw); g.addColorStop(1, C.paw);
-    path(c, () => c.roundRect(-12, -4, 24, 48, 12)); fillStroke(c, g);
+    const g = c.createLinearGradient(0, -4, 0, len);
+    g.addColorStop(0, C.fur); g.addColorStop(0.55, C.fur); g.addColorStop(0.82, C.paw); g.addColorStop(1, C.paw);
+    path(c, () => c.roundRect(-12, -4, 24, len + 4, 12)); fillStroke(c, g);
     c.restore();
   }
 

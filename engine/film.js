@@ -74,10 +74,10 @@
     normal: { eyes: 'normal', mouth: 'smile', wide: 0, brows: 0, droop: 0, blush: 0, lookY: 0, wag: 0 },
     happy: { eyes: 'normal', mouth: 'open', wide: 0, brows: 0, droop: 0, blush: 0.1, lookY: 0, wag: 1 },
     surprised: { eyes: 'wide', mouth: 'o', wide: 1, brows: 0, droop: -0.12, blush: 0, lookY: 0, wag: 0 },
-    shy: { eyes: 'normal', mouth: 'soft', wide: 0, brows: 0, droop: 0.15, blush: 0.55, lookY: 0.5, wag: 0 },
+    shy: { eyes: 'shy', mouth: 'tinyfrown', wide: 0, brows: 0.75, droop: 0.62, blush: 0.8, lookY: 0.6, wag: 0 },
     sad: { eyes: 'normal', mouth: 'frown', wide: 0, brows: 1, droop: 0.42, blush: 0, lookY: 0.3, wag: 0 },
-    sleepy: { eyes: 'sleepy', mouth: 'soft', wide: 0, brows: 0, droop: 0.25, blush: 0, lookY: 0.2, wag: 0 },
-    playful: { eyes: 'playful', mouth: 'tongue', wide: 0, brows: 0, droop: -0.05, blush: 0.2, lookY: 0, wag: 1 },
+    sleepy: { eyes: 'sleepy', mouth: 'yawn', wide: 0, brows: 0, droop: 0.48, blush: 0, lookY: 0.2, wag: 0 },
+    playful: { eyes: 'happy', mouth: 'smile', wide: 0, brows: 0, droop: -0.05, blush: 0.4, lookY: 0, wag: 1 },
     joy: { eyes: 'happy', mouth: 'open', wide: 0, brows: 0, droop: 0, blush: 0.25, lookY: 0, wag: 1 },
   };
   function moodAt(t) {
