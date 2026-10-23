@@ -1,8 +1,8 @@
 # Kitsu Studio
 
-You write a story as a text file and get a finished animated Kitsu video: 1920×1080, 30 fps, with narration, Kitsu's voice, music, sound effects and speech bubbles.
+You write a story as a text file and get a finished animated Ren video: 1920×1080, 30 fps, with narration, Ren's voice, music, sound effects and speech bubbles.
 
-Kitsu's design, the voices and the style are fixed in the project. **Only the story changes.**
+Ren's design, the voices and the style are fixed in the project. **Only the story changes.**
 
 ## One-time setup (Windows)
 
@@ -47,8 +47,8 @@ The results are in `videos\<name>-report.txt`.
 | Folder or file | What it is |
 |---|---|
 | `stories\` | Your stories, plus the template and examples |
-| `config\voices.json` | The two fixed voices: the narrator is `af_heart`, and Kitsu is `af_sky`, pitched up |
-| `engine\kitsu.js` | Kitsu's fixed design (shape, colours, face, scarf) |
+| `config\voices.json` | The two fixed voices: the narrator is `af_heart`, and Ren is `af_sky`, pitched up |
+| `engine\ren.js` | Ren's fixed design (shape, colours, face, scarf) |
 | `engine\story.js` | Reads the story and works out the timing for everything |
 | `engine\film.js` | Draws the meadow, the sky, the star, hearts, bubbles and captions |
 | `engine\audio.js` | Music, sound effects, voice mixing (Web Audio) |

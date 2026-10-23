@@ -243,5 +243,5 @@
     return { wav: btoa(s), missing };
   }
 
-  window.KitsuAudio = { loadVoices, buildAudio, renderAudio };
+  window.StudioAudio = { loadVoices, buildAudio, renderAudio };
 })();

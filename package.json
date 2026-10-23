@@ -2,7 +2,7 @@
   "name": "kitsu-studio",
   "version": "1.0.0",
   "private": true,
-  "description": "Write a story, get a Kitsu animated video.",
+  "description": "Write a story, get a Ren animated video.",
   "scripts": {
     "make": "node tools/make-video.js"
   },

@@ -1,8 +1,8 @@
 // Scene renderer: draws any compiled story plan. render(t) is deterministic.
 (() => {
   const W = 1920, H = 1080;
-  const { drawKitsu } = KitsuCharacter;
-  const { evalKeys, feetY } = KitsuStory;
+  const { drawRen } = RenCharacter;
+  const { evalKeys, feetY } = StudioStory;
   let P, KS;
 
   // ---------- helpers ----------
@@ -35,10 +35,10 @@
     sun: ['#fffbe8', '#fff4d6', '#ffcf9a', '#ffcf9a'], grade: ['#ffffff', '#fff3e2', '#e4d4ee', '#aab2e6'], tint: ['#ffffff', '#ffb070', '#a080c0', '#3a4aa0'],
   };
 
-  // ---------- Kitsu ----------
+  // ---------- Ren ----------
   const ARM_R = 0.16;
-  function kitsuX(t) {
-    let x = P.kitsuStartX;
+  function renX(t) {
+    let x = P.renStartX;
     for (const w of P.walks) {
       if (t >= w.t1) x = w.x1;
       else if (t > w.t0) return lerp(w.x0, w.x1, ease((t - w.t0) / (w.t1 - w.t0)));
@@ -47,8 +47,8 @@
     return x;
   }
   // Body: position, squash, facing, arms. Never depends on props (so props can follow it).
-  function kitsuBody(t) {
-    const x = kitsuX(t), v = (kitsuX(t + 0.02) - kitsuX(t - 0.02)) / 0.04, walk = clamp(Math.abs(v) / 140);
+  function renBody(t) {
+    const x = renX(t), v = (renX(t + 0.02) - renX(t - 0.02)) / 0.04, walk = clamp(Math.abs(v) / 140);
     let h = 0, sx = 1, sy = 1, hopping = false;
     for (const hp of P.hops) {
       const pre = hp.t0 - 0.14;
@@ -86,8 +86,8 @@
     return { cur: MOOD[cur], prev: MOOD[prev], w: ease((t - since) / 0.3) };
   }
 
-  function kitsuState(t) {
-    const K = kitsuBody(t);
+  function renState(t) {
+    const K = renBody(t);
     const m = moodAt(t), mix = k => lerp(m.prev[k], m.cur[k], m.w), pick = k => (m.w > 0.5 ? m.cur : m.prev)[k];
     let lx = K_('lookX', t), ly = K_('lookY', t) + mix('lookY');
     const head = toWorld(K, K.f * 6, -210);
@@ -105,7 +105,7 @@
     if (K.hopping) K.eyes = 'happy';
     K.talk = 0;
     for (const v of P.voice) {
-      if (v.who !== 'kitsu' || t < v.t || t >= v.t + v.len) continue;
+      if (v.who !== 'ren' || t < v.t || t >= v.t + v.len) continue;
       K.mouth = 'talk';
       K.talk = 0.25 + 0.75 * Math.abs(Math.sin((t - v.t) * 13.5)) * (0.6 + 0.4 * Math.abs(Math.sin((t - v.t) * 4.7 + 1)));
     }
@@ -128,7 +128,7 @@
     let bright = K_('bright', t), p, r = 26, alpha = 1, flare = 0;
     for (const f of flickers) if (t >= f.t0 && t < f.t1) bright = 0.25 + 0.14 * (Math.sin(t * 23) + Math.sin(t * 37 + 1)) * 0.5;
     const u = seg.t1 ? (t - seg.t0) / (seg.t1 - seg.t0) : 0;
-    const chest = () => { const B = kitsuBody(t); const up = clamp((B.armL + 1.2) / 3.9); return toWorld(B, lerp(B.f * 10, 0, up), lerp(-98, -372, ease((up - 0.45) / 0.55))); };
+    const chest = () => { const B = renBody(t); const up = clamp((B.armL + 1.2) / 3.9); return toWorld(B, lerp(B.f * 10, 0, up), lerp(-98, -372, ease((up - 0.45) / 0.55))); };
     switch (seg.type) {
       case 'appear': p = seg.at; r = seg.r; alpha = ease(u); break;
       case 'sky': p = seg.at; r = seg.r; if (seg.arrive && t < seg.t0 + 0.6) flare = Math.sin((t - seg.t0) / 0.6 * Math.PI) * 0.8; break;
@@ -140,7 +140,7 @@
       case 'pickup': { const q = ease(u), ch = chest(); p = { x: lerp(seg.from.x, ch.x, q), y: lerp(seg.from.y, ch.y, q) - Math.sin(q * Math.PI) * 40 }; r = lerp(26, 28, q); break; }
       case 'held': case 'raise': case 'lower': p = chest(); r = 28 + 2 * bright; break;
       case 'rise': {
-        const from = seg.from === 'overhead' ? (seg._from || (seg._from = (() => { const B = kitsuBody(seg.t0); return toWorld(B, 0, -372); })())) : seg.from;
+        const from = seg.from === 'overhead' ? (seg._from || (seg._from = (() => { const B = renBody(seg.t0); return toWorld(B, 0, -372); })())) : seg.from;
         const c = { x: from.x - (seg.to.x - from.x) * 0.9, y: Math.min(from.y, seg.to.y) - 50 };
         p = bez(from, c, seg.to, ease(u)); r = lerp(seg.r0, seg.r1, ease(u)); break;
       }
@@ -153,7 +153,7 @@
   function heartAt(t) {
     for (const h of P.heartDown) {
       if (t < h.t0 || t > h.burst) continue;
-      const B = kitsuBody(t), hold = toWorld(B, 0, -104);
+      const B = renBody(t), hold = toWorld(B, 0, -104);
       if (t < h.t1) { const u = ease((t - h.t0) / (h.t1 - h.t0)); return { vis: true, x: lerp(h.from.x, hold.x, u) + Math.sin(u * Math.PI * 3) * 50 * (1 - u), y: lerp(h.from.y, hold.y, u), sc: easeOutBack((t - h.t0) / 0.3) }; }
       return { vis: true, x: hold.x, y: hold.y, sc: 1 + 0.15 * Math.sin((t - h.t1) * 20) };
     }
@@ -241,7 +241,7 @@
   const flies = Array.from({ length: 26 }, (_, i) => ({ x: hash(i + 1500) * 1920, y: 560 + hash(i + 1600) * 420, ph: hash(i + 1700) * 6, sp: 0.4 + hash(i + 1800) * 0.6 }));
 
   function camAt(t) {
-    const z = K_('zoom', t), fz = clamp((z - 1) / 0.55), B = kitsuBody(t);
+    const z = K_('zoom', t), fz = clamp((z - 1) / 0.55), B = renBody(t);
     let cx = lerp(960, B.x, fz * 0.85), cy = lerp(540, B.y - 230, fz * 0.9);
     const hw = 960 / z, hh = 540 / z;
     cx = clamp(cx, -220 + hw, 2140 - hw); cy = clamp(cy, -40 + hh, 1140 - hh);
@@ -406,10 +406,10 @@
     c.setTransform(1, 0, 0, 1, 0, 0); c.globalAlpha = 1; c.globalCompositeOperation = 'source-over';
     drawBackground(c, t, cam, tau);
     c.setTransform(1, 0, 0, 1, 0, 0); c.globalCompositeOperation = 'multiply'; c.fillStyle = tod(tau, PAL.grade); c.fillRect(0, 0, W, H); c.globalCompositeOperation = 'source-over';
-    const K = kitsuState(t);
+    const K = renState(t);
     const k = layer.getContext('2d');
     k.setTransform(1, 0, 0, 1, 0, 0); k.globalCompositeOperation = 'source-over'; k.clearRect(0, 0, W, H);
-    applyCam(k, cam, 1); drawKitsu(k, K);
+    applyCam(k, cam, 1); drawRen(k, K);
     k.setTransform(1, 0, 0, 1, 0, 0); k.globalCompositeOperation = 'source-atop';
     k.globalAlpha = tau < 1 ? 0.06 * tau : 0.06 + 0.08 * (tau - 1); k.fillStyle = tod(tau, PAL.tint); k.fillRect(0, 0, W, H);
     k.globalAlpha = 1; k.globalCompositeOperation = 'source-over';
@@ -435,7 +435,7 @@
     P.sparkles.forEach((sp, i) => {
       let p = sp.at;
       if (!p && sp.onStar) { const q = starAt(sp.t); p = q ? { x: q.x, y: q.y } : head; }
-      if (!p) { const B = kitsuBody(sp.t); p = toWorld(B, 0, -180); }
+      if (!p) { const B = renBody(sp.t); p = toWorld(B, 0, -180); }
       burst(c, t, sp.t, p.x, p.y, sp.small ? 7 : 12, 60 + i * 13, sp.small ? 80 : 170, 1.0, sp.small ? 12 : 15);
     });
     P.hearts.forEach(hh => {
@@ -444,7 +444,7 @@
     });
     const HS = heartAt(t);
     if (HS) drawHeart(c, HS.x, HS.y, 24 * HS.sc, 1, '#ffd36b', '255,210,120');
-    P.heartDown.forEach((h, i) => { const B = kitsuBody(h.burst), p = toWorld(B, 0, -104); burst(c, t, h.burst, p.x, p.y, 14, 33 + i, 140, 1.1, 16); });
+    P.heartDown.forEach((h, i) => { const B = renBody(h.burst), p = toWorld(B, 0, -104); burst(c, t, h.burst, p.x, p.y, 14, 33 + i, 140, 1.1, 16); });
 
     P.titles.forEach(T => drawTitle(c, T, t));
     P.captions.forEach(cap => drawCaption(c, cap, t));
@@ -467,5 +467,5 @@
     await Promise.all(['700 52px Fredoka', 'italic 500 40px Lora'].map(f => document.fonts.load(f)));
     render(0);
   }
-  window.KitsuFilm = { init, render };
+  window.StudioFilm = { init, render };
 })();

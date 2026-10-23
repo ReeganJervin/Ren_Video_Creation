@@ -34,7 +34,7 @@
   <p id="status"></p>
 </div>
 <script src="story.js"></script>
-<script src="kitsu.js"></script>
+<script src="ren.js"></script>
 <script src="film.js"></script>
 <script src="audio.js"></script>
 <script>
@@ -45,26 +45,26 @@
     const plan = await (await fetch(qs.get('plan'))).json();
     $('title').textContent = plan.meta.title;
     $('scrub').max = plan.duration;
-    await KitsuFilm.init($('film'), plan);
+    await StudioFilm.init($('film'), plan);
     return plan;
   })();
   window.FILM = {
     ready: ready.then(() => true),
-    render: t => KitsuFilm.render(t),
-    renderAudio: async stem => KitsuAudio.renderAudio(await ready, stem),
+    render: t => StudioFilm.render(t),
+    renderAudio: async stem => StudioAudio.renderAudio(await ready, stem),
   };
 
   // Live preview: the picture follows the audio clock so both stay in sync.
   let actx = null, t0 = 0, raf = 0;
-  const show = t => { KitsuFilm.render(t); $('scrub').value = t; $('time').textContent = t.toFixed(2) + ' s'; };
+  const show = t => { StudioFilm.render(t); $('scrub').value = t; $('time').textContent = t.toFixed(2) + ' s'; };
   async function play() {
     stop();
     const plan = await ready;
     actx = new AudioContext();
-    const { buffers, missing } = await KitsuAudio.loadVoices(actx, plan);
+    const { buffers, missing } = await StudioAudio.loadVoices(actx, plan);
     $('status').textContent = missing.length ? `Some voice clips are missing: ${missing.join(', ')}` : '';
     t0 = actx.currentTime + 0.15;
-    KitsuAudio.buildAudio(actx, t0, plan, buffers);
+    StudioAudio.buildAudio(actx, t0, plan, buffers);
     const tick = () => { const t = actx.currentTime - t0; show(Math.max(0, t)); if (t < plan.duration) raf = requestAnimationFrame(tick); else stop(); };
     raf = requestAnimationFrame(tick);
   }

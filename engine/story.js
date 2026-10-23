@@ -8,15 +8,15 @@
   const TIMES = { day: 0, sunset: 1, dusk: 2, night: 3 };
   const MOODS = ['normal', 'happy', 'surprised', 'shy', 'sad', 'sleepy'];
   const SPEED = 290;            // walking speed, px per second
-  const KS = 1.15;              // Kitsu scale (fixed)
+  const KS = 1.15;              // Ren scale (fixed)
   const feetY = x => 905 - 38 * Math.exp(-(((x - 960) / 240) ** 2));
 
   const HELP = [
-    'narrator: <text>', 'kitsu: <text>', 'kitsu (happy|surprised|shy|sad|sleepy): <text>',
-    'kitsu enters [from left|right] [to left|center|right]', 'kitsu walks to left|center|right', 'kitsu exits [to] left|right',
-    'kitsu hops [twice]', 'kitsu waves', 'kitsu looks up|down|left|right|at you|at the star|at the heart', 'kitsu turns to you',
-    'kitsu tilts its head', 'kitsu feels happy|surprised|shy|sad|sleepy|normal', 'kitsu picks up the star', 'kitsu lets go of the star',
-    'kitsu raises its paws', 'kitsu lowers its paws', 'kitsu blinks',
+    'narrator: <text>', 'ren: <text>', 'ren (happy|surprised|shy|sad|sleepy): <text>',
+    'ren enters [from left|right] [to left|center|right]', 'ren walks to left|center|right', 'ren exits [to] left|right',
+    'ren hops [twice]', 'ren waves', 'ren looks up|down|left|right|at you|at the star|at the heart', 'ren turns to you',
+    'ren tilts its head', 'ren feels happy|surprised|shy|sad|sleepy|normal', 'ren picks up the star', 'ren lets go of the star',
+    'ren raises its paws', 'ren lowers its paws', 'ren blinks',
     'star appears', 'star falls', 'star glows', 'star twinkles', 'star rises', 'star disappears',
     'hearts float up', 'heart floats down', 'sparkles', 'title card: <WORD>',
     'time: day|sunset|dusk|night', 'camera: wide|close|closer', 'wait <seconds>',
@@ -54,7 +54,7 @@
         if (!z) return err(`Unknown camera "${m[1]}". Use: wide, close or closer`);
         return beat('camera', { zoom: z });
       }
-      if ((m = line.match(/^(narrator|kitsu)\s*(?:\(\s*([a-z]+)\s*\))?\s*:\s*(.+)$/i))) {
+      if ((m = line.match(/^(narrator|ren)\s*(?:\(\s*([a-z]+)\s*\))?\s*:\s*(.+)$/i))) {
         const who = m[1].toLowerCase(), mood = m[2] && m[2].toLowerCase(), say = m[3].trim();
         if (mood && who === 'narrator') return err('The narrator has no mood. Remove the (…) part.');
         if (mood && !MOODS.includes(mood)) return err(`Unknown mood "${m[2]}". Use: ${MOODS.join(', ')}`);
@@ -67,12 +67,12 @@
         if (word.length > 14) return err('Title card text must be 14 characters or fewer.');
         return beat('title', { text: word });
       }
-      if (/^sparkles?(\s+around kitsu)?$/i.test(line)) return beat('sparkles');
+      if (/^sparkles?(\s+around ren)?$/i.test(line)) return beat('sparkles');
       if (/^(a |the |little )*hearts? floats? up$/i.test(line)) return beat('heartsUp');
       if (/^(a |the |golden )*hearts? floats? down$/i.test(line)) return beat('heartDown');
       if ((m = line.match(/^(?:the |a |little )*star\s+(appears|falls|glows|twinkles|rises|disappears)$/i))) return beat('star', { act: m[1].toLowerCase() });
 
-      if ((m = line.match(/^kitsu\s+(.+)$/i))) {
+      if ((m = line.match(/^ren\s+(.+)$/i))) {
         const a = m[1].toLowerCase().replace(/[.!]+$/, '').replace(/\s+/g, ' ');
         let k;
         if ((k = a.match(/^enters(?: from (left|right))?(?: to (?:the )?(left|center|centre|right))?$/))) return beat('enter', { from: k[1] || 'left', to: (k[2] || 'center').replace('centre', 'center') });
@@ -93,11 +93,11 @@
         if (/^raises (its |his |her )?paws$/.test(a)) return beat('paws', { up: true });
         if (/^lowers (its |his |her )?paws$/.test(a)) return beat('paws', { up: false });
         if (/^blinks$/.test(a)) return beat('blink');
-        return err(`I don't know how Kitsu can "${a}".`);
+        return err(`I don't know how Ren can "${a}".`);
       }
       err('I don\'t understand this line.');
     });
-    if (!beats.some(b => b.type === 'say')) errors.push('The story has no narrator or kitsu lines.');
+    if (!beats.some(b => b.type === 'say')) errors.push('The story has no narrator or Ren lines.');
     return { meta, beats, errors };
   }
 
@@ -134,9 +134,9 @@
       star: [], twinkles: [], sfx: [], warnings: [],
     };
     const ARM_R = 0.16;
-    const firstKitsu = beats.find(b => /^(enter|walk|exit|hop|wave|look|tilt|mood|pickup|paws|blink)$/.test(b.type) || (b.type === 'say' && b.who === 'kitsu'));
-    let kx = firstKitsu && firstKitsu.type === 'enter' ? OFF[firstKitsu.from] : POS.center;
-    P.kitsuStartX = kx;
+    const firstRen = beats.find(b => /^(enter|walk|exit|hop|wave|look|tilt|mood|pickup|paws|blink)$/.test(b.type) || (b.type === 'say' && b.who === 'ren'));
+    let kx = firstRen && firstRen.type === 'enter' ? OFF[firstRen.from] : POS.center;
+    P.renStartX = kx;
     let facing = 0, holding = false, armsUp = false, mood = 'normal', openLook = null, zoom = 1;
     let star = { state: 'none', x: 0, y: 0, r: 20 };
     let t = 0.6, prevStart = 0.6;
@@ -166,7 +166,7 @@
       switch (b.type) {
         case 'say': {
           const len = lens[P.voice.length] || estimate(b.text);
-          const vt = b.who === 'kitsu' ? s + 0.15 : s;
+          const vt = b.who === 'ren' ? s + 0.15 : s;
           if (voiceWins.some(([a, e]) => vt < e && vt + len > a)) errors.push(`Line ${b.line}: two voices would talk at the same time. Remove the "+" so this line waits its turn.`);
           voiceWins.push([vt, vt + len]);
           P.voice.push({ id: P.voice.length, who: b.who, text: b.text, t: vt, len, line: b.line });
@@ -198,7 +198,7 @@
           break;
         }
         case 'wave': {
-          if (holding) { P.warnings.push(`Line ${b.line}: Kitsu is holding the star, so it waves with the star in its paws.`); }
+          if (holding) { P.warnings.push(`Line ${b.line}: Ren is holding the star, so it waves with the star in its paws.`); }
           set('armR', s, 2.35, 0.4); P.waves.push({ a: s + 0.4, b: s + 2.2 }); set('armR', s + 2.2, holding ? -1.2 : ARM_R, 0.4);
           dur = 2.6; break;
         }
@@ -355,7 +355,7 @@
     const keys = {};
     const init = { facing: 0, lookX: 0, lookY: 0, tilt: 0, armL: ARM_R, armR: ARM_R, crouch: 1, tau: tau0, zoom: 1, bright: 0.9 };
     for (const k in ch) keys[k] = keysFrom(init[k], ch[k]);
-    if (firstKitsu && firstKitsu.type === 'enter') keys.facing = keysFrom(firstKitsu.from === 'left' ? 0.85 : -0.85, ch.facing);
+    if (firstRen && firstRen.type === 'enter') keys.facing = keysFrom(firstRen.from === 'left' ? 0.85 : -0.85, ch.facing);
 
     return {
       version: 1, duration, fps: 30, width: 1920, height: 1080, scale: KS, errors, ...P, keys,
@@ -365,5 +365,5 @@
   function estimate(text) { return 0.45 + text.split(/\s+/).length * 0.36; }
 
   const api = { parseStory, compileStory, evalKeys, feetY, HELP, POS };
-  if (typeof module !== 'undefined') module.exports = api; else root.KitsuStory = api;
+  if (typeof module !== 'undefined') module.exports = api; else root.StudioStory = api;
 })(this);

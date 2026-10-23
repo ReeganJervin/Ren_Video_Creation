@@ -1,25 +1,25 @@
-# A short daytime story that shows Kitsu's moods.
+# A short daytime story that shows Ren's moods.
 
 title: A Sunny Hello
 place: meadow
 time: day
 
-kitsu enters from right
+ren enters from right
 + narrator: It was a bright and sunny morning in the meadow.
-kitsu waves
-+ kitsu (happy): Hello, friends! I'm Kitsu!
+ren waves
++ ren (happy): Hello, friends! I'm Ren!
 camera: close
-kitsu (shy): Will you... play with me today?
-kitsu feels sad
-narrator: But nobody answered, and Kitsu felt a little lonely.
-kitsu looks around
+ren (shy): Will you... play with me today?
+ren feels sad
+narrator: But nobody answered, and Ren felt a little lonely.
+ren looks around
 sparkles
-kitsu (surprised): Oh! You're here!
-kitsu feels happy
-kitsu hops twice
+ren (surprised): Oh! You're here!
+ren feels happy
+ren hops twice
 hearts float up
 camera: wide
 time: sunset
 narrator: They played all day, until the sun went down.
-kitsu (sleepy): What a wonderful day...
-kitsu exits to left
+ren (sleepy): What a wonderful day...
+ren exits to left

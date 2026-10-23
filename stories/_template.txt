@@ -1,5 +1,5 @@
 # ============================================================
-#  KITSU STORY TEMPLATE
+#  REN STORY TEMPLATE
 #  1. Copy this file and give it a new name, e.g. my-story.txt
 #     (the video will be called videos\my-story.mp4)
 #  2. Change the lines below. Lines starting with # are ignored.
@@ -9,24 +9,24 @@
 #  All lines you can use are listed in STORY-GUIDE.md
 # ============================================================
 
-title: My Kitsu Story
+title: My Ren Story
 place: meadow
 # time can be: day, sunset, dusk, night
 time: sunset
 
 # --- Beginning ---
-kitsu enters
-+ narrator: Once upon a time, a little fox named Kitsu went for a walk.
-kitsu turns to you
-title card: KITSU
-kitsu (happy): Hello! Today is a special day!
+ren enters
++ narrator: Once upon a time, a little fox named Ren went for a walk.
+ren turns to you
+title card: REN
+ren (happy): Hello! Today is a special day!
 
 # --- Middle ---
-kitsu looks around
-kitsu (surprised): What's that?
+ren looks around
+ren (surprised): What's that?
 sparkles
 
 # --- End ---
-kitsu hops
+ren hops
 hearts float up
 narrator: And that was the start of a wonderful adventure.

@@ -66,7 +66,7 @@ async function main() {
     for (const p of pending) {
       const raw = p.cached + '.raw.wav';
       if (p.pitch !== 1 && fs.existsSync(raw)) {
-        // Kitsu's brighter voice: raise pitch, keep timing.
+        // Ren's brighter voice: raise pitch, keep timing.
         const sr = readWav(raw).rate;
         spawnSync(ffmpeg, ['-loglevel', 'error', '-y', '-i', raw, '-af', `asetrate=${Math.round(sr * p.pitch)},aresample=${sr},atempo=${(1 / p.pitch).toFixed(5)}`, p.cached]);
         fs.unlinkSync(raw);

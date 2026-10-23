@@ -1,5 +1,5 @@
-// Kitsu — the fixed character. Proportions, palette and features never change between videos.
-// drawKitsu(ctx, K) draws Kitsu with feet at (K.x, K.y); K holds pose/expression values.
+// Ren — the fixed character. Proportions, palette and features never change between videos.
+// drawRen(ctx, K) draws Ren with feet at (K.x, K.y); K holds pose/expression values.
 (function (root) {
   const C = {
     line: '#4a2616', fur: '#f39a4a', furD: '#e2802f', cream: '#fff3e0', tip: '#5a2d18',
@@ -236,7 +236,7 @@
     c.restore();
   }
 
-  function drawKitsu(c, K) {
+  function drawRen(c, K) {
     c.save();
     c.translate(K.x, K.y - K.h);
     c.scale(K.s * K.sx, K.s * K.sy);
@@ -257,5 +257,5 @@
   }
 
   // ---------- star + heart ----------
-  root.KitsuCharacter = { drawKitsu, C };
+  root.RenCharacter = { drawRen, C };
 })(this);

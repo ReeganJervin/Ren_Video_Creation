@@ -42,8 +42,8 @@ function validate(plan, files) {
   check('No overlapping or cut-off voices', !overlap.length, overlap.length ? `problem: ${overlap.join(', ')}` : 'every line ends before the next starts and before the ending');
 
   // text boxes hold their voice lines
-  const kitsu = plan.voice.filter(x => x.who === 'kitsu'), narr = plan.voice.filter(x => x.who === 'narrator');
-  const badB = plan.bubbles.filter((b, i) => !(b.t0 <= kitsu[i].t && kitsu[i].t + kitsu[i].len <= b.t1 + 0.01));
+  const ren = plan.voice.filter(x => x.who === 'ren'), narr = plan.voice.filter(x => x.who === 'narrator');
+  const badB = plan.bubbles.filter((b, i) => !(b.t0 <= ren[i].t && ren[i].t + ren[i].len <= b.t1 + 0.01));
   const badC = plan.captions.filter((c, i) => !(c.t0 <= narr[i].t && narr[i].t + narr[i].len <= c.t1 + 0.01));
   check('Speech bubbles and captions stay up for their lines', !badB.length && !badC.length, `${plan.bubbles.length} bubbles, ${plan.captions.length} captions${badB.length + badC.length ? `; too short: ${[...badB, ...badC].map(x => x.text).join(' | ')}` : ''}`);
 
