@@ -129,7 +129,7 @@
     let bright = K_('bright', t), p, r = 26, alpha = 1, flare = 0;
     for (const f of flickers) if (t >= f.t0 && t < f.t1) bright = 0.25 + 0.14 * (Math.sin(t * 23) + Math.sin(t * 37 + 1)) * 0.5;
     const u = seg.t1 ? (t - seg.t0) / (seg.t1 - seg.t0) : 0;
-    const chest = () => { const B = renBody(t); const up = clamp((B.armL + 1.2) / 3.9); return toWorld(B, lerp(B.f * 10, 0, up), lerp(-98, -372, ease((up - 0.45) / 0.55))); };
+    const chest = () => { const B = renBody(t); const up = clamp((B.armL + 1.2) / 3.9); return toWorld(B, lerp(B.f * 40, 0, up), lerp(-98, -372, ease((up - 0.45) / 0.55))); };
     switch (seg.type) {
       case 'appear': p = seg.at; r = seg.r; alpha = ease(u); break;
       case 'sky': p = seg.at; r = seg.r; if (seg.arrive && t < seg.t0 + 0.6) flare = Math.sin((t - seg.t0) / 0.6 * Math.PI) * 0.8; break;

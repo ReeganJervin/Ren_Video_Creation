@@ -43,12 +43,11 @@
     tufts(c, outer[outer.length - 1], inner.slice(0, -1).reverse(), 6, -1);
     c.closePath();
   }
-  function drawTail(c, K) {
-    const side = K.f >= 0 ? 1 - 2 * K.f : 1;
-    const sg = side >= 0 ? 1 : -1, spread = Math.max(0.45, Math.abs(side));
+  // Tail rooted at (x, -50); sx < 0 points it to the left, |sx| < 1 foreshortens it.
+  function drawTail(c, K, x, sx) {
     c.save();
-    c.translate(side * 26, -50);
-    c.scale(sg * spread * 0.86, 0.86);
+    c.translate(x, -50);
+    c.scale(sx * 0.86, 0.86);
     c.rotate(0.12 + K.tail);
     tailPath(c); fillUnion(c, C.fur);
     c.save(); c.clip();
@@ -157,14 +156,11 @@
     drawFlower(c, bx + 10, -122, 7.5);
   }
 
-  // ---------- head ----------
-  function drawEar(c, i, K) {
-    // when turned, the far ear slides in behind the head and sits a little lower
-    const far = Math.sign(K.f) === -i ? turnOf(K.f) : 0;
+  // ---------- head parts shared by every view ----------
+  // One ear with its base at (x, y), turned by rot; sx/sy squeeze it when seen at an angle.
+  function earAt(c, x, y, rot, sx = 1, sy = 1) {
     c.save();
-    c.translate(i * 48 + K.f * 10 - i * 30 * far, -48 + 10 * far);
-    c.rotate(i * 0.3 + (i < 0 ? -K.earL : K.earR) - i * 0.12 * far);
-    c.scale(1 - 0.15 * far, 1 - 0.08 * far);
+    c.translate(x, y); c.rotate(rot); c.scale(sx, sy);
     const ear = () => path(c, () => { c.moveTo(-37, 14); c.bezierCurveTo(-39, -40, -20, -84, 2, -114); c.bezierCurveTo(24, -84, 40, -40, 37, 14); });
     // dark brown tip blending softly into the orange
     const g = c.createLinearGradient(0, -52, 0, -100);
@@ -182,47 +178,22 @@
     c.restore();
   }
 
-  // How far the head is turned into a three-quarter/side view: 0 below |f| = 0.3, 1 at |f| = 0.85.
-  const turnOf = f => clamp((Math.abs(f) - 0.3) / 0.55);
-  // Snout that pokes out past the head outline on the facing side when turned.
-  const snout = f => { const a = turnOf(f), s = Math.sign(f) || 1; return { a, x: s * (62 + 30 * a), rx: 16 + 16 * a, tip: s * (62 + 30 * a + 16 + 16 * a) }; };
-
-  // Round head with small orange cheek tufts and a little tuft on top. Below the eyes it is never
-  // wider than at eye level, apart from the tufts. The far tuft shrinks when the head turns.
-  const CHEEK = [[104, 14], [95, 22], [104, 32], [91, 40], [84, 48]];
-  function headPath(c, f) {
-    const a = turnOf(f), kR = f < 0 ? 1 - 0.8 * a : 1, kL = f > 0 ? 1 - 0.8 * a : 1;
-    const side = (k, s) => CHEEK.map(([x, y]) => [s * (90 + (x - 90) * k), y]);
-    const R = side(kR, 1), L = side(kL, -1).reverse(), lEnd = L.shift();
-    c.beginPath();
-    c.moveTo(-92, 4);
-    c.bezierCurveTo(-98, -48, -54, -84, 0, -84);
-    c.bezierCurveTo(54, -84, 98, -48, 92, 4);
-    tufts(c, [92, 4], R, 5, -1);
-    c.bezierCurveTo(R[4][0] - 18, 66, 30, 78, 0, 78);
-    c.bezierCurveTo(-30, 78, lEnd[0] + 18, 66, lEnd[0], lEnd[1]);
-    tufts(c, lEnd, [...L, [-92, 4]], 5, -1);
-    c.closePath();
-    c.moveTo(-22, -70);
-    tufts(c, [-22, -70], [[-12, -92], [-4, -82], [6, -98], [10, -84], [22, -92], [24, -70]], 4, -1);
-    c.closePath();
-    if (a > 0) { const S = snout(f); c.moveTo(S.x + S.rx, 34); c.ellipse(S.x, 34, S.rx, 17, 0, 0, Math.PI * 2); c.closePath(); }
-  }
-
   // eyes: 'normal' | 'happy' (^ arcs) | 'wide' | 'sleepy' (closed) | 'shy' (glossy) | 'playful' (wink, for Yuki)
-  function drawEye(c, ex, ey, i, K) {
-    const far = Math.sign(K.f) === -i ? Math.abs(K.f) : 0;
+  // `squeeze` narrows an eye seen at an angle.
+  // `bold` draws closed eyes thicker and longer so they read at video size (profile)
+  function drawEye(c, ex, ey, i, K, squeeze = 1, bold = false) {
     c.save(); c.translate(ex, ey);
-    c.scale((1 - 0.5 * far) * (1 + 0.1 * K.wide), 1 + 0.12 * K.wide);
+    c.scale(squeeze * (1 + 0.1 * K.wide), 1 + 0.12 * K.wide);
     c.strokeStyle = C.line; c.lineCap = 'round';
     if (K.eyes === 'happy' || (K.eyes === 'playful' && i > 0)) {
-      c.lineWidth = 5; c.beginPath(); c.moveTo(-17, 7); c.quadraticCurveTo(0, -15, 17, 7); c.stroke();
+      c.lineWidth = 5 / squeeze; c.beginPath(); c.moveTo(-17, 7); c.quadraticCurveTo(0, -15, 17, 7); c.stroke();
       c.restore(); return;
     }
     const open = 1 - K.blink;
     if (K.eyes === 'sleepy' || open < 0.15) {
-      c.lineWidth = 4.5; c.beginPath(); c.moveTo(-17, 2); c.quadraticCurveTo(0, 13, 17, 2); c.stroke();
-      if (K.eyes === 'sleepy') { c.lineWidth = 3; c.beginPath(); c.moveTo(i * 16, 3); c.lineTo(i * 22, 0); c.stroke(); }
+      const L = bold ? 21 : 17;
+      c.lineWidth = (bold ? 6.5 : 4.5) / squeeze; c.beginPath(); c.moveTo(-L, 2); c.quadraticCurveTo(0, bold ? 15 : 13, L, 2); c.stroke();
+      if (K.eyes === 'sleepy') { c.lineWidth = bold ? 4.5 : 3; c.beginPath(); c.moveTo(i * (L - 1), 3); c.lineTo(i * (L + 6), -1); c.stroke(); }
       c.restore(); return;
     }
     c.scale(1, open);
@@ -281,65 +252,92 @@
     }
   }
 
-  function drawHead(c, K) {
-    const f = K.f;
-    c.save();
-    c.translate(0, -142); c.rotate(K.tilt); c.translate(f * 6, -68);
-    drawEar(c, -1, K); drawEar(c, 1, K);
-    const S = snout(f), mx = f * 26 + (S.tip - 8 - f * 26) * S.a;   // muzzle centre slides out onto the snout
-    headPath(c, f); fillUnion(c, C.fur);
-    c.save(); c.clip();
-    // small soft sheen on the crown
-    c.save(); c.translate(f * 16, -56); c.scale(1, 0.6);
-    const sh = c.createRadialGradient(0, 0, 0, 0, 0, 44);
-    sh.addColorStop(0, 'rgba(252,192,128,0.45)'); sh.addColorStop(1, 'rgba(252,192,128,0)');
-    c.fillStyle = sh; c.fillRect(-44, -44, 88, 88); c.restore();
-    if (f) { c.fillStyle = C.furD; c.globalAlpha = 0.3 * Math.abs(f); c.beginPath(); c.ellipse(-Math.sign(f) * 92, 0, 36, 90, 0, 0, Math.PI * 2); c.fill(); }
-    // cream only on the muzzle, chin and the inner/lower cheeks (fur-edged); the outer cheek tufts stay orange
-    c.globalAlpha = 1; c.fillStyle = C.cream;
-    const my = f * 26 + (mx - f * 26) * 0.8, sx = f * 14 + (my - f * 26) * 0.45;
-    c.beginPath();
-    c.moveTo(-64 + sx, 78);
-    tufts(c, [-64 + sx, 78], [[-64 + sx, 56], [-56 + sx, 60], [-52 + sx, 46], [-44 + sx, 50], [-38 + sx, 40]], 3, -1);
-    c.bezierCurveTo(-30 + sx, 46, -24 + my, 44, -17 + my, 28);
-    c.quadraticCurveTo(my, 17, 17 + my, 28);
-    c.bezierCurveTo(24 + my, 44, 30 + sx, 46, 38 + sx, 40);
-    tufts(c, [38 + sx, 40], [[44 + sx, 50], [52 + sx, 46], [56 + sx, 60], [64 + sx, 56], [64 + sx, 78]], 3, -1);
-    c.lineTo(64 + sx, 120); c.lineTo(-64 + sx, 120); c.closePath(); c.fill();
-    if (S.a > 0.5) { c.beginPath(); c.ellipse(S.x + Math.sign(f) * 4, 40, S.rx, 12, 0, 0, Math.PI * 2); c.fill(); }
-    // shy: a blush band across the nose
-    if (K.blushBoost > 0.4) {
-      c.save(); c.translate(mx * 0.7, 28); c.scale(1, 0.28);
-      const bg = c.createRadialGradient(0, 0, 0, 0, 0, 80), ba = clamp((K.blushBoost - 0.4) * 1.4);
-      bg.addColorStop(0, `rgba(${C.blush},${0.55 * ba})`); bg.addColorStop(1, `rgba(${C.blush},0)`);
-      c.fillStyle = bg; c.fillRect(-80, -80, 160, 160); c.restore();
-    }
-    c.restore();
-    // cream eyebrow dots
-    c.fillStyle = C.cream;
-    [-1, 1].forEach(i => { c.beginPath(); c.ellipse(i * 26 + f * 18, -42, 7.5, 4.5, i * 0.25, 0, Math.PI * 2); c.fill(); });
-    // soft blush
-    [-1, 1].forEach(i => {
-      const x = i * 60 + f * 16, y = 38, r = 20 + K.blushBoost * 8, a = clamp(0.5 + K.blushBoost * 0.6);
-      const g = c.createRadialGradient(x, y, 0, x, y, r);
-      g.addColorStop(0, `rgba(${C.blush},${a})`); g.addColorStop(0.6, `rgba(${C.blush},${a * 0.6})`); g.addColorStop(1, `rgba(${C.blush},0)`);
-      c.fillStyle = g; c.beginPath(); c.ellipse(x, y, r, r * 0.62, 0, 0, Math.PI * 2); c.fill();
-    });
-    drawEye(c, -37 + f * 22, 2, -1, K);
-    drawEye(c, 37 + f * 22, 2, 1, K);
-    if (K.brows > 0) {
-      // worried brows: inner ends raised
-      c.save(); c.globalAlpha = K.brows; c.strokeStyle = C.line; c.lineWidth = 4; c.lineCap = 'round';
-      [-1, 1].forEach(i => { const bx = i * 37 + f * 20; c.beginPath(); c.moveTo(bx - i * 12, -38); c.lineTo(bx + i * 10, -30); c.stroke(); });
-      c.restore();
-    }
-    // nose + mouth
-    c.save(); c.translate(mx, 30);
+  function drawNose(c, x, y, rot = 0) {
+    c.save(); c.translate(x, y); c.rotate(rot);
     path(c, () => { c.moveTo(-7, -3); c.quadraticCurveTo(0, -6, 7, -3); c.quadraticCurveTo(4, 4, 0, 5); c.quadraticCurveTo(-4, 4, -7, -3); });
     c.fillStyle = C.eye; c.fill();
     c.fillStyle = 'rgba(255,255,255,0.6)'; c.beginPath(); c.ellipse(-2, -2.5, 2.2, 1.2, 0, 0, Math.PI * 2); c.fill();
-    c.translate(0, 9); drawMouth(c, K);
     c.restore();
+  }
+  function blushAt(c, x, y, K, k = 1) {
+    const r = (20 + K.blushBoost * 8) * k, a = clamp(0.5 + K.blushBoost * 0.6);
+    const g = c.createRadialGradient(x, y, 0, x, y, r);
+    g.addColorStop(0, `rgba(${C.blush},${a})`); g.addColorStop(0.6, `rgba(${C.blush},${a * 0.6})`); g.addColorStop(1, `rgba(${C.blush},0)`);
+    c.fillStyle = g; c.beginPath(); c.ellipse(x, y, r, r * 0.62, 0, 0, Math.PI * 2); c.fill();
+  }
+  // shy: a soft blush band across the nose
+  function noseBand(c, x, y, K, w = 80) {
+    if (K.blushBoost <= 0.4) return;
+    c.save(); c.translate(x, y); c.scale(1, 0.28);
+    const g = c.createRadialGradient(0, 0, 0, 0, 0, w), a = clamp((K.blushBoost - 0.4) * 1.4);
+    g.addColorStop(0, `rgba(${C.blush},${0.55 * a})`); g.addColorStop(1, `rgba(${C.blush},0)`);
+    c.fillStyle = g; c.fillRect(-w, -w, w * 2, w * 2); c.restore();
+  }
+  function browDot(c, x, y, k = 1) { c.fillStyle = C.cream; c.beginPath(); c.ellipse(x, y, 7.5 * k, 4.5, 0, 0, Math.PI * 2); c.fill(); }
+  // worried brows: inner end (toward the nose, direction `inward`) raised
+  function brow(c, x, K, inward, k = 1) {
+    if (K.brows <= 0) return;
+    c.save(); c.globalAlpha = K.brows; c.strokeStyle = C.line; c.lineWidth = 4; c.lineCap = 'round';
+    c.beginPath(); c.moveTo(x + inward * 12 * k, -38); c.lineTo(x - inward * 10 * k, -30); c.stroke();
+    c.restore();
+  }
+  function sheen(c, x, y) {
+    c.save(); c.translate(x, y); c.scale(1, 0.6);
+    const g = c.createRadialGradient(0, 0, 0, 0, 0, 44);
+    g.addColorStop(0, 'rgba(252,192,128,0.45)'); g.addColorStop(1, 'rgba(252,192,128,0)');
+    c.fillStyle = g; c.fillRect(-44, -44, 88, 88); c.restore();
+  }
+  function shade(c, x, y, rx, ry, a) { c.save(); c.fillStyle = C.furD; c.globalAlpha = a; c.beginPath(); c.ellipse(x, y, rx, ry, 0, 0, Math.PI * 2); c.fill(); c.restore(); }
+  const topTuft = (c, dx) => { c.moveTo(dx - 22, -70); tufts(c, [dx - 22, -70], [[dx - 12, -92], [dx - 4, -82], [dx + 6, -98], [dx + 10, -84], [dx + 22, -92], [dx + 24, -70]], 4, -1); c.closePath(); };
+  // Head pivot: shared by every view so the head sits on the neck the same way.
+  function headFrame(c, K, dx) { c.translate(0, -142); c.rotate(K.tilt); c.translate(dx, -68); }
+
+  // ---------- FRONT view (|f| < 0.3) ----------
+  // Round head with small orange cheek tufts and a little tuft on top. Below the eyes it is never
+  // wider than at eye level, apart from the tufts.
+  const CHEEK_R = [[104, 14], [95, 22], [104, 32], [91, 40], [84, 48]];
+  const CHEEK_L = CHEEK_R.map(([x, y]) => [-x, y]).reverse();
+  function frontHeadPath(c) {
+    c.beginPath();
+    c.moveTo(-92, 4);
+    c.bezierCurveTo(-98, -48, -54, -84, 0, -84);
+    c.bezierCurveTo(54, -84, 98, -48, 92, 4);
+    tufts(c, [92, 4], CHEEK_R, 5, -1);
+    c.bezierCurveTo(66, 66, 30, 78, 0, 78);
+    c.bezierCurveTo(-30, 78, -66, 66, -84, 48);
+    tufts(c, [-84, 48], [...CHEEK_L.slice(1), [-92, 4]], 5, -1);
+    c.closePath();
+    topTuft(c, 0);
+  }
+  function drawFrontHead(c, K) {
+    const f = K.f, mx = f * 26;
+    c.save();
+    headFrame(c, K, f * 6);
+    earAt(c, -48 + f * 10, -48, -0.3 - K.earL);
+    earAt(c, 48 + f * 10, -48, 0.3 + K.earR);
+    frontHeadPath(c); fillUnion(c, C.fur);
+    c.save(); c.clip();
+    sheen(c, f * 16, -56);
+    if (f) shade(c, -Math.sign(f) * 92, 0, 36, 90, 0.3 * Math.abs(f));
+    // cream only on the muzzle, chin and the inner/lower cheeks (fur-edged); the outer cheek tufts stay orange
+    c.fillStyle = C.cream;
+    const sx = f * 14;
+    c.beginPath();
+    c.moveTo(-64 + sx, 78);
+    tufts(c, [-64 + sx, 78], [[-64 + sx, 56], [-56 + sx, 60], [-52 + sx, 46], [-44 + sx, 50], [-38 + sx, 40]], 3, -1);
+    c.bezierCurveTo(-30 + sx, 46, -24 + mx, 44, -17 + mx, 28);
+    c.quadraticCurveTo(mx, 17, 17 + mx, 28);
+    c.bezierCurveTo(24 + mx, 44, 30 + sx, 46, 38 + sx, 40);
+    tufts(c, [38 + sx, 40], [[44 + sx, 50], [52 + sx, 46], [56 + sx, 60], [64 + sx, 56], [64 + sx, 78]], 3, -1);
+    c.lineTo(64 + sx, 120); c.lineTo(-64 + sx, 120); c.closePath(); c.fill();
+    noseBand(c, mx * 0.7, 28, K);
+    c.restore();
+    [-1, 1].forEach(i => { browDot(c, i * 26 + f * 18, -42); blushAt(c, i * 60 + f * 16, 38, K); });
+    drawEye(c, -37 + f * 22, 2, -1, K);
+    drawEye(c, 37 + f * 22, 2, 1, K);
+    [-1, 1].forEach(i => brow(c, i * 37 + f * 20, K, -i));
+    drawNose(c, mx, 30);
+    c.save(); c.translate(mx, 39); drawMouth(c, K); c.restore();
     c.restore();
   }
 
@@ -349,14 +347,223 @@
     c.save();
     c.translate(i * 44 + K.f * 4, -122);
     c.rotate(i < 0 ? ang : -ang);
-    // dark brown paw fading into the orange
+    armShape(c, len);
+    c.restore();
+  }
+  // dark brown paw fading into the orange
+  function armShape(c, len) {
     const g = c.createLinearGradient(0, -4, 0, len);
     g.addColorStop(0, C.fur); g.addColorStop(0.55, C.fur); g.addColorStop(0.82, C.paw); g.addColorStop(1, C.paw);
     path(c, () => c.roundRect(-12, -4, 24, len + 4, 12)); fillStroke(c, g);
-    c.restore();
   }
 
-  function drawRen(c, K) {
+  function drawFront(c, K) {
+    const side = K.f >= 0 ? 1 - 2 * K.f : 1;
+    drawTail(c, K, side * 26, Math.sign(side || 1) * Math.max(0.45, Math.abs(side)));
+    drawLegs(c, K);
+    c.translate(0, -Math.abs(Math.sin(K.phase)) * 5 * K.walk);
+    drawBody(c, K);
+    drawScarf(c, K);
+    drawFrontHead(c, K);
+    drawArm(c, -1, K.armL, K);
+    drawArm(c, 1, K.armR, K);
+  }
+
+  // ---------- THREE-QUARTER view (0.3 <= |f| < 0.7), drawn facing right ----------
+  // The near cheek (left) keeps its full tuft; on the right the face turns into a short snout that
+  // stays part of one outline, with the far eye small and close to the edge.
+  function threeHeadPath(c) {
+    c.beginPath();
+    c.moveTo(-92, 4);
+    c.bezierCurveTo(-98, -48, -54, -86, 2, -86);
+    c.bezierCurveTo(56, -86, 94, -54, 92, -14);
+    c.bezierCurveTo(92, -2, 96, 4, 102, 10);
+    c.quadraticCurveTo(108, 18, 102, 26);
+    c.bezierCurveTo(98, 34, 90, 38, 84, 42);
+    c.bezierCurveTo(74, 62, 40, 78, 2, 78);
+    c.bezierCurveTo(-30, 78, -66, 66, -84, 48);
+    tufts(c, [-84, 48], [...CHEEK_L.slice(1), [-92, 4]], 5, -1);
+    c.closePath();
+    topTuft(c, 6);
+  }
+  function drawThreeHead(c, K) {
+    c.save();
+    headFrame(c, K, 6);
+    earAt(c, 40, -56, 0.24 + K.earR * 0.8, 0.8, 0.95);   // far ear, partly behind the head
+    earAt(c, -46, -50, -0.32 - K.earL);                    // near ear
+    threeHeadPath(c); fillUnion(c, C.fur);
+    c.save(); c.clip();
+    sheen(c, 14, -56);
+    shade(c, -96, 0, 34, 90, 0.18);
+    c.fillStyle = C.cream;
+    c.beginPath();
+    c.moveTo(-70, 80);
+    tufts(c, [-70, 80], [[-70, 58], [-62, 62], [-58, 48], [-50, 52], [-44, 42]], 3, -1);
+    c.bezierCurveTo(-32, 52, -6, 52, 6, 40);
+    c.quadraticCurveTo(14, 20, 32, 20);
+    c.bezierCurveTo(44, 20, 50, 34, 66, 36);
+    c.bezierCurveTo(78, 36, 86, 26, 96, 24);
+    c.lineTo(140, 24); c.lineTo(140, 120); c.lineTo(-70, 120); c.closePath(); c.fill();
+    noseBand(c, 40, 28, K, 70);
+    c.restore();
+    browDot(c, -20, -42); browDot(c, 56, -42, 0.65);
+    blushAt(c, -54, 38, K); blushAt(c, 80, 42, K, 0.6);
+    drawEye(c, -20, 2, -1, K);
+    drawEye(c, 58, 2, 1, K, 0.66);
+    brow(c, -20, K, 1); brow(c, 58, K, -1, 0.66);
+    drawNose(c, 98, 18, 0.15);
+    c.save(); c.translate(86, 34); c.scale(0.85, 0.85); drawMouth(c, K); c.restore();
+    c.restore();
+  }
+  function drawThree(c, K) {
+    const B = { ...K, f: K.f * 1.6 };   // body turned a little further than the front pieces normally go
+    drawTail(c, K, -28, -0.7);
+    drawLegs(c, B);
+    c.translate(0, -Math.abs(Math.sin(K.phase)) * 5 * K.walk);
+    drawBody(c, B);
+    drawScarf(c, B);
+    drawThreeHead(c, K);
+    drawArm(c, -1, K.armL, K);
+    drawArm(c, 1, K.armR, K);
+  }
+
+  // ---------- SIDE profile (|f| >= 0.7), drawn facing right ----------
+  // One outline: skull -> forehead -> short upturned snout -> chin -> throat; cheek tuft at the back of the jaw.
+  function sideHeadPath(c) {
+    c.beginPath();
+    c.moveTo(-88, 14);
+    c.bezierCurveTo(-98, -46, -56, -88, -4, -88);
+    c.bezierCurveTo(40, -88, 72, -64, 76, -34);
+    c.bezierCurveTo(78, -20, 80, -8, 86, -2);
+    c.bezierCurveTo(96, 2, 98, 14, 92, 20);
+    c.bezierCurveTo(88, 26, 80, 28, 74, 30);
+    c.bezierCurveTo(70, 34, 68, 40, 66, 46);
+    c.bezierCurveTo(62, 62, 44, 72, 22, 78);
+    c.bezierCurveTo(-8, 84, -40, 78, -60, 64);
+    tufts(c, [-60, 64], [[-84, 70], [-78, 58], [-104, 54], [-90, 42], [-106, 32], [-88, 14]], 6, -1);
+    c.closePath();
+    topTuft(c, -14);
+  }
+  function sideMouth(c, K) {
+    c.strokeStyle = C.line; c.lineWidth = 3; c.lineCap = 'round';
+    const line = (dip) => { c.beginPath(); c.moveTo(90, 22); c.quadraticCurveTo(84, 26 + dip, 76, 26); c.stroke(); };
+    switch (K.mouth) {
+      case 'smile': line(6); break;
+      case 'soft': line(4); break;
+      case 'frown': case 'tinyfrown': line(-4); break;
+      default: c.save(); c.translate(77, 22); c.scale(0.7, 0.7); drawMouth(c, K); c.restore();
+    }
+  }
+  function drawSideHead(c, K) {
+    c.save();
+    headFrame(c, K, 4);
+    earAt(c, 18, -66, 0.14 - K.earR * 0.5, 0.72, 0.9);     // far ear, just visible in front
+    earAt(c, -30, -58, -0.26 - K.earL * 0.8, 0.86, 1);      // near ear at the back of the head
+    sideHeadPath(c); fillUnion(c, C.fur);
+    c.save(); c.clip();
+    sheen(c, 4, -58);
+    shade(c, -86, 4, 30, 80, 0.22);
+    // muzzle, chin and throat as one cream shape that flows down into the chest
+    c.fillStyle = C.cream;
+    c.beginPath();
+    c.moveTo(130, 14); c.lineTo(92, 14);
+    c.bezierCurveTo(84, 18, 78, 24, 70, 26);
+    c.bezierCurveTo(56, 32, 40, 32, 26, 28);
+    tufts(c, [26, 28], [[14, 36], [10, 28], [-2, 40], [-6, 32], [-18, 48], [-16, 60], [-28, 70], [-26, 90]], 3, -1);
+    c.lineTo(-26, 130); c.lineTo(130, 130); c.closePath(); c.fill();
+    noseBand(c, 74, 18, K, 44);
+    c.restore();
+    browDot(c, 46, -44, 0.9);
+    blushAt(c, 44, 34, K, 0.9);
+    drawEye(c, 46, -2, 1, K, 0.84, true);
+    brow(c, 46, K, 1, 0.84);
+    drawNose(c, 91, 8, -0.2);
+    sideMouth(c, K);
+    c.restore();
+  }
+  function sideBodyPath(c) {
+    path(c, () => {
+      c.moveTo(-38, -34);
+      c.bezierCurveTo(-52, -80, -38, -140, -6, -146);
+      c.bezierCurveTo(14, -148, 28, -142, 34, -130);
+      tufts(c, [34, -130], [[46, -122], [42, -112], [54, -102], [48, -92], [56, -80]], 5, -1);
+      c.bezierCurveTo(60, -58, 52, -34, 40, -26);
+      c.bezierCurveTo(22, -10, -30, -12, -38, -34);
+    });
+  }
+  function drawSideBody(c) {
+    sideBodyPath(c); c.fillStyle = C.fur; c.fill();
+    c.save(); c.clip();
+    shade(c, -34, -80, 20, 70, 0.3);
+    // chest fluff on the front of the body, fur-edged toward the back
+    c.fillStyle = C.cream;
+    c.beginPath(); c.moveTo(-2, -152);
+    tufts(c, [-2, -152], [[-8, -138], [2, -128], [-6, -116], [4, -104], [-2, -92], [8, -80], [4, -66]], 4, 1);
+    c.bezierCurveTo(8, -48, 20, -34, 36, -26);
+    c.lineTo(70, -28); c.lineTo(70, -152); c.closePath(); c.fill();
+    c.restore();
+    sideBodyPath(c); c.lineWidth = 4; c.strokeStyle = C.line; c.stroke();
+  }
+  // legs one slightly in front of the other, swapping while walking; small paws pointing forward
+  function drawSideLegs(c, K) {
+    [[-17, Math.PI, true], [15, 0, false]].forEach(([x0, off, far]) => {
+      const ph = K.phase + off, lx = x0 + Math.sin(ph) * 14 * K.walk, lift = Math.max(0, Math.cos(ph)) * 9 * K.walk;
+      const g = c.createLinearGradient(0, -66 - lift, 0, -lift);
+      g.addColorStop(0, C.fur); g.addColorStop(0.3, C.fur); g.addColorStop(0.62, C.paw); g.addColorStop(1, C.paw);
+      c.beginPath(); c.roundRect(lx - 14, -66 - lift, 28, 62, [12, 12, 8, 8]); c.ellipse(lx + 6, -9 - lift, 16, 9, 0, 0, Math.PI * 2);
+      fillUnion(c, g, 3.5);
+      if (far) { c.fillStyle = 'rgba(60,30,15,0.3)'; c.fill(); }
+    });
+  }
+  // arm angles map to swinging forward in profile; folded (holding) brings the paw to the chest
+  function drawSideArm(c, ang, far) {
+    const a = ang < 0 ? 0.7 - ang * 0.35 : ang, len = 64 - 16 * clamp(-ang / 1.2);
+    c.save();
+    c.translate(far ? -4 : 22, -122);
+    c.rotate(-a - (far ? 0 : 0.12));
+    armShape(c, len);
+    if (far) { c.fillStyle = 'rgba(60,30,15,0.25)'; c.fill(); }
+    c.restore();
+  }
+  function drawSideScarf(c) {
+    // small bow at the back of the neck with short ends
+    path(c, () => { c.moveTo(-36, -134); c.quadraticCurveTo(-44, -122, -46, -112); c.lineTo(-38, -116); c.quadraticCurveTo(-36, -124, -30, -132); });
+    fillStroke(c, C.scarfD, 3);
+    path(c, () => { c.moveTo(-32, -132); c.quadraticCurveTo(-32, -120, -28, -110); c.lineTo(-22, -116); c.quadraticCurveTo(-26, -124, -26, -132); });
+    fillStroke(c, C.scarf, 3);
+    [[-1, C.scarfD], [1, C.scarf]].forEach(([d, col]) => { path(c, () => c.ellipse(-36 + d * 8, -138 - d * 2, 10, 6.5, d * 0.5, 0, Math.PI * 2)); fillStroke(c, col, 3); });
+    // thin band around the neck
+    path(c, () => { c.moveTo(-36, -145); c.quadraticCurveTo(0, -154, 38, -139); c.lineTo(37, -123); c.quadraticCurveTo(0, -136, -36, -129); });
+    const g = c.createLinearGradient(0, -154, 0, -123);
+    g.addColorStop(0, C.scarfL); g.addColorStop(0.55, C.scarf); g.addColorStop(1, C.scarfD);
+    fillStroke(c, g);
+    path(c, () => c.ellipse(-36, -137, 6, 6, 0, 0, Math.PI * 2)); fillStroke(c, C.scarf, 3);
+    // bib under the chin, pointing forward
+    path(c, () => { c.moveTo(6, -130); c.quadraticCurveTo(16, -108, 50, -99); c.quadraticCurveTo(50, -116, 38, -130); });
+    fillStroke(c, C.scarf);
+    c.strokeStyle = C.scarfD; c.lineWidth = 2.5;
+    c.beginPath(); c.moveTo(15, -125); c.quadraticCurveTo(25, -110, 42, -103); c.stroke();
+    drawFlower(c, 34, -116, 6.5);
+  }
+  function drawSide(c, K) {
+    drawTail(c, K, -26, -0.95);
+    drawSideArm(c, K.armL, true);
+    drawSideLegs(c, K);
+    c.translate(0, -Math.abs(Math.sin(K.phase)) * 5 * K.walk);
+    drawSideBody(c);
+    drawSideHead(c, K);
+    drawSideArm(c, K.armR, false);
+    drawSideScarf(c);   // wraps over the throat and the top of the arm, as on the sheet
+  }
+
+  // ---------- views ----------
+  const VIEWS = { front: drawFront, three: drawThree, side: drawSide };
+  const viewAt = a => (a < 0.3 ? 'front' : a < 0.7 ? 'three' : 'side');
+  const FADES = [[0.26, 0.34], [0.65, 0.75]];   // brief crossfades around the switch points
+  // Three-quarter and side views are drawn facing right; facing left mirrors them.
+  const mirror = K => ({ ...K, f: -K.f, lookX: -K.lookX, tilt: -K.tilt, earL: K.earR, earR: K.earL });
+
+  function drawView(c, K, view) {
     c.save();
     c.translate(K.x, K.y - K.h);
     c.scale(K.s * K.sx, K.s * K.sy);
@@ -365,14 +572,28 @@
     c.save(); c.translate(0, K.h / (K.s * K.sy));
     c.fillStyle = 'rgba(30,40,20,0.22)'; c.beginPath(); c.ellipse(0, 0, 70 * (1 - K.h / 260), 12 * (1 - K.h / 260), 0, 0, Math.PI * 2); c.fill();
     c.restore();
-    drawTail(c, K);
-    drawLegs(c, K);
-    c.translate(0, -Math.abs(Math.sin(K.phase)) * 5 * K.walk);
-    drawBody(c, K);
-    drawScarf(c, K);
-    drawHead(c, K);
-    drawArm(c, -1, K.armL, K);
-    drawArm(c, 1, K.armR, K);
+    if (view !== 'front' && K.f < 0) { c.scale(-1, 1); K = mirror(K); }
+    VIEWS[view](c, K);
+    c.restore();
+  }
+
+  let bufs = null;
+  function drawRen(c, K) {
+    const a = Math.abs(K.f), fade = FADES.find(([lo, hi]) => a > lo && a < hi);
+    if (!fade || typeof document === 'undefined') return drawView(c, K, viewAt(a));
+    // crossfade: draw both views off-screen, lay the nearer one down fully and the other on top
+    const W = c.canvas.width, H = c.canvas.height, w = (a - fade[0]) / (fade[1] - fade[0]);
+    if (!bufs || bufs[0].width !== W || bufs[0].height !== H) bufs = [0, 1].map(() => Object.assign(document.createElement('canvas'), { width: W, height: H }));
+    const m = c.getTransform(), views = [viewAt(fade[0]), viewAt(fade[1])];
+    views.forEach((v, i) => {
+      const b = bufs[i].getContext('2d');
+      b.setTransform(1, 0, 0, 1, 0, 0); b.clearRect(0, 0, W, H); b.setTransform(m);
+      drawView(b, K, v);
+    });
+    const [base, top, alpha] = w < 0.5 ? [0, 1, w * 2] : [1, 0, (1 - w) * 2];
+    c.save(); c.setTransform(1, 0, 0, 1, 0, 0);
+    c.drawImage(bufs[base], 0, 0);
+    c.globalAlpha *= alpha; c.drawImage(bufs[top], 0, 0);
     c.restore();
   }
 

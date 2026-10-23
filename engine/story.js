@@ -235,7 +235,7 @@
           P.star.push({ type: 'pickup', t0: p + 0.6, t1: p + 1.3, from: { x: star.x, y: star.y } });
           P.star.push({ type: 'held', t0: p + 1.3 });
           set('armL', p + 1.0, -1.2, 0.4); set('armR', p + 1.0, -1.2, 0.4);
-          set('facing', p + 1.3, 0, 0.6); set('lookX', p + 1.3, 0, 0.4); set('lookY', p + 1.3, 0.8, 0.4);
+          set('facing', p + 1.3, 0, 0.4); set('lookX', p + 1.3, 0, 0.4); set('lookY', p + 1.3, 0.8, 0.4);
           sfx('rustle', p, { dur: 1.2, gain: 0.8 }); sfx('twinkle', p + 1.3, { midi: 93, gain: 0.1 });
           holding = true; star.state = 'held';
           dur = (p - s) + 2.0;
