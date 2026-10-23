@@ -78,6 +78,7 @@
     sad: { eyes: 'normal', mouth: 'frown', wide: 0, brows: 1, droop: 0.42, blush: 0, lookY: 0.3, wag: 0 },
     sleepy: { eyes: 'sleepy', mouth: 'yawn', wide: 0, brows: 0, droop: 0.48, blush: 0, lookY: 0.2, wag: 0 },
     playful: { eyes: 'happy', mouth: 'smile', wide: 0, brows: 0, droop: -0.05, blush: 0.4, lookY: 0, wag: 1 },
+    pouty: { eyes: 'normal', mouth: 'pout', wide: 0, brows: -1, droop: 0, blush: 0.35, lookY: 0, wag: 0, puff: 1 },
     joy: { eyes: 'happy', mouth: 'open', wide: 0, brows: 0, droop: 0, blush: 0.25, lookY: 0, wag: 1 },
   };
   function moodAt(t) {
@@ -89,7 +90,7 @@
 
   function renState(t) {
     const K = renBody(t);
-    const m = moodAt(t), mix = k => lerp(m.prev[k], m.cur[k], m.w), pick = k => (m.w > 0.5 ? m.cur : m.prev)[k];
+    const m = moodAt(t), mix = k => lerp(m.prev[k] || 0, m.cur[k] || 0, m.w), pick = k => (m.w > 0.5 ? m.cur : m.prev)[k];
     let lx = K_('lookX', t), ly = K_('lookY', t) + mix('lookY');
     const head = toWorld(K, K.f * 6, -210);
     for (const L of P.lookAt) {
@@ -102,7 +103,7 @@
     K.lookX = clamp(lx, -1, 1); K.lookY = clamp(ly, -1, 1);
     K.tilt = K_('tilt', t) + Math.sin(t * 0.9) * 0.025 + mix('brows') * 0.06;
     K.eyes = pick('eyes'); K.mouth = pick('mouth'); K.wide = mix('wide'); K.brows = mix('brows');
-    K.blushBoost = mix('blush');
+    K.blushBoost = mix('blush'); K.puff = mix('puff');
     if (K.hopping) K.eyes = 'happy';
     K.talk = 0;
     for (const v of P.voice) {

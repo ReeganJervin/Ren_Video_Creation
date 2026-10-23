@@ -82,7 +82,7 @@
       // dark brown socks fading into the orange
       const g = c.createLinearGradient(0, -66 - lift, 0, -lift);
       g.addColorStop(0, C.fur); g.addColorStop(0.3, C.fur); g.addColorStop(0.62, C.paw); g.addColorStop(1, C.paw);
-      path(c, () => c.roundRect(lx - 16, -66 - lift, 32, 66, [14, 14, 13, 13]));
+      c.beginPath(); c.roundRect(lx - 16, -66 - lift, 32, 66, [14, 14, 13, 13]);
       fillStroke(c, g);
       c.strokeStyle = 'rgba(255,220,190,0.35)'; c.lineWidth = 2;
       [-5, 5].forEach(o => { c.beginPath(); c.moveTo(lx + o, -lift - 3); c.lineTo(lx + o, -lift - 10); c.stroke(); });
@@ -233,7 +233,7 @@
       case 'o': c.beginPath(); c.ellipse(0, 9, 6, 8, 0, 0, Math.PI * 2); c.fillStyle = C.mouth; c.fill(); c.stroke(); break;
       case 'soft': c.beginPath(); c.moveTo(-10, 2); c.quadraticCurveTo(0, 10, 10, 2); c.stroke(); break;
       case 'frown': c.beginPath(); c.moveTo(-9, 7); c.quadraticCurveTo(0, -1, 9, 7); c.stroke(); break;
-      case 'tinyfrown': c.beginPath(); c.moveTo(-5, 7); c.quadraticCurveTo(0, 3, 5, 7); c.stroke(); break;
+      case 'tinyfrown': case 'pout': c.beginPath(); c.moveTo(-5, 7); c.quadraticCurveTo(0, 3, 5, 7); c.stroke(); break;
       case 'yawn': {
         path(c, () => c.ellipse(0, 9, 7, 9, 0, 0, Math.PI * 2));
         c.fillStyle = C.mouth; c.fill();
@@ -274,11 +274,12 @@
     c.fillStyle = g; c.fillRect(-w, -w, w * 2, w * 2); c.restore();
   }
   function browDot(c, x, y, k = 1) { c.fillStyle = C.cream; c.beginPath(); c.ellipse(x, y, 7.5 * k, 4.5, 0, 0, Math.PI * 2); c.fill(); }
-  // worried brows: inner end (toward the nose, direction `inward`) raised
+  // brows > 0: worried (inner end, toward the nose in direction `inward`, raised); brows < 0: cross (inner end lowered)
   function brow(c, x, K, inward, k = 1) {
-    if (K.brows <= 0) return;
-    c.save(); c.globalAlpha = K.brows; c.strokeStyle = C.line; c.lineWidth = 4; c.lineCap = 'round';
-    c.beginPath(); c.moveTo(x + inward * 12 * k, -38); c.lineTo(x - inward * 10 * k, -30); c.stroke();
+    const v = K.brows || 0; if (Math.abs(v) < 0.02) return;
+    const inY = v > 0 ? -38 : -26, outY = v > 0 ? -30 : -38;
+    c.save(); c.globalAlpha = clamp(Math.abs(v)); c.strokeStyle = C.line; c.lineWidth = 4; c.lineCap = 'round';
+    c.beginPath(); c.moveTo(x + inward * 12 * k, inY); c.lineTo(x - inward * 10 * k, outY); c.stroke();
     c.restore();
   }
   function sheen(c, x, y) {
@@ -297,7 +298,12 @@
   // wider than at eye level, apart from the tufts.
   const CHEEK_R = [[104, 14], [95, 22], [104, 32], [91, 40], [84, 48]];
   const CHEEK_L = CHEEK_R.map(([x, y]) => [-x, y]).reverse();
-  function frontHeadPath(c) {
+  // puffed cheeks for 'pouty': round bulges added to the head outline at (x, y)
+  function puffs(c, K, spots) {
+    const p = K.puff || 0; if (p <= 0) return;
+    spots.forEach(([x, y, r]) => { c.moveTo(x + r * p, y); c.ellipse(x, y, r * p, r * p * 0.85, 0, 0, Math.PI * 2); c.closePath(); });
+  }
+  function frontHeadPath(c, K) {
     c.beginPath();
     c.moveTo(-92, 4);
     c.bezierCurveTo(-98, -48, -54, -84, 0, -84);
@@ -308,6 +314,7 @@
     tufts(c, [-84, 48], [...CHEEK_L.slice(1), [-92, 4]], 5, -1);
     c.closePath();
     topTuft(c, 0);
+    puffs(c, K, [[-70, 42, 30], [70, 42, 30]]);
   }
   function drawFrontHead(c, K) {
     const f = K.f, mx = f * 26;
@@ -315,7 +322,7 @@
     headFrame(c, K, f * 6);
     earAt(c, -48 + f * 10, -48, -0.3 - K.earL);
     earAt(c, 48 + f * 10, -48, 0.3 + K.earR);
-    frontHeadPath(c); fillUnion(c, C.fur);
+    frontHeadPath(c, K); fillUnion(c, C.fur);
     c.save(); c.clip();
     sheen(c, f * 16, -56);
     if (f) shade(c, -Math.sign(f) * 92, 0, 36, 90, 0.3 * Math.abs(f));
@@ -354,7 +361,7 @@
   function armShape(c, len) {
     const g = c.createLinearGradient(0, -4, 0, len);
     g.addColorStop(0, C.fur); g.addColorStop(0.55, C.fur); g.addColorStop(0.82, C.paw); g.addColorStop(1, C.paw);
-    path(c, () => c.roundRect(-12, -4, 24, len + 4, 12)); fillStroke(c, g);
+    c.beginPath(); c.roundRect(-12, -4, 24, len + 4, 12); fillStroke(c, g);
   }
 
   function drawFront(c, K) {
@@ -372,7 +379,7 @@
   // ---------- THREE-QUARTER view (0.3 <= |f| < 0.7), drawn facing right ----------
   // The near cheek (left) keeps its full tuft; on the right the face turns into a short snout that
   // stays part of one outline, with the far eye small and close to the edge.
-  function threeHeadPath(c) {
+  function threeHeadPath(c, K) {
     c.beginPath();
     c.moveTo(-92, 4);
     c.bezierCurveTo(-98, -48, -54, -86, 2, -86);
@@ -385,13 +392,14 @@
     tufts(c, [-84, 48], [...CHEEK_L.slice(1), [-92, 4]], 5, -1);
     c.closePath();
     topTuft(c, 6);
+    puffs(c, K, [[-66, 44, 30], [70, 48, 20]]);
   }
   function drawThreeHead(c, K) {
     c.save();
     headFrame(c, K, 6);
     earAt(c, 40, -56, 0.24 + K.earR * 0.8, 0.8, 0.95);   // far ear, partly behind the head
     earAt(c, -46, -50, -0.32 - K.earL);                    // near ear
-    threeHeadPath(c); fillUnion(c, C.fur);
+    threeHeadPath(c, K); fillUnion(c, C.fur);
     c.save(); c.clip();
     sheen(c, 14, -56);
     shade(c, -96, 0, 34, 90, 0.18);
@@ -429,7 +437,7 @@
 
   // ---------- SIDE profile (|f| >= 0.7), drawn facing right ----------
   // One outline: skull -> forehead -> short upturned snout -> chin -> throat; cheek tuft at the back of the jaw.
-  function sideHeadPath(c) {
+  function sideHeadPath(c, K) {
     c.beginPath();
     c.moveTo(-88, 14);
     c.bezierCurveTo(-98, -46, -56, -88, -4, -88);
@@ -443,6 +451,7 @@
     tufts(c, [-60, 64], [[-84, 70], [-78, 58], [-104, 54], [-90, 42], [-106, 32], [-88, 14]], 6, -1);
     c.closePath();
     topTuft(c, -14);
+    puffs(c, K, [[42, 44, 26]]);
   }
   function sideMouth(c, K) {
     c.strokeStyle = C.line; c.lineWidth = 3; c.lineCap = 'round';
@@ -450,7 +459,7 @@
     switch (K.mouth) {
       case 'smile': line(6); break;
       case 'soft': line(4); break;
-      case 'frown': case 'tinyfrown': line(-4); break;
+      case 'frown': case 'tinyfrown': case 'pout': line(-4); break;
       default: c.save(); c.translate(77, 22); c.scale(0.7, 0.7); drawMouth(c, K); c.restore();
     }
   }
@@ -459,7 +468,7 @@
     headFrame(c, K, 4);
     earAt(c, 18, -66, 0.14 - K.earR * 0.5, 0.72, 0.9);     // far ear, just visible in front
     earAt(c, -30, -58, -0.26 - K.earL * 0.8, 0.86, 1);      // near ear at the back of the head
-    sideHeadPath(c); fillUnion(c, C.fur);
+    sideHeadPath(c, K); fillUnion(c, C.fur);
     c.save(); c.clip();
     sheen(c, 4, -58);
     shade(c, -86, 4, 30, 80, 0.22);

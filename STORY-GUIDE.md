@@ -38,7 +38,7 @@ ren (surprised): Whoa! A little fallen star!
 |---|---|
 | `narrator: text` | The narrator reads the text. It also appears in a storybook caption box at the top |
 | `ren: text` | Ren says the text in a speech bubble, and its mouth moves |
-| `ren (happy): text` | Ren says it with a mood: `happy`, `surprised`, `shy`, `sad`, `sleepy`, `playful` (a happy ^ ^ grin) |
+| `ren (happy): text` | Ren says it with a mood: `happy`, `surprised`, `shy`, `sad`, `sleepy`, `playful` (a happy ^ ^ grin), `pouty` (puffed cheeks and a cross little frown) |
 
 Keep each line under 160 characters. Write long speeches as several lines.
 
@@ -54,7 +54,7 @@ Keep each line under 160 characters. Write long speeches as several lines.
 | `ren looks up` | Looks `up`, `down`, `left`, `right`, `around`, `at you`, `at the star` or `at the heart`. Looking at the star or heart follows it as it moves |
 | `ren turns to you` | Faces the viewer |
 | `ren tilts its head` | A curious head tilt |
-| `ren feels sad` | Changes Ren's mood until you change it again: `happy`, `surprised`, `shy`, `sad`, `sleepy`, `playful`, `normal` |
+| `ren feels sad` | Changes Ren's mood until you change it again: `happy`, `surprised`, `shy`, `sad`, `sleepy`, `playful`, `pouty`, `normal` |
 | `ren blinks` | An extra blink. Ren also blinks by itself |
 | `ren raises its paws` / `ren lowers its paws` | Paws up or down |
 | `ren picks up the star` | Walks to the fallen star and picks it up with both paws |
