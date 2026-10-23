@@ -1,0 +1,32 @@
+# ============================================================
+#  KITSU STORY TEMPLATE
+#  1. Copy this file and give it a new name, e.g. my-story.txt
+#     (the video will be called videos\my-story.mp4)
+#  2. Change the lines below. Lines starting with # are ignored.
+#  3. Double-check:  check-story.bat stories\my-story.txt
+#     Watch first:   preview.bat stories\my-story.txt
+#     Make video:    make-video.bat stories\my-story.txt
+#  All lines you can use are listed in STORY-GUIDE.md
+# ============================================================
+
+title: My Kitsu Story
+place: meadow
+# time can be: day, sunset, dusk, night
+time: sunset
+
+# --- Beginning ---
+kitsu enters
++ narrator: Once upon a time, a little fox named Kitsu went for a walk.
+kitsu turns to you
+title card: KITSU
+kitsu (happy): Hello! Today is a special day!
+
+# --- Middle ---
+kitsu looks around
+kitsu (surprised): What's that?
+sparkles
+
+# --- End ---
+kitsu hops
+hearts float up
+narrator: And that was the start of a wonderful adventure.

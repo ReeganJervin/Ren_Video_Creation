@@ -1,0 +1,38 @@
+# Kitsu and the Fallen Star
+# Lines starting with # are notes for you; they are ignored.
+# A "+" at the start of a line makes it happen at the same time as the line above.
+
+title: Kitsu and the Fallen Star
+place: meadow
+time: sunset
+
+kitsu enters
++ narrator: Once upon a time, in a meadow kissed by the setting sun...
+kitsu looks up
+narrator: ...lived a little fox named Kitsu.
+kitsu turns to you
+title card: KITSU
++ narrator: And today... an adventure begins!
+kitsu hops
+hearts float up
+wait 1
+
+time: dusk
+star appears
+kitsu looks at the star
+star falls
+kitsu (surprised): Whoa! A little fallen star!
+kitsu picks up the star
+star glows
++ kitsu: Don't worry. I'll help you!
+
+time: night
+kitsu walks to center
+kitsu lets go of the star
++ kitsu (happy): Go shine in the sky!
+kitsu waves
+star twinkles
+heart floats down
+kitsu hops
+kitsu (happy): Kindness makes every heart shine!
+kitsu looks up

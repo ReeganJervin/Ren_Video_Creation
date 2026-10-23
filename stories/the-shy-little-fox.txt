@@ -1,0 +1,53 @@
+# ============================================================
+#  The Shy Little Fox  (no star - a story about being brave)
+#  Check:  check-story.bat stories\the-shy-little-fox.txt
+#  Watch:  preview.bat stories\the-shy-little-fox.txt
+#  Make:   make-video.bat stories\the-shy-little-fox.txt
+# ============================================================
+
+title: The Shy Little Fox
+place: meadow
+time: day
+
+# --- Kitsu peeks in ---
+kitsu enters from left to left
++ narrator: In a sunny meadow lived a little fox who was very, very shy.
+kitsu feels shy
+kitsu looks around
+kitsu (shy): Um... is anybody there?
+kitsu looks at you
+kitsu (surprised): Oh! Someone is watching!
+kitsu exits to left
+
+# --- Trying again ---
+wait 1
+kitsu enters from left to center
++ narrator: But Kitsu didn't want to hide forever.
+kitsu feels shy
+kitsu tilts its head
+kitsu (shy): H-hello... my name is Kitsu.
+kitsu feels sad
+kitsu (sad): I'm not very good at making friends.
+
+# --- Getting brave ---
+camera: close
+narrator: So Kitsu took a deep breath...
+kitsu raises its paws
+sparkles
+title card: BE BRAVE
+kitsu lowers its paws
+kitsu feels happy
+kitsu (happy): Hello! I'm Kitsu! Will you be my friend?
+camera: wide
+
+# --- A new friend ---
+kitsu hops twice
+hearts float up
+kitsu walks to right
++ kitsu (happy): Come on, let's explore the meadow together!
+kitsu walks to left
++ time: sunset
+narrator: And from that day on, the shy little fox was never lonely again.
+kitsu turns to you
+kitsu waves
+kitsu exits to right

@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kitsu Studio Preview</title>
+<style>
+  @font-face { font-family: 'Fredoka'; font-weight: 600; src: url(fonts/fredoka-latin-600-normal.woff2) format('woff2'); }
+  @font-face { font-family: 'Fredoka'; font-weight: 700; src: url(fonts/fredoka-latin-700-normal.woff2) format('woff2'); }
+  @font-face { font-family: 'Lora'; font-style: italic; font-weight: 500; src: url(fonts/lora-latin-500-italic.woff2) format('woff2'); }
+  html, body { margin: 0; background: #17121f; color: #f4e9dc; font: 16px/1.4 'Fredoka', system-ui, sans-serif; }
+  #wrap { max-width: 1280px; margin: 0 auto; padding: 16px; }
+  h1 { font-size: 20px; margin: 0 0 10px; font-weight: 600; }
+  canvas { display: block; width: 100%; height: auto; border-radius: 10px; background: #000; }
+  #controls { display: flex; gap: 10px; align-items: center; margin-top: 12px; flex-wrap: wrap; }
+  button { font: 600 16px 'Fredoka', sans-serif; padding: 8px 16px; border-radius: 8px; border: 0; background: #f39a4a; color: #2a1408; cursor: pointer; }
+  input[type=range] { flex: 1; min-width: 160px; }
+  #status { opacity: .75; font-size: 14px; }
+  body.export #wrap { padding: 0; max-width: none; }
+  body.export h1, body.export #controls, body.export #status { display: none; }
+  body.export canvas { width: 1920px; height: 1080px; border-radius: 0; }
+</style>
+</head>
+<body>
+<div id="wrap">
+  <h1 id="title">Kitsu Studio</h1>
+  <canvas id="film" width="1920" height="1080"></canvas>
+  <div id="controls">
+    <button id="play">▶ Play with sound</button>
+    <button id="stop">■ Stop</button>
+    <input id="scrub" type="range" min="0" max="10" step="0.01" value="0">
+    <span id="time">0.00 s</span>
+  </div>
+  <p id="status"></p>
+</div>
+<script src="story.js"></script>
+<script src="kitsu.js"></script>
+<script src="film.js"></script>
+<script src="audio.js"></script>
+<script>
+  const qs = new URLSearchParams(location.search);
+  if (qs.has('export')) document.body.classList.add('export');
+  const $ = id => document.getElementById(id);
+  const ready = (async () => {
+    const plan = await (await fetch(qs.get('plan'))).json();
+    $('title').textContent = plan.meta.title;
+    $('scrub').max = plan.duration;
+    await KitsuFilm.init($('film'), plan);
+    return plan;
+  })();
+  window.FILM = {
+    ready: ready.then(() => true),
+    render: t => KitsuFilm.render(t),
+    renderAudio: async stem => KitsuAudio.renderAudio(await ready, stem),
+  };
+
+  // Live preview: the picture follows the audio clock so both stay in sync.
+  let actx = null, t0 = 0, raf = 0;
+  const show = t => { KitsuFilm.render(t); $('scrub').value = t; $('time').textContent = t.toFixed(2) + ' s'; };
+  async function play() {
+    stop();
+    const plan = await ready;
+    actx = new AudioContext();
+    const { buffers, missing } = await KitsuAudio.loadVoices(actx, plan);
+    $('status').textContent = missing.length ? `Some voice clips are missing: ${missing.join(', ')}` : '';
+    t0 = actx.currentTime + 0.15;
+    KitsuAudio.buildAudio(actx, t0, plan, buffers);
+    const tick = () => { const t = actx.currentTime - t0; show(Math.max(0, t)); if (t < plan.duration) raf = requestAnimationFrame(tick); else stop(); };
+    raf = requestAnimationFrame(tick);
+  }
+  function stop() { cancelAnimationFrame(raf); if (actx) { actx.close(); actx = null; } }
+  $('play').onclick = play;
+  $('stop').onclick = stop;
+  $('scrub').oninput = e => { stop(); show(+e.target.value); };
+</script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+{
+  "name": "kitsu-studio",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Write a story, get a Kitsu animated video.",
+  "scripts": {
+    "make": "node tools/make-video.js"
+  },
+  "dependencies": {
+    "ffmpeg-static": "5.2.0",
+    "ffprobe-static": "3.1.0",
+    "playwright": "1.63.0"
+  }
+}
