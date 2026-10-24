@@ -22,11 +22,13 @@ ren (surprised): Oh! Hello!
 yuki (surprised): Eek! A fox!
 yuki (shy): Um... I'm Yuki.
 
-# --- Making friends ---
+# --- Making friends (close-up on both) ---
 ren walks to yuki
+camera: close
 ren (happy): I'm Ren! Will you be my friend?
 yuki looks at ren
 yuki (happy): Yes, please!
+camera: wide
 
 # --- Playing together ---
 ren (playful): Bet you can't hop as high as me!
@@ -37,9 +39,11 @@ yuki (pouty): Hmph! You hopped higher!
 ren (happy): Then let's hop together!
 ren and yuki hop twice
 
-# --- A hug ---
+# --- A hug (closer) ---
+camera: closer
 yuki hugs ren
-narrator: And that was the start of a wonderful friendship.
++ narrator: And that was the start of a wonderful friendship.
+camera: wide
 
 # --- Evening ---
 time: sunset

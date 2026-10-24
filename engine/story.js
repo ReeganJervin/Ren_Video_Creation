@@ -11,6 +11,7 @@
   const TIMES = { day: 0, sunset: 1, dusk: 2, night: 3 };
   const KS = 1.15;              // character scale (fixed)
   const GAP = 280;              // closest two characters may stand (centre to centre)
+  const HUG = 230;              // cheek to cheek
   const MINX = 300, MAXX = 1620;
   const feetY = x => 905 - 38 * Math.exp(-(((x - 960) / 240) ** 2));
   const title = id => CHARACTERS[id].name;
@@ -196,17 +197,25 @@
     const onStage = a => a.x > 0 && a.x < 1920;
     const others = a => cast.map(i => A[i]).filter(o => o !== a && onStage(o));
     const inside = x => x >= MINX && x <= MAXX;
-    // a spot someone else already stands on moves the newcomer beside them, never on top of them
-    function freeSpot(a, x) {
-      for (const o of others(a)) {
-        if (Math.abs(x - o.x) >= GAP) continue;
-        const side = Math.sign(a.x - o.x) || (o.x < 960 ? 1 : -1);
-        x = inside(o.x + side * GAP) ? o.x + side * GAP : o.x - side * GAP;
-      }
-      return x;
-    }
-    const beside = (a, o, gap) => { const side = Math.sign(a.x - o.x) || 1; return inside(o.x + side * gap) ? o.x + side * gap : o.x - side * gap; };
     const toward = (a, o) => Math.sign(o.x - a.x) || 1;
+    const nearestSpot = x => [POS.left, POS.center, POS.right].reduce((p, q) => (Math.abs(q - x) < Math.abs(p - x) ? q : p));
+    // the other character a move to x would bump into, if any
+    const crowding = (a, x) => others(a).find(o => Math.abs(x - o.x) < GAP);
+    // Two characters near each other stand as a pair centred on `c`: the mover keeps the side it comes from,
+    // and the one already standing steps over (after finishing any move of its own). Returns how long it takes.
+    function pairUp(a, o, s, c, gap, slow) {
+      const side = Math.sign(a.x - o.x) || (a.x < c ? -1 : 1);
+      c = Math.max(MINX + gap / 2, Math.min(MAXX - gap / 2, c));
+      const at = o.free > s ? o.free - 0.15 : s;
+      const dO = moveTo(o, at, c - side * gap / 2, false) + (at - s);
+      const dA = moveTo(a, s, c + side * gap / 2, slow);
+      return Math.max(dA, dO);
+    }
+    // going to a stage spot: alone it is the spot itself; next to someone they share it as a centred pair
+    function goToSpot(a, s, x, slow) {
+      const o = crowding(a, x);
+      return o ? pairUp(a, o, s, x, GAP, slow) : moveTo(a, s, x, slow);
+    }
 
     // walking (or hopping, for characters that hop) to x1
     function moveTo(a, s, x1, slow) {
@@ -229,7 +238,7 @@
       set(a, 'facing', s + 0.15 + dur, 0, 0.45);
       set(a, 'lookX', s, dir * 0.6, 0.3); set(a, 'lookY', s, 0, 0.3);
       set(a, 'lookX', s + 0.15 + dur, 0, 0.4);
-      a.x = x1;
+      a.x = x1; a.free = s + 0.15 + dur; a.toYou = false;
       return dur + 0.6;
     }
     function hop(a, s, n) {
@@ -246,7 +255,9 @@
       a.open = { a: s, b: 1e9, target: { actor: o.id } }; a.out.lookAt.push(a.open);
       set(a, 'facing', s, toward(a, o) * (turn ? 0.5 : 0.18), 0.35);
       set(a, 'lookY', s, 0, 0.3);
+      a.toYou = false;
     }
+    const talks = [];   // conversation lines: who spoke to whom, used to turn them toward each other
 
     for (const b of beats) {
       const s = b.together ? prevStart : t;
@@ -269,6 +280,7 @@
             // the bubble goes on the side away from the other character
             const o = others(a)[0];
             const side = o ? (a.x >= o.x ? 1 : -1) : (a.x >= 960 ? -1 : 1);
+            if (o) talks.push({ t0: s, t1: vt + len, pairs: [[a, toward(a, o)], [o, toward(o, a)]].filter(([q]) => !q.toYou) });
             P.bubbles.push({ who: a.id, text: b.text, t0: s, t1: Math.max(vt + len + 0.9, s + 2.8), side, emph: /!/.test(b.text) && /^(whoa|wow|oh|look|yay|hooray)/i.test(b.text) });
             if (b.mood) a.out.exprs.push({ a: s, b: vt + len + 0.3, mood: b.mood });
             dur = 0.15 + len + 0.55;
@@ -276,11 +288,21 @@
           break;
         }
         case 'wait': dur = b.secs; break;
-        case 'enter': who.forEach((a, i) => { a.x = OFF[b.from]; dur = Math.max(dur, moveTo(a, s + i * 0.25, freeSpot(a, POS[b.to]), false) + i * 0.25); }); break;
-        case 'walk': who.forEach(a => { dur = Math.max(dur, moveTo(a, s, freeSpot(a, POS[b.to]), b.slow)); }); break;
+        case 'enter': case 'walk': {
+          if (b.type === 'enter') who.forEach(a => { a.x = OFF[b.from]; });
+          const c = POS[b.to];
+          if (who.length === 2) {
+            // two together share the spot as a centred pair; the one in front goes further in
+            const [p, q] = b.type === 'enter' ? who : [...who].sort((x, y) => x.x - y.x);
+            const side = b.type === 'enter' ? (b.from === 'left' ? 1 : -1) : 1, k = b.type === 'enter' ? 0.25 : 0;
+            dur = Math.max(moveTo(p, s, c + side * GAP / 2, b.slow), moveTo(q, s + k, c - side * GAP / 2, b.slow) + k);
+          } else dur = goToSpot(who[0], s, c, b.slow);
+          break;
+        }
         case 'walkTo': {
+          // they meet in the middle: the pair is centred on the stage spot between them
           const a = who[0], o = A[b.target];
-          dur = moveTo(a, s, beside(a, o, GAP), b.slow);
+          dur = pairUp(a, o, s, nearestSpot((a.x + o.x) / 2), GAP, b.slow);
           lookAtActor(a, o, s + Math.max(0.2, dur - 0.4), false);
           break;
         }
@@ -301,7 +323,7 @@
             if (b.at === 'star' || b.at === 'heart') { a.open = { a: s, b: 1e9, target: b.at }; a.out.lookAt.push(a.open); }
             else if (b.at === 'around') { set(a, 'lookX', s, -1, 0.4); set(a, 'lookX', s + 0.6, 1, 0.6); set(a, 'lookX', s + 1.4, 0, 0.4); set(a, 'lookY', s, 0, 0.3); }
             else { set(a, 'lookX', s, L[0], 0.4); set(a, 'lookY', s, L[1], 0.4); }
-            if (b.at === 'you') set(a, 'facing', s, 0, 0.4);
+            if (b.at === 'you') { set(a, 'facing', s, 0, 0.4); a.toYou = true; }
             if (b.at === 'up') { set(a, 'tilt', s, -0.1, 0.4); } else set(a, 'tilt', s, 0, 0.4);
           });
           dur = b.at === 'around' ? 1.9 : 0.9;
@@ -313,20 +335,25 @@
           dur = 0.9; break;
         }
         case 'hug': {
+          // cheek to cheek: side by side, heads leaning together, a slight turn toward each other, both faces visible
           const [a, o] = b.target === 'each other' ? who : [who[0], A[b.target]];
-          const d = moveTo(a, s, beside(a, o, 185), false);
+          const c = (a.x + o.x) / 2;
+          const d = pairUp(a, o, s, c, HUG, false);
           const p = s + Math.max(0, d - 0.35), dir = toward(a, o);
           [[a, dir], [o, -dir]].forEach(([q, d2]) => {
+            const inner = d2 > 0 ? 'armR' : 'armL', outer = d2 > 0 ? 'armL' : 'armR', rest = holder === q.id ? -1.2 : ARM_R;
             closeLook(q, p);
-            set(q, 'facing', p, d2 * 0.5, 0.3); set(q, 'lookX', p, d2 * 0.6, 0.3); set(q, 'lookY', p, 0, 0.3);
-            set(q, 'armL', p, 1.3, 0.35); set(q, 'armR', p, 1.3, 0.35);
-            set(q, 'armL', p + 2.3, holder === q.id ? -1.2 : ARM_R, 0.4); set(q, 'armR', p + 2.3, holder === q.id ? -1.2 : ARM_R, 0.4);
-            set(q, 'facing', p + 2.5, 0, 0.45); set(q, 'lookX', p + 2.5, 0, 0.4);
+            set(q, 'facing', p, d2 * 0.15, 0.3); set(q, 'lookX', p, d2 * 0.5, 0.3); set(q, 'lookY', p, 0, 0.3);
+            set(q, 'tilt', p, d2 * 0.14, 0.35);
+            set(q, inner, p, 1.75, 0.35); set(q, outer, p, 0.45, 0.35);
+            set(q, inner, p + 2.3, rest, 0.4); set(q, outer, p + 2.3, rest, 0.4);
+            set(q, 'facing', p + 2.5, 0, 0.45); set(q, 'lookX', p + 2.5, 0, 0.4); set(q, 'tilt', p + 2.4, 0, 0.4);
             q.out.exprs.push({ a: p + 0.1, b: p + 2.6, mood: 'joy' });
+            q.toYou = false;
           });
           [0.35, 0.75, 1.15].forEach((o2, i) => { P.hearts.push({ t: p + o2, i, between: [a.id, o.id] }); sfx('pop', p + o2); });
-          // then the hugger steps back so the two never stand on top of each other
-          dur = (p - s) + 2.55 + moveTo(a, p + 2.55, beside(a, o, GAP), false);
+          // then they step apart again, still centred where they hugged
+          dur = (p - s) + 2.55 + pairUp(a, o, p + 2.55, c, GAP, false);
           break;
         }
         case 'tilt': who.forEach(a => { set(a, 'tilt', s, 0.22, 0.3); set(a, 'tilt', s + 0.9, 0, 0.3); }); dur = 1.25; break;
@@ -463,6 +490,15 @@
       return 0;
     }
 
+    const turned = {};
+    talks.forEach(k => k.pairs.forEach(([q, dir]) => {
+      const list = turned[q.id] || (turned[q.id] = []), last = list[list.length - 1];
+      if (last && last.dir === dir && k.t0 - last.t1 < 1.6) last.t1 = k.t1; else list.push({ t0: k.t0, t1: k.t1, dir, q });
+    }));
+    // turn at the start of every line (so a walk ending mid-conversation doesn't leave them facing front)…
+    talks.forEach(k => k.pairs.forEach(([q, dir]) => set(q, 'facing', k.t0, dir * 0.42, 0.3)));
+    // …and relax only when the conversation pauses
+    Object.values(turned).forEach(list => list.forEach(w => set(w.q, 'facing', w.t1 + 0.35, 0, 0.45)));
     cast.forEach(id => closeLook(A[id], t));
     const duration = Math.ceil((t + 1.8) * 30) / 30;
     // bubbles fade out before the next one pops in, so two bubbles are never on screen together

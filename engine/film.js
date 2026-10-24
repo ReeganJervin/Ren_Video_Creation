@@ -277,10 +277,13 @@
   function camAt(t) {
     const z = K_('zoom', t), fz = clamp((z - 1) / 0.55), on = CAST.filter(id => onStage(id, t)), Bs = (on.length ? on : CAST.slice(0, 1)).map(id => actorBody(id, t));
     const B = { x: Bs.reduce((v, b) => v + b.x, 0) / Bs.length, y: Bs.reduce((v, b) => v + b.y, 0) / Bs.length };
-    let cx = lerp(960, B.x, fz * 0.85), cy = lerp(540, B.y - 230, fz * 0.9);
-    const hw = 960 / z, hh = 540 / z;
+    // close-ups frame everyone on stage: centred between them, never zoomed in so far that someone is cut off
+    const xs = Bs.map(b => b.x), spread = Math.max(...xs) - Math.min(...xs);
+    const zz = Math.min(z, Math.max(1, 1700 / (spread + 560)));
+    let cx = lerp(960, B.x, fz * (Bs.length > 1 ? 1 : 0.85)), cy = lerp(540, B.y - 230, fz * 0.9);
+    const hw = 960 / zz, hh = 540 / zz;
     cx = clamp(cx, -220 + hw, 2140 - hw); cy = clamp(cy, -40 + hh, 1140 - hh);
-    return { z, cx, cy };
+    return { z: zz, cx, cy };
   }
   function applyCam(c, cam, p) {
     const z = 1 + (cam.z - 1) * p;
