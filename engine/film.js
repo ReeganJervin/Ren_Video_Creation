@@ -1,8 +1,8 @@
 // Scene renderer: draws any compiled story plan. render(t) is deterministic.
 (() => {
   const W = 1920, H = 1080;
-  const { evalKeys, feetY } = StudioStory;
-  let P, KS, REG, CAST = [], DRAW = {};
+  const { evalKeys } = StudioStory;
+  let P, KS, REG, CAST = [], DRAW = {}, PL, HP;
 
   // ---------- helpers ----------
   const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
@@ -25,13 +25,6 @@
   const tod = (tau, cols) => {
     const i = Math.min(2, Math.floor(clamp(tau, 0, 3))), u = clamp(tau - i), a = hex(cols[i]), b = hex(cols[i + 1]);
     return `rgb(${a.map((v, k) => Math.round(lerp(v, b[k], u))).join(',')})`;
-  };
-  const PAL = {
-    skyTop: ['#6ec3f4', '#ff9d5c', '#5b4a9e', '#0b1236'], skyMid: ['#a8dcf7', '#ffc488', '#c0709a', '#1d2a66'], skyBot: ['#e6f6ff', '#ffe7c2', '#f5a77a', '#3b3f8c'],
-    far: ['#9fcf9a', '#e8a87c', '#8a6a9a', '#2a2d5e'], mid: ['#7fbf6e', '#a3c48a', '#6f8f86', '#1f3a4a'], tree: ['#4f8f4f', '#5e8b5a', '#3f6a5a', '#14303a'],
-    trunk: ['#7a5132', '#7a5132', '#5a4038', '#1a2230'], front: ['#79b862', '#86b56f', '#5f8a6a', '#1d3b3c'], knoll: ['#8cc873', '#97c47c', '#6c9a72', '#24474a'],
-    grass: ['#5a9a4e', '#5e8b5a', '#4a7060', '#163032'], stem: ['#4f8a48', '#4f7a48', '#3f6a50', '#1a3a3a'], cloud: ['#ffffff', '#fff8ef', '#e9b8c8', '#4a4f8f'],
-    sun: ['#fffbe8', '#fff4d6', '#ffcf9a', '#ffcf9a'], grade: ['#ffffff', '#fff3e2', '#e4d4ee', '#aab2e6'], tint: ['#ffffff', '#ffb070', '#a080c0', '#3a4aa0'],
   };
 
   // ---------- characters ----------
@@ -86,7 +79,7 @@
     const phase = x / 160 * Math.PI * 2, swing = Math.sin(phase) * 0.35 * walk, idle = Math.sin(t * 2 + n * 2.1) * 0.04;
     let wave = 0; for (const w of a.waves) wave += Math.sin((t - w.a) * 9) * 0.35 * win(t, w.a, w.b, 0.2, 0.3);
     return {
-      id, x, y: feetY(x), h, sx, sy, s: KS, f: A_(id, 'facing', t), walk, phase, hopping,
+      id, x, y: PL.ground(x), h, sx, sy, s: KS, f: A_(id, 'facing', t), walk, phase, hopping,
       armL: A_(id, 'armL', t) + swing + idle, armR: A_(id, 'armR', t) - swing + idle + wave,
     };
   }
@@ -261,19 +254,6 @@
     }
   }
 
-  // ---------- background ----------
-  const stars = Array.from({ length: 170 }, (_, i) => ({ x: hash(i) * 2400 - 240, y: hash(i + 400) * 640 - 80, r: 0.6 + hash(i + 800) * 1.9, ph: hash(i + 1200) * 6 }));
-  const clouds = [[260, 230, 1.1], [820, 150, 0.8], [1250, 260, 1.0], [1700, 180, 0.9]];
-  const trees = [[130, 640, 1.0], [250, 660, 0.78], [1590, 630, 1.0], [1710, 655, 0.75], [1840, 640, 0.9], [-80, 650, 0.9], [2020, 650, 0.85]];
-  const flowers = [];
-  for (let i = 0; i < 52; i++) {
-    const x = -200 + i * 46 + hash(i + 77) * 30, y = 790 + hash(i + 99) * 270;
-    if (Math.abs(x - 960) < 170 && y < 960) continue;
-    flowers.push({ x, y, ph: hash(i) * 6, col: ['#ffffff', '#ffd6e7', '#fff3bf', '#e5dbff', '#ffe0c2'][i % 5], s: 0.8 + hash(i + 5) * 0.5 });
-  }
-  const grass = Array.from({ length: 100 }, (_, i) => ({ x: hash(i + 300) * 2400 - 240, y: 760 + hash(i + 600) * 320, ph: hash(i + 900) * 6 }));
-  const flies = Array.from({ length: 26 }, (_, i) => ({ x: hash(i + 1500) * 1920, y: 560 + hash(i + 1600) * 420, ph: hash(i + 1700) * 6, sp: 0.4 + hash(i + 1800) * 0.6 }));
-
   function camAt(t) {
     const z = K_('zoom', t), fz = clamp((z - 1) / 0.55), on = CAST.filter(id => onStage(id, t)), Bs = (on.length ? on : CAST.slice(0, 1)).map(id => actorBody(id, t));
     const B = { x: Bs.reduce((v, b) => v + b.x, 0) / Bs.length, y: Bs.reduce((v, b) => v + b.y, 0) / Bs.length };
@@ -291,71 +271,6 @@
     c.translate(-(W / 2 + (cam.cx - W / 2) * p), -(H / 2 + (cam.cy - H / 2) * p));
   }
   const toScreen = (cam, p) => ({ x: (p.x - cam.cx) * cam.z + W / 2, y: (p.y - cam.cy) * cam.z + H / 2 });
-
-  function drawBackground(c, t, cam, tau) {
-    c.setTransform(1, 0, 0, 1, 0, 0);
-    const g = c.createLinearGradient(0, 0, 0, H);
-    g.addColorStop(0, tod(tau, PAL.skyTop)); g.addColorStop(0.55, tod(tau, PAL.skyMid)); g.addColorStop(1, tod(tau, PAL.skyBot));
-    c.fillStyle = g; c.fillRect(0, 0, W, H);
-    applyCam(c, cam, 0.1);
-    const sa = clamp((tau - 1.6) / 0.9);
-    if (sa > 0) for (const s of stars) { c.globalAlpha = sa * (0.45 + 0.55 * Math.abs(Math.sin(t * 1.3 + s.ph))); c.fillStyle = '#fff'; c.beginPath(); c.arc(s.x, s.y, s.r, 0, Math.PI * 2); c.fill(); }
-    c.globalAlpha = 1;
-    const ma = clamp((tau - 2.2) / 0.6);
-    if (ma > 0) {
-      c.save(); c.globalAlpha = ma; c.globalCompositeOperation = 'lighter'; glow(c, 330, 200, 160, '230,230,255', 0.25); c.globalCompositeOperation = 'source-over';
-      c.beginPath(); c.rect(0, 0, 800, 600); c.arc(356, 182, 56, 0, Math.PI * 2); c.clip('evenodd');
-      c.beginPath(); c.arc(330, 200, 62, 0, Math.PI * 2); c.fillStyle = '#fff6d6'; c.fill(); c.restore();
-    }
-    applyCam(c, cam, 0.15);
-    const sunY = tau < 1 ? lerp(190, 540, tau) : lerp(540, 1000, clamp((tau - 1) / 0.8));
-    if (sunY < 990) {
-      c.save(); c.globalCompositeOperation = 'lighter'; glow(c, 1450, sunY, 330, '255,236,190', 0.5 * clamp(1.6 - tau * 0.6)); c.restore();
-      c.beginPath(); c.arc(1450, sunY, tau < 0.5 ? 95 : 120, 0, Math.PI * 2); c.fillStyle = tod(tau, PAL.sun); c.fill();
-    }
-    applyCam(c, cam, 0.2);
-    c.fillStyle = tod(tau, PAL.cloud); c.globalAlpha = 0.9;
-    clouds.forEach(([x, y, s], i) => {
-      const cx = ((x + t * (8 + i * 3)) % 2500) - 290;
-      [[0, 0, 95, 30], [55, -18, 62, 32], [-50, -8, 55, 24], [10, -30, 48, 26]].forEach(([dx, dy, rx, ry]) => { c.beginPath(); c.ellipse(cx + dx * s, y + dy * s, rx * s, ry * s, 0, 0, Math.PI * 2); c.fill(); });
-    });
-    c.globalAlpha = 1;
-    if (tau < 1.5) {
-      c.strokeStyle = 'rgba(110,60,40,0.8)'; c.lineWidth = 3; c.lineCap = 'round';
-      for (let start = 0.8; start < P.duration; start += 16) [0, 1, 2].forEach(i => {
-        const u = (t - start - i * 0.3) / 6.5; if (u < 0 || u > 1) return;
-        const x = lerp(2000, 200, u) + i * 50, y = 230 + i * 26 + Math.sin(t * 2 + i) * 8, w = Math.sin(t * 13 + i * 2) * 8;
-        c.beginPath(); c.moveTo(x - 13, y - w); c.quadraticCurveTo(x - 6, y - 4, x, y); c.quadraticCurveTo(x + 6, y - 4, x + 13, y - w); c.stroke();
-      });
-    }
-    applyCam(c, cam, 0.35);
-    c.fillStyle = tod(tau, PAL.far);
-    c.beginPath(); c.moveTo(-500, 620); c.quadraticCurveTo(200, 480, 700, 590); c.quadraticCurveTo(1150, 680, 1550, 560); c.quadraticCurveTo(1900, 480, 2500, 590); c.lineTo(2500, 1400); c.lineTo(-500, 1400); c.fill();
-    applyCam(c, cam, 0.6);
-    c.fillStyle = tod(tau, PAL.mid);
-    c.beginPath(); c.moveTo(-500, 700); c.quadraticCurveTo(350, 600, 900, 690); c.quadraticCurveTo(1400, 760, 2500, 650); c.lineTo(2500, 1400); c.lineTo(-500, 1400); c.fill();
-    trees.forEach(([x, y, s], i) => {
-      c.save(); c.translate(x, y + 30); c.rotate(Math.sin(t * 1.5 + i) * 0.03); c.transform(1, 0, Math.sin(t * 1.5 + i + 0.6) * 0.05, 1, 0, 0);
-      c.fillStyle = tod(tau, PAL.trunk); c.fillRect(-8 * s, -20 * s, 16 * s, 40 * s);
-      c.fillStyle = tod(tau, PAL.tree);
-      c.beginPath(); c.moveTo(0, -190 * s); c.lineTo(56 * s, -80 * s); c.lineTo(36 * s, -80 * s); c.lineTo(66 * s, -10 * s); c.lineTo(-66 * s, -10 * s); c.lineTo(-36 * s, -80 * s); c.lineTo(-56 * s, -80 * s); c.fill();
-      c.restore();
-    });
-    applyCam(c, cam, 1);
-    c.fillStyle = tod(tau, PAL.front);
-    c.beginPath(); c.moveTo(-500, 780); c.quadraticCurveTo(500, 730, 960, 760); c.quadraticCurveTo(1500, 790, 2500, 750); c.lineTo(2500, 1500); c.lineTo(-500, 1500); c.fill();
-    c.fillStyle = tod(tau, PAL.knoll); c.beginPath(); c.ellipse(960, 975, 440, 110, 0, 0, Math.PI * 2); c.fill();
-    c.strokeStyle = tod(tau, PAL.grass); c.lineWidth = 3; c.lineCap = 'round';
-    grass.forEach(g => { const sw = Math.sin(t * 2.2 + g.ph) * 3; c.beginPath(); c.moveTo(g.x, g.y); c.lineTo(g.x - 5 + sw, g.y - 13); c.moveTo(g.x, g.y); c.lineTo(g.x + sw, g.y - 17); c.moveTo(g.x, g.y); c.lineTo(g.x + 6 + sw, g.y - 12); c.stroke(); });
-    const stem = tod(tau, PAL.stem);
-    flowers.forEach(fl => {
-      c.save(); c.translate(fl.x, fl.y + Math.sin(t * 3 + fl.ph) * 3); c.rotate(Math.sin(t * 2.4 + fl.ph) * 0.15); c.scale(fl.s, fl.s);
-      c.strokeStyle = stem; c.lineWidth = 3; c.beginPath(); c.moveTo(0, 0); c.quadraticCurveTo(4, -16, 0, -30); c.stroke();
-      c.fillStyle = fl.col; for (let k = 0; k < 5; k++) { c.save(); c.translate(0, -30); c.rotate(k * 1.2566); c.beginPath(); c.ellipse(0, -8, 5.5, 8.5, 0, 0, Math.PI * 2); c.fill(); c.restore(); }
-      c.fillStyle = '#ffc53d'; c.beginPath(); c.arc(0, -30, 4.5, 0, Math.PI * 2); c.fill();
-      c.restore();
-    });
-  }
 
   // ---------- text overlays ----------
   const FONT = '"Fredoka", "Arial Rounded MT Bold", Arial, sans-serif', SERIF = '"Lora", Georgia, serif';
@@ -442,14 +357,15 @@
     t = clamp(t, 0, P.duration);
     const c = ctx, cam = camAt(t), tau = K_('tau', t);
     c.setTransform(1, 0, 0, 1, 0, 0); c.globalAlpha = 1; c.globalCompositeOperation = 'source-over';
-    drawBackground(c, t, cam, tau);
-    c.setTransform(1, 0, 0, 1, 0, 0); c.globalCompositeOperation = 'multiply'; c.fillStyle = tod(tau, PAL.grade); c.fillRect(0, 0, W, H); c.globalCompositeOperation = 'source-over';
+    HP.cam = p => applyCam(c, cam, p);
+    PL.draw(c, t, cam, tau, HP);
+    c.setTransform(1, 0, 0, 1, 0, 0); c.globalCompositeOperation = 'multiply'; c.fillStyle = tod(tau, PL.grade); c.fillRect(0, 0, W, H); c.globalCompositeOperation = 'source-over';
     const Ks = {}; CAST.forEach(id => { Ks[id] = actorState(id, t); });
     const k = layer.getContext('2d');
     k.setTransform(1, 0, 0, 1, 0, 0); k.globalCompositeOperation = 'source-over'; k.clearRect(0, 0, W, H);
     applyCam(k, cam, 1); CAST.forEach(id => DRAW[id](k, Ks[id]));
     k.setTransform(1, 0, 0, 1, 0, 0); k.globalCompositeOperation = 'source-atop';
-    k.globalAlpha = tau < 1 ? 0.06 * tau : 0.06 + 0.08 * (tau - 1); k.fillStyle = tod(tau, PAL.tint); k.fillRect(0, 0, W, H);
+    k.globalAlpha = tau < 1 ? 0.06 * tau : 0.06 + 0.08 * (tau - 1); k.fillStyle = tod(tau, PL.tint); k.fillRect(0, 0, W, H);
     k.globalAlpha = 1; k.globalCompositeOperation = 'source-over';
     c.drawImage(layer, 0, 0);
 
@@ -458,15 +374,7 @@
     const segNow = starSegs.filter(q => q.t0 <= t).pop();
     const held = S && segNow && ['held', 'pickup', 'raise', 'lower'].includes(segNow.type);
     if (S && held) { c.save(); c.globalCompositeOperation = 'lighter'; glow(c, S.x, S.y, 560, '255,190,90', 0.12 * S.bright); c.restore(); }
-    const fa = clamp((tau - 2.1) / 0.6);
-    if (fa > 0) {
-      c.save(); c.globalCompositeOperation = 'lighter';
-      flies.forEach(fl => {
-        const x = fl.x + Math.sin(t * fl.sp + fl.ph) * 60, y = fl.y + Math.cos(t * fl.sp * 1.3 + fl.ph) * 30, a = fa * (0.4 + 0.6 * Math.abs(Math.sin(t * 2 + fl.ph)));
-        glow(c, x, y, 14, '220,255,150', 0.7 * a); c.fillStyle = `rgba(250,255,210,${a})`; c.beginPath(); c.arc(x, y, 2.5, 0, Math.PI * 2); c.fill();
-      });
-      c.restore();
-    }
+    if (PL.front) PL.front(c, t, cam, tau, HP);
     starSegs.forEach((s, i) => { if (s.type === 'fall' || s.type === 'rise') trail(c, t, s.t0, s.t1, 11 + i * 30); });
     if (S) drawStar(c, S, t);
     const heads = {}; CAST.forEach(id => { heads[id] = toWorld(Ks[id], Ks[id].f * 6, REG[id].head); });
@@ -500,6 +408,8 @@
 
   async function init(canvas, plan) {
     P = plan; KS = plan.scale; CAST = plan.cast; REG = StudioCharacters.CHARACTERS;
+    PL = StudioPlaces.find(plan.meta.place) || StudioPlaces.PLACES.meadow;
+    HP = { W, H, duration: plan.duration, cam: null };
     CAST.forEach(id => { DRAW[id] = window[REG[id].global][REG[id].draw]; });
     starSegs = plan.star.filter(s => s.type !== 'flicker').sort((a, b) => a.t0 - b.t0);
     flickers = plan.star.filter(s => s.type === 'flicker');

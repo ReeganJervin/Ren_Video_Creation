@@ -34,6 +34,7 @@
   <p id="status"></p>
 </div>
 <script src="characters.js"></script>
+<script src="places/index.js"></script>
 <script src="story.js"></script>
 <script src="film.js"></script>
 <script src="audio.js"></script>
@@ -43,10 +44,10 @@
   const $ = id => document.getElementById(id);
   const ready = (async () => {
     const plan = await (await fetch(qs.get('plan'))).json();
-    // load the drawing file of every character in the story (listed in characters.js)
-    for (const id of plan.cast) await new Promise((ok, fail) => {
-      const s = document.createElement('script'); s.src = StudioCharacters.CHARACTERS[id].script; s.onload = ok; s.onerror = fail; document.head.appendChild(s);
-    });
+    // load the drawing file of every character in the story (listed in characters.js) and every place (places/index.js)
+    const load = src => new Promise((ok, fail) => { const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = fail; document.head.appendChild(s); });
+    for (const id of plan.cast) await load(StudioCharacters.CHARACTERS[id].script);
+    for (const f of StudioPlaces.FILES) await load(`places/${f}.js`);
     $('title').textContent = plan.meta.title;
     $('scrub').max = plan.duration;
     await StudioFilm.init($('film'), plan);

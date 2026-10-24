@@ -5,6 +5,7 @@
 // Characters come from the registry in characters.js; every line works for any of them.
 (function (root) {
   const { CHARACTERS, MOODS } = typeof module !== 'undefined' ? require('./characters.js') : root.StudioCharacters;
+  const PLACES = typeof module !== 'undefined' ? require('./places/index.js') : root.StudioPlaces;
   const NAMES = Object.keys(CHARACTERS), NAME = NAMES.join('|');
   const POS = { left: 560, center: 960, right: 1360 };
   const OFF = { left: -280, right: 2200 };
@@ -13,7 +14,7 @@
   const GAP = 280;              // closest two characters may stand (centre to centre)
   const HUG = 230;              // cheek to cheek
   const MINX = 300, MAXX = 1620;
-  const feetY = x => 905 - 38 * Math.exp(-(((x - 960) / 240) ** 2));
+  const feetY = x => 905 - 38 * Math.exp(-(((x - 960) / 240) ** 2));   // the meadow's ground (each place has its own)
   const title = id => CHARACTERS[id].name;
 
   const HELP = [
@@ -25,7 +26,7 @@
     '<name> raises its paws', '<name> lowers its paws', '<name> blinks', '<name> and <name> hop | wave | look at each other | feel <mood>',
     'star appears', 'star falls', 'star glows', 'star twinkles', 'star rises', 'star disappears',
     'hearts float up', 'heart floats down', 'sparkles [around <name>]', 'title card: <WORD>',
-    'time: day|sunset|dusk|night', 'camera: wide|close|closer', 'wait <seconds>',
+    `place: ${PLACES.names().join('|')}`, 'time: day|sunset|dusk|night', 'camera: wide|close|closer', 'wait <seconds>',
     `Characters: ${NAMES.join(', ')}`,
   ];
 
@@ -78,8 +79,11 @@
 
       if ((m = line.match(/^(title|place)\s*:\s*(.+)$/i))) {
         const key = m[1].toLowerCase(), val = m[2].trim();
-        if (key === 'place' && val.toLowerCase() !== 'meadow') return err(`Unknown place "${val}". Available places: meadow`);
-        meta[key] = key === 'place' ? val.toLowerCase() : val;
+        if (key === 'place') {
+          const p = PLACES.find(val);
+          if (!p) return err(`Unknown place "${val}". Available places: ${PLACES.names().join(', ')}`);
+          meta.place = p.id;
+        } else meta[key] = val;
         return;
       }
       if ((m = line.match(/^time\s*:\s*(\w+)$/i))) {
@@ -159,6 +163,8 @@
   // ---------------- compiler ----------------
   function compileStory(parsed, lens = {}) {
     const { meta, beats } = parsed;
+    // stage spots and ground height come from the place
+    const place = PLACES.find(meta.place) || PLACES.PLACES.meadow, POS = place.pos, feetY = place.ground;
     const errors = [];
     const G = { tau: [], zoom: [], bright: [] };
     const setG = (k, t, v, dur = 0.4) => G[k].push({ t, v, dur });
