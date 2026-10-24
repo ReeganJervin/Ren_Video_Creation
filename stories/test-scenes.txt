@@ -1,0 +1,52 @@
+# ============================================================
+#  Test Scenes  (three scenes, three music moods, two places)
+#  Check:  check-story.bat stories\test-scenes.txt
+#  Make:   make-video.bat stories\test-scenes.txt
+#  This also makes videos\test-scenes-chapters.txt for YouTube.
+# ============================================================
+
+title: Test Scenes
+
+scene: A Sunny Morning
+place: meadow
+time: day
+music: happy
+
+ren enters
++ narrator: One sunny morning, Ren went out to play in the meadow.
+yuki enters from right
++ yuki (happy): Good morning, Ren!
+ren waves at yuki
+ren (happy): Good morning, Yuki! Shall we explore today?
+yuki hops twice
+yuki (playful): Yes! Let's go to the big forest!
+ren and yuki hop
+
+scene: Into the Forest
+place: forest
+time: dusk
+music: mystery
+
+narrator: The forest was quiet, and the shadows were growing long.
+yuki looks around
+yuki (shy): It's getting a little dark in here...
+ren walks to yuki
+ren: Don't worry. We'll stay together.
+yuki (happy): Thank you, Ren. I feel braver now.
+ren (playful): You're the bravest bunny I know!
+ren and yuki look up
+narrator: Then, high above the trees, something began to shine.
+
+scene: The Wishing Star
+time: night
+music: magical
+
+star appears
+star twinkles
+yuki (surprised): Look, Ren! A little star!
+ren (happy): It's so beautiful!
+star glows
+narrator: The star sparkled, as if it was saying hello.
+ren and yuki wave
+yuki hugs ren
++ narrator: And the two friends watched it shine all night long.

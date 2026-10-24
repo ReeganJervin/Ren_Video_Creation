@@ -23,7 +23,21 @@ After setup, everything runs offline.
 3. Watch it live with sound (optional): `preview.bat stories\my-story.txt`. This opens in your browser. Press Ctrl+C in the window to stop.
 4. Make the video: `make-video.bat stories\my-story.txt`. You can also drag the story file onto `make-video.bat`.
 
-The video appears in the `videos` folder as `my-story.mp4`, along with a check report, `my-story-report.txt`.
+The video appears in the `videos` folder as `my-story.mp4`, along with a check report, `my-story-report.txt`. A story with at least 3 scenes also gets `my-story-chapters.txt`, ready to paste into a YouTube description (see "Scenes" in STORY-GUIDE.md).
+
+### Still images (for checking)
+
+To save single pictures instead of the whole video, open a command window in the project folder and run:
+
+```
+node tools\make-video.js stories\my-story.txt --stills 3,10.5
+```
+
+This saves the pictures at 3 s and 10.5 s into the `videos` folder. For stories with scenes, you can also write:
+- `--stills scene:2` for the middle of scene 2
+- `--stills scene:2@3.5` for 3.5 seconds into scene 2
+
+You can mix them, for example `--stills 3,scene:1,scene:3@4`.
 
 **How long it takes:** about 4–6 minutes for a 50-second video, depending on your computer. Voices are remembered, so if you only change actions, the voices aren't made again.
 
@@ -32,6 +46,7 @@ There are example stories to try first:
 - `stories\a-sunny-hello.txt` is a short daytime story that shows Ren's moods.
 - `stories\ren-meets-yuki.txt` is a one-minute story where Ren meets Yuki: talking, every Yuki mood, a hug and hopping together.
 - `stories\a-trip-around.txt` takes Ren and Yuki to every place: the meadow, forest, river, snowy hill and beach.
+- `stories\test-scenes.txt` is a story in three scenes, with three music moods and YouTube chapters.
 
 ## Every video is checked automatically
 
@@ -42,7 +57,9 @@ After rendering, the video is tested for:
 - every sound effect playing on its moment
 - sensible volume with no clipping, no sudden jumps, and a clean fade-out
 
-The results are in `videos\<name>-report.txt`.
+Stories with scenes get three extra lines in the report: scene lengths, that something happens at least every 90 seconds, and whether a chapters file was made.
+
+The results are in `videos\<name>-report.txt`. Each line starts with `PASS`, `FAIL`, `WARN` (worth a look, but the video is fine) or `NOTE` (for your information).
 
 ## What's inside
 
@@ -58,6 +75,8 @@ The results are in `videos\<name>-report.txt`.
 | `engine\film.js` | Draws each frame: the place, the characters, the star, hearts, bubbles, captions and place changes |
 | `engine\audio.js` | Music, sound effects, the sound of each place, voice mixing (Web Audio) |
 | `tools\make-video.js` | The main program behind the `.bat` files |
+| `tools\scenes.js` | Chapters and the extra checks for stories with scenes |
+| `tools\compare-engines.js` | For engine changes: checks that every story in `stories\` still looks and sounds exactly the same as before (`node tools\compare-engines.js`) |
 | `voice-overrides\` | Optional: your own recordings for specific lines (see STORY-GUIDE.md) |
 
 ## Adding new things later

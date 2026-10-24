@@ -10,6 +10,7 @@
   const POS = { left: 560, center: 960, right: 1360 };
   const OFF = { left: -280, right: 2200 };
   const TIMES = { day: 0, sunset: 1, dusk: 2, night: 3 };
+  const MUSIC = ['happy', 'calm', 'magical', 'mystery', 'adventure', 'tense', 'sad', 'bedtime', 'none'];
   const KS = 1.15;              // character scale (fixed)
   const GAP = 280;              // closest two characters may stand (centre to centre)
   const HUG = 230;              // cheek to cheek
@@ -27,6 +28,7 @@
     'star appears', 'star falls', 'star glows', 'star twinkles', 'star rises', 'star disappears',
     'hearts float up', 'heart floats down', 'sparkles [around <name>]', 'title card: <WORD>',
     `place: ${PLACES.names().join('|')}`, 'time: day|sunset|dusk|night', 'camera: wide|close|closer', 'wait <seconds>',
+    'scene: <name>', `music: ${MUSIC.join('|')}`,
     `Characters: ${NAMES.join(', ')}`,
   ];
 
@@ -86,6 +88,20 @@
         } else meta[key] = val;
         return;
       }
+      // a new scene: its first place/time/music lines belong to its start (see "scene heads" below)
+      if ((m = line.match(/^scene\s*:\s*(.+)$/i))) {
+        if (together) return err('A scene can\'t start at the same time as the line above. Remove the "+".');
+        const name = m[1].trim();
+        if (name.length > 60) return err('A scene name must be 60 characters or fewer.');
+        beats.push({ type: 'scene', line: lineNo, together: false, src: raw.trim(), name });
+        return;
+      }
+      if ((m = line.match(/^music\s*:\s*(\w+)$/i))) {
+        const v = m[1].toLowerCase();
+        if (!MUSIC.includes(v)) return err(`Unknown music "${m[1]}". Use: ${MUSIC.join(', ')}`);
+        if (!started) meta.music = v; else beat('music', { mood: v });
+        return;
+      }
       if ((m = line.match(/^time\s*:\s*(\w+)$/i))) {
         const v = m[1].toLowerCase();
         if (!(v in TIMES)) return err(`Unknown time "${m[1]}". Use: day, sunset, dusk or night`);
@@ -133,6 +149,15 @@
       err('I don\'t understand this line.');
     });
     if (!beats.some(b => b.type === 'say')) errors.push('The story has no narrator or character lines.');
+    // scene heads: the place/time/music lines right after "scene:" all happen at the scene's start.
+    // When the scene changes place, its new time of day is already set as the page turns.
+    beats.forEach((b, i) => {
+      if (b.type !== 'scene') return;
+      const head = [];
+      for (let k = i + 1; k < beats.length && /^(place|time|music)$/.test(beats[k].type); k++) head.push(beats[k]);
+      const moves = head.some(h => h.type === 'place');
+      head.forEach(h => { h.head = true; if (h.type === 'time' && moves) h.snap = true; });
+    });
     return { meta, beats, errors };
   }
 
@@ -268,6 +293,8 @@
       a.toYou = false;
     }
     const talks = [];   // conversation lines: who spoke to whom, used to turn them toward each other
+    const scenes = [], music = meta.music ? [{ t: 0, mood: meta.music }] : [];
+    let scene = null, content = false;   // the scene going on now; whether anything has happened yet
 
     for (const b of beats) {
       const s = b.together ? prevStart : t;
@@ -424,7 +451,10 @@
           dur = letters.length * 0.22 + 0.6;
           break;
         }
-        case 'time': setG('tau', s, TIMES[b.value], 4); dur = 0; break;
+        case 'time':
+          // a scene that opens somewhere new switches the sky while the page is white; otherwise it changes slowly
+          if (b.snap && scene && scene.turn) setG('tau', scene.t0 + PT / 2, TIMES[b.value], 0.001); else setG('tau', s, TIMES[b.value], 4);
+          dur = 0; break;
         case 'place': {
           if (b.value === here) { P.warnings.push(`Line ${b.line}: the story is already at the ${PLACES.PLACES[here].name}.`); break; }
           changes.push({ t0: s, t1: s + PT, from: here, to: b.value });
@@ -434,7 +464,19 @@
           break;
         }
         case 'camera': setG('zoom', s, b.zoom, 1.6); dur = 0; break;
+        case 'scene': {
+          // lines before the first scene make an opening scene named after the story
+          if (!scenes.length && content) scenes.push({ name: meta.title, line: 0, t0: 0, opening: true });
+          const t0 = content ? s : 0, i = beats.indexOf(b);
+          let turn = false;
+          for (let k = i + 1; k < beats.length && beats[k].head; k++) if (beats[k].type === 'place' && beats[k].value !== here) turn = true;
+          scene = { name: b.name, line: b.line, t0, turn };
+          scenes.push(scene);
+          break;
+        }
+        case 'music': music.push({ t: b.head ? scene.t0 : s, mood: b.mood, line: b.line }); break;
       }
+      if (b.type !== 'scene') content = true;
       prevStart = s;
       t = Math.max(t, s + dur);
     }
@@ -559,14 +601,19 @@
       }
     }
     P.sfx.sort((a, b) => a.t - b.t);
+    // scenes run until the next one starts; a story without "scene:" lines is one scene
+    if (!scenes.length) scenes.push({ name: meta.title, line: 0, t0: 0, implicit: true });
+    scenes.forEach((c, i) => { c.t1 = i + 1 < scenes.length ? scenes[i + 1].t0 : duration; delete c.turn; });
+    // music changes ([] means the classic music all story long)
+    if (music.length) P.music = music;
 
     return {
-      version: 2, duration, fps: 30, width: 1920, height: 1080, scale: KS, errors, cast, ...P, keys,
+      version: 2, duration, fps: 30, width: 1920, height: 1080, scale: KS, errors, cast, ...P, keys, scenes,
       musicFadeIn: 1.0, musicFadeOut: [Math.max(1, duration - 3), duration], pictureFadeOut: [duration - 0.65, duration],
     };
   }
   function estimate(text) { return 0.45 + text.split(/\s+/).length * 0.36; }
 
-  const api = { parseStory, compileStory, evalKeys, feetY, HELP, POS, CHARACTERS, MOODS };
+  const api = { parseStory, compileStory, evalKeys, feetY, HELP, POS, CHARACTERS, MOODS, MUSIC };
   if (typeof module !== 'undefined') module.exports = api; else root.StudioStory = api;
 })(this);

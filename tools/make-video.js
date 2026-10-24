@@ -4,6 +4,7 @@
 //   node tools/make-video.js stories/my-story.txt --check    only check the story and show its timing
 //   node tools/make-video.js stories/my-story.txt --preview  open a live preview in your browser
 //   node tools/make-video.js stories/my-story.txt --stills 3,10.5   save still images (for checking)
+//   node tools/make-video.js stories/my-story.txt --stills scene:2,scene:3@4.5   the middle of scene 2, 4.5 s into scene 3
 const fs = require('fs'), path = require('path'), http = require('http'), crypto = require('crypto');
 const { spawn, spawnSync } = require('child_process');
 const { once } = require('events');
@@ -11,6 +12,7 @@ const ffmpeg = require('ffmpeg-static');
 const { parseStory, compileStory } = require('../engine/story.js');
 const { readWav } = require('./wav');
 const { validate } = require('./validate');
+const { clock, hasScenes, chapters, sceneChecks } = require('./scenes');
 
 const ROOT = path.resolve(__dirname, '..');
 const say = (...a) => console.log(...a);
@@ -36,6 +38,12 @@ async function main() {
     say(`\n"${plan.meta.title}" looks good! Estimated length: ${plan.duration.toFixed(1)} s (exact length is known after voices are made).\n`);
     plan.voice.forEach(v => say(`  ${v.t.toFixed(1).padStart(6)} s  ${v.who.padEnd(8)} ${v.text}`));
     plan.warnings.forEach(w => say('  note: ' + w));
+    if (hasScenes(plan)) {
+      say(`\nScenes (estimated):`);
+      plan.scenes.forEach((c, i) => say(`  ${String(i + 1).padStart(2)}. ${clock(c.t0).padStart(7)}  ${(c.t1 - c.t0).toFixed(1).padStart(6)} s  ${c.name}`));
+      say('');
+      sceneChecks(plan).forEach(r => say(`  ${label(r)}  ${r.name}: ${r.detail}`));
+    }
     return;
   }
 
@@ -94,8 +102,7 @@ async function main() {
   }
 
   // 4. render
-  const { chromium } = require('playwright');
-  const browser = await chromium.launch();
+  const browser = await require('./browser').launch();
   const page = await browser.newPage({ viewport: { width: 1920, height: 1080 } });
   page.on('pageerror', e => { console.error('[page error]', e.message); });
   await page.goto(url + '&export=1');
@@ -105,12 +112,12 @@ async function main() {
   fs.mkdirSync(outDir, { recursive: true });
 
   if (opt('stills')) {
-    const times = args[args.indexOf('--stills') + 1].split(',').map(Number);
-    for (const t of times) {
+    const shots = stillTimes(args[args.indexOf('--stills') + 1] || '', plan);
+    for (const { t, tag } of shots) {
       await page.evaluate(t => FILM.render(t), t);
-      await canvas.screenshot({ path: path.join(outDir, `${name}-still-${t.toFixed(1)}s.png`) });
+      await canvas.screenshot({ path: path.join(outDir, `${name}-still-${tag}${t.toFixed(1)}s.png`) });
     }
-    say(`Saved ${times.length} still(s) in videos/`);
+    say(`Saved ${shots.length} still(s) in videos/`);
     await browser.close(); server.close(); return;
   }
 
@@ -143,11 +150,37 @@ async function main() {
   if (code !== 0) fail('Encoding the video failed.');
   say('\n\nChecking the video...');
   const results = validate(plan, { root: ROOT, mp4, voice: path.join(buildDir, 'voice.wav'), sfx: path.join(buildDir, 'sfx.wav'), master: path.join(buildDir, 'master.wav') });
-  const report = results.map(r => `${r.ok ? 'PASS' : 'FAIL'}  ${r.name}: ${r.detail}`).join('\n');
+  results.push(...sceneChecks(plan));
+  // YouTube chapters, when the scenes allow it (an old file from an earlier render is removed otherwise)
+  const chFile = path.join(outDir, `${name}-chapters.txt`), ch = chapters(plan);
+  if (ch.text) fs.writeFileSync(chFile, ch.text); else if (fs.existsSync(chFile)) fs.unlinkSync(chFile);
+  const report = results.map(r => `${label(r)}  ${r.name}: ${r.detail}`).join('\n');
   fs.writeFileSync(path.join(outDir, `${name}-report.txt`), report + '\n');
   say(report);
+  if (ch.text) say(`\nChapters for YouTube: videos/${name}-chapters.txt`);
   const bad = results.filter(r => !r.ok).length;
   say(bad ? `\nThe video was made, but ${bad} check(s) failed. See videos/${name}-report.txt` : `\nDone! Your video: videos/${name}.mp4`);
+}
+
+const label = r => (!r.ok ? 'FAIL' : r.warn ? 'WARN' : r.note ? 'NOTE' : 'PASS');
+
+// "--stills 3,10.5,scene:2,scene:3@4.5" -> [{ t, tag }]: plain seconds, the middle of a scene, or seconds into a scene
+function stillTimes(list, plan) {
+  const out = list.split(',').filter(Boolean).map(item => {
+    const m = item.trim().match(/^scene:(\d+)(?:@([\d.]+))?$/i);
+    if (!m) {
+      const t = Number(item);
+      if (!isFinite(t)) fail(`"${item}" is not a time. Use seconds like 12.5, or scene:2, or scene:2@3.5`);
+      return { t, tag: '' };
+    }
+    const n = +m[1], c = plan.scenes[n - 1];
+    if (!c) fail(`There is no scene ${n}. This story has ${plan.scenes.length} scene(s).`);
+    const t = m[2] !== undefined ? c.t0 + +m[2] : (c.t0 + c.t1) / 2;
+    if (t > c.t1) fail(`Scene ${n} is only ${(c.t1 - c.t0).toFixed(1)} s long, so scene:${n}@${m[2]} is past its end.`);
+    return { t, tag: `scene${n}-` };
+  });
+  if (!out.length) fail('Tell me which moments to save, for example: --stills 3,10.5 or --stills scene:2');
+  return out;
 }
 
 // Mastering: one fixed gain to about -16 LUFS, capped so true peak stays at or below -1.5 dBTP.
