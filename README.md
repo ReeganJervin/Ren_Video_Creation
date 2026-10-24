@@ -1,8 +1,8 @@
 # Kitsu Studio
 
-You write a story as a text file and get a finished animated Ren video: 1920×1080, 30 fps, with narration, Ren's voice, music, sound effects and speech bubbles.
+You write a story as a text file and get a finished animated video starring Ren the fox and Yuki the bunny: 1920×1080, 30 fps, with narration, the characters' voices, music, sound effects and speech bubbles.
 
-Ren's design, the voices and the style are fixed in the project. **Only the story changes.**
+The characters' designs, the voices and the style are fixed in the project. **Only the story changes.** A story can use Ren, Yuki or both.
 
 ## One-time setup (Windows)
 
@@ -27,9 +27,10 @@ The video appears in the `videos` folder as `my-story.mp4`, along with a check r
 
 **How long it takes:** about 4–6 minutes for a 50-second video, depending on your computer. Voices are remembered, so if you only change actions, the voices aren't made again.
 
-There are two example stories to try first:
+There are example stories to try first:
 - `stories\the-fallen-star.txt` is your 50-second film, written as a story.
-- `stories\a-sunny-hello.txt` is a short daytime story that shows all the moods.
+- `stories\a-sunny-hello.txt` is a short daytime story that shows Ren's moods.
+- `stories\ren-meets-yuki.txt` is a one-minute story where Ren meets Yuki: talking, every Yuki mood, a hug and hopping together.
 
 ## Every video is checked automatically
 
@@ -47,19 +48,23 @@ The results are in `videos\<name>-report.txt`.
 | Folder or file | What it is |
 |---|---|
 | `stories\` | Your stories, plus the template and examples |
-| `config\voices.json` | The two fixed voices: the narrator is `af_heart`, and Ren is `af_sky`, pitched up |
+| `config\voices.json` | The fixed voices: the narrator is `af_heart`, Ren is `af_sky` pitched up, and Yuki is `af_bella` pitched up more |
+| `engine\characters.js` | The list of characters: their names, how they move, their sounds and how each mood looks on them |
 | `engine\ren.js` | Ren's fixed design (shape, colours, face, scarf) |
+| `engine\yuki.js` | Yuki's fixed design (shape, colours, face, ears, flower and bow) |
 | `engine\story.js` | Reads the story and works out the timing for everything |
-| `engine\film.js` | Draws the meadow, the sky, the star, hearts, bubbles and captions |
+| `engine\film.js` | Draws the meadow, the sky, the characters, the star, hearts, bubbles and captions |
 | `engine\audio.js` | Music, sound effects, voice mixing (Web Audio) |
 | `tools\make-video.js` | The main program behind the `.bat` files |
 | `voice-overrides\` | Optional: your own recordings for specific lines (see STORY-GUIDE.md) |
 
 ## Adding new things later
 
-New places, props or characters, like a forest, a butterfly or a bunny, are added in code:
+New places and props, like a forest or a butterfly, are added in code:
 - `engine/story.js` gets the new story words.
 - `engine/film.js` gets the drawing.
 - `engine/audio.js` gets the sounds.
+
+A new character needs only a drawing file in `engine/` (like `engine/yuki.js`), one entry in `engine/characters.js` and a voice in `config/voices.json`. Every story line then works for the new name.
 
 Existing stories keep working unchanged.

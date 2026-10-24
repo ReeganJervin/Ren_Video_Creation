@@ -164,6 +164,19 @@
         lfo.connect(lg); lg.connect(o.frequency);
         o.connect(g); g.connect(sfx); env(g, t, 0.26, 0.008, 0.42); o.start(t); o.stop(t + 0.5); lfo.start(t); lfo.stop(t + 0.5);
       },
+      // lighter, higher boings for hopping characters (Yuki)
+      hopUp(c) {
+        const t = at(c.t), o = ctx.createOscillator(), g = ctx.createGain();
+        o.type = 'sine'; o.frequency.setValueAtTime(520, t); o.frequency.exponentialRampToValueAtTime(1100, t + 0.11);
+        o.connect(g); g.connect(sfx); env(g, t, 0.15 * (c.gain || 1), 0.006, 0.16); o.start(t); o.stop(t + 0.2);
+      },
+      hopLand(c) {
+        const t = at(c.t), o = ctx.createOscillator(), g = ctx.createGain(), lfo = ctx.createOscillator(), lg = ctx.createGain();
+        o.type = 'sine'; o.frequency.setValueAtTime(340, t); o.frequency.exponentialRampToValueAtTime(760, t + 0.09);
+        lfo.frequency.value = 32; lg.gain.setValueAtTime(30, t); lg.gain.exponentialRampToValueAtTime(1, t + 0.25);
+        lfo.connect(lg); lg.connect(o.frequency);
+        o.connect(g); g.connect(sfx); env(g, t, 0.17 * (c.gain || 1), 0.006, 0.26); o.start(t); o.stop(t + 0.32); lfo.start(t); lfo.stop(t + 0.32);
+      },
       chime(c) { chime(at(c.t), c.midi, c.gain || 0.2); },
       twinkle(c) { const g = c.gain || 0.2; chime(at(c.t), c.midi, g, 0.7); chime(at(c.t + 0.07), c.midi + 7, g * 0.6, 0.6); },
       sparkleChime(c) { [96, 100, 103, 108].forEach((m, i) => chime(at(c.t + i * 0.06), m, 0.13, 0.7)); },

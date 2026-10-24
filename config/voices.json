@@ -1,4 +1,5 @@
 {
   "narrator": { "voice": "af_heart", "speed": 0.92, "pitch": 1.0 },
-  "ren": { "voice": "af_sky", "speed": 1.0, "pitch": 1.12 }
+  "ren": { "voice": "af_sky", "speed": 1.0, "pitch": 1.12 },
+  "yuki": { "voice": "af_bella", "speed": 1.0, "pitch": 1.18 }
 }

@@ -1,5 +1,5 @@
 # ============================================================
-#  REN STORY TEMPLATE
+#  STORY TEMPLATE
 #  1. Copy this file and give it a new name, e.g. my-story.txt
 #     (the video will be called videos\my-story.mp4)
 #  2. Change the lines below. Lines starting with # are ignored.
@@ -7,9 +7,12 @@
 #     Watch first:   preview.bat stories\my-story.txt
 #     Make video:    make-video.bat stories\my-story.txt
 #  All lines you can use are listed in STORY-GUIDE.md
+#
+#  Characters: ren (the fox) and yuki (the bunny).
+#  Use one or both; only the ones you mention appear.
 # ============================================================
 
-title: My Ren Story
+title: My Story
 place: meadow
 # time can be: day, sunset, dusk, night
 time: sunset
@@ -24,9 +27,13 @@ ren (happy): Hello! Today is a special day!
 # --- Middle ---
 ren looks around
 ren (surprised): What's that?
-sparkles
+yuki enters from right
++ narrator: A little bunny came hopping over.
+yuki (happy): Hi, Ren! Can I come too?
+ren turns to yuki
+ren (happy): Of course, Yuki!
 
 # --- End ---
-ren hops
-hearts float up
+ren and yuki hop
+yuki hugs ren
 narrator: And that was the start of a wonderful adventure.

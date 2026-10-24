@@ -41,15 +41,15 @@ function validate(plan, files) {
   check('Voices start on time', !late.length, late.length ? `off: ${late.join('; ')}` : `${plan.voice.length} lines, speech heard within 0.1 s of plan`);
   check('No overlapping or cut-off voices', !overlap.length, overlap.length ? `problem: ${overlap.join(', ')}` : 'every line ends before the next starts and before the ending');
 
-  // text boxes hold their voice lines
-  const ren = plan.voice.filter(x => x.who === 'ren'), narr = plan.voice.filter(x => x.who === 'narrator');
-  const badB = plan.bubbles.filter((b, i) => !(b.t0 <= ren[i].t && ren[i].t + ren[i].len <= b.t1 + 0.01));
+  // text boxes hold their voice lines (bubbles belong to the characters' lines, in order)
+  const talk = plan.voice.filter(x => x.who !== 'narrator'), narr = plan.voice.filter(x => x.who === 'narrator');
+  const badB = plan.bubbles.filter((b, i) => !(b.t0 <= talk[i].t && talk[i].t + talk[i].len <= b.t1 + 0.01));
   const badC = plan.captions.filter((c, i) => !(c.t0 <= narr[i].t && narr[i].t + narr[i].len <= c.t1 + 0.01));
   check('Speech bubbles and captions stay up for their lines', !badB.length && !badC.length, `${plan.bubbles.length} bubbles, ${plan.captions.length} captions${badB.length + badC.length ? `; too short: ${[...badB, ...badC].map(x => x.text).join(' | ')}` : ''}`);
 
   // sound effects: energy rises at each discrete cue
   const sw = readWav(files.sfx), ss = sw.samples(), ssr = sw.rate;
-  const cues = plan.sfx.filter(c => ['boingUp', 'boingLand', 'chime', 'twinkle', 'pop', 'softLand', 'chirp', 'sparkleChime'].includes(c.type));
+  const cues = plan.sfx.filter(c => ['boingUp', 'boingLand', 'hopUp', 'hopLand', 'chime', 'twinkle', 'pop', 'softLand', 'chirp', 'sparkleChime'].includes(c.type));
   const miss = cues.filter(c => {
     const i = Math.round(c.t * ssr), w = Math.round(0.12 * ssr);
     const before = db(ss, Math.max(0, i - w), Math.max(1, i - Math.round(0.01 * ssr))), after = db(ss, i, Math.min(ss.length, i + w));

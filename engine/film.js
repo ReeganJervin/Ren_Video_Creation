@@ -1,9 +1,8 @@
 // Scene renderer: draws any compiled story plan. render(t) is deterministic.
 (() => {
   const W = 1920, H = 1080;
-  const { drawRen } = RenCharacter;
   const { evalKeys, feetY } = StudioStory;
-  let P, KS;
+  let P, KS, REG, CAST = [], DRAW = {};
 
   // ---------- helpers ----------
   const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
@@ -35,22 +34,42 @@
     sun: ['#fffbe8', '#fff4d6', '#ffcf9a', '#ffcf9a'], grade: ['#ffffff', '#fff3e2', '#e4d4ee', '#aab2e6'], tint: ['#ffffff', '#ffb070', '#a080c0', '#3a4aa0'],
   };
 
-  // ---------- Ren ----------
+  // ---------- characters ----------
   const ARM_R = 0.16;
-  function renX(t) {
-    let x = P.renStartX;
-    for (const w of P.walks) {
+  const A_ = (id, name, t) => evalKeys(P.actors[id].keys[name], t);
+  // Position along the ground. Hopping characters travel in small hops and pause briefly on each landing.
+  function actorX(id, t) {
+    const a = P.actors[id];
+    let x = a.startX;
+    for (const w of a.walks) {
       if (t >= w.t1) x = w.x1;
-      else if (t > w.t0) return lerp(w.x0, w.x1, ease((t - w.t0) / (w.t1 - w.t0)));
+      else if (t > w.t0) {
+        const u = (t - w.t0) / (w.t1 - w.t0);
+        if (!w.hops) return lerp(w.x0, w.x1, ease(u));
+        const k = Math.min(w.hops - 1, Math.floor(u * w.hops)), v = u * w.hops - k;
+        return lerp(w.x0, w.x1, (k + ease(clamp(v / 0.8))) / w.hops);
+      }
       else break;
     }
     return x;
   }
+  // height and landing squash of a travel hop at t (null when not hopping along)
+  function travelHop(id, t) {
+    for (const w of P.actors[id].walks) {
+      if (!w.hops || t <= w.t0 || t >= w.t1) continue;
+      const u = (t - w.t0) / (w.t1 - w.t0), k = Math.floor(u * w.hops), v = u * w.hops - k;
+      return { h: v < 0.8 ? Math.sin(v / 0.8 * Math.PI) * 30 : 0, land: v >= 0.8 ? Math.sin((v - 0.8) / 0.2 * Math.PI) : 0 };
+    }
+    return null;
+  }
+  const onStage = (id, t) => { const x = actorX(id, t); return x > -60 && x < 1980; };
   // Body: position, squash, facing, arms. Never depends on props (so props can follow it).
-  function renBody(t) {
-    const x = renX(t), v = (renX(t + 0.02) - renX(t - 0.02)) / 0.04, walk = clamp(Math.abs(v) / 140);
+  function actorBody(id, t) {
+    const a = P.actors[id], n = CAST.indexOf(id);
+    const x = actorX(id, t), v = (actorX(id, t + 0.02) - actorX(id, t - 0.02)) / 0.04;
+    const walk = REG[id].moves === 'hop' ? 0 : clamp(Math.abs(v) / 140);
     let h = 0, sx = 1, sy = 1, hopping = false;
-    for (const hp of P.hops) {
+    for (const hp of a.hops) {
       const pre = hp.t0 - 0.14;
       if (t > pre && t < hp.t0) { const q = Math.sin((t - pre) / 0.14 * Math.PI); sy *= 1 - 0.09 * q; sx *= 1 + 0.07 * q; }
       if (t >= hp.t0 && t <= hp.t1) {
@@ -59,62 +78,75 @@
       }
       if (t > hp.t1 && t < hp.t1 + 0.2) { const q = Math.sin((t - hp.t1) / 0.2 * Math.PI); sy *= 1 - 0.12 * q; sx *= 1 + 0.09 * q; }
     }
-    const crouch = K_('crouch', t);
-    sy *= crouch * (1 + 0.012 * Math.sin(t * 2.6)); sx *= 1 + (1 - crouch) * 0.45;
-    const phase = x / 160 * Math.PI * 2, swing = Math.sin(phase) * 0.35 * walk, idle = Math.sin(t * 2) * 0.04;
-    let wave = 0; for (const w of P.waves) wave += Math.sin((t - w.a) * 9) * 0.35 * win(t, w.a, w.b, 0.2, 0.3);
+    const th = travelHop(id, t);
+    if (th) { h += th.h; sy *= 1 - 0.1 * th.land; sx *= 1 + 0.08 * th.land; }
+    const crouch = A_(id, 'crouch', t);
+    // breathing and idle sway, each character on its own phase
+    sy *= crouch * (1 + 0.012 * Math.sin(t * 2.6 + n * 1.7)); sx *= 1 + (1 - crouch) * 0.45;
+    const phase = x / 160 * Math.PI * 2, swing = Math.sin(phase) * 0.35 * walk, idle = Math.sin(t * 2 + n * 2.1) * 0.04;
+    let wave = 0; for (const w of a.waves) wave += Math.sin((t - w.a) * 9) * 0.35 * win(t, w.a, w.b, 0.2, 0.3);
     return {
-      x, y: feetY(x), h, sx, sy, s: KS, f: K_('facing', t), walk, phase, hopping,
-      armL: K_('armL', t) + swing + idle, armR: K_('armR', t) - swing + idle + wave,
+      id, x, y: feetY(x), h, sx, sy, s: KS, f: A_(id, 'facing', t), walk, phase, hopping,
+      armL: A_(id, 'armL', t) + swing + idle, armR: A_(id, 'armR', t) - swing + idle + wave,
     };
   }
   const toWorld = (K, lx, ly) => ({ x: K.x + lx * K.s * K.sx, y: K.y - K.h + ly * K.s * K.sy });
+  const headOf = (id, t) => { const B = actorBody(id, t); return { vis: true, ...toWorld(B, B.f * 6, REG[id].head) }; };
 
-  const MOOD = {
-    normal: { eyes: 'normal', mouth: 'smile', wide: 0, brows: 0, droop: 0, blush: 0, lookY: 0, wag: 0 },
-    happy: { eyes: 'normal', mouth: 'open', wide: 0, brows: 0, droop: 0, blush: 0.1, lookY: 0, wag: 1 },
-    surprised: { eyes: 'wide', mouth: 'o', wide: 1, brows: 0, droop: -0.12, blush: 0, lookY: 0, wag: 0 },
-    shy: { eyes: 'shy', mouth: 'tinyfrown', wide: 0, brows: 0.75, droop: 0.62, blush: 0.8, lookY: 0.6, wag: 0 },
-    sad: { eyes: 'normal', mouth: 'frown', wide: 0, brows: 1, droop: 0.42, blush: 0, lookY: 0.3, wag: 0 },
-    sleepy: { eyes: 'sleepy', mouth: 'yawn', wide: 0, brows: 0, droop: 0.48, blush: 0, lookY: 0.2, wag: 0 },
-    playful: { eyes: 'happy', mouth: 'smile', wide: 0, brows: 0, droop: -0.05, blush: 0.4, lookY: 0, wag: 1 },
-    pouty: { eyes: 'normal', mouth: 'pout', wide: 0, brows: -1, droop: 0, blush: 0.35, lookY: 0, wag: 0, puff: 1 },
-    joy: { eyes: 'happy', mouth: 'open', wide: 0, brows: 0, droop: 0, blush: 0.25, lookY: 0, wag: 1 },
-  };
-  function moodAt(t) {
+  // what each mood looks like comes from the character registry; anything a mood leaves out is neutral
+  const NEUTRAL = { eyes: 'normal', mouth: 'smile', wide: 0, brows: 0, droop: 0, blush: 0, lookY: 0, wag: 0, puff: 0, flop: 0, pawPose: null, pawW: 0 };
+  const moodLook = (id, name) => ({ ...NEUTRAL, ...REG[id].moods[name] });
+  function moodAt(id, t) {
+    const a = P.actors[id];
     let cur = 'normal', prev = 'normal', since = -10;
-    for (const m of P.moods) if (m.t <= t) { prev = cur; cur = m.mood; since = m.t; }
-    for (const e of P.exprs) if (t >= e.a - 0.25 && t < e.b) { prev = cur; cur = e.mood; since = e.a - 0.25; }
-    return { cur: MOOD[cur], prev: MOOD[prev], w: ease((t - since) / 0.3) };
+    for (const m of a.moods) if (m.t <= t) { prev = cur; cur = m.mood; since = m.t; }
+    for (const e of a.exprs) if (t >= e.a - 0.25 && t < e.b) { prev = cur; cur = e.mood; since = e.a - 0.25; }
+    return { cur: moodLook(id, cur), prev: moodLook(id, prev), w: ease((t - since) / 0.3) };
   }
 
-  function renState(t) {
-    const K = renBody(t);
-    const m = moodAt(t), mix = k => lerp(m.prev[k] || 0, m.cur[k] || 0, m.w), pick = k => (m.w > 0.5 ? m.cur : m.prev)[k];
-    let lx = K_('lookX', t), ly = K_('lookY', t) + mix('lookY');
-    const head = toWorld(K, K.f * 6, -210);
-    for (const L of P.lookAt) {
+  function actorState(id, t) {
+    const K = actorBody(id, t), a = P.actors[id], def = REG[id], n = CAST.indexOf(id);
+    const m = moodAt(id, t), mix = k => lerp(m.prev[k] || 0, m.cur[k] || 0, m.w), pick = k => (m.w > 0.5 ? m.cur : m.prev)[k];
+    let lx = A_(id, 'lookX', t), ly = A_(id, 'lookY', t) + mix('lookY');
+    const head = toWorld(K, K.f * 6, def.head);
+    for (const L of a.lookAt) {
       const w = win(t, L.a, L.b, 0.3, 0.4); if (w <= 0) continue;
-      const p = L.target === 'star' ? starAt(t) : heartAt(t);
+      const p = L.target === 'star' ? starAt(t) : L.target === 'heart' ? heartAt(t) : headOf(L.target.actor, t);
       if (!p || !p.vis) continue;
-      const dx = p.x - head.x, dy = p.y - head.y, n = Math.hypot(dx, dy) || 1;
-      lx = lerp(lx, clamp(dx / n * 1.3, -1, 1), w); ly = lerp(ly, clamp(dy / n * 1.3, -1, 1), w);
+      const dx = p.x - head.x, dy = p.y - head.y, nn = Math.hypot(dx, dy) || 1;
+      lx = lerp(lx, clamp(dx / nn * 1.3, -1, 1), w); ly = lerp(ly, clamp(dy / nn * 1.3, -1, 1), w);
+    }
+    // listening: characters standing still turn their eyes (and a little of the body) to whoever is talking;
+    // the speaker glances at the listener
+    if (CAST.length > 1 && onStage(id, t)) {
+      for (const v of P.voice) {
+        if (v.who === 'narrator') continue;
+        const w = win(t, v.t - 0.25, v.t + v.len + 0.4, 0.35, 0.45); if (w <= 0) continue;
+        const other = v.who === id ? CAST.find(o => o !== id && onStage(o, t)) : v.who;
+        if (!other || other === id || !onStage(other, t)) continue;
+        const dir = Math.sign(actorX(other, t) - K.x) || 1, k = w * (v.who === id ? 0.5 : 1) * (1 - clamp(Math.abs(K.f) / 0.3));
+        lx = lerp(lx, dir * 0.85, k); ly = lerp(ly, 0, k * 0.5);
+        K.f += dir * 0.2 * k;
+      }
     }
     K.lookX = clamp(lx, -1, 1); K.lookY = clamp(ly, -1, 1);
-    K.tilt = K_('tilt', t) + Math.sin(t * 0.9) * 0.025 + mix('brows') * 0.06;
+    K.tilt = A_(id, 'tilt', t) + Math.sin(t * 0.9 + n * 1.3) * 0.025 + mix('brows') * 0.06;
     K.eyes = pick('eyes'); K.mouth = pick('mouth'); K.wide = mix('wide'); K.brows = mix('brows');
-    K.blushBoost = mix('blush'); K.puff = mix('puff');
+    K.blushBoost = mix('blush'); K.puff = mix('puff'); K.flop = mix('flop');
+    K.pawPose = m.cur.pawPose || m.prev.pawPose;
+    K.pawW = lerp(m.prev.pawPose === K.pawPose ? m.prev.pawW : 0, m.cur.pawPose === K.pawPose ? m.cur.pawW : 0, m.w);
     if (K.hopping) K.eyes = 'happy';
     K.talk = 0;
     for (const v of P.voice) {
-      if (v.who !== 'ren' || t < v.t || t >= v.t + v.len) continue;
+      if (v.who !== id || t < v.t || t >= v.t + v.len) continue;
       K.mouth = 'talk';
       K.talk = 0.25 + 0.75 * Math.abs(Math.sin((t - v.t) * 13.5)) * (0.6 + 0.4 * Math.abs(Math.sin((t - v.t) * 4.7 + 1)));
     }
+    if (K.mouth === 'talk' && K.pawPose === 'yawn') K.pawW *= 0.15;   // move the paw away so the talking mouth shows
     K.blink = 0;
-    if (K.eyes !== 'happy') for (const b of P.blinks) { const u = (t - b) / (K.eyes === 'sleepy' ? 0.4 : 0.18); if (u > 0 && u < 1) K.blink = Math.sin(u * Math.PI); }
+    if (K.eyes !== 'happy') for (const b of a.blinks) { const u = (t - b) / (K.eyes === 'sleepy' ? 0.4 : 0.18); if (u > 0 && u < 1) K.blink = Math.sin(u * Math.PI); }
     let tw = 0, side = 1;
-    P.twitches.forEach((tt, i) => { const u = (t - tt) / 0.32; if (u > 0 && u < 1) { tw = Math.sin(u * Math.PI) * 0.32; side = i % 2 ? 1 : -1; } });
+    a.twitches.forEach((tt, i) => { const u = (t - tt) / 0.32; if (u > 0 && u < 1) { tw = Math.sin(u * Math.PI) * 0.32; side = i % 2 ? 1 : -1; } });
     const base = mix('droop') - 0.12 * K.wide;
     K.earL = base + (side < 0 ? tw : 0); K.earR = base + (side > 0 ? tw : 0);
     const wag = Math.max(mix('wag'), K.hopping ? 1 : 0);
@@ -130,7 +162,7 @@
     let bright = K_('bright', t), p, r = 26, alpha = 1, flare = 0;
     for (const f of flickers) if (t >= f.t0 && t < f.t1) bright = 0.25 + 0.14 * (Math.sin(t * 23) + Math.sin(t * 37 + 1)) * 0.5;
     const u = seg.t1 ? (t - seg.t0) / (seg.t1 - seg.t0) : 0;
-    const chest = () => { const B = renBody(t); const up = clamp((B.armL + 1.2) / 3.9); return toWorld(B, lerp(B.f * 40, 0, up), lerp(-98, -372, ease((up - 0.45) / 0.55))); };
+    const chest = () => { const B = actorBody(seg.who, t), d = REG[seg.who]; const up = clamp((B.armL + 1.2) / 3.9); return toWorld(B, lerp(B.f * 40, 0, up), lerp(d.chest, d.overhead, ease((up - 0.45) / 0.55))); };
     switch (seg.type) {
       case 'appear': p = seg.at; r = seg.r; alpha = ease(u); break;
       case 'sky': p = seg.at; r = seg.r; if (seg.arrive && t < seg.t0 + 0.6) flare = Math.sin((t - seg.t0) / 0.6 * Math.PI) * 0.8; break;
@@ -142,7 +174,7 @@
       case 'pickup': { const q = ease(u), ch = chest(); p = { x: lerp(seg.from.x, ch.x, q), y: lerp(seg.from.y, ch.y, q) - Math.sin(q * Math.PI) * 40 }; r = lerp(26, 28, q); break; }
       case 'held': case 'raise': case 'lower': p = chest(); r = 28 + 2 * bright; break;
       case 'rise': {
-        const from = seg.from === 'overhead' ? (seg._from || (seg._from = (() => { const B = renBody(seg.t0); return toWorld(B, 0, -372); })())) : seg.from;
+        const from = seg.from === 'overhead' ? (seg._from || (seg._from = (() => { const B = actorBody(seg.who, seg.t0); return toWorld(B, 0, REG[seg.who].overhead); })())) : seg.from;
         const c = { x: from.x - (seg.to.x - from.x) * 0.9, y: Math.min(from.y, seg.to.y) - 50 };
         p = bez(from, c, seg.to, ease(u)); r = lerp(seg.r0, seg.r1, ease(u)); break;
       }
@@ -155,7 +187,7 @@
   function heartAt(t) {
     for (const h of P.heartDown) {
       if (t < h.t0 || t > h.burst) continue;
-      const B = renBody(t), hold = toWorld(B, 0, -104);
+      const B = actorBody(h.who, t), hold = toWorld(B, 0, REG[h.who].catch);
       if (t < h.t1) { const u = ease((t - h.t0) / (h.t1 - h.t0)); return { vis: true, x: lerp(h.from.x, hold.x, u) + Math.sin(u * Math.PI * 3) * 50 * (1 - u), y: lerp(h.from.y, hold.y, u), sc: easeOutBack((t - h.t0) / 0.3) }; }
       return { vis: true, x: hold.x, y: hold.y, sc: 1 + 0.15 * Math.sin((t - h.t1) * 20) };
     }
@@ -243,7 +275,8 @@
   const flies = Array.from({ length: 26 }, (_, i) => ({ x: hash(i + 1500) * 1920, y: 560 + hash(i + 1600) * 420, ph: hash(i + 1700) * 6, sp: 0.4 + hash(i + 1800) * 0.6 }));
 
   function camAt(t) {
-    const z = K_('zoom', t), fz = clamp((z - 1) / 0.55), B = renBody(t);
+    const z = K_('zoom', t), fz = clamp((z - 1) / 0.55), on = CAST.filter(id => onStage(id, t)), Bs = (on.length ? on : CAST.slice(0, 1)).map(id => actorBody(id, t));
+    const B = { x: Bs.reduce((v, b) => v + b.x, 0) / Bs.length, y: Bs.reduce((v, b) => v + b.y, 0) / Bs.length };
     let cx = lerp(960, B.x, fz * 0.85), cy = lerp(540, B.y - 230, fz * 0.9);
     const hw = 960 / z, hh = 540 / z;
     cx = clamp(cx, -220 + hw, 2140 - hw); cy = clamp(cy, -40 + hh, 1140 - hh);
@@ -408,10 +441,10 @@
     c.setTransform(1, 0, 0, 1, 0, 0); c.globalAlpha = 1; c.globalCompositeOperation = 'source-over';
     drawBackground(c, t, cam, tau);
     c.setTransform(1, 0, 0, 1, 0, 0); c.globalCompositeOperation = 'multiply'; c.fillStyle = tod(tau, PAL.grade); c.fillRect(0, 0, W, H); c.globalCompositeOperation = 'source-over';
-    const K = renState(t);
+    const Ks = {}; CAST.forEach(id => { Ks[id] = actorState(id, t); });
     const k = layer.getContext('2d');
     k.setTransform(1, 0, 0, 1, 0, 0); k.globalCompositeOperation = 'source-over'; k.clearRect(0, 0, W, H);
-    applyCam(k, cam, 1); drawRen(k, K);
+    applyCam(k, cam, 1); CAST.forEach(id => DRAW[id](k, Ks[id]));
     k.setTransform(1, 0, 0, 1, 0, 0); k.globalCompositeOperation = 'source-atop';
     k.globalAlpha = tau < 1 ? 0.06 * tau : 0.06 + 0.08 * (tau - 1); k.fillStyle = tod(tau, PAL.tint); k.fillRect(0, 0, W, H);
     k.globalAlpha = 1; k.globalCompositeOperation = 'source-over';
@@ -433,25 +466,27 @@
     }
     starSegs.forEach((s, i) => { if (s.type === 'fall' || s.type === 'rise') trail(c, t, s.t0, s.t1, 11 + i * 30); });
     if (S) drawStar(c, S, t);
-    const head = toWorld(K, K.f * 6, -210);
+    const heads = {}; CAST.forEach(id => { heads[id] = toWorld(Ks[id], Ks[id].f * 6, REG[id].head); });
     P.sparkles.forEach((sp, i) => {
       let p = sp.at;
-      if (!p && sp.onStar) { const q = starAt(sp.t); p = q ? { x: q.x, y: q.y } : head; }
-      if (!p) { const B = renBody(sp.t); p = toWorld(B, 0, -180); }
+      if (!p && sp.onStar) { const q = starAt(sp.t); p = q ? { x: q.x, y: q.y } : heads[sp.who]; }
+      if (!p) { const B = actorBody(sp.who, sp.t); p = toWorld(B, 0, REG[sp.who].sparkle); }
       burst(c, t, sp.t, p.x, p.y, sp.small ? 7 : 12, 60 + i * 13, sp.small ? 80 : 170, 1.0, sp.small ? 12 : 15);
     });
     P.hearts.forEach(hh => {
       const u = (t - hh.t) / 1.5; if (u < 0 || u > 1) return;
-      drawHeart(c, head.x + [-90, 95, -20][hh.i] + Math.sin(u * 9 + hh.i) * 10, head.y - 140 - u * 150, 16 * easeOutBack(clamp(u * 4)), Math.sin(u * Math.PI) * 1.2);
+      // from one character's head, or between two hugging characters
+      const at = hh.between ? { x: (heads[hh.between[0]].x + heads[hh.between[1]].x) / 2, y: Math.min(heads[hh.between[0]].y, heads[hh.between[1]].y) + 40 } : heads[hh.who];
+      const dx = hh.between ? [-40, 45, 0][hh.i] : [-90, 95, -20][hh.i];
+      drawHeart(c, at.x + dx + Math.sin(u * 9 + hh.i) * 10, at.y - 140 - u * 150, 16 * easeOutBack(clamp(u * 4)), Math.sin(u * Math.PI) * 1.2);
     });
     const HS = heartAt(t);
     if (HS) drawHeart(c, HS.x, HS.y, 24 * HS.sc, 1, '#ffd36b', '255,210,120');
-    P.heartDown.forEach((h, i) => { const B = renBody(h.burst), p = toWorld(B, 0, -104); burst(c, t, h.burst, p.x, p.y, 14, 33 + i, 140, 1.1, 16); });
+    P.heartDown.forEach((h, i) => { const B = actorBody(h.who, h.burst), p = toWorld(B, 0, REG[h.who].catch); burst(c, t, h.burst, p.x, p.y, 14, 33 + i, 140, 1.1, 16); });
 
     P.titles.forEach(T => drawTitle(c, T, t));
     P.captions.forEach(cap => drawCaption(c, cap, t));
-    const hs = toScreen(cam, head);
-    P.bubbles.forEach(b => drawBubble(c, b, t, hs, cam));
+    P.bubbles.forEach(b => drawBubble(c, b, t, toScreen(cam, heads[b.who]), cam));
     c.setTransform(1, 0, 0, 1, 0, 0);
     const vg = c.createRadialGradient(W / 2, H / 2, H * 0.45, W / 2, H / 2, H * 1.05);
     vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, `rgba(20,10,30,${0.12 + 0.07 * tau})`);
@@ -461,7 +496,8 @@
   }
 
   async function init(canvas, plan) {
-    P = plan; KS = plan.scale;
+    P = plan; KS = plan.scale; CAST = plan.cast; REG = StudioCharacters.CHARACTERS;
+    CAST.forEach(id => { DRAW[id] = window[REG[id].global][REG[id].draw]; });
     starSegs = plan.star.filter(s => s.type !== 'flicker').sort((a, b) => a.t0 - b.t0);
     flickers = plan.star.filter(s => s.type === 'flicker');
     ctx = canvas.getContext('2d');

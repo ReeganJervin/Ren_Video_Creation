@@ -32,35 +32,78 @@ ren (surprised): Whoa! A little fallen star!
 | `place: meadow` | Where the story happens. The only place for now is `meadow` |
 | `time: sunset` | How the sky starts: `day`, `sunset`, `dusk` or `night` |
 
+## The characters
+
+| Name | Who | How they move | Voice |
+|---|---|---|---|
+| `ren` | Ren, the little fox with the burgundy scarf | Walks | Kokoro `af_sky`, pitched up |
+| `yuki` | Yuki, the white bunny with the pink cherry blossom | Hops along in small hops, with light, high boings | Kokoro `af_bella`, pitched up more |
+
+A story can use Ren, Yuki or both. Only characters you mention appear, and a character whose first line is `enters` stays off screen until then. Everything below works for either name: write `ren` or `yuki` where you see `<name>`.
+
 ## Talking
 
 | Line | What it does |
 |---|---|
 | `narrator: text` | The narrator reads the text. It also appears in a storybook caption box at the top |
-| `ren: text` | Ren says the text in a speech bubble, and its mouth moves |
-| `ren (happy): text` | Ren says it with a mood: `happy`, `surprised`, `shy`, `sad`, `sleepy`, `playful` (a happy ^ ^ grin), `pouty` (puffed cheeks and a cross little frown) |
+| `ren: text` | Ren says the text in a speech bubble, and its mouth moves. `yuki: text` works the same way |
+| `yuki (pouty): text` | Says it with a mood: `happy`, `surprised`, `shy`, `sad`, `sleepy`, `playful`, `pouty` |
 
 Keep each line under 160 characters. Write long speeches as several lines.
 
-## Ren's actions
+The bubble's tail points at whoever is talking, and when both characters are on stage the bubble sits on the side away from the other one. Only one bubble is shown at a time. While one character talks, the other turns to look at them.
 
-| Line | What Ren does |
+### How the moods look
+
+| Mood | Ren | Yuki |
+|---|---|---|
+| `happy` | Open smile, tail wag | Open smile |
+| `surprised` | Wide shiny eyes, little "o" mouth | Round white eyes with small pupils, ears perk up |
+| `shy` | Ears flat, worried brows, blush across the nose | One ear flops, paws near her chin, glossy eyes, big blush |
+| `sad` | Worried brows, frown, ears droop | Worried brows, frown, ears droop |
+| `sleepy` | Eyes closed, small yawn, ears droop | Eyes closed, ears flop down, paw over a yawn |
+| `playful` | A happy ^ ^ grin | A wink with her tongue out |
+| `pouty` | Puffed cheeks, cross brows, small frown | Puffed cheeks, cross brows, narrowed eyes, pursed mouth |
+
+## What a character can do
+
+| Line | What happens |
 |---|---|
-| `ren enters` | Walks in from the left to the centre. Also: `ren enters from right`, `ren enters from left to right` |
-| `ren walks to left` | Walks to the `left`, `center` or `right` spot. Add `slowly` for a careful walk |
-| `ren exits to right` | Walks off screen (`left` or `right`) |
-| `ren hops` | One happy hop with a boing sound. `ren hops twice` hops twice |
-| `ren waves` | Waves a paw |
-| `ren looks up` | Looks `up`, `down`, `left`, `right`, `around`, `at you`, `at the star` or `at the heart`. Looking at the star or heart follows it as it moves |
-| `ren turns to you` | Faces the viewer |
-| `ren tilts its head` | A curious head tilt |
-| `ren feels sad` | Changes Ren's mood until you change it again: `happy`, `surprised`, `shy`, `sad`, `sleepy`, `playful`, `pouty`, `normal` |
-| `ren blinks` | An extra blink. Ren also blinks by itself |
-| `ren raises its paws` / `ren lowers its paws` | Paws up or down |
-| `ren picks up the star` | Walks to the fallen star and picks it up with both paws |
-| `ren lets go of the star` | Lifts the star up and it floats back into the sky |
+| `<name> enters` | Comes in from the left to the centre. Also: `yuki enters from right`, `ren enters from left to right` |
+| `<name> walks to left` | Goes to the `left`, `center` or `right` spot (Yuki hops there; `yuki hops to left` also works). Add `slowly` for a careful walk |
+| `<name> walks to <other name>` | Goes over and stops beside the other character, then looks at them |
+| `<name> exits to right` | Goes off screen (`left` or `right`) |
+| `<name> hops` | One happy hop. `yuki hops twice` hops twice. Yuki hops higher, with a lighter boing |
+| `<name> waves` | Waves a paw. `yuki waves at ren` also looks at Ren |
+| `<name> looks up` | Looks `up`, `down`, `left`, `right`, `around`, `at you`, `at the star` or `at the heart`. Looking at the star or heart follows it as it moves |
+| `<name> looks at <other name>` | Looks at the other character (and keeps looking until the next look) |
+| `<name> turns to you` | Faces the viewer |
+| `<name> turns to <other name>` | Turns toward the other character |
+| `<name> hugs <other name>` | Goes over and hugs them: both turn to each other, look happy, and little hearts float up between them. Then they step apart again |
+| `<name> tilts its head` | A curious head tilt |
+| `<name> feels sad` | Changes the mood until you change it again: `happy`, `surprised`, `shy`, `sad`, `sleepy`, `playful`, `pouty`, `normal` |
+| `<name> blinks` | An extra blink. Characters also blink by themselves |
+| `<name> raises its paws` / `<name> lowers its paws` | Paws up or down |
+| `<name> picks up the star` | Goes to the fallen star and picks it up with both paws |
+| `<name> lets go of the star` | Lifts the star up and it floats back into the sky |
 
-Ren also blinks, breathes, twitches its ears and wags its tail automatically.
+### Both at once
+
+Write `ren and yuki` to make both do something together:
+
+| Line | What happens |
+|---|---|
+| `ren and yuki hop` | Both hop at the same time (`hop twice` works too) |
+| `ren and yuki wave` | Both wave |
+| `ren and yuki look at each other` / `turn to each other` | They look (or turn) at each other |
+| `ren and yuki hug` | The first one hugs the second |
+| `ren and yuki feel happy` | Both change mood. Also `enter`, `walk to left`, `look up`, `exit to right`, … |
+
+### Standing apart
+
+Each character has their own place on the stage (`left`, `center`, `right`). If two characters would end up on the same spot, the one who arrives second stops beside the other instead, so they never stand on top of each other.
+
+Characters also blink, breathe, sway a little, twitch their ears and (Ren) wag his tail by themselves, even when they aren't doing anything.
 
 ## The star
 
@@ -68,18 +111,18 @@ Ren also blinks, breathes, twitches its ears and wags its tail automatically.
 |---|---|
 | `star appears` | A little star appears in the sky |
 | `star twinkles` | The star (in the sky) twinkles three times |
-| `star falls` | The star falls from the sky and lands in the grass next to Ren |
+| `star falls` | The star falls from the sky and lands in the grass next to the character who acted or spoke last |
 | `star glows` | The star flickers weakly, then shines brightly |
-| `star rises` | The star floats up into the sky (from the grass, or from Ren's paws) |
+| `star rises` | The star floats up into the sky (from the grass, or from the paws of whoever holds it) |
 | `star disappears` | The star fades away |
 
 ## Magic and fun
 
 | Line | What happens |
 |---|---|
-| `hearts float up` | Three small pink hearts float up from Ren |
-| `heart floats down` | A golden heart floats down from the star (or the sky) and Ren catches it |
-| `sparkles` | Sparkles burst around Ren |
+| `hearts float up` | Three small pink hearts float up from the character who acted or spoke last |
+| `heart floats down` | A golden heart floats down from the star (or the sky) and the character who acted or spoke last catches it |
+| `sparkles` | Sparkles burst around the character who acted or spoke last. `sparkles around yuki` picks who |
 | `title card: REN` | Big bouncy letters drop in one by one (up to 14 characters) |
 
 ## Scene and camera
@@ -87,7 +130,7 @@ Ren also blinks, breathes, twitches its ears and wags its tail automatically.
 | Line | What happens |
 |---|---|
 | `time: night` | The sky slowly changes over 4 seconds (`day`, `sunset`, `dusk`, `night`). Stars, moon and fireflies come out at night |
-| `camera: close` | The camera slowly moves closer to Ren. Also `closer`, or `wide` to go back |
+| `camera: close` | The camera slowly moves closer to the characters on stage. Also `closer`, or `wide` to go back |
 | `wait 2` | A pause of 2 seconds |
 
 ## Sounds you get automatically
@@ -95,7 +138,7 @@ Ren also blinks, breathes, twitches its ears and wags its tail automatically.
 You don't write sounds. They come from the actions:
 
 - Music-box music runs through the whole story. It's quieter while someone talks and fades out at the end.
-- Hops make boings, and walking rustles the grass.
+- Hops make boings (Yuki's are lighter and higher), and walking rustles the grass.
 - Title letters chime, hearts pop, and star moments twinkle and sparkle.
 - There's a breeze, plus birds in the day and sunset.
 
