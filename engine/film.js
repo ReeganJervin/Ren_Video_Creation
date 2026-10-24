@@ -79,10 +79,12 @@
     const phase = x / 160 * Math.PI * 2, swing = Math.sin(phase) * 0.35 * walk, idle = Math.sin(t * 2 + n * 2.1) * 0.04;
     let wave = 0; for (const w of a.waves) wave += Math.sin((t - w.a) * 9) * 0.35 * win(t, w.a, w.b, 0.2, 0.3);
     return {
-      id, x, y: PL.ground(x), h, sx, sy, s: KS, f: A_(id, 'facing', t), walk, phase, hopping,
+      id, x, y: placeAt(t).ground(x), h, sx, sy, s: KS, f: A_(id, 'facing', t), walk, phase, hopping,
       armL: A_(id, 'armL', t) + swing + idle, armR: A_(id, 'armR', t) - swing + idle + wave,
     };
   }
+  // the place on screen at t: a change of place switches halfway through its fade
+  const placeAt = t => { let p = PL; if (P.places) for (const ch of P.places) if (t >= (ch.t0 + ch.t1) / 2) p = StudioPlaces.PLACES[ch.to]; return p; };
   const toWorld = (K, lx, ly) => ({ x: K.x + lx * K.s * K.sx, y: K.y - K.h + ly * K.s * K.sy });
   const headOf = (id, t) => { const B = actorBody(id, t); return { vis: true, ...toWorld(B, B.f * 6, REG[id].head) }; };
 
@@ -357,15 +359,16 @@
     t = clamp(t, 0, P.duration);
     const c = ctx, cam = camAt(t), tau = K_('tau', t);
     c.setTransform(1, 0, 0, 1, 0, 0); c.globalAlpha = 1; c.globalCompositeOperation = 'source-over';
+    const PN = placeAt(t);
     HP.cam = p => applyCam(c, cam, p);
-    PL.draw(c, t, cam, tau, HP);
-    c.setTransform(1, 0, 0, 1, 0, 0); c.globalCompositeOperation = 'multiply'; c.fillStyle = tod(tau, PL.grade); c.fillRect(0, 0, W, H); c.globalCompositeOperation = 'source-over';
+    PN.draw(c, t, cam, tau, HP);
+    c.setTransform(1, 0, 0, 1, 0, 0); c.globalCompositeOperation = 'multiply'; c.fillStyle = tod(tau, PN.grade); c.fillRect(0, 0, W, H); c.globalCompositeOperation = 'source-over';
     const Ks = {}; CAST.forEach(id => { Ks[id] = actorState(id, t); });
     const k = layer.getContext('2d');
     k.setTransform(1, 0, 0, 1, 0, 0); k.globalCompositeOperation = 'source-over'; k.clearRect(0, 0, W, H);
     applyCam(k, cam, 1); CAST.forEach(id => DRAW[id](k, Ks[id]));
     k.setTransform(1, 0, 0, 1, 0, 0); k.globalCompositeOperation = 'source-atop';
-    k.globalAlpha = tau < 1 ? 0.06 * tau : 0.06 + 0.08 * (tau - 1); k.fillStyle = tod(tau, PL.tint); k.fillRect(0, 0, W, H);
+    k.globalAlpha = tau < 1 ? 0.06 * tau : 0.06 + 0.08 * (tau - 1); k.fillStyle = tod(tau, PN.tint); k.fillRect(0, 0, W, H);
     k.globalAlpha = 1; k.globalCompositeOperation = 'source-over';
     c.drawImage(layer, 0, 0);
 
@@ -374,7 +377,7 @@
     const segNow = starSegs.filter(q => q.t0 <= t).pop();
     const held = S && segNow && ['held', 'pickup', 'raise', 'lower'].includes(segNow.type);
     if (S && held) { c.save(); c.globalCompositeOperation = 'lighter'; glow(c, S.x, S.y, 560, '255,190,90', 0.12 * S.bright); c.restore(); }
-    if (PL.front) PL.front(c, t, cam, tau, HP);
+    if (PN.front) PN.front(c, t, cam, tau, HP);
     starSegs.forEach((s, i) => { if (s.type === 'fall' || s.type === 'rise') trail(c, t, s.t0, s.t1, 11 + i * 30); });
     if (S) drawStar(c, S, t);
     const heads = {}; CAST.forEach(id => { heads[id] = toWorld(Ks[id], Ks[id].f * 6, REG[id].head); });
@@ -395,6 +398,15 @@
     if (HS) drawHeart(c, HS.x, HS.y, 24 * HS.sc, 1, '#ffd36b', '255,210,120');
     P.heartDown.forEach((h, i) => { const B = actorBody(h.who, h.burst), p = toWorld(B, 0, REG[h.who].catch); burst(c, t, h.burst, p.x, p.y, 14, 33 + i, 140, 1.1, 16); });
 
+    // a change of place: the page fades to warm paper-white and back, with a few sparkles at its brightest
+    if (P.places) P.places.forEach((ch, i) => {
+      const u = (t - ch.t0) / (ch.t1 - ch.t0); if (u <= 0 || u >= 1) return;
+      const a = u < 0.5 ? ease(u * 2) : ease((1 - u) * 2);
+      c.save(); c.setTransform(1, 0, 0, 1, 0, 0); c.fillStyle = `rgba(255,250,240,${a})`; c.fillRect(0, 0, W, H); c.restore();
+      c.save(); c.setTransform(1, 0, 0, 1, 0, 0);
+      for (let k = 0; k < 9; k++) sparkle(c, 260 + hash(i * 31 + k) * 1400, 200 + hash(i * 31 + k + 9) * 680, 18 * a, a * 0.9, '255,214,120');
+      c.restore();
+    });
     P.titles.forEach(T => drawTitle(c, T, t));
     P.captions.forEach(cap => drawCaption(c, cap, t));
     P.bubbles.forEach(b => drawBubble(c, b, t, toScreen(cam, heads[b.who]), cam));

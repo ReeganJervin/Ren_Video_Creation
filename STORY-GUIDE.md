@@ -29,7 +29,7 @@ ren (surprised): Whoa! A little fallen star!
 | Line | What it does |
 |---|---|
 | `title: My Story Name` | The story's name, shown in the preview |
-| `place: meadow` | Where the story happens. The only place for now is `meadow` |
+| `place: meadow` | Where the story starts: `meadow`, `forest`, `river`, `snowy hill` or `beach` (see "Places" below) |
 | `time: sunset` | How the sky starts: `day`, `sunset`, `dusk` or `night` |
 
 ## The characters
@@ -125,6 +125,28 @@ Characters also blink, breathe, sway a little, twitch their ears and (Ren) wag h
 | `sparkles` | Sparkles burst around the character who acted or spoke last. `sparkles around yuki` picks who |
 | `title card: REN` | Big bouncy letters drop in one by one (up to 14 characters) |
 
+## Places
+
+| Place | What it looks like | What you hear |
+|---|---|---|
+| `meadow` | Rolling green hills, pine trees, a sunny knoll full of flowers; fireflies at night | A breeze, and birds in the day and at sunset |
+| `forest` | Tall rounded trees, a sandy path, ferns and mushrooms; sunbeams by day, a purple glow at dusk, fireflies at night | Birds and softly rustling leaves |
+| `river` | A wide river with a wooden footbridge, reeds and stones; the sun and moon shine on the water | Flowing water |
+| `snowy hill` | Snowy hills and pine trees, a snowman, paw prints and sparkling snow | A soft wind |
+| `beach` | The sea, waves washing up on the sand, shells and a palm tree; a beautiful sunset over the water | Gentle waves |
+
+Every place works at every time of day (`day`, `sunset`, `dusk`, `night`).
+
+### Changing place in the middle of a story
+
+Write `place: river` anywhere in the story to go somewhere new. The page fades to white like a storybook page turning (about 1.2 seconds, with a soft whoosh), and the new place fades in. Characters keep their spots and their moods, and the sounds of the old place cross-fade into the new one.
+
+```
+narrator: First, they explored the shady forest.
+place: river
+narrator: Next, they found a sparkling river.
+```
+
 ## Scene and camera
 
 | Line | What happens |
@@ -140,7 +162,7 @@ You don't write sounds. They come from the actions:
 - Music-box music runs through the whole story. It's quieter while someone talks and fades out at the end.
 - Hops make boings (Yuki's are lighter and higher), and walking rustles the grass.
 - Title letters chime, hearts pop, and star moments twinkle and sparkle.
-- There's a breeze, plus birds in the day and sunset.
+- Each place has its own sound: a breeze and birds in the meadow, birds and leaves in the forest, flowing water at the river, wind on the snowy hill and waves at the beach.
 
 ## Using your own voice recording for a line
 

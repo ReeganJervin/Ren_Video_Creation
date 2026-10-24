@@ -82,7 +82,7 @@
         if (key === 'place') {
           const p = PLACES.find(val);
           if (!p) return err(`Unknown place "${val}". Available places: ${PLACES.names().join(', ')}`);
-          meta.place = p.id;
+          if (!started) meta.place = p.id; else beat('place', { value: p.id });
         } else meta[key] = val;
         return;
       }
@@ -164,7 +164,11 @@
   function compileStory(parsed, lens = {}) {
     const { meta, beats } = parsed;
     // stage spots and ground height come from the place
-    const place = PLACES.find(meta.place) || PLACES.PLACES.meadow, POS = place.pos, feetY = place.ground;
+    const place = PLACES.find(meta.place) || PLACES.PLACES.meadow, POS = place.pos;
+    let here = place.id;                                   // the place right now, as the story goes along
+    const PT = 1.2;                                        // a change of place: fade to white and back, switching halfway
+    const changes = [];
+    const feetY = x => PLACES.PLACES[here].ground(x), spots = () => PLACES.PLACES[here].pos;
     const errors = [];
     const G = { tau: [], zoom: [], bright: [] };
     const setG = (k, t, v, dur = 0.4) => G[k].push({ t, v, dur });
@@ -204,7 +208,7 @@
     const others = a => cast.map(i => A[i]).filter(o => o !== a && onStage(o));
     const inside = x => x >= MINX && x <= MAXX;
     const toward = (a, o) => Math.sign(o.x - a.x) || 1;
-    const nearestSpot = x => [POS.left, POS.center, POS.right].reduce((p, q) => (Math.abs(q - x) < Math.abs(p - x) ? q : p));
+    const nearestSpot = x => [spots().left, spots().center, spots().right].reduce((p, q) => (Math.abs(q - x) < Math.abs(p - x) ? q : p));
     // the other character a move to x would bump into, if any
     const crowding = (a, x) => others(a).find(o => Math.abs(x - o.x) < GAP);
     // Two characters near each other stand as a pair centred on `c`: the mover keeps the side it comes from,
@@ -296,7 +300,7 @@
         case 'wait': dur = b.secs; break;
         case 'enter': case 'walk': {
           if (b.type === 'enter') who.forEach(a => { a.x = OFF[b.from]; });
-          const c = POS[b.to];
+          const c = spots()[b.to];
           if (who.length === 2) {
             // two together share the spot as a centred pair; the one in front goes further in
             const [p, q] = b.type === 'enter' ? who : [...who].sort((x, y) => x.x - y.x);
@@ -421,6 +425,14 @@
           break;
         }
         case 'time': setG('tau', s, TIMES[b.value], 4); dur = 0; break;
+        case 'place': {
+          if (b.value === here) { P.warnings.push(`Line ${b.line}: the story is already at the ${PLACES.PLACES[here].name}.`); break; }
+          changes.push({ t0: s, t1: s + PT, from: here, to: b.value });
+          sfx('pageTurn', s);
+          here = b.value;
+          dur = PT;
+          break;
+        }
         case 'camera': setG('zoom', s, b.zoom, 1.6); dur = 0; break;
       }
       prevStart = s;
@@ -521,13 +533,32 @@
       o.keys = {};
       for (const k in A[id].ch) o.keys[k] = keysFrom(init[k], A[id].ch[k]);
     });
-    sfx('breeze', 0, { t1: duration });
     const tau0 = TIMES[meta.time];
-    if (tau0 <= 1) [1.6, 3.3, 5.4].forEach(c => { if (c < duration - 2) sfx('chirp', c); });
-    P.sfx.sort((a, b) => a.t - b.t);
-
     const gInit = { tau: tau0, zoom: 1, bright: 0.9 }, keys = {};
     for (const k in G) keys[k] = keysFrom(gInit[k], G[k]);
+    if (!changes.length && place.id === 'meadow') {
+      // the meadow all story long: the breeze and birds, exactly as always
+      sfx('breeze', 0, { t1: duration });
+      if (tau0 <= 1) [1.6, 3.3, 5.4].forEach(c => { if (c < duration - 2) sfx('chirp', c); });
+    } else {
+      // each place has its own ambient sound; on a change of place the two cross-fade over the transition
+      const segs = [{ id: place.id, t0: 0 }, ...changes.map(c => ({ id: c.to, t0: c.t0 }))];
+      segs.forEach((g, k) => {
+        const next = segs[k + 1], t0 = g.t0, t1 = next ? next.t0 + PT : duration;
+        sfx('ambience', t0, { kind: g.id, t1, fi: k ? PT : 1.5, fo: next ? PT : 1.5 });
+        // birds sing in the meadow and the forest in the day and at sunset
+        if (g.id !== 'meadow' && g.id !== 'forest') return;
+        const calls = g.id === 'forest' ? [] : [1.6, 3.3, 5.4];
+        if (g.id === 'forest') for (let c = 1.4, i = 0; c < t1 - t0 - 1; c += 3.2 + hash(i++ + 77) * 2.6) calls.push(c);
+        calls.forEach(c => { const at = t0 + c + (k ? PT : 0); if (at < (next ? next.t0 : duration - 2) && evalKeys(keys.tau, at) <= 1.3) sfx('chirp', at); });
+      });
+      if (changes.length) {
+        P.places = changes;
+        // speech bubbles close as the page turns (their lines have always finished by then)
+        P.bubbles.forEach(b => changes.forEach(c => { if (b.t0 < c.t0 && b.t1 > c.t0) b.t1 = Math.min(b.t1, c.t0 + 0.3); }));
+      }
+    }
+    P.sfx.sort((a, b) => a.t - b.t);
 
     return {
       version: 2, duration, fps: 30, width: 1920, height: 1080, scale: KS, errors, cast, ...P, keys,

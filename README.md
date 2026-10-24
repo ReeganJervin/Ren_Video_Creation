@@ -31,6 +31,7 @@ There are example stories to try first:
 - `stories\the-fallen-star.txt` is your 50-second film, written as a story.
 - `stories\a-sunny-hello.txt` is a short daytime story that shows Ren's moods.
 - `stories\ren-meets-yuki.txt` is a one-minute story where Ren meets Yuki: talking, every Yuki mood, a hug and hopping together.
+- `stories\a-trip-around.txt` takes Ren and Yuki to every place: the meadow, forest, river, snowy hill and beach.
 
 ## Every video is checked automatically
 
@@ -53,18 +54,19 @@ The results are in `videos\<name>-report.txt`.
 | `engine\ren.js` | Ren's fixed design (shape, colours, face, scarf) |
 | `engine\yuki.js` | Yuki's fixed design (shape, colours, face, ears, flower and bow) |
 | `engine\story.js` | Reads the story and works out the timing for everything |
-| `engine\film.js` | Draws the meadow, the sky, the characters, the star, hearts, bubbles and captions |
-| `engine\audio.js` | Music, sound effects, voice mixing (Web Audio) |
+| `engine\places\` | The places (meadow, forest, river, snowy hill, beach): one drawing file each, plus the list in `index.js` |
+| `engine\film.js` | Draws each frame: the place, the characters, the star, hearts, bubbles, captions and place changes |
+| `engine\audio.js` | Music, sound effects, the sound of each place, voice mixing (Web Audio) |
 | `tools\make-video.js` | The main program behind the `.bat` files |
 | `voice-overrides\` | Optional: your own recordings for specific lines (see STORY-GUIDE.md) |
 
 ## Adding new things later
 
-New places and props, like a forest or a butterfly, are added in code:
+New props, like a butterfly, are added in code:
 - `engine/story.js` gets the new story words.
 - `engine/film.js` gets the drawing.
 - `engine/audio.js` gets the sounds.
 
-A new character needs only a drawing file in `engine/` (like `engine/yuki.js`), one entry in `engine/characters.js` and a voice in `config/voices.json`. Every story line then works for the new name.
+A new place needs a drawing file in `engine/places/`, its name in the list in `engine/places/index.js` and a sound in `engine/audio.js`. A new character needs only a drawing file in `engine/` (like `engine/yuki.js`), one entry in `engine/characters.js` and a voice in `config/voices.json`. Every story line then works for the new name.
 
 Existing stories keep working unchanged.

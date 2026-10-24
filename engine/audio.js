@@ -164,6 +164,50 @@
         lfo.connect(lg); lg.connect(o.frequency);
         o.connect(g); g.connect(sfx); env(g, t, 0.26, 0.008, 0.42); o.start(t); o.stop(t + 0.5); lfo.start(t); lfo.stop(t + 0.5);
       },
+      // the sound of a place, from c.t to c.t1, fading in over c.fi and out over c.fo (so places cross-fade)
+      ambience(c) {
+        const t0 = c.t, t1 = c.t1, g = ctx.createGain(), out = ctx.createGain();
+        out.connect(sfx);
+        const band = (type, f, q) => { const b = ctx.createBiquadFilter(); b.type = type; b.frequency.value = f; if (q) b.Q.value = q; return b; };
+        const layer = (filters, level) => {
+          const n = noiseSrc(at(t0), t1 - t0), lg = ctx.createGain(); lg.gain.value = level;
+          filters.reduce((a, b) => (a.connect(b), b), n).connect(lg); lg.connect(g);
+        };
+        // a gentle level that changes over time, set every 0.25 s (no sudden jumps)
+        const shape = fn => { g.gain.setValueAtTime(fn(t0), at(t0)); for (let s = t0 + 0.25; s <= t1; s += 0.25) g.gain.linearRampToValueAtTime(fn(s), at(s)); };
+        g.connect(out);
+        switch (c.kind) {
+          case 'meadow': layer([band('bandpass', 520, 0.5)], 1); shape(s => 0.03 + 0.03 * Math.abs(Math.sin(s * 0.7))); break;
+          case 'forest': // leaves rustling softly
+            layer([band('highpass', 2400)], 0.6); layer([band('bandpass', 700, 0.6)], 0.5);
+            shape(s => 0.025 + 0.02 * Math.abs(Math.sin(s * 0.55)) * (0.6 + 0.4 * Math.sin(s * 1.7)));
+            break;
+          case 'river': // flowing water: a low rush and a bubbling shimmer
+            layer([band('lowpass', 500)], 1); layer([band('bandpass', 1500, 1.2)], 0.45);
+            shape(s => 0.055 + 0.012 * Math.sin(s * 1.3) + 0.008 * Math.sin(s * 3.1));
+            break;
+          case 'snowy-hill': { // soft wind that swells and fades
+            const bp = band('bandpass', 420, 0.9);
+            for (let s = t0; s <= t1; s += 0.5) bp.frequency.linearRampToValueAtTime(380 + 160 * Math.sin(s * 0.4), at(s));
+            layer([bp], 1); shape(s => 0.03 + 0.035 * (0.5 + 0.5 * Math.sin(s * 0.45)));
+            break;
+          }
+          case 'beach': // waves rolling in and washing back, in time with the picture
+            layer([band('lowpass', 650)], 1); layer([band('highpass', 1800)], 0.35);
+            shape(s => 0.025 + 0.06 * Math.pow(0.5 + 0.5 * Math.sin(s * 0.9 + 0.6), 2));
+            break;
+        }
+        out.gain.setValueAtTime(0, at(t0)); out.gain.linearRampToValueAtTime(1, at(t0 + c.fi));
+        out.gain.setValueAtTime(1, at(Math.max(t0 + c.fi, t1 - c.fo))); out.gain.linearRampToValueAtTime(0, at(t1));
+      },
+      // a soft page-turn whoosh and a little chime when the story moves to a new place
+      pageTurn(c) {
+        const t = at(c.t), n = noiseSrc(t, 0.9), bp = ctx.createBiquadFilter(), g = ctx.createGain();
+        bp.type = 'bandpass'; bp.Q.value = 0.8; bp.frequency.setValueAtTime(500, t); bp.frequency.exponentialRampToValueAtTime(2400, t + 0.55);
+        n.connect(bp); bp.connect(g); g.connect(sfx);
+        g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(0.07, t + 0.3); g.gain.linearRampToValueAtTime(0, t + 0.85);
+        chime(t + 0.55, 88, 0.08, 1.0); chime(t + 0.68, 93, 0.06, 1.0);
+      },
       // lighter, higher boings for hopping characters (Yuki)
       hopUp(c) {
         const t = at(c.t), o = ctx.createOscillator(), g = ctx.createGain();

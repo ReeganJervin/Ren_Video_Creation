@@ -1,0 +1,46 @@
+# ============================================================
+#  A Trip Around  (Ren and Yuki visit every place)
+#  Check:  check-story.bat stories\a-trip-around.txt
+#  Watch:  preview.bat stories\a-trip-around.txt
+#  Make:   make-video.bat stories\a-trip-around.txt
+# ============================================================
+
+title: A Trip Around
+place: meadow
+time: day
+
+# --- The meadow ---
+ren enters from left
++ yuki enters from right
++ narrator: One morning, Ren and Yuki set off on an adventure.
+yuki (happy): Where shall we go first?
+ren (playful): Everywhere!
+
+# --- The forest ---
+place: forest
+narrator: First, they explored the shady forest.
+yuki looks up
+yuki (surprised): Look at the sunbeams!
+
+# --- The river ---
+place: river
+narrator: Next, they found a sparkling river.
+ren (happy): Let's cross the little bridge!
+yuki (shy): The water looks so cold...
+
+# --- The snowy hill ---
+place: snowy hill
+narrator: Then up a snowy hill they went.
+yuki hops twice
+yuki (playful): I love the snow!
+ren (surprised): Look, a snowman!
+
+# --- The beach ---
+place: beach
+time: sunset
+narrator: At last, they reached the beach as the sun went down.
+ren and yuki hop
+yuki hugs ren
++ yuki (sleepy): What a wonderful trip...
+ren (happy): Let's go again tomorrow!
+ren and yuki wave
