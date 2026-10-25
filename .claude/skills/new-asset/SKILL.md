@@ -17,7 +17,7 @@ The owner is not a programmer. Keep every message short, friendly and simple. Ne
 
 1. **Read** `STYLE-GUIDE.md` (the rules), `ASSET-KIT.md` (what each kind needs) and the matching template: `engine/props/_template.js`, `engine/extras/_template.js` or `engine/places/_template.js`. Look at an existing asset of the same kind for the style (`engine/props/star.js`, the places in `engine/places/`).
 2. **Understand how it's used:** from the missing list, read its `kind`, `text` (the story lines), `needs` (appears, opens, glows, flies, speaks…), `places` and `times`.
-   - A missing prop with `size: big`, or one used like a building or big object, is a **set piece**: `size: 'big'`, about 280–420 px tall.
+   - A missing prop with `size: big`, or one used like a building or big object, is a **set piece**: `size: 'big'`, about 280–420 px tall. A building a character could walk into is bigger: door about Ren's height, building about 1.7–2× Ren (see STYLE-GUIDE.md section 4).
    - **A full main character** (every mood, three views, hugs, real acting) is **not** an asset: say it belongs to the creature kit (F8 in `ENGINE-ROADMAP.md`) and stop.
 3. **Ask at most one or two short questions**, and only if something important is unclear (main colour, rough size). Otherwise choose sensible defaults that fit the series.
 
