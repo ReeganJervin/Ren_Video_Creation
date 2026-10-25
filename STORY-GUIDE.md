@@ -151,6 +151,7 @@ Extras can do the simple things characters do:
 |---|---|
 | `owl enters` / `owl enters from right` / `owl exits to left` | Comes in or goes out |
 | `owl flies in` / `owl flies away` | For flying extras (they stay up in the air) |
+| `owl lands` / `owl takes off` | A flying extra settles on the ground where it is (wings folded), for example during a long talk, and flies up again. `flies away` takes off by itself |
 | `fish swims by` | Swims across, from one side to the other |
 | `owl hops`, `owl looks at ren`, `owl feels happy` | Like the characters |
 | `owl: Hoo!` / `owl (happy): Hoo!` | Talks in a speech bubble (it needs a voice in `config/voices.json`) |
@@ -164,6 +165,7 @@ Extras can do the simple things characters do:
 | `heart` | prop | `hearts float up`, `heart floats down`, plus `heart appears at right` |
 | `lantern` | prop (also `little lantern`, `old lantern`) | `lantern appears next to ren`, `the lantern glows` (the candle lights; brightest at night), `the lantern stops glowing`, `ren walks to the lantern`, `ren looks at the lantern` |
 | `cottage` | set piece (also `little cottage`) | `cottage appears at right`, `the cottage opens` / `closes` (the door), `ren walks to the cottage`, `ren looks at the cottage`. About twice Ren's height, with a door his size; its windows (and an open door) glow warm at dusk and night |
+| `owl` | extra (also `little owl`) | `owl flies in from left`, `owl flies away`, `owl lands`, `owl takes off`, `owl (happy): Hoo!` (it has its own voice), `ren waves at the owl`, `ren walks to the owl`. A small round brown owl that blinks, looks around and opens its beak to talk |
 
 Places are listed in "Places" below. New assets are added here as they are created (with `/new-asset` in Claude Code).
 

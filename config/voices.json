@@ -14,5 +14,10 @@
     "voice": "af_bella:0.6+af_nicole:0.4",
     "speed": 1.0,
     "pitch": 1.18
+  },
+  "owl": {
+    "voice": "bm_fable:0.7+bm_george:0.3",
+    "speed": 0.92,
+    "pitch": 1.08
   }
 }

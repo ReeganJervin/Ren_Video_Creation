@@ -73,13 +73,13 @@
     }
     const th = travelHop(id, t);
     if (th) { h += th.h; sy *= 1 - 0.1 * th.land; sx *= 1 + 0.08 * th.land; }
-    const crouch = A_(id, 'crouch', t);
+    const crouch = A_(id, 'crouch', t), air = a.keys.air ? A_(id, 'air', t) : 1;   // air: 1 flying, 0 landed
     // breathing and idle sway, each character on its own phase
     sy *= crouch * (1 + 0.012 * Math.sin(t * 2.6 + n * 1.7)); sx *= 1 + (1 - crouch) * 0.45;
     const phase = x / 160 * Math.PI * 2, swing = Math.sin(phase) * 0.35 * walk, idle = Math.sin(t * 2 + n * 2.1) * 0.04;
     let wave = 0; for (const w of a.waves) wave += Math.sin((t - w.a) * 9) * 0.35 * win(t, w.a, w.b, 0.2, 0.3);
     return {
-      id, t, x, y: placeAt(t).ground(x) - (REG[id].fly || 0), h, sx, sy, s: KS, f: A_(id, 'facing', t), walk, phase, hopping,
+      id, t, x, y: placeAt(t).ground(x) - (REG[id].fly || 0) * air, air, h, sx, sy, s: KS, f: A_(id, 'facing', t), walk, phase, hopping,
       armL: A_(id, 'armL', t) + swing + idle, armR: A_(id, 'armR', t) - swing + idle + wave,
     };
   }

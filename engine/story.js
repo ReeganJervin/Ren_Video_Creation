@@ -47,7 +47,7 @@
     'editing: auto', 'beat', 'slow motion <seconds>', 'reveal: the star|<name>|<place>',
     '<prop> appears [at left|center|right | on the ground | in the sky | next to <name>]', '<prop> disappears',
     'the <prop> glows | stops glowing | opens | closes', '<name> walks to the <prop>', '<name> looks at the <prop>',
-    '<extra> enters | exits | flies in | flies away | swims by | hops', '<extra>: <text>',
+    '<extra> enters | exits | flies in | flies away | lands | takes off | swims by | hops', '<extra>: <text>',
     `Characters: ${BASE.join(', ')}`,
   ];
 
@@ -84,6 +84,9 @@
     // extras that fly, float or swim
     if ((k = a.match(/^(?:flies|fly|floats?) in(?: from (left|right))?(?: to (?:the )?(left|center|centre|right))?$/))) return { type: 'enter', from: k[1] || 'left', to: spot(k[2] || 'center'), how: 'fly' };
     if ((k = a.match(/^(?:flies|fly|floats?) (?:away|off)(?: to(?: the)? (left|right))?$/))) return { type: 'exit', to: k[1] || 'right', how: 'fly' };
+    // a flying extra settles on the ground (wings folded) and takes off again
+    if (/^(?:lands?|settles?)(?: down| on the ground)?$/.test(a)) return { type: 'land', down: true };
+    if (/^(?:takes? off|flies up)$/.test(a)) return { type: 'land', down: false };
     if ((k = a.match(/^swims? (?:by|past)(?: from(?: the)? (left|right))?$/))) return { type: 'pass', from: k[1] || 'left', how: 'swim' };
     // things (props and set pieces): "walks to the lantern", "looks at the cottage", "waves at the owl"
     if ((k = a.match(/^(?:walks?|moves?|goes|go|hops?|runs?) (?:over )?to (?:the |a |an )?(.+?)( slowly)?$/))) return { type: 'walkToThing', thing: ASSETS.norm(k[1]), slow: !!k[2] };
@@ -100,7 +103,7 @@
     lines.forEach((raw, i) => {
       const line = raw.trim().replace(/^\+\s*/, '');
       if (!line || line.startsWith('#')) return;
-      const act = line.match(/^(?:the |a |an )?([a-z][a-z' ]{0,30}?)\s+(enters?|exits?|leaves?|flies|fly|floats?|swims?|hops?)\b/i);
+      const act = line.match(/^(?:the |a |an )?([a-z][a-z' ]{0,30}?)\s+(enters?|exits?|leaves?|flies|fly|floats?|swims?|hops?|lands?|takes? off)\b/i);
       const talk = line.match(/^([a-z][a-z' ]{0,30}?)\s*(?:\(\s*[a-z]+\s*\))?\s*:\s*\S/i);
       const n = ASSETS.norm((act || talk || [])[1] || '');
       if (!n || n.split(' ').length > 3 || KEYS.test(n) || / and /.test(` ${n} `) || CHARACTERS[n] || /^(star|stars|heart|hearts|sparkles?)$/.test(n)) return;
@@ -111,7 +114,7 @@
         if (s) { errors.push(`Line ${i + 1}: I don't know "${n}". Did you mean "${s}"?\n    "${raw.trim()}"`); found['#' + (i + 1)] = true; return; }
       }
       const e = found[n] || (found[n] = { id: known ? known.id : n.replace(/\s+/g, '-'), name: n, asset: known, moves: null, lines: [] });
-      if (act && !e.moves) e.moves = /^(flies|fly)$/i.test(act[2]) ? 'fly' : /^float/i.test(act[2]) ? 'float' : /^swim/i.test(act[2]) ? 'swim' : /^hop/i.test(act[2]) ? 'hop' : null;
+      if (act && !e.moves) e.moves = /^(flies|fly|lands?|takes? off)$/i.test(act[2]) ? 'fly' : /^float/i.test(act[2]) ? 'float' : /^swim/i.test(act[2]) ? 'swim' : /^hop/i.test(act[2]) ? 'hop' : null;
     });
     return found;
   }
@@ -575,7 +578,13 @@
           lookAtActor(a, o, s + Math.max(0.2, dur - 0.4), false);
           break;
         }
-        case 'exit': who.forEach(a => { dur = Math.max(dur, moveTo(a, s, OFF[b.to], false)); }); break;
+        case 'exit': who.forEach(a => { if (a.ch.air) a.ch.air.push({ t: s, v: 1, dur: 0.6 }); dur = Math.max(dur, moveTo(a, s, OFF[b.to], false)); }); break;
+        // a flying extra lands where it is (wings folded) or takes off again; only made when a story uses it
+        case 'land': who.forEach(a => {
+          if (!a.def.fly) { errors.push(`Line ${b.line}: only things that fly can ${b.down ? 'land' : 'take off'}.`); return; }
+          (a.ch.air || (a.ch.air = [])).push({ t: s, v: b.down ? 0 : 1, dur: 0.9 });
+          sfx('rustle', s, { dur: 0.8, gain: 0.5 }); dur = 1.0;
+        }); break;
         // an extra swimming past: in from one side and out the other
         case 'pass': who.forEach(a => { a.x = OFF[b.from]; dur = Math.max(dur, moveTo(a, s, OFF[b.from === 'left' ? 'right' : 'left'], false)); }); break;
         case 'prop': dur = propBeat(b, s); break;
@@ -679,6 +688,8 @@
         }
         case 'star': {
           if (who.length && b.act === 'rises' && holder && holder !== who[0].id) { errors.push(`Line ${b.line}: ${who[0].def.name} isn't holding the star; ${title(holder)} is.`); break; }
+          // "the star glows" / "disappears" for a star that came in as a prop ("star appears at left")
+          if (star.state === 'none' && props.star && /^(glows|disappears)$/.test(b.act)) { dur = propBeat({ ...b, name: 'star', act: b.act === 'glows' ? 'glow' : 'disappear' }, s); break; }
           dur = starBeat(b, s);
           break;
         }
@@ -920,7 +931,7 @@
       o.blinks = []; for (let b = 2.0 + n * 0.9, i = 0; b < duration - 0.5; b += 2.8 + hash(i++ + seed) * 1.8) o.blinks.push(b);
       o.blinks.push(...o.blinkExtra); o.blinks.sort((a, b) => a - b);
       o.twitches = []; for (let w = 3.0 + n * 1.3, i = 0; w < duration - 1; w += 5 + hash(i + 50 + seed) * 3, i++) o.twitches.push(w);
-      const init = { facing: o.firstFacing, lookX: 0, lookY: 0, tilt: 0, armL: ARM_R, armR: ARM_R, crouch: 1 };
+      const init = { facing: o.firstFacing, lookX: 0, lookY: 0, tilt: 0, armL: ARM_R, armR: ARM_R, crouch: 1, air: 1 };
       o.keys = {};
       for (const k in A[id].ch) o.keys[k] = keysFrom(init[k], A[id].ch[k]);
     });

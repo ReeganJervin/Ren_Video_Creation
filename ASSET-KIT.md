@@ -218,6 +218,7 @@ Give the owl a voice in `config/voices.json` and make a 5-second sample for the 
    - `the map shows <text>`
    - clear errors for impossible actions, e.g. *"Line 22: Ren isn't holding the sword."*
    - continuity: held props travel with the character between scenes and places; others stay where they were left
+   - **extras land on set pieces:** `owl lands on the fence` / `on the roof` / `on the branch`. Set pieces mark where things can perch, and the extra flies there and settles. Since Part C, `<extra> lands` and `<extra> takes off` work on the ground only (added at the owner's request).
 2. **Season 1 starter props, made with `/new-asset`:**
    - golden coin with the tree symbol
    - legendary sword with glowing runes
