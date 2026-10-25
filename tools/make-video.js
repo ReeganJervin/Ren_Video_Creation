@@ -12,7 +12,7 @@ const fs = require('fs'), path = require('path'), http = require('http'), crypto
 const { spawn, spawnSync } = require('child_process');
 const ffmpeg = require('ffmpeg-static');
 const { renderVideo, fingerprint } = require('./render');
-const { parseStory, compileStory } = require('../engine/story.js');
+const { parseStory, compileStory, PICTURES, CHARACTERS } = require('../engine/story.js');
 const { readWav } = require('./wav');
 const { validate } = require('./validate');
 const { clock, hasScenes, chapters, sceneChecks } = require('./scenes');
@@ -57,6 +57,7 @@ async function main() {
       sceneChecks(plan).forEach(r => say(`  ${label(r)}  ${r.name}: ${r.detail}`));
     }
     missingReport(plan, buildDir);
+    pictureReport(plan);
     return;
   }
 
@@ -105,6 +106,8 @@ async function main() {
   // 3. compile the timeline
   const plan = compileStory(parsed, lens);
   // a finished video needs every asset; stills and the preview show placeholders instead
+  // every picture in the video needs a credit (who made it), because the videos may be sold later
+  if (!opt('stills') && !opt('preview') && pictureReport(plan).length) fail('The video can\'t be made until every picture it uses has a credit line.');
   if (plan.missing.length && !opt('stills') && !opt('preview')) {
     missingReport(plan, buildDir);
     if (!opt('allow-placeholders')) fail('The video can\'t be made until these are created (or add --allow-placeholders for a test video).');
@@ -183,6 +186,7 @@ async function main() {
   // YouTube chapters, when the scenes allow it (an old file from an earlier render is removed otherwise)
   const chFile = path.join(outDir, `${name}-chapters.txt`), ch = chapters(plan);
   if (ch.text) fs.writeFileSync(chFile, ch.text); else if (fs.existsSync(chFile)) fs.unlinkSync(chFile);
+  fs.writeFileSync(path.join(outDir, `${name}-credits.txt`), creditsText(plan));
   const report = results.map(r => `${label(r)}  ${r.name}: ${r.detail}`).join('\n');
   fs.writeFileSync(path.join(outDir, `${name}-report.txt`), report + '\n');
   say(report);
@@ -190,6 +194,33 @@ async function main() {
   const bad = results.filter(r => !r.ok).length;
   say(bad ? `\nThe video was made, but ${bad} check(s) failed. See videos/${name}-report.txt` : `\nDone! Your video: videos/${name}.mp4`);
 }
+
+// The assets a plan uses: [{ id, kind, name, credit, picture }]
+function usedAssets(plan) {
+  const { ASSETS } = require('../engine/assets.js'), out = [], seen = new Set();
+  const add = (id, kind, name, credit, picture) => { if (!seen.has(kind + id)) { seen.add(kind + id); out.push({ id, kind, name, credit, picture }); } };
+  plan.cast.forEach(id => { if (CHARACTERS[id]) add(id, 'character', CHARACTERS[id].name, 'Claude Code (approved character design)'); });
+  [plan.meta.place, ...(plan.places || []).map(c => c.to)].forEach(id => { const a = ASSETS[id]; if (a) add(id, 'place', a.names[0], a.credit, a.picture); });
+  if (plan.star.length) add('star', 'prop', 'star', ASSETS.star.credit);
+  if (plan.hearts.length || plan.heartDown.length) add('heart', 'prop', 'heart', ASSETS.heart.credit);
+  (plan.props || []).forEach(p => { const a = p.asset && ASSETS[p.asset]; if (a) add(a.id, a.size === 'big' ? 'set piece' : 'prop', a.names[0], a.credit, a.picture); });
+  Object.keys(plan.extras || {}).forEach(id => { const a = ASSETS[id]; if (a) add(id, 'extra', a.names[0], a.credit, a.picture); });
+  return out;
+}
+// Notes about the pictures in assets/ (too big, no transparency...), and the pictures this story uses without a credit.
+// Returns the credit problems, which stop a finished video.
+function pictureReport(plan) {
+  const used = new Set(usedAssets(plan).filter(a => a.picture).map(a => a.id));
+  const notes = PICTURES.warnings.filter(w => typeof w === 'string'), credits = PICTURES.warnings.filter(w => w.credit);
+  if (notes.length || credits.length) {
+    say('\nAbout your pictures:');
+    notes.forEach(w => say('  note: ' + w));
+    credits.forEach(w => say(`  ${used.has(w.what) ? 'needed for this video' : 'note'}: ${w.text}`));
+  }
+  return credits.filter(w => used.has(w.what));
+}
+const creditsText = plan => 'Made with Kitsu Studio. Everything in this video, and who made it:\n\n' +
+  usedAssets(plan).map(a => `${a.name} (${a.kind}${a.picture ? ', picture' : ''}): ${a.credit || 'unknown'}`).join('\n') + '\n';
 
 // The missing list, in plain words, and as build/<story>/missing-assets.json for the /new-asset command.
 function missingReport(plan, dir) {
@@ -259,7 +290,7 @@ async function master(src, dst) {
 }
 
 function serve() {
-  const MIME = { '.html': 'text/html', '.js': 'text/javascript', '.json': 'application/json', '.wav': 'audio/wav', '.woff2': 'font/woff2' };
+  const MIME = { '.html': 'text/html', '.js': 'text/javascript', '.json': 'application/json', '.wav': 'audio/wav', '.woff2': 'font/woff2', '.png': 'image/png' };
   const server = http.createServer((req, res) => {
     const file = path.join(ROOT, decodeURIComponent(new URL(req.url, 'http://x').pathname));
     if (!file.startsWith(ROOT) || !fs.existsSync(file) || fs.statSync(file).isDirectory()) { res.writeHead(404); return res.end(); }

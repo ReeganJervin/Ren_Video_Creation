@@ -7,6 +7,13 @@
   const { CHARACTERS, MOODS } = typeof module !== 'undefined' ? require('./characters.js') : root.StudioCharacters;
   const PLACES = typeof module !== 'undefined' ? require('./places/index.js') : root.StudioPlaces;
   const ASSETS = typeof module !== 'undefined' ? require('./assets.js') : root.StudioAssets;
+  // picture assets (PNG files in assets/): read once in Node; the plan carries them to the page
+  const PICTURES = { descs: [], warnings: [] };
+  if (typeof module !== 'undefined') {
+    const pics = require('./pictures.js');
+    Object.assign(PICTURES, pics.scan(require('path').join(__dirname, '..')));
+    PICTURES.warnings.push(...pics.register(PICTURES.descs));
+  }
   // Everyone who can act: the characters, plus the extras (simple animals) a story uses, set by parseStory.
   // NAMES are written as in a story ("baby owl"); ALIAS turns them into ids ("baby-owl").
   const BASE = Object.keys(CHARACTERS);
@@ -423,8 +430,9 @@
       const side = Math.sign(a.x - o.x) || (a.x < c ? -1 : 1);
       c = Math.max(MINX + gap / 2, Math.min(MAXX - gap / 2, c));
       const at = o.free > s ? o.free - 0.15 : s;
-      const dO = moveTo(o, at, c - side * gap / 2, false) + (at - s);
-      const dA = moveTo(a, s, c + side * gap / 2, slow);
+      const want = c - side * gap / 2, dO = moveTo(o, at, want, false) + (at - s);
+      // if the other couldn't get there (say a prop was in the way), keep the full gap from where they really are
+      const dA = moveTo(a, s, Math.abs(o.x - want) > 4 ? o.x + side * gap : c + side * gap / 2, slow);
       return Math.max(dA, dO);
     }
     // going to a stage spot: alone it is the spot itself; next to someone they share it as a centred pair
@@ -928,11 +936,13 @@
       const segs = [{ id: place.id, t0: 0 }, ...changes.map(c => ({ id: c.to, t0: c.t0 }))];
       segs.forEach((g, k) => {
         const next = segs[k + 1], t0 = g.t0, t1 = next ? next.t0 + PT : duration;
-        sfx('ambience', t0, { kind: g.id, t1, fi: k ? PT : 1.5, fo: next ? PT : 1.5 });
+        // (a picture place uses one of the existing place sounds)
+        const amb = PLACES.PLACES[g.id].ambient || g.id;
+        if (amb !== 'none') sfx('ambience', t0, { kind: amb, t1, fi: k ? PT : 1.5, fo: next ? PT : 1.5 });
         // birds sing in the meadow and the forest in the day and at sunset
-        if (g.id !== 'meadow' && g.id !== 'forest') return;
-        const calls = g.id === 'forest' ? [] : [1.6, 3.3, 5.4];
-        if (g.id === 'forest') for (let c = 1.4, i = 0; c < t1 - t0 - 1; c += 3.2 + hash(i++ + 77) * 2.6) calls.push(c);
+        if (amb !== 'meadow' && amb !== 'forest') return;
+        const calls = amb === 'forest' ? [] : [1.6, 3.3, 5.4];
+        if (amb === 'forest') for (let c = 1.4, i = 0; c < t1 - t0 - 1; c += 3.2 + hash(i++ + 77) * 2.6) calls.push(c);
         calls.forEach(c => { const at = t0 + c + (k ? PT : 0); if (at < (next ? next.t0 : duration - 2) && evalKeys(keys.tau, at) <= 1.3) sfx('chirp', at); });
       });
       if (changes.length) {
@@ -951,6 +961,7 @@
     if (shotMode) P.shots = shots;
     // the asset files the page loads, the extras on stage, and what is still missing
     P.assetFiles = [...ASSETS.FILES, ...PLACES.FILES.map(f => `places/${f}.js`)];
+    P.pictures = PICTURES.descs;
     P.extras = parsed.extras || {};
     P.missing = missing;
     P.missingPlaces = missing.filter(e => e.kind === 'place').map(e => e.name);
@@ -1010,6 +1021,6 @@
   }
   function estimate(text) { return 0.45 + text.split(/\s+/).length * 0.36; }
 
-  const api = { parseStory, compileStory, evalKeys, feetY, HELP, POS, CHARACTERS, MOODS, MUSIC };
+  const api = { parseStory, compileStory, evalKeys, feetY, HELP, POS, CHARACTERS, MOODS, MUSIC, PICTURES };
   if (typeof module !== 'undefined') module.exports = api; else root.StudioStory = api;
 })(this);

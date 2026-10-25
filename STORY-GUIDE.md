@@ -175,6 +175,51 @@ They are shown as grey placeholders for now, so you can still preview.
 - If a name is very close to something that exists, it's probably a typo, and the check tells you: *"Line 4: I don't know "hart". Did you mean "heart"?"*
 - The list is also saved as `build\<story>\missing-assets.json`, which Claude Code uses to create the missing things.
 
+### Adding your own pictures (no code)
+
+The quickest way to create a missing thing is a PNG picture in the `assets` folder of the project:
+
+| Put this file | And you get |
+|---|---|
+| `assets\props\lantern.png` | the prop `lantern` (a name with dashes, like `old-map.png`, becomes `old map`) |
+| `assets\props\chest.png` + `chest-open.png` | a chest that opens: `the chest opens` shows the second picture |
+| `assets\props\lantern-glowing.png` | the picture for `the lantern glows` |
+| `assets\extras\owl.png` | the animal `owl` |
+| `assets\extras\owl-1.png`, `owl-2.png`, … | an owl that moves, like a flipbook. Add `owl-blink.png` for blinks and `owl-talk.png` for talking |
+| `assets\places\cottage-garden\back.png` | the place `cottage garden` (1920×1080 or bigger) |
+
+Pictures of props and animals need a **see-through (transparent) background**. They face right; if yours faces left, say so in the settings file.
+
+**Settings** (optional): a text file with the same name, like `assets\props\lantern.txt`, with simple lines you can write in Notepad. Every setting has a sensible default:
+
+```
+size: small          # small, medium or big (big = a set piece like a house)
+height: 90           # how tall, in pixels, next to Ren and Yuki
+hold: one paw        # one paw or both paws
+glow: yes            # so "the lantern glows" works
+moves: fly           # animals only: walk, hop, fly, swim or float
+fps: 6               # animals only: flipbook speed
+faces: left          # if the picture faces left
+credit: drawn by me  # who made the picture (required)
+```
+
+**Places:** in `assets\places\cottage-garden\` you can also add `front.png` (a see-through picture drawn in front of the characters, like flowers), `back-sunset.png`, `back-dusk.png` and `back-night.png` (without them, `back.png` is coloured for the time of day, and the sky shows through any see-through part), and `place.txt`:
+
+```
+ground: 0.85               # where feet stand, as a share of the height (0.85 = 85% down)
+spots: 0.29, 0.5, 0.71     # the left, center and right spots, as shares of the width
+ambient: birds             # the place's sound: birds, leaves, water, wind, waves or none
+credit: drawn by me
+```
+
+Pictures change colour with the time of day, like everything else, so a daytime picture still looks right at night. **Things that give light are the exception:** the lit parts of a glowing picture (the parts of `lantern-glowing.png` that are brighter than `lantern.png`), the star, and the soft glow around anything that glows keep their full colour, so they look brightest at night.
+
+**Examples:** `docs\examples\pictures\` has a full set to copy and try: a lantern that glows, a cottage whose door opens, an owl that flies, blinks and talks, and the place "cottage garden" with flowers in front. Copy a folder's files into `assets\` (for example `docs\examples\pictures\props\lantern*.*` into `assets\props\`) and they work in your stories straight away. `bad-example-crate.png` shows what the check says about a picture without a see-through background or a credit. The engine never loads pictures from `docs\`, only from `assets\`.
+
+**Credits:** every picture needs a `credit:` line (who made it). The check reminds you, and a finished video can't be made with an uncredited picture. Every video also gets `videos\<story>-credits.txt`, listing everything in it and who made it. **Only use pictures you made yourself, or from a tool whose terms allow selling videos. Don't use pictures found on the internet.**
+
+The check also warns about pictures that are very large (over 4000 pixels), place backgrounds smaller than 1920×1080 (they look blurry), and prop or animal pictures without a see-through background.
+
 ## Places
 
 | Place | What it looks like | What you hear |

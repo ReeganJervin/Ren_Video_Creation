@@ -79,7 +79,7 @@
     const phase = x / 160 * Math.PI * 2, swing = Math.sin(phase) * 0.35 * walk, idle = Math.sin(t * 2 + n * 2.1) * 0.04;
     let wave = 0; for (const w of a.waves) wave += Math.sin((t - w.a) * 9) * 0.35 * win(t, w.a, w.b, 0.2, 0.3);
     return {
-      id, x, y: placeAt(t).ground(x) - (REG[id].fly || 0), h, sx, sy, s: KS, f: A_(id, 'facing', t), walk, phase, hopping,
+      id, t, x, y: placeAt(t).ground(x) - (REG[id].fly || 0), h, sx, sy, s: KS, f: A_(id, 'facing', t), walk, phase, hopping,
       armL: A_(id, 'armL', t) + swing + idle, armR: A_(id, 'armR', t) - swing + idle + wave,
     };
   }
@@ -358,7 +358,9 @@
   const lastAt = (list, t) => { let v = null; for (const e of list) if (e.t <= t) v = e; return v; };
   // Props stand on the ground behind the characters (or float in the sky), drawn with the scenery so they share
   // its time-of-day colour. They pop in, fade out, and glow or open when the story says so.
-  function drawProps(c, t, tau, PN) {
+  // Two passes: 'base' before the time-of-day colour, 'light' after it, for everything that gives light
+  // (the glow, emissive assets, and an asset's drawLight parts), so light is never darkened at night.
+  function drawProps(c, t, tau, PN, pass) {
     const light = { tau, tint: tod(tau, PN.tint) };
     P.props.forEach(p => {
       if (t < p.t0 || (p.t1 !== null && t >= p.t1)) return;
@@ -369,8 +371,13 @@
       if (glowA > 0.5 && asset && asset.states.includes('glowing')) state = 'glowing';
       HP.cam(1);
       c.save(); c.translate(p.x, p.y); c.globalAlpha = a; c.scale(pop, pop);
-      if (glowA > 0) { c.save(); c.globalCompositeOperation = 'lighter'; glow(c, 0, -p.height * 0.55, p.height * 1.3, '255,222,140', 0.45 * glowA * a); c.restore(); }
-      if (asset) asset.draw(c, t, state, light); else drawPropPlaceholder(c, p, st ? state : null);
+      if (pass === 'base') {
+        if (!asset) drawPropPlaceholder(c, p, st ? state : null); else if (!asset.emissive) asset.draw(c, t, state, light);
+      } else {
+        if (glowA > 0) { c.save(); c.globalCompositeOperation = 'lighter'; glow(c, 0, -p.height * 0.55, p.height * 1.3, '255,222,140', 0.45 * glowA * a); c.restore(); }
+        if (asset && asset.emissive) asset.draw(c, t, state, light);
+        else if (asset && asset.drawLight) asset.drawLight(c, t, state, light);
+      }
       c.restore();
     });
     c.setTransform(1, 0, 0, 1, 0, 0); c.globalAlpha = 1;
@@ -560,8 +567,9 @@
     const PN = placeAt(t);
     HP.cam = p => applyCam(c, cam, p);
     PN.draw(c, t, cam, tau, HP);
-    if (P.props && P.props.length) drawProps(c, t, tau, PN);
+    if (P.props && P.props.length) drawProps(c, t, tau, PN, 'base');
     c.setTransform(1, 0, 0, 1, 0, 0); c.globalCompositeOperation = 'multiply'; c.fillStyle = tod(tau, PN.grade); c.fillRect(0, 0, W, H); c.globalCompositeOperation = 'source-over';
+    if (P.props && P.props.length) drawProps(c, t, tau, PN, 'light');
     const Ks = {}; CAST.forEach(id => { Ks[id] = actorState(id, t); });
     const k = layer.getContext('2d');
     k.setTransform(1, 0, 0, 1, 0, 0); k.globalCompositeOperation = 'source-over'; k.clearRect(0, 0, W, H);
@@ -633,6 +641,8 @@
 
   async function init(canvas, plan) {
     P = plan; KS = plan.scale; CAST = plan.cast; REG = { ...StudioCharacters.CHARACTERS };
+    // picture assets (PNG files in assets/): registered from the plan, every picture loaded before drawing
+    if (plan.pictures && plan.pictures.length) { StudioPictures.register(plan.pictures); await StudioPictures.preload(plan.pictures); }
     // places the story names that don't exist yet are shown as placeholders
     (plan.missingPlaces || []).forEach(n => StudioPlaces.placeholder(n));
     PL = StudioPlaces.PLACES[plan.meta.place] || StudioPlaces.find(plan.meta.place) || StudioPlaces.PLACES.meadow;
@@ -667,5 +677,7 @@
     });
     return out;
   }
-  window.StudioFilm = { init, render, faces };
+  // For checks: a character's pose at t (facing, look, mood...), exactly as it is drawn
+  const pose = (id, t) => actorState(id, t);
+  window.StudioFilm = { init, render, faces, pose };
 })();

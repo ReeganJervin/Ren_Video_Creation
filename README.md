@@ -23,7 +23,7 @@ After setup, everything runs offline.
 3. Watch it live with sound (optional): `preview.bat stories\my-story.txt`. This opens in your browser. Press Ctrl+C in the window to stop.
 4. Make the video: `make-video.bat stories\my-story.txt`. You can also drag the story file onto `make-video.bat`.
 
-The video appears in the `videos` folder as `my-story.mp4`, along with a check report, `my-story-report.txt`. A story with at least 3 scenes also gets `my-story-chapters.txt`, ready to paste into a YouTube description (see "Scenes" in STORY-GUIDE.md).
+The video appears in the `videos` folder as `my-story.mp4`, along with a check report, `my-story-report.txt`, and `my-story-credits.txt`, which lists everything in the video and who made it. A story with at least 3 scenes also gets `my-story-chapters.txt`, ready to paste into a YouTube description (see "Scenes" in STORY-GUIDE.md).
 
 ### Still images (for checking)
 
@@ -98,6 +98,7 @@ The results are in `videos\<name>-report.txt`. Each line starts with `PASS`, `FA
 | `engine\places\` | The places (meadow, forest, river, snowy hill, beach): one drawing file each, found automatically (`index.js` has the shared helpers) |
 | `engine\assets.js` | The asset registry: every prop, set piece, extra and place, found automatically, plus spelling help |
 | `engine\props\`, `engine\extras\` | Props and set pieces (the star and heart so far), and extras (animals), one file each |
+| `assets\` | Your own pictures: `props\`, `extras\` and `places\` (see "Adding your own pictures" in STORY-GUIDE.md). `engine\pictures.js` turns them into props, animals and places |
 | `engine\film.js` | Draws each frame: the place, the characters, the star, hearts, bubbles, captions and place changes |
 | `engine\audio.js` | Music, sound effects, the sound of each place, voice mixing (Web Audio) |
 | `tools\make-video.js` | The main program behind the `.bat` files |

@@ -42,7 +42,7 @@
   }
   register({
     id: 'star', kind: 'prop', names: ['star', 'little star'], size: 'small', height: 52, hold: 'both paws',
-    states: ['off', 'glowing'], glow: true, motion: 'bob', credit: 'Claude Code',
+    states: ['off', 'glowing'], glow: true, emissive: true, motion: 'bob', credit: 'Claude Code',
     drawAt,
     draw(c, t, state, light) { drawAt(c, t, { x: 0, y: -26 + Math.sin(t * 2) * 3, r: 26, alpha: 1, bright: state === 'glowing' ? 1 : 0.6, flare: 0, happy: true }); },
   });

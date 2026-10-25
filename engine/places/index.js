@@ -12,7 +12,7 @@
   const ASSETS = typeof module !== 'undefined' ? require('../assets.js') : root.StudioAssets;
   // the place files: found in the folder (Node), or listed in the plan (browser)
   const FILES = [];
-  const register = (id, def) => { PLACES[id] = { id, ...def }; ASSETS.register({ id, kind: 'place', names: [def.name], credit: def.credit || 'Claude Code' }); };
+  const register = (id, def) => { PLACES[id] = { id, ...def }; ASSETS.register({ id, kind: 'place', names: [def.name], credit: def.credit || 'Claude Code', picture: !!def.picture }); };
   // "snowy hill", "Snowy-Hill" and "snowy_hill" all mean the same place
   const find = name => { const n = String(name).toLowerCase().trim().replace(/[-_\s]+/g, ' '); return Object.values(PLACES).find(p => p.name === n); };
   const names = () => Object.values(PLACES).filter(p => !p.missing).map(p => p.name);

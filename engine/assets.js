@@ -12,6 +12,9 @@
 //   hold      'one paw' | 'both paws' (not for big props)
 //   anchors, motion, sounds   optional
 //   draw(c, t, state, light)   the drawing, with (0, 0) where it stands on the ground. light = { tau, tint }
+//   Things that give light are never darkened by the time of day (they look brightest at night):
+//   emissive  true if the whole asset gives light (the star): it is drawn after the time-of-day colour
+//   drawLight(c, t, state, light)   optional: just the parts that give light, drawn after the time-of-day colour
 //   credit    who made it
 // Extras also have moves ('walk' | 'hop' | 'fly' | 'swim' | 'float') and draw(c, K) like a character.
 (function (root) {
