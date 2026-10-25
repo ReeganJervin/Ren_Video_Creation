@@ -46,7 +46,8 @@
     music.connect(duck); duck.connect(section); section.connect(mfade); mfade.connect(master);
     const mSend = ctx.createGain(); mSend.gain.value = 0.35; mfade.connect(mSend); mSend.connect(reverb);
     mfade.gain.setValueAtTime(0, at(0)); mfade.gain.linearRampToValueAtTime(1, at(T.musicFadeIn));
-    mfade.gain.setValueAtTime(1, at(T.musicFadeOut[0])); mfade.gain.linearRampToValueAtTime(0, at(T.musicFadeOut[1]));
+    // the ending fades on a curve that is nearly silent for its last moments
+    mfade.gain.setValueCurveAtTime(Float32Array.from({ length: 64 }, (_, i) => (1 - i / 63) ** 2), at(T.musicFadeOut[0]), T.musicFadeOut[1] - T.musicFadeOut[0]);
     // music softer during the act of kindness (scene 4)
     section.gain.setValueAtTime(1, at(0));
 
@@ -65,12 +66,16 @@
       const buf = voices[v.id]; if (!buf) continue;
       const src = ctx.createBufferSource(); src.buffer = buf; src.connect(voice); src.start(at(v.t));
       const w = [v.t, v.t + buf.duration];
-      if (wins.length && w[0] - wins[wins.length - 1][1] < 1.0) wins[wins.length - 1][1] = w[1]; else wins.push(w);
+      // (closer than the music needs to come back up and dip again, they count as one)
+      if (wins.length && w[0] - wins[wins.length - 1][1] < 1.6) wins[wins.length - 1][1] = w[1]; else wins.push(w);
     }
-    duck.gain.setValueAtTime(1, at(0));
+    // Under speech the music sits at UNDER; in the pauses between lines it fills in at FILL, so a voice
+    // starting after a pause is not a sudden jump. It comes back up slowly after a line ends.
+    const FILL = 1.5, UNDER = 0.55;
+    duck.gain.setValueAtTime(FILL, at(0));
     for (const [s, e] of wins) {
-      duck.gain.setValueAtTime(1, at(Math.max(0, s - 0.3))); duck.gain.linearRampToValueAtTime(0.55, at(s));
-      duck.gain.setValueAtTime(0.55, at(e)); duck.gain.linearRampToValueAtTime(1, at(e + 0.6));
+      duck.gain.setValueAtTime(FILL, at(Math.max(0, s - 0.3))); duck.gain.linearRampToValueAtTime(UNDER, at(s));
+      duck.gain.setValueAtTime(UNDER, at(e)); duck.gain.linearRampToValueAtTime(FILL, at(e + 1.2));
     }
 
     // ---- instruments ----

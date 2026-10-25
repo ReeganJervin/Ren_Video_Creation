@@ -39,7 +39,28 @@ This saves the pictures at 3 s and 10.5 s into the `videos` folder. For stories 
 
 You can mix them, for example `--stills 3,scene:1,scene:3@4`.
 
-**How long it takes:** about 4–6 minutes for a 50-second video, depending on your computer. Voices are remembered, so if you only change actions, the voices aren't made again.
+**How long it takes:** on a small laptop (2 processor cores), a 1-minute video takes about 2 minutes, plus about a minute the first time its voices are made. Voices are remembered, so if you only change actions, the voices aren't made again. An 11-minute episode takes about 30 minutes, of which drawing the pictures takes about 12. A faster computer with more cores is quicker.
+
+### If a video stops halfway
+
+Long videos are drawn in pieces, one scene at a time (long scenes are cut into one-minute pieces). If the window was closed or the computer restarted, carry on where it stopped:
+
+```
+resume-video.bat stories\my-story.txt
+```
+
+The pieces that were already finished are kept. If you changed the story since then, it starts again from the beginning, so the video always matches your story.
+
+### Options for the make-video command
+
+| Option | What it does |
+|---|---|
+| `--resume` | Carries on with a stopped video (this is what `resume-video.bat` does) |
+| `--workers 3` | Draws with 3 browser pages at once. The default is the number of processor threads minus 1. More workers are faster, until the computer is busy; the video looks exactly the same with any number of workers |
+
+For example: `node tools\make-video.js stories\my-story.txt --workers 2 --resume`
+
+While drawing, the window shows how far it is, which scene it's on, how many frames per second it draws and about how long is left.
 
 There are example stories to try first:
 - `stories\the-fallen-star.txt` is your 50-second film, written as a story.
@@ -76,6 +97,8 @@ The results are in `videos\<name>-report.txt`. Each line starts with `PASS`, `FA
 | `engine\audio.js` | Music, sound effects, the sound of each place, voice mixing (Web Audio) |
 | `tools\make-video.js` | The main program behind the `.bat` files |
 | `tools\scenes.js` | Chapters and the extra checks for stories with scenes |
+| `tools\render.js` | Draws the frames: several workers at once, scene by scene in pieces that `--resume` can keep |
+| `tools\browser.js` | Starts the drawing browser (or Chrome/Edge if setup couldn't download it) |
 | `tools\compare-engines.js` | For engine changes: checks that every story in `stories\` still looks and sounds exactly the same as before (`node tools\compare-engines.js`) |
 | `voice-overrides\` | Optional: your own recordings for specific lines (see STORY-GUIDE.md) |
 

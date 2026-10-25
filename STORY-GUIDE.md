@@ -225,7 +225,7 @@ music: tense
 
 You don't write sounds. They come from the actions:
 
-- Music-box music runs through the whole story (choose its mood with `music:`, see "Music" above). It's quieter while someone talks and fades out at the end.
+- Music-box music runs through the whole story (choose its mood with `music:`, see "Music" above). It's quieter while someone talks, comes up a little in the pauses between lines, and fades out at the end.
 - Hops make boings (Yuki's are lighter and higher), and walking rustles the grass.
 - Title letters chime, hearts pop, and star moments twinkle and sparkle.
 - Each place has its own sound: a breeze and birds in the meadow, birds and leaves in the forest, flowing water at the river, wind on the snowy hill and waves at the beach.

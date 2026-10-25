@@ -534,7 +534,7 @@
         G.bright.push({ t: s0, v: 1, dur: 0.5 });
         // everyone on stage watches it go
         cast.map(i => A[i]).filter(q => q === a || onStage(q)).forEach(q => { closeLook(q, s); q.out.lookAt.push({ a: s0, b: s0 + 5.6, target: 'star' }); });
-        sfx('riseChime', s0, { dur: 4.2 }); sfx('sparkleTrail', s0, { t1: s0 + 4.2 }); sfx('windSwell', s0, { t1: s0 + 5 }); sfx('chime', s0 + 4.2, { midi: 96, gain: 0.25 });
+        sfx('riseChime', s0, { dur: 4.2 }); sfx('sparkleTrail', s0, { t1: s0 + 4.2 }); sfx('windSwell', s0, { t1: s0 + 5 }); sfx('chime', s0 + 4.2, { midi: 96, gain: 0.15 });
         holder = null;
         star = { state: 'sky', x: to.x, y: to.y, r: 14 };
         return (s0 - s) + 4.6;
