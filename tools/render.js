@@ -42,7 +42,7 @@ function fingerprint(plan, root) {
 const grab = (page, t) => page.evaluate(t => { FILM.render(t); return document.getElementById('film').toDataURL('image/jpeg', 0.93).slice(23); }, t).then(b => Buffer.from(b, 'base64'));
 
 // Draws frames f0..f1-1 on all pages at once and hands them to write() strictly in order.
-function drawInOrder(pages, f0, f1, fps, write) {
+function drawInOrder(pages, f0, f1, fps, write, where) {
   return new Promise((resolve, reject) => {
     const got = new Map(), idle = [...pages], ahead = pages.length * 3;
     let next = f0, want = f0, writing = false, failed = false;
@@ -57,7 +57,7 @@ function drawInOrder(pages, f0, f1, fps, write) {
     const kick = () => {
       while (idle.length && next < f1 && next - want < ahead && !failed) {
         const p = idle.pop(), i = next++;
-        grab(p, i / fps).then(d => { got.set(i, d); idle.push(p); pump(); kick(); }, stop);
+        grab(p, i / fps).then(d => { got.set(i, d); idle.push(p); pump(); kick(); }, e => stop(new Error(`Drawing the frame at ${where(i / fps)} failed: ${String(e && e.message || e).split('\n')[0]}`)));
       }
     };
     if (f0 >= f1) resolve(); else kick();
@@ -66,12 +66,13 @@ function drawInOrder(pages, f0, f1, fps, write) {
 
 // Encodes one chunk. Written to a .part file first and renamed only when complete,
 // so a chunk on disk is always a finished one.
-async function drawChunk(pages, c, file, fps, onFrame) {
+async function drawChunk(pages, c, file, fps, onFrame, where) {
   const part = file + '.part';
   const ff = spawn(ffmpeg, ['-loglevel', 'error', '-y', '-f', 'image2pipe', '-c:v', 'mjpeg', '-framerate', String(fps), '-i', 'pipe:0',
     '-c:v', 'libx264', '-preset', PRESET, '-crf', '18', '-pix_fmt', 'yuv420p', '-f', 'mp4', part], { stdio: ['pipe', 'inherit', 'inherit'] });
   const closed = once(ff, 'close');
-  await drawInOrder(pages, c.f0, c.f1, fps, async (jpg, i) => { if (!ff.stdin.write(jpg)) await once(ff.stdin, 'drain'); onFrame(i); });
+  try { await drawInOrder(pages, c.f0, c.f1, fps, async (jpg, i) => { if (!ff.stdin.write(jpg)) await once(ff.stdin, 'drain'); onFrame(i); }, where); }
+  catch (e) { ff.stdin.end(); await closed; throw e; }
   ff.stdin.end();
   const [code] = await closed;
   if (code !== 0) throw new Error(`Encoding chunk ${c.i + 1} failed.`);
@@ -90,7 +91,18 @@ async function join(files, wav, duration, mp4, dir) {
 
 const mmss = s => { s = Math.round(s); return (s >= 3600 ? `${Math.floor(s / 3600)} h ` : '') + (s >= 60 ? `${Math.floor(s / 60) % 60} min ` : '') + `${s % 60} s`; };
 
-// Renders the whole video. o: { browser, url, workers, resume, buildDir, mp4, root, wav, say, progress }
+// "0:28.1 (line 34: ren (happy): Good morning, world!...)": a moment of the video and the story line that started last
+function whereIn(plan, storyLines) {
+  return t => {
+    let line = null;
+    for (const [l, s] of plan.lineTimes || []) if (s <= t + 1e-6) line = l;
+    const clock = `${Math.floor(t / 60)}:${(t % 60).toFixed(1).padStart(4, '0')}`;
+    const text = line && storyLines && storyLines[line - 1] ? `: ${storyLines[line - 1].trim().slice(0, 70)}` : '';
+    return line ? `${clock} (line ${line}${text})` : clock;
+  };
+}
+
+// Renders the whole video. o: { browser, url, workers, resume, buildDir, mp4, root, wav, say, progress, storyLines }
 async function renderVideo(plan, o) {
   const dir = path.join(o.buildDir, 'chunks'), state = path.join(dir, 'state.json');
   const id = fingerprint(plan, o.root), chunks = chunksOf(plan);
@@ -128,7 +140,7 @@ async function renderVideo(plan, o) {
       const el = (now - started) / 1000, fps = drawn / el, done = (total - left + drawn) / total;
       if (o.progress) o.progress({ step: 'drawing', done, scene: label, fps: +fps.toFixed(1), left: Math.round(Math.max(0, (left - drawn) / fps)) });
       process.stdout.write(`\r  ${String(Math.floor(done * 100)).padStart(3)}%  ${label}  ${fps.toFixed(1)} frames/s  about ${mmss(Math.max(0, (left - drawn) / fps))} left      `.slice(0, 118));
-    });
+    }, whereIn(plan, o.storyLines));
   }
   await Promise.all(pages.map(p => p.close()));
   const el = (Date.now() - started) / 1000;

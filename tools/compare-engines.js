@@ -95,13 +95,26 @@ async function main() {
     const po = await open('build/_compare/old/engine', `/build/_compare/plans/${name}-old.json`);
     const pn = SELF ? await open('build/_compare/old/engine', `/build/_compare/plans/${name}-old.json`) : await open('engine', `/build/_compare/plans/${name}-new.json`);
     const bad = [];
+    // a frame one engine can't draw: the old one crashing is a bug that's fixed now; the new one crashing is a failure
+    const tryFrame = (p, t) => frame(p, t).catch(e => 'crash: ' + String(e.message).split('\n')[0]);
+    let crash = null;
     for (let i = 0; i < FRAMES; i++) {
       const t = +(A.duration * (i + 0.5) / FRAMES).toFixed(3);
-      if ((await frame(po, t)) !== (await frame(pn, t))) {
+      const fo = await tryFrame(po, t), fn = await tryFrame(pn, t);
+      if (fn.startsWith('crash')) { crash = `the new engine crashes at ${t.toFixed(2)} s: ${fn.slice(7)}`; break; }
+      if (fo.startsWith('crash')) { crash = crash || `the old engine crashed at ${t.toFixed(2)} s (fixed in the new one)`; continue; }
+      if (fo !== fn) {
         bad.push(t.toFixed(2));
         await po.locator('#film').screenshot({ path: path.join(diffDir, `${name}-${t.toFixed(2)}-old.png`) });
         await pn.locator('#film').screenshot({ path: path.join(diffDir, `${name}-${t.toFixed(2)}-new.png`) });
       }
+    }
+    if (crash) {
+      await po.close(); await pn.close();
+      const fixed = crash.startsWith('the old');
+      if (!fixed) allOk = false;
+      rows.push(`${fixed ? 'FIXED' : 'FAIL '} ${name.padEnd(26)} ${crash}`);
+      continue;
     }
     const soundOk = SOUND ? sameSound(await sound(po), await sound(pn)) : null;
     await po.close(); await pn.close();

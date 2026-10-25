@@ -205,7 +205,7 @@ async function main() {
   const wn = args.indexOf('--workers'), workers = wn >= 0 ? parseInt(args[wn + 1], 10) : Math.max(1, os.cpus().length - 1);
   if (!(workers >= 1 && workers <= 64)) fail('--workers needs a number of workers from 1 to 64, for example --workers 3');
   try {
-    await renderVideo(plan, { browser, url, workers, resume: opt('resume'), buildDir, mp4, root: ROOT, wav: path.join(buildDir, 'master.wav'), say, progress });
+    await renderVideo(plan, { browser, url, workers, resume: opt('resume'), buildDir, mp4, root: ROOT, wav: path.join(buildDir, 'master.wav'), say, progress, storyLines: fs.readFileSync(storyPath, 'utf8').split(/\r?\n/) });
   } catch (e) {
     await browser.close(); server.close();
     fail(`${e.message}\nYou can carry on where it stopped with:  resume-video.bat ${path.relative(ROOT, storyPath)}`);

@@ -464,6 +464,23 @@
       }
       if (last && last.ok) break;
     }
+    // A long line can need more than 3 lines at every size above (the wrapping width shrinks with the text). Then the
+    // width stays put while the text gets smaller, so fewer lines are needed; and failing everything, the smallest
+    // size in a corner. (Bubbles that fit above are laid out exactly as before.)
+    if (!last) {
+      const maxW = 560 * start / 52;
+      for (let size = start; size >= 24 && !(last && last.ok); size -= 2) {
+        c.font = `700 ${size}px ${FONT}`;
+        const lines = wrap(c, b.text, maxW);
+        if (lines.length > 4 && size > 24) continue;
+        const lh = size * 1.18, w = Math.max(...lines.map(l => c.measureText(l).width)) + 84 * size / 52, h = lines.length * lh + 56 * size / 52;
+        const into = (x, y) => [clamp(x, 40 + w / 2, W - 40 - w / 2), clamp(y, 40 + h / 2, H - 40 - h / 2)];
+        const sides = [b.side, -b.side];
+        const cands = sides.map(s => into(s > 0 ? me.x1 + 36 + w / 2 : me.x0 - 36 - w / 2, me.y0 + h / 2)).concat(sides.map(s => into(s > 0 ? W : 0, 0)));
+        const ok = cands.find(([x, y]) => fits(x, y, w, h));
+        if (ok || !last) last = { size, lines, lh, w, h, bx: (ok || cands[0])[0], by: (ok || cands[0])[1], ok: !!ok };
+      }
+    }
     // the tail reaches toward the speaker but stops before the face
     const d = Math.hypot(head.x - last.bx, head.y - last.by), e = Math.min(last.w / 2, last.h / 2), faceR = (me.x1 - me.x0) / 2;
     last.L = clamp(d - e - faceR * 0.9, 24, 120);
@@ -505,11 +522,13 @@
     if (t < b.t0 || t > b.t1) return;
     const pin = easeOutBack((t - b.t0) / 0.38), out = ease((b.t1 - t) / 0.3), a = clamp((t - b.t0) / 0.12) * out, sc = (0.35 + 0.65 * pin) * (0.92 + 0.08 * out);
     c.save(); c.setTransform(1, 0, 0, 1, 0, 0);
-    let size = 52, lines, lh, w, h, bx, by, L = 120;
+    let size = 52, lines, lh, w, h, bx, by, L = 120, framed = null;
     if (F) {
       head = F.heads[b.who] || head;
-      ({ size, lines, lh, w, h, bx, by, L } = framedBubble(c, b, head, cam, F));
-    } else {
+      try { framed = framedBubble(c, b, head, cam, F); } catch (e) { console.warn(`bubble "${b.text}": ${e.message}; placed the usual way`); }
+    }
+    if (framed) ({ size, lines, lh, w, h, bx, by, L } = framed);
+    else {
       for (; size >= 34; size -= 2) { c.font = `700 ${size}px ${FONT}`; lines = wrap(c, b.text, 560); if (lines.length <= 2) break; }
       lh = size * 1.18; w = Math.max(...lines.map(l => c.measureText(l).width)) + 84; h = lines.length * lh + 56;
       bx = head.x + b.side * (w / 2 + 170 * cam.z); by = head.y - 190;
