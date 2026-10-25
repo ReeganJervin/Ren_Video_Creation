@@ -3,7 +3,7 @@
 > **For Claude Code.** This is the implementation plan for upgrading Kitsu Studio into a production engine for the series **"Ren & Yuki: The Secrets Beyond the Enchanted Forest"**: 10 episodes of 8–10 minutes, plus Shorts.
 > **Read first:** `HANDOFF.md` (the current engine, status and way of working) and `PRODUCTION-SYSTEM.md` (the three video formats).
 > **Owner:** not a programmer, on Windows. They review every step from images and reports.
-> **Version 2 (2026-10-25):** adds the big picture (section 0.5), the Asset Kit (F4, detailed in `ASSET-KIT.md`), the Studio App (F9, detailed in `STUDIO-APP.md`), the World system (F10), rules R12–R13, and a **build order** that no longer follows the F-numbers exactly.
+> **Version 2 (2026-10-25):** adds the big picture (section 0.5), the Asset Kit (F4, detailed in `ASSET-KIT.md`), the Studio App (F9, detailed in `STUDIO-APP.md`), the World system (F10), rules R12–R14 (including quick and full test levels), and a **build order** that no longer follows the F-numbers exactly.
 
 ---
 
@@ -58,6 +58,31 @@ The goal is not a video maker with a fixed set of things. It's a **world-buildin
 | R11 | **No fighting or violence.** Danger is shown through suspense, chases, hiding and puzzles. Every video stays suitable for children. |
 | R12 | **Everything new goes into a registry, never hard-coded.** Characters, extras, places, props, voices, music moods and sounds are each one entry or one file in their registry, found automatically. A story or the engine core must never contain a one-off drawing. This is what lets the world keep growing. |
 | R13 | **One engine, many front ends.** The CMD tools (`check-story.bat`, `preview.bat`, `make-video.bat`) keep working forever. The Studio App (F9) and Claude Code skills only *call* the engine; they never copy its logic. |
+
+| R14 | **Quick tests per step, full tests at milestones.** See "Test levels" below. Never render a long video just to test a single step. |
+
+### Test levels
+
+**Quick test: every Part A and Part B stop.** Aim for under 15–20 minutes in total.
+1. `--check` on every story (seconds).
+2. **R1 by frames, not by videos:** compare the 12 frames per story and the timing data. Don't render the old stories as full videos.
+3. **One short demo story, 1–2 minutes long,** that uses the new feature. Render it in full and run all 10 checks on it. The demo stories in this roadmap (camera-demo, treasure-demo and so on) must be kept to **2 minutes or less**.
+4. Stills and frame strips for the visual review.
+5. Reuse the voice cache. Never delete `cache/` to test.
+
+**Full test: at each milestone only.** A milestone comes every 3–4 steps of the build order:
+- **Milestone 1:** after step 4 (F2, F4 A–C, F9 A)
+- **Milestone 2:** after step 7 (F3, F4 D, Episode 1)
+- **Milestone 3:** after step 10 (F5, F6, F7)
+- **Milestone 4:** after step 13 (F9 B, F10, F8)
+
+A full test means:
+1. Render **every** example story in `stories/` as a full video. All 10 checks must pass on each.
+2. Render the 12-minute stress test (`stories/test-12min.txt`) and report the time and memory.
+3. Do R1 by frames against the commit from the previous milestone.
+4. Write a short milestone report: what passed, what failed, the render times.
+
+**Exception:** if a step changes rendering itself, audio, the voice step or the joining of chunks, also render the 12-minute test at that step. Some problems only show up in long videos. Say so in the review package.
 
 **Review package**, included at every stop:
 1. a summary of what changed
