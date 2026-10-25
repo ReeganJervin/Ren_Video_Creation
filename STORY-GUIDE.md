@@ -264,6 +264,43 @@ yuki (happy): Then close your eyes and count to ten!
 
 Moves happen while the story carries on, like `camera: close`. The old lines `camera: close`, `closer` and `wide` still work, and in a story with shots they glide too. Background layers move at different speeds as the camera moves, so the picture has depth.
 
+### Automatic editing
+
+Write `editing: auto` at the top of the story (next to `title:`), and the camera chooses the shots by itself, like a TV editor:
+
+- When a conversation starts, it shows both characters together (a medium shot).
+- Then it cuts to a close-up of whoever is talking.
+- After a **surprised**, **shy** or **sad** line, it shows the other character's reaction for a moment.
+- When someone enters, walks, exits or hugs, and when the narrator speaks, it shows the whole place (a wide shot).
+
+Your own `shot:` and `camera:` lines always win. After one of them, the automatic editor waits until the next character line has been spoken. Without `editing: auto`, nothing changes.
+
+```
+title: The Missing Cookie
+editing: auto
+```
+
+### Timing
+
+| Line | What happens |
+|---|---|
+| `beat` | A short pause (0.6 seconds), for comic timing |
+| `pause 2` | A quiet pause of 2 seconds (the same as `wait 2`) |
+| `slow motion 3` | The **next action** happens slowly and takes about 3 seconds, with a soft dreamy glow. Use it for magical moments, like a falling star. It works on actions, not on voice lines |
+| `reveal: the star` | The camera glides slowly to the star, with a gentle magical swell in the music. Also `reveal: yuki` |
+| `reveal: river` | Shows a place: if the story isn't there yet, the page turns first. Then the camera starts close on the characters and slowly pulls back to show the whole place |
+
+```
+ren looks around
+beat
+ren (surprised): Wait... where did it go?
+
+star appears
+reveal: the star
+slow motion 4
+star falls
+```
+
 ## Sounds you get automatically
 
 You don't write sounds. They come from the actions:
@@ -271,7 +308,7 @@ You don't write sounds. They come from the actions:
 - Music-box music runs through the whole story (choose its mood with `music:`, see "Music" above). It's quieter while someone talks, comes up a little in the pauses between lines, and fades out at the end.
 - Hops make boings (Yuki's are lighter and higher), and walking rustles the grass.
 - Title letters chime, hearts pop, and star moments twinkle and sparkle.
-- Each place has its own sound: a breeze and birds in the meadow, birds and leaves in the forest, flowing water at the river, wind on the snowy hill and waves at the beach.
+- Each place has its own sound: a breeze and birds in the meadow, birds and leaves in the forest, flowing water at the river, wind on the snowy hill and waves at the beach. These sounds get softer at night and when the music is `calm` or `bedtime`, so quiet scenes stay quiet.
 
 ## Using your own voice recording for a line
 
@@ -281,7 +318,7 @@ Put a WAV file in `voice-overrides\<story-file-name>\line-<number>.wav`, where t
 voice-overrides\my-story\line-12.wav
 ```
 
-The timing adapts to your recording automatically.
+The timing adapts to your recording automatically, and its volume is matched to the other voices, so it doesn't sound louder or quieter than the rest. (Every voice line is volume-matched this way, whichever voice says it.)
 
 ## When something is wrong
 

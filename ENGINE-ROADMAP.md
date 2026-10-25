@@ -93,6 +93,7 @@ A full test means:
 
 **How the rules are checked (tools added during F1 and F2):**
 - **R1:** `node tools/compare-engines.js` compares every story in `stories/` against the last commit: the timing plan and 12 frames pixel by pixel (R14: no full videos). `--only <story>` checks one story. `--sound` also compares the music and effects soundtrack (slow on long stories; use it when a step changes audio). Soundtracks count as the same when no sample differs by more than 2 in 32768, because the browser's reverb is not bit-exact between runs (about -100 dB).
+- **R3, one check changed with the owner's approval (2026-10-25):** "No sudden volume changes" fails only above **2.5 LU** (it was 2.0). Moments between 2.0 and 2.5 are listed in the report as a NOTE, so they stay visible. **Why:** the owner's new voices (Ren `am_puck`, Yuki and narrator blends) are livelier, and in long, dialogue-heavy stories a loud word after a quiet moment reaches about 2.5 LU. The owner listened to the loudest such moment (a 10-second clip from the 12-minute test) and found it fine. At the same time, every voice line got volume-matching and a soft start, and place sounds became half as loud at night and under calm or bedtime music.
 - **R4:** frames are drawn by the browser in software mode (`tools/browser.js`, `launch({ exact: true })`), because drawing with the graphics card is not pixel-repeatable. `make-video` always uses this mode.
 
 ---
@@ -104,7 +105,7 @@ Work through the steps **in this order**. The F-numbers are names, not the order
 | Step | Feature | Status | Commit(s) |
 |---|---|---|---|
 | 1 | F1 Long episodes (scenes, music moods, chapters, fast rendering) | Done | `7ff0e59` (F1A), `97a1ecd` (F1B) |
-| 2 | F2 Camera and editing | Part A done (approved); Part B next | `a2ca81a` (F2A) |
+| 2 | F2 Camera and editing | Done | `a2ca81a` (F2A), F2B (see git log) |
 | 3 | F4 Asset Kit, Parts A–C: registry and missing list, picture drop-in, `/new-asset` (`ASSET-KIT.md`) | Not started | |
 | 4 | F9 Studio App, Part A: editor, live check, preview, render with progress (`STUDIO-APP.md`) | Not started | |
 | 5 | F3 Rig 2.0 (joints, movement library, lip-sync) | Not started | |
@@ -235,6 +236,15 @@ All work is committed on the git branch `Improvment` (never directly on `main`).
 - no face is cut off in any of the 30 stills sampled from the demo
 
 **Commit message:** `F2B: automatic editing, beats, slow motion, reveals`
+
+**As built (F2B):**
+- Automatic editing rules: wide for entrances, walks, exits, hugs and the narrator; a medium two-shot to start a conversation; a close-up on each new speaker; a 1-cut reaction shot of the listener after a surprised, shy or sad line; never more than about one cut a second. A manual shot or camera line holds until the next character line has been spoken, and no automatic cut lands less than 1 s before a manual one.
+- `slow motion N` stretches everything the next action creates so it takes about N seconds (never faster than normal), with a soft dreamy glow. `beat` is a 0.6 s pause.
+- `reveal: the star` frames the star together with everyone watching it; `reveal: <name>` pushes in close; `reveal: <place>` turns the page if needed, then pulls back from the characters to the whole place. A gentle magical swell plays under every reveal.
+- In a shot of one character, nobody else's face is ever half in the frame (it is slid fully in or fully out). In an extreme close-up this wins over look room.
+- Acceptance: a face check (`StudioFilm.faces(t)`) over the whole demo, every 0.1 s: no face cut off in any framed shot.
+- **Voices (owner-approved):** every voice line is volume-matched to -22 LUFS with a 0.4 s soft start (also the owner's recordings), and place sounds are half as loud at night and under calm or bedtime music. The volume check limit became 2.5 LU (see section 1).
+- Demo: `stories/camera-demo.txt` (97 s).
 
 ---
 

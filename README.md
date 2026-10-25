@@ -69,6 +69,7 @@ There are example stories to try first:
 - `stories\a-trip-around.txt` takes Ren and Yuki to every place: the meadow, forest, river, snowy hill and beach.
 - `stories\test-scenes.txt` is a story in three scenes, with three music moods and YouTube chapters.
 - `stories\test-camera.txt` shows every kind of shot and camera move.
+- `stories\camera-demo.txt` lets the camera edit by itself (`editing: auto`), with comic beats, slow motion and reveals.
 
 ## Every video is checked automatically
 

@@ -31,6 +31,7 @@
     'scene: <name>', `music: ${MUSIC.join('|')}`,
     'shot: wide|medium|close|extreme close [on <name>|both|the star]', 'shot: over the shoulder of <name>',
     'camera: push in|pull out|pan to <name|the star|left|center|right>|follow <name>|shake|hold',
+    'editing: auto', 'beat', 'slow motion <seconds>', 'reveal: the star|<name>|<place>',
     `Characters: ${NAMES.join(', ')}`,
   ];
 
@@ -145,6 +146,29 @@
         return beat('say', { who, mood, text: say });
       }
       if ((m = line.match(/^(?:wait|pause)\s+([\d.]+)\s*(?:s|sec|seconds?)?$/i))) return beat('wait', { secs: Math.min(20, parseFloat(m[1])) });
+      // a short pause for comic timing
+      if (/^(a )?beat\.?$/i.test(line)) return beat('wait', { secs: 0.6 });
+      if ((m = line.match(/^slow[- ]?motion\s+([\d.]+)\s*(?:s|sec|seconds?)?$/i))) {
+        const secs = parseFloat(m[1]);
+        if (!(secs >= 0.5 && secs <= 10)) return err('Slow motion needs a length from 0.5 to 10 seconds, like "slow motion 3".');
+        return beat('slow', { secs });
+      }
+      // the camera chooses its own shots in conversations (manual shot: lines still win)
+      if ((m = line.match(/^editing\s*:\s*(\w+)$/i))) {
+        const v = m[1].toLowerCase();
+        if (!/^(auto|manual|off)$/.test(v)) return err(`Unknown editing "${m[1]}". Use: auto (or manual).`);
+        if (started) return err('"editing:" goes at the top of the story, before the first action or line.');
+        meta.editing = v === 'auto' ? 'auto' : 'manual';
+        return;
+      }
+      // a slow, magical camera move to show something (or somewhere) new
+      if ((m = line.match(/^reveal\s*:\s*(.+)$/i))) {
+        const v = m[1].trim().toLowerCase().replace(/[.!]+$/, '').replace(/^the /, '');
+        if (v === 'star' || CHARACTERS[v]) return beat('reveal', { on: v });
+        const p = PLACES.find(v);
+        if (p) return beat('reveal', { place: p.id });
+        return err(`I can't reveal "${m[1].trim()}". Reveal the star, a character (${NAMES.join(', ')}) or a place (${PLACES.names().join(', ')}).`);
+      }
       if ((m = line.match(/^title card\s*:\s*(.+)$/i))) {
         const word = m[1].trim().toUpperCase();
         if (word.length > 14) return err('Title card text must be 14 characters or fewer.');
@@ -319,7 +343,7 @@
     const talks = [];   // conversation lines: who spoke to whom, used to turn them toward each other
     const scenes = [], music = meta.music ? [{ t: 0, mood: meta.music }] : [];
     // shots and camera moves (a story without them keeps the classic automatic camera)
-    const shotMode = beats.some(b => b.type === 'shot' || b.type === 'cam'), shots = [];
+    const shotMode = beats.some(b => /^(shot|cam|reveal)$/.test(b.type)) || meta.editing === 'auto', shots = [];
     // what a shot or move looks at: { all } on-stage characters, { actors }, { star } or a stage spot { x }
     const aim = (on, line) => {
       if (!on || on === 'both') return { all: true };
@@ -330,12 +354,34 @@
       return { actors: [on] };
     };
     let scene = null, content = false;   // the scene going on now; whether anything has happened yet
+    // slow motion: everything the next action creates is stretched around its start
+    let slow = null;
+    const tracked = () => [
+      ...Object.values(P).filter(Array.isArray), ...Object.values(G), changes, shots,
+      ...cast.flatMap(id => [...Object.values(A[id].out).filter(Array.isArray), ...Object.values(A[id].ch)]),
+    ];
+    const stretch = (snap, s, k) => snap.forEach(([arr, n]) => {
+      for (let i = n; i < arr.length; i++) {
+        const o = arr[i], at = x => (typeof x === 'number' && x >= s && x < 1e8 ? s + (x - s) * k : x);
+        if (typeof o === 'number') { arr[i] = at(o); continue; }
+        if (!o || typeof o !== 'object') continue;
+        ['t', 't0', 't1', 'a', 'b', 'burst', 'out0', 'out1'].forEach(f => { o[f] = at(o[f]); });
+        if (typeof o.dur === 'number') o.dur *= k;
+        if (Array.isArray(o.letters)) o.letters = o.letters.map(at);
+      }
+    });
+    const log = [];   // every beat with its start, for automatic editing
 
     for (const b of beats) {
       const s = b.together ? prevStart : t;
       const who = (b.who && typeof b.who !== 'string' ? b.who : []).map(id => A[id]);
       if (who.length) focus = who[0].id;
-      let dur = 0;
+      const stage = cast.filter(id => onStage(A[id]));
+      let dur = 0, snap = null;
+      if (slow && b.type !== 'slow') {
+        if (b.type === 'say') { errors.push(`Line ${slow.line}: slow motion slows an action, not a voice line. Put it right before an action.`); slow = null; }
+        else snap = tracked().map(arr => [arr, arr.length]);
+      }
       switch (b.type) {
         case 'say': {
           const len = lens[P.voice.length] || estimate(b.text);
@@ -530,11 +576,46 @@
           break;
         }
         case 'music': music.push({ t: b.head ? scene.t0 : s, mood: b.mood, line: b.line }); break;
+        case 'slow':
+          if (slow) errors.push(`Line ${b.line}: there are two "slow motion" lines in a row.`);
+          slow = { secs: b.secs, line: b.line };
+          break;
+        case 'reveal': {
+          // a slow, eased camera move with a gentle magical swell; a place is shown by pulling out wide
+          const D = 3.2;
+          if (b.place) {
+            let at = s;
+            if (b.place !== here) { changes.push({ t0: s, t1: s + PT, from: here, to: b.place }); sfx('pageTurn', s); here = b.place; at = s + PT / 2; }
+            shots.push({ t: at, op: 'cut', size: 'medium', on: { all: true }, dur: 0 }, { t: at + 0.6, op: 'reveal', z: 1, on: { all: true }, dur: D });
+            dur = at - s + 0.6 + D;
+          } else {
+            // the star is revealed with everyone looking up at it; a character fills a close shot
+            shots.push(b.on === 'star' ? { t: s, op: 'reveal', z: 1.5, on: { ...aim('star', b.line), all: true }, dur: D } : { t: s, op: 'reveal', z: 2.2, on: aim(b.on, b.line), dur: D });
+            dur = D;
+          }
+          sfx('swell', s + (dur - D), { t1: s + dur + 0.8 });
+          break;
+        }
       }
+      if (snap) {
+        // the action takes about the asked-for time (never faster than normal)
+        const k = dur > 0 ? Math.max(1, slow.secs / dur) : 1;
+        if (dur <= 0) P.warnings.push(`Line ${slow.line}: slow motion has nothing to slow down on the next line.`);
+        else if (k === 1) P.warnings.push(`Line ${slow.line}: that action already takes ${dur.toFixed(1)} s, so slow motion ${slow.secs} doesn't slow it.`);
+        if (k > 1) {
+          stretch(snap, s, k);
+          cast.forEach(id => { if (A[id].free > s) A[id].free = s + (A[id].free - s) * k; });
+          dur *= k;
+          (P.slowmo || (P.slowmo = [])).push({ t0: s, t1: s + dur });
+        }
+        slow = null;
+      }
+      log.push({ b, s, dur, stage });
       if (b.type !== 'scene') content = true;
       prevStart = s;
       t = Math.max(t, s + dur);
     }
+    if (slow) errors.push(`Line ${slow.line}: slow motion needs an action after it.`);
 
     function starBeat(b, s) {
       const act = b.act, f = A[focus], h = holder && A[holder];
@@ -661,7 +742,56 @@
     scenes.forEach((c, i) => { c.t1 = i + 1 < scenes.length ? scenes[i + 1].t0 : duration; delete c.turn; });
     // music changes ([] means the classic music all story long)
     if (music.length) P.music = music;
+    if (meta.editing === 'auto') autoEdit();
     if (shotMode) P.shots = shots;
+
+    // Automatic coverage ("editing: auto"), like a TV editor: a medium two-shot to set up a conversation,
+    // close-ups on whoever speaks, a quick reaction shot of the listener after a surprised, shy or sad line,
+    // a wide shot whenever someone moves or the narrator speaks. A manual shot or camera line always wins:
+    // the editor waits until the character line after it has been spoken.
+    function autoEdit() {
+      const lineOf = b => P.voice.find(v => v.line === b.line);
+      const manual = shots.map(x => x.t).sort((a, b) => a - b);
+      const holds = manual.map(m => {
+        const e = log.find(x => x.s >= m && x.b.type === 'say' && x.b.who !== 'narrator');
+        const v = e && lineOf(e.b);
+        return [m, v ? v.t + v.len + 0.3 : m + 3];
+      });
+      const held = at => holds.some(([a, b]) => at >= a - 0.05 && at < b);
+      const auto = [];
+      let last = { t: -10, key: '' }, convo = false, speaker = null, lineEnd = -10, reaction = false;
+      const cut = (at, size, on, o = {}) => {
+        const key = size + JSON.stringify(on), manualBetween = manual.some(m => m > last.t && m <= at);
+        // (and never just before a manual shot, which would make two cuts in a row)
+        if (held(at) || key === last.key && !manualBetween || manual.some(m => m > at && m - at < 1)) return;
+        if (at - last.t < 1.2 && !o.force) return;   // never cut faster than about once a second
+        auto.push({ t: at, op: 'cut', size, on, dur: 0, auto: true });
+        last = { t: at, key };
+      };
+      for (const { b, s, stage } of log) {
+        if (b.type === 'say' && b.who === 'narrator') { cut(s, 'wide', { all: true }, { force: reaction }); convo = false; reaction = false; continue; }
+        if (b.type === 'say') {
+          const v = lineOf(b), others = stage.filter(id => id !== b.who && onStage(A[id]));
+          if (!others.length) { if (speaker !== b.who) cut(s, 'medium', { actors: [b.who] }); }
+          else if (!convo || s - lineEnd > 4) cut(s, 'medium', { all: true });   // set up the conversation
+          else if (b.who !== speaker || reaction) cut(s, 'close', { actors: [b.who] }, { force: reaction });
+          reaction = false;
+          convo = others.length > 0; speaker = b.who; lineEnd = v.t + v.len;
+          if (others.length && /^(surprised|shy|sad)$/.test(b.mood || '')) {
+            cut(lineEnd + 0.1, 'close', { actors: [others[0]] }, { force: true });
+            reaction = true;
+          }
+          continue;
+        }
+        if (/^(enter|walk|walkTo|exit|hug|pickup|place)$/.test(b.type) || b.type === 'star' && /^(appears|falls|rises)$/.test(b.act)) {
+          cut(s, 'wide', { all: true }, { force: b.type === 'place' });
+          convo = false;
+        }
+      }
+      // at the same moment a manual shot comes after an automatic one, so the manual one wins
+      shots.unshift(...auto);
+      shots.sort((a, b) => a.t - b.t);
+    }
 
     return {
       version: 2, duration, fps: 30, width: 1920, height: 1080, scale: KS, errors, cast, ...P, keys, scenes,

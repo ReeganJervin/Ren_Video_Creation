@@ -33,10 +33,12 @@ Kitsu Studio turns a story written as a plain text file into a finished animated
 4. Look at your own stills before showing the owner (R7). Put review images in the session's scratchpad and give their full paths.
 5. Keep messages to the owner short, simple and friendly.
 
+**Owner-approved exceptions to the rules:** the "No sudden volume changes" check fails only above 2.5 LU (was 2.0), with 2.0–2.5 shown as a NOTE. Approved 2026-10-25 after the owner listened to the loudest moment of the 12-minute test; the reason is the livelier new voices. Details in `ENGINE-ROADMAP.md` section 1.
+
 **Notes about the owner's computer:** an Intel i3 laptop with 2 cores and 8 GB of memory that slows itself down when hot, so speed measurements vary a lot; compare runs side by side. Playwright's own browser could not be downloaded there, so the installed Chrome is used automatically.
 
 ## Current status
 
 - **Next step:** see the **build order in `ENGINE-ROADMAP.md` section 2**. The first step there whose status isn't "Done" is the one to work on.
-- Right now: **F1 is done**, **F2 Part A is done**, and **F2 Part B** (automatic editing, beats, slow motion, reveals) is next.
-- After F2, the order is: F4 Asset Kit Parts A–C (`ASSET-KIT.md`), then F9 Studio App Part A (`STUDIO-APP.md`), then F3 Rig 2.0.
+- Right now: **F1 and F2 are done.** Next is **F4 Asset Kit, Part A** (`ASSET-KIT.md`): asset registry, missing list and placeholders.
+- After that: F4 Parts B–C, then F9 Studio App Part A (`STUDIO-APP.md`), then **milestone 1** (full test, rule R14), then F3 Rig 2.0.

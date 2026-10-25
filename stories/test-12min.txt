@@ -182,8 +182,8 @@ scene: Wind on the Hill
 music: calm
 
 narrator: As they walked down the snowy hill, a soft wind began to blow, swirling the snowflakes around them.
-ren feels sleepy
-ren (sleepy): I'm getting a little tired. We have walked such a long way.
++ ren feels sleepy
+ren (sleepy): Mm... I'm getting a little tired. We have walked such a long way.
 yuki turns to ren
 yuki (happy): Let's rest for a moment. The view from here is so beautiful.
 narrator: From the hill, they could see the forest, the river, and, far away, a line of blue.
@@ -274,8 +274,8 @@ time: night
 music: bedtime
 
 narrator: And so the two tired friends lay down in the soft grass, under a sky full of stars.
-yuki feels sleepy
-yuki (sleepy): Goodnight, Ren. Thank you for the best day ever.
++ yuki feels sleepy
+yuki (sleepy): Goodnight, Ren... thank you for the best day ever.
 ren feels sleepy
 ren (sleepy): Goodnight, Yuki. See you tomorrow.
 yuki (sleepy): Ren? Where shall we go tomorrow?

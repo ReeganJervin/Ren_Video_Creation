@@ -2,8 +2,9 @@
 //
 //   node tools/compare-engines.js [git-ref]      compare the engine at git-ref (default HEAD) with the working copy
 //   ... --only the-fallen-star                    only that story
+//   ... --sound                                   also compare the soundtracks (slow on long stories)
 //
-// For every story in stories/: the timing plan, 12 frames (pixel by pixel) and the music + effects soundtrack.
+// For every story in stories/: the timing plan and 12 frames (pixel by pixel), plus the music + effects soundtrack with --sound.
 // Timing uses estimated voice lengths (the same for both engines), so no voices need to be made.
 // Differences are saved as PNGs in build/_compare/diff/.
 const fs = require('fs'), path = require('path'), http = require('http');
@@ -12,6 +13,7 @@ const { spawnSync } = require('child_process');
 const ROOT = path.resolve(__dirname, '..');
 const ref = process.argv.slice(2).find(a => !a.startsWith('--')) || 'HEAD';
 const FRAMES = 12, SELF = process.argv.includes('--self');   // --self: old engine against itself (how repeatable rendering is)
+const SOUND = process.argv.includes('--sound');               // rule R14: frames and timing by default
 const work = path.join(ROOT, 'build', '_compare'), oldDir = path.join(work, 'old'), planDir = path.join(work, 'plans'), diffDir = path.join(work, 'diff');
 
 // the engine folder as it was at `ref`
@@ -99,13 +101,13 @@ async function main() {
         await pn.locator('#film').screenshot({ path: path.join(diffDir, `${name}-${t.toFixed(2)}-new.png`) });
       }
     }
-    const soundOk = sameSound(await sound(po), await sound(pn));
+    const soundOk = SOUND ? sameSound(await sound(po), await sound(pn)) : null;
     await po.close(); await pn.close();
     const timingOk = !d.changed.length && !d.onlyOld.length;
-    const ok = timingOk && !bad.length && soundOk;
+    const ok = timingOk && !bad.length && soundOk !== false;
     allOk = allOk && ok;
     rows.push(`${ok ? 'SAME' : 'DIFF'}  ${name.padEnd(26)} timing ${timingOk ? 'identical' : 'CHANGED: ' + [...d.changed, ...d.onlyOld].slice(0, 6).join(', ')}` +
-      `${d.onlyNew.length ? ` (new fields: ${d.onlyNew.join(', ')})` : ''}; frames ${FRAMES - bad.length}/${FRAMES} identical${bad.length ? ' (differ at ' + bad.join(', ') + ' s)' : ''}; soundtrack ${soundOk ? 'same' : 'CHANGED'}`);
+      `${d.onlyNew.length ? ` (new fields: ${d.onlyNew.join(', ')})` : ''}; frames ${FRAMES - bad.length}/${FRAMES} identical${bad.length ? ' (differ at ' + bad.join(', ') + ' s)' : ''}${soundOk === null ? '' : `; soundtrack ${soundOk ? 'same' : 'CHANGED'}`}`);
   }
   await browser.close(); server.close();
   console.log(`\nComparing the engine at ${ref} with the working copy:\n\n${rows.join('\n')}\n`);

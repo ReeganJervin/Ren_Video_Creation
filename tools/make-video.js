@@ -59,7 +59,7 @@ async function main() {
   speech.forEach((b, i) => {
     const v = voices[b.who], out = path.join(voiceDir, `${i}.wav`);
     const override = path.join(overrideDir, `line-${b.line}.wav`);
-    if (fs.existsSync(override)) { fs.copyFileSync(override, out); say(`  using your recording for line ${b.line}`); return; }
+    if (fs.existsSync(override)) { levelVoice(override, out); say(`  using your recording for line ${b.line}`); return; }
     const key = crypto.createHash('sha1').update(JSON.stringify([b.text, v.voice, v.speed, v.pitch])).digest('hex').slice(0, 16);
     const cached = path.join(cacheDir, key + '.wav');
     pending.push({ cached, out, pitch: v.pitch });
@@ -84,7 +84,12 @@ async function main() {
       }
     }
   }
-  for (const p of pending) fs.copyFileSync(p.cached, p.out);
+  // every line at the same loudness, whichever voice says it (levelled once, kept beside the cached clip)
+  for (const p of pending) {
+    const levelled = p.cached.replace(/\.wav$/, `.lv${-VOICE_LUFS}s.wav`);
+    if (!fs.existsSync(levelled)) levelVoice(p.cached, levelled);
+    fs.copyFileSync(levelled, p.out);
+  }
   speech.forEach((b, i) => { lens[i] = readWav(path.join(voiceDir, `${i}.wav`)).duration; });
 
   // 3. compile the timeline
@@ -188,6 +193,31 @@ function stillTimes(list, plan) {
   });
   if (!out.length) fail('Tell me which moments to save, for example: --stills 3,10.5 or --stills scene:2');
   return out;
+}
+
+// Voices come out of Kokoro (and from recordings) at different loudness, e.g. am_puck is about 4 dB louder
+// than af_bella. Each line gets one fixed gain to VOICE_LUFS, capped so its peak stays below -2 dBTP.
+// Some voices also start with a punch, so the first SOFT_START seconds of speech fade up from about -9 dB:
+// the line still starts clearly, without a jump in volume. The length never changes.
+// Clips too short or quiet to measure are copied as they are.
+const VOICE_LUFS = -22, SOFT_START = 0.4;
+function levelVoice(src, dst) {
+  const r = spawnSync(ffmpeg, ['-hide_banner', '-i', src, '-af', 'loudnorm=print_format=json', '-f', 'null', '-'], { encoding: 'utf8' });
+  let m = null;
+  try { m = JSON.parse(r.stderr.slice(r.stderr.lastIndexOf('{'), r.stderr.lastIndexOf('}') + 1)); } catch (_) { /* unmeasurable */ }
+  const I = m && parseFloat(m.input_i), tp = m && parseFloat(m.input_tp);
+  if (!isFinite(I) || I < -60) { fs.copyFileSync(src, dst); return; }
+  const gain = Math.max(-15, Math.min(15, VOICE_LUFS - I, -2 - tp));
+  // where the speech starts: the first 10 ms that rise above -40 dB (from the very start if it can't be read)
+  let s0 = 0;
+  try {
+    const w = readWav(src), x = w.samples(), hop = Math.round(w.rate * 0.01);
+    for (let i = 0; i + hop <= x.length; i += hop) { let e = 0; for (let k = i; k < i + hop; k++) e += x[k] * x[k]; if (10 * Math.log10(e / hop + 1e-18) > -40) { s0 = i / w.rate; break; } }
+  } catch (_) { /* e.g. a 24-bit recording */ }
+  const ramp = `volume='${Math.pow(10, gain / 20).toFixed(4)}*if(lt(t,${s0.toFixed(3)}+${SOFT_START}),0.35+0.65*max(0,t-${s0.toFixed(3)})/${SOFT_START},1)':eval=frame`;
+  const tmp = dst + '.part.wav';
+  spawnSync(ffmpeg, ['-loglevel', 'error', '-y', '-i', src, '-af', ramp, '-c:a', 'pcm_s16le', tmp]);
+  fs.renameSync(tmp, dst);
 }
 
 // Mastering: one fixed gain to about -16 LUFS, capped so true peak stays at or below -1.5 dBTP.

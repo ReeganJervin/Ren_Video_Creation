@@ -274,8 +274,10 @@
   function aimBox(on, t) {
     let S = [];
     if (on.star) { const s = starAt(t); if (s) S = [{ x: s.x, top: s.y - 70, eye: s.y, feet: s.y + 70, f: 0 }]; }
-    else if (on.x !== undefined) { const y = placeAt(t).ground(on.x); S = [{ x: on.x, top: y - 430, eye: y - 240, feet: y, f: 0 }]; }
-    else {
+    if (on.x !== undefined) { const y = placeAt(t).ground(on.x); S = [{ x: on.x, top: y - 430, eye: y - 240, feet: y, f: 0 }]; }
+    // the star together with everyone watching it ({ star, all }): their faces count, not their feet
+    if (on.star && on.all) S.push(...CAST.filter(id => onStage(id, t)).map(id => { const B = actorBody(id, t), e = toWorld(B, 0, REG[id].head).y; return { x: B.x, top: e - 90, eye: e, feet: e + 110, f: B.f }; }));
+    else if (!on.star && on.x === undefined) {
       let ids = on.actors || CAST.filter(id => onStage(id, t));
       if (!ids.length) ids = CAST.slice(0, 1);
       S = ids.map(id => {
@@ -305,7 +307,22 @@
     const byTop = g.top + hh * (1 - 2 * (z < 2.2 ? 0.1 : 0.08)), byEye = g.eye + 0.16 * hh;
     let cy = lerp(540, lerp(byTop, byEye, u), v);
     if (z < 3.4 && g.top < cy - hh + 6) cy = g.top + hh - 6;
+    if (g.x0 === g.x1 && on.actors && z > 1.2) cx = noHalfFaces(cx, hw, g.x0, on.actors[0], t);
     return bounds({ z, cx, cy });
+  }
+  // In a shot of one character, nobody else's face sits half in the frame: slide the frame (as little as
+  // possible, keeping the subject's own face well inside) so each other face is fully in or fully out.
+  function noHalfFaces(cx, hw, x, id, t) {
+    const fw = 105 * KS, keep = [x - fw * 1.05, x + fw * 1.05];
+    for (const o of CAST) {
+      if (o === id || !onStage(o, t)) continue;
+      const ox = aimSmooth({ actors: [o] }, t).x0, lo = ox - fw, hi = ox + fw, L = cx - hw, R = cx + hw;
+      if (hi <= L || lo >= R || lo >= L && hi <= R) continue;   // already fully out or fully in
+      const shifts = ox > cx ? [hi - R + 12, lo - R - 12] : [lo - L - 12, hi - L + 12];   // bring it in / push it out
+      const ok = shifts.filter(d => keep[0] >= L + d && keep[1] <= R + d).sort((a, b) => Math.abs(a) - Math.abs(b));
+      if (ok.length) cx += ok[0];
+    }
+    return cx;
   }
   // over the shoulder: the other character on the third away from the shoulder, facing it
   function otsCam(rig, t) {
@@ -335,7 +352,7 @@
       const z0 = () => (!p ? base().z : p.kind === 'frame' ? p.z : p.kind === 'ots' ? OTS_Z : p.cam.z);
       if (s.op === 'cut') Object.assign(r, { kind: 'frame', z: SIZES[s.size], on: on = s.on });
       else if (s.op === 'ots') Object.assign(r, { kind: 'ots', of: s.of, on: on = s.on });
-      else if (s.op === 'zoom') Object.assign(r, { kind: 'frame', z: s.z, on: on = s.on });
+      else if (s.op === 'zoom' || s.op === 'reveal') Object.assign(r, { kind: 'frame', z: s.z, on: on = s.on });
       else if (s.op === 'push') Object.assign(r, { kind: 'frame', z: Math.min(SIZES['extreme close'], z0() * 1.4), on });
       else if (s.op === 'pull') Object.assign(r, { kind: 'frame', z: Math.max(1, z0() / 1.4), on });
       else if (s.op === 'pan' || s.op === 'follow') Object.assign(r, { kind: 'frame', z: z0(), on: on = s.on });
@@ -565,6 +582,19 @@
       for (let k = 0; k < 9; k++) sparkle(c, 260 + hash(i * 31 + k) * 1400, 200 + hash(i * 31 + k + 9) * 680, 18 * a, a * 0.9, '255,214,120');
       c.restore();
     });
+    // slow motion: a soft, dreamy glow at the edges and a few drifting sparkles
+    if (P.slowmo) P.slowmo.forEach((sm, i) => {
+      const a = win(t, sm.t0, sm.t1, 0.4, 0.5); if (a <= 0) return;
+      c.save(); c.setTransform(1, 0, 0, 1, 0, 0);
+      const g = c.createRadialGradient(W / 2, H / 2, H * 0.35, W / 2, H / 2, H * 0.95);
+      g.addColorStop(0, 'rgba(255,248,230,0)'); g.addColorStop(1, `rgba(255,244,220,${0.32 * a})`);
+      c.fillStyle = g; c.fillRect(0, 0, W, H);
+      for (let k = 0; k < 14; k++) {
+        const u = ((t - sm.t0) * 0.12 + hash(i * 41 + k)) % 1;
+        sparkle(c, 120 + hash(i * 41 + k + 7) * 1680, H * (0.95 - u * 0.9), 10 + 8 * hash(k + 3), a * Math.sin(u * Math.PI) * 0.8, '255,236,170');
+      }
+      c.restore();
+    });
     P.titles.forEach(T => drawTitle(c, T, t));
     P.captions.forEach(cap => drawCaption(c, cap, t));
     const F = cam.framed ? faceBoxes(cam, Ks, heads) : null;
@@ -592,5 +622,18 @@
     await Promise.all(['700 52px Fredoka', 'italic 500 40px Lora'].map(f => document.fonts.load(f)));
     render(0);
   }
-  window.StudioFilm = { init, render };
+  // For checks: where each visible face (eyes to chin) is on screen at t, and whether the frame cuts it.
+  // The shoulder in an over-the-shoulder shot is cut on purpose and is left out.
+  function faces(t) {
+    const cam = P.shots ? camShot(t) : camAt(t), out = [];
+    CAST.forEach(id => {
+      if (!onStage(id, t) || cam.ots && cam.ots.of === id) return;
+      const K = actorBody(id, t), p = toScreen(cam, toWorld(K, K.f * 6, REG[id].head)), s = KS * cam.z;
+      const box = { x0: p.x - 90 * s, x1: p.x + 90 * s, y0: p.y - 70 * s, y1: p.y + 75 * s };
+      if (box.x1 < 0 || box.x0 > W || box.y1 < 0 || box.y0 > H) return;   // not in the picture at all
+      out.push({ id, z: +cam.z.toFixed(2), cut: box.x0 < 0 || box.x1 > W || box.y0 < 0 || box.y1 > H, box });
+    });
+    return out;
+  }
+  window.StudioFilm = { init, render, faces };
 })();
