@@ -163,6 +163,7 @@ Extras can do the simple things characters do:
 | `star` | prop | Everything in "The star" above, plus `star appears at left`, `the star glows` |
 | `heart` | prop | `hearts float up`, `heart floats down`, plus `heart appears at right` |
 | `lantern` | prop (also `little lantern`, `old lantern`) | `lantern appears next to ren`, `the lantern glows` (the candle lights; brightest at night), `the lantern stops glowing`, `ren walks to the lantern`, `ren looks at the lantern` |
+| `cottage` | set piece (also `little cottage`) | `cottage appears at right`, `the cottage opens` / `closes` (the door), `ren walks to the cottage`, `ren looks at the cottage`. About twice Ren's height, with a door his size; its windows (and an open door) glow warm at dusk and night |
 
 Places are listed in "Places" below. New assets are added here as they are created (with `/new-asset` in Claude Code).
 
