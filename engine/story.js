@@ -1028,6 +1028,8 @@
     return {
       version: 2, duration, fps: 30, width: 1920, height: 1080, scale: KS, errors, cast, ...P, keys, scenes,
       musicFadeIn: 1.0, musicFadeOut: [Math.max(1, duration - 3), duration], pictureFadeOut: [duration - 0.65, duration],
+      // when each story line starts: [line, seconds] (for the studio's preview; the renderer doesn't use it)
+      lineTimes: log.map(x => [x.b.line, +x.s.toFixed(3)]),
     };
   }
   function estimate(text) { return 0.45 + text.split(/\s+/).length * 0.36; }

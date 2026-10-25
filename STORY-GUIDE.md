@@ -1,6 +1,6 @@
 # Story Guide: every line you can write
 
-A story is a plain text file in the `stories` folder. You can write it in Notepad. Each line is one thing that happens, and they happen **one after another, top to bottom**. The timing is automatic: each line waits until the one before it has finished. You never type seconds, except with `wait`.
+A story is a plain text file in the `stories` folder. You can write it in Notepad, or in the studio app (double-click `Kitsu Studio.bat`), which checks every line as you type and shows a live preview. Each line is one thing that happens, and they happen **one after another, top to bottom**. The timing is automatic: each line waits until the one before it has finished. You never type seconds, except with `wait`.
 
 ```
 title: Ren and the Fallen Star

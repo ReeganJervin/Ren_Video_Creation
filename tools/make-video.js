@@ -8,6 +8,8 @@
 //   options for making the video:
 //     --workers N   draw with N browser pages at once (default: number of processor cores minus 1)
 //     --resume      carry on with a render that was stopped, keeping the parts already drawn
+//   node tools/make-video.js stories/my-story.txt --voices   only make the voices (used by the studio app)
+// With the environment variable KITSU_PROGRESS=1, progress is also printed as "@@{json}" lines (for the studio app).
 const fs = require('fs'), path = require('path'), http = require('http'), crypto = require('crypto'), os = require('os');
 const { spawn, spawnSync } = require('child_process');
 const ffmpeg = require('ffmpeg-static');
@@ -16,10 +18,13 @@ const { parseStory, compileStory, PICTURES, CHARACTERS } = require('../engine/st
 const { readWav } = require('./wav');
 const { validate } = require('./validate');
 const { clock, hasScenes, chapters, sceneChecks } = require('./scenes');
+const { readVoices, storyName, addMissingVoices, cachedVoice, levelledVoice, overrideFile, VOICE_LUFS } = require('./story-check');
 
 const ROOT = path.resolve(__dirname, '..');
 const say = (...a) => console.log(...a);
 const fail = msg => { console.error('\n' + msg + '\n'); process.exit(1); };
+// machine-readable progress for the studio app: { step: 'voices' | 'soundtrack' | 'drawing' | 'joining' | 'checking', ... }
+const progress = process.env.KITSU_PROGRESS ? o => console.log('@@' + JSON.stringify(o)) : () => {};
 
 async function main() {
   const args = process.argv.slice(2);
@@ -27,7 +32,7 @@ async function main() {
   if (!storyArg) fail('Tell me which story to make, for example:\n  make-video.bat stories\\the-fallen-star.txt');
   const storyPath = path.resolve(storyArg);
   if (!fs.existsSync(storyPath)) fail(`I can't find the story file: ${storyArg}`);
-  const name = path.basename(storyPath).replace(/\.[^.]+$/, '').replace(/[^\w-]+/g, '-');
+  const name = storyName(storyPath);
   const opt = k => args.includes('--' + k);
 
   // 1. read + check the story
@@ -35,12 +40,8 @@ async function main() {
   if (parsed.errors.length) fail(`Please fix these lines in ${path.basename(storyPath)}:\n\n${parsed.errors.join('\n\n')}\n\nSee STORY-GUIDE.md for every line you can use.`);
   const speech = parsed.beats.filter(b => b.type === 'say');
   // an extra that speaks needs a voice in config/voices.json: without one, the voice is missing too
-  const voices = JSON.parse(fs.readFileSync(path.join(ROOT, 'config/voices.json'), 'utf8'));
-  speech.forEach(b => {
-    if (voices[b.who] || b.who === 'narrator') return;
-    const e = parsed.missing.find(x => x.kind === 'voice' && x.id === b.who) || (parsed.missing.push({ kind: 'voice', id: b.who, name: `voice for ${parsed.extras[b.who] ? parsed.extras[b.who].name : b.who}`, lines: [], text: [], needs: ['speaks'], places: [], times: [] }), parsed.missing[parsed.missing.length - 1]);
-    e.lines.push(b.line); e.text.push(b.src);
-  });
+  const voices = readVoices();
+  addMissingVoices(parsed, voices);
   const buildDir = path.join(ROOT, 'build', name);
   fs.mkdirSync(buildDir, { recursive: true });
 
@@ -64,20 +65,19 @@ async function main() {
   // 2. voices (cached, so unchanged lines are never re-made)
   const voiceDir = path.join(buildDir, 'voice'), cacheDir = path.join(ROOT, 'cache', 'voices');
   fs.mkdirSync(voiceDir, { recursive: true }); fs.mkdirSync(cacheDir, { recursive: true });
-  const overrideDir = path.join(ROOT, 'voice-overrides', name);
   const lens = {}, jobs = [], pending = [];
   speech.forEach((b, i) => {
     const v = voices[b.who], out = path.join(voiceDir, `${i}.wav`);
-    const override = path.join(overrideDir, `line-${b.line}.wav`);
+    const override = overrideFile(name, b.line);
     if (fs.existsSync(override)) { levelVoice(override, out); say(`  using your recording for line ${b.line}`); return; }
     if (!v) { if (fs.existsSync(out)) fs.unlinkSync(out); return; }   // no voice yet: estimated timing, no sound
-    const key = crypto.createHash('sha1').update(JSON.stringify([b.text, v.voice, v.speed, v.pitch])).digest('hex').slice(0, 16);
-    const cached = path.join(cacheDir, key + '.wav');
+    const cached = cachedVoice(b.text, v);
     pending.push({ cached, out, pitch: v.pitch });
     if (!fs.existsSync(cached)) jobs.push({ text: b.text, voice: v.voice, speed: v.speed, out: cached + (v.pitch !== 1 ? '.raw.wav' : '') });
   });
   if (jobs.length) {
     say(`Making ${jobs.length} voice line(s)...`);
+    progress({ step: 'voices', total: jobs.length });
     const py = [path.join(ROOT, '.venv', 'Scripts', 'python.exe'), path.join(ROOT, '.venv', 'bin', 'python')].find(p => fs.existsSync(p));
     if (!py) fail('The voice tool is not installed yet. Please run setup.bat first.');
     if (!fs.existsSync(path.join(ROOT, 'models', 'kokoro.onnx'))) fail('The voice model is missing. Please run setup.bat first.');
@@ -97,7 +97,7 @@ async function main() {
   }
   // every line at the same loudness, whichever voice says it (levelled once, kept beside the cached clip)
   for (const p of pending) {
-    const levelled = p.cached.replace(/\.wav$/, `.lv${-VOICE_LUFS}s.wav`);
+    const levelled = levelledVoice(p.cached);
     if (!fs.existsSync(levelled)) levelVoice(p.cached, levelled);
     fs.copyFileSync(levelled, p.out);
   }
@@ -118,6 +118,7 @@ async function main() {
   fs.writeFileSync(path.join(buildDir, 'plan.json'), JSON.stringify(plan));
   plan.warnings.forEach(w => say('  note: ' + w));
   say(`"${plan.meta.title}": ${plan.duration.toFixed(1)} s, ${plan.voice.length} spoken lines.`);
+  if (opt('voices')) { say('The voices are ready.'); return; }
 
   const server = await serve();
   const url = `http://127.0.0.1:${server.address().port}/engine/page.html?plan=/build/${name}/plan.json`;
@@ -158,6 +159,7 @@ async function main() {
   if (opt('resume') && soundOld === soundId && stems.every(f => fs.existsSync(f))) say('Using the soundtrack made last time.');
   else {
     say('Making the soundtrack...');
+    progress({ step: 'soundtrack' });
     if (fs.existsSync(soundState)) fs.unlinkSync(soundState);
     for (const stem of ['mix', 'voice', 'sfx']) {
       const { wav, missing } = await page.evaluate(s => FILM.renderAudio(s), stem);
@@ -173,13 +175,14 @@ async function main() {
   const wn = args.indexOf('--workers'), workers = wn >= 0 ? parseInt(args[wn + 1], 10) : Math.max(1, os.cpus().length - 1);
   if (!(workers >= 1 && workers <= 64)) fail('--workers needs a number of workers from 1 to 64, for example --workers 3');
   try {
-    await renderVideo(plan, { browser, url, workers, resume: opt('resume'), buildDir, mp4, root: ROOT, wav: path.join(buildDir, 'master.wav'), say });
+    await renderVideo(plan, { browser, url, workers, resume: opt('resume'), buildDir, mp4, root: ROOT, wav: path.join(buildDir, 'master.wav'), say, progress });
   } catch (e) {
     await browser.close(); server.close();
     fail(`${e.message}\nYou can carry on where it stopped with:  resume-video.bat ${path.relative(ROOT, storyPath)}`);
   }
   await browser.close(); server.close();
   say('\nChecking the video...');
+  progress({ step: 'checking' });
   const results = validate(plan, { root: ROOT, mp4, voice: path.join(buildDir, 'voice.wav'), sfx: path.join(buildDir, 'sfx.wav'), master: path.join(buildDir, 'master.wav') });
   results.push(...sceneChecks(plan));
   if (plan.missing.length) results.push({ ok: true, note: true, name: 'Placeholders', detail: `rendered with ${plan.missing.length} placeholder${plan.missing.length === 1 ? '' : 's'}: ${plan.missing.map(m => m.name).join(', ')}` });
@@ -261,7 +264,7 @@ function stillTimes(list, plan) {
 // Some voices also start with a punch, so the first SOFT_START seconds of speech fade up from about -9 dB:
 // the line still starts clearly, without a jump in volume. The length never changes.
 // Clips too short or quiet to measure are copied as they are.
-const VOICE_LUFS = -22, SOFT_START = 0.4;
+const SOFT_START = 0.4;
 function levelVoice(src, dst) {
   const r = spawnSync(ffmpeg, ['-hide_banner', '-i', src, '-af', 'loudnorm=print_format=json', '-f', 'null', '-'], { encoding: 'utf8' });
   let m = null;

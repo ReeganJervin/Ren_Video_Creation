@@ -16,6 +16,17 @@ The characters' designs, the voices and the style are fixed in the project. **On
 
 After setup, everything runs offline.
 
+## The studio app (in your browser)
+
+Double-click **`Kitsu Studio.bat`**. Your browser opens the studio at http://localhost:3000. Everything runs on your own computer: nothing goes online, and nobody else can open it. Keep the black window open while you use the studio, and close it to stop.
+
+- **Home:** all your stories, with their length and status (*Has errors*, *Missing assets*, *Ready*, *Rendered*). New story, Open, Duplicate, Rename and Delete. Delete moves the story to `stories\_deleted\`, so nothing is ever lost.
+- **Writing:** the editor colours each kind of line and suggests what you can write (type `ren ` and see). Mistakes get a red underline about half a second after you stop typing; point at one to read what's wrong. Things that don't exist yet get an orange underline, with the `/new-asset` command to copy for Claude Code. The story saves itself, and it stays a normal text file you can still open in Notepad. If someone else changes the file (Claude Code, or you in Notepad), the studio offers to load the new version.
+- **Preview:** play, pause and drag the timeline. Click a story line to jump to that moment; while it plays, the current line lights up. **Make voices** makes the voice lines that aren't made yet. **Save still** saves the picture in `videos\`.
+- **Make video:** shows each step, the scene, the speed and the time left. You can cancel it and resume it later, and closing the browser doesn't stop it. When it's done, the video plays in the page with its checks in green and red, plus **Open folder** and **Copy report** (to paste to Claude Code).
+
+The command files below keep working exactly as before.
+
 ## Making a video
 
 1. Copy `stories\_template.txt` to a new name, for example `stories\my-story.txt`, and write your story. The full list of lines you can use is in **[STORY-GUIDE.md](STORY-GUIDE.md)**.
@@ -102,6 +113,8 @@ The results are in `videos\<name>-report.txt`. Each line starts with `PASS`, `FA
 | `engine\film.js` | Draws each frame: the place, the characters, the star, hearts, bubbles, captions and place changes |
 | `engine\audio.js` | Music, sound effects, the sound of each place, voice mixing (Web Audio) |
 | `tools\make-video.js` | The main program behind the `.bat` files |
+| `tools\story-check.js` | The story check and voice bookkeeping that `make-video.js` and the studio app share |
+| `studio\` | The studio app: `server\server.js` (the local server), `src\` (the screens, React + TypeScript), `tests\` (`node studio\tests\api.test.js` and `node studio\tests\e2e.test.js`) |
 | `tools\scenes.js` | Chapters and the extra checks for stories with scenes |
 | `tools\render.js` | Draws the frames: several workers at once, scene by scene in pieces that `--resume` can keep |
 | `tools\browser.js` | Starts the drawing browser (or Chrome/Edge if setup couldn't download it) |
