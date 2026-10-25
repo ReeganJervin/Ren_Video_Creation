@@ -79,7 +79,7 @@
     const phase = x / 160 * Math.PI * 2, swing = Math.sin(phase) * 0.35 * walk, idle = Math.sin(t * 2 + n * 2.1) * 0.04;
     let wave = 0; for (const w of a.waves) wave += Math.sin((t - w.a) * 9) * 0.35 * win(t, w.a, w.b, 0.2, 0.3);
     return {
-      id, x, y: placeAt(t).ground(x), h, sx, sy, s: KS, f: A_(id, 'facing', t), walk, phase, hopping,
+      id, x, y: placeAt(t).ground(x) - (REG[id].fly || 0), h, sx, sy, s: KS, f: A_(id, 'facing', t), walk, phase, hopping,
       armL: A_(id, 'armL', t) + swing + idle, armR: A_(id, 'armR', t) - swing + idle + wave,
     };
   }
@@ -106,7 +106,7 @@
     const head = toWorld(K, K.f * 6, def.head);
     for (const L of a.lookAt) {
       const w = win(t, L.a, L.b, 0.3, 0.4); if (w <= 0) continue;
-      const p = L.target === 'star' ? starAt(t) : L.target === 'heart' ? heartAt(t) : headOf(L.target.actor, t);
+      const p = L.target === 'star' ? starAt(t) : L.target === 'heart' ? heartAt(t) : L.target.prop !== undefined ? propPoint(L.target.prop, t) : headOf(L.target.actor, t);
       if (!p || !p.vis) continue;
       const dx = p.x - head.x, dy = p.y - head.y, nn = Math.hypot(dx, dy) || 1;
       lx = lerp(lx, clamp(dx / nn * 1.3, -1, 1), w); ly = lerp(ly, clamp(dy / nn * 1.3, -1, 1), w);
@@ -196,43 +196,9 @@
     g.addColorStop(0, `rgba(${col},${a})`); g.addColorStop(1, `rgba(${col},0)`);
     c.fillStyle = g; c.fillRect(x - r, y - r, r * 2, r * 2);
   }
-  function starPath(c, r) { c.beginPath(); for (let k = 0; k < 10; k++) { const a = -Math.PI / 2 + k * Math.PI / 5, rr = k % 2 ? r * 0.5 : r; c.lineTo(Math.cos(a) * rr, Math.sin(a) * rr); } c.closePath(); }
-  function drawStar(c, S, t) {
-    c.save(); c.globalCompositeOperation = 'lighter';
-    glow(c, S.x, S.y, S.r * (3.5 + S.bright * 2.5), '255,214,110', 0.4 * S.bright * S.alpha);
-    if (S.flare > 0) {
-      c.translate(S.x, S.y); c.rotate(t * 0.3);
-      for (const rot of [0, Math.PI / 2, Math.PI / 4, -Math.PI / 4]) {
-        c.save(); c.rotate(rot);
-        const L = S.r * (rot % (Math.PI / 2) ? 2.5 + 3 * S.flare : 3 + 5 * S.flare), g = c.createLinearGradient(-L, 0, L, 0);
-        g.addColorStop(0, 'rgba(255,240,180,0)'); g.addColorStop(0.5, `rgba(255,240,180,${0.9 * S.flare})`); g.addColorStop(1, 'rgba(255,240,180,0)');
-        c.fillStyle = g; c.fillRect(-L, -2.5, L * 2, 5); c.restore();
-      }
-    }
-    c.restore();
-    c.save(); c.translate(S.x, S.y); c.rotate(Math.sin(t * 1.7) * 0.12); c.globalAlpha = S.alpha;
-    const g = c.createRadialGradient(-S.r * 0.3, -S.r * 0.3, 0, 0, 0, S.r);
-    g.addColorStop(0, '#fff8d0'); g.addColorStop(1, S.bright > 0.6 ? '#ffc93c' : '#f2c25a');
-    starPath(c, S.r); c.fillStyle = g; c.fill(); c.lineJoin = 'round'; c.lineWidth = S.r * 0.16; c.strokeStyle = '#e8a21a'; c.stroke();
-    const fa = clamp((S.r - 15) / 5) * S.alpha;
-    if (fa > 0) {
-      c.globalAlpha = fa; c.strokeStyle = c.fillStyle = '#6b3a10'; c.lineWidth = 2; c.lineCap = 'round';
-      const e = S.r * 0.22;
-      if (S.happy) [-1, 1].forEach(i => { c.beginPath(); c.arc(i * e, -1, 2.3, 0, Math.PI * 2); c.fill(); });
-      else [-1, 1].forEach(i => { c.beginPath(); c.moveTo(i * e - 3, -1); c.quadraticCurveTo(i * e, 2, i * e + 3, -1); c.stroke(); });
-      c.beginPath(); c.moveTo(-3, 4); c.quadraticCurveTo(0, 7, 3, 4); c.stroke();
-      c.fillStyle = 'rgba(255,120,120,0.5)'; [-1, 1].forEach(i => { c.beginPath(); c.ellipse(i * e * 1.9, 4, 3, 2, 0, 0, Math.PI * 2); c.fill(); });
-    }
-    c.restore();
-  }
-  function drawHeart(c, x, y, r, a, col = '#ff7a9a', glowCol = '255,150,170') {
-    c.save(); c.globalCompositeOperation = 'lighter'; glow(c, x, y, r * 2.6, glowCol, 0.3 * a); c.restore();
-    c.save(); c.translate(x, y); c.globalAlpha = clamp(a);
-    c.beginPath(); c.moveTo(0, r * 0.35);
-    c.bezierCurveTo(-r * 1.1, -r * 0.35, -r * 0.5, -r * 1.05, 0, -r * 0.45); c.bezierCurveTo(r * 0.5, -r * 1.05, r * 1.1, -r * 0.35, 0, r * 0.35); c.closePath();
-    c.fillStyle = col; c.fill(); c.lineWidth = 3; c.strokeStyle = '#ffffffaa'; c.stroke();
-    c.restore();
-  }
+  // the star and the heart are props in the asset registry (engine/props/)
+  const drawStar = (c, S, t) => StudioAssets.ASSETS.star.drawAt(c, t, S);
+  const drawHeart = (c, ...rest) => StudioAssets.ASSETS.heart.drawAt(c, ...rest);
   function sparkle(c, x, y, s, a, col = '255,246,200') {
     if (a <= 0 || s <= 0) return;
     c.save(); c.translate(x, y); c.globalAlpha = clamp(a); c.fillStyle = `rgb(${col})`;
@@ -381,6 +347,63 @@
     c.translate(-(W / 2 + (cam.cx - W / 2) * p), -(H / 2 + (cam.cy - H / 2) * p));
   }
   const toScreen = (cam, p) => ({ x: (p.x - cam.cx) * cam.z + W / 2, y: (p.y - cam.cy) * cam.z + H / 2 });
+
+  // ---------- props, set pieces and extras (asset kit) ----------
+  // where a prop is (for looking at it), or null when it isn't on stage
+  function propPoint(i, t) {
+    const p = P.props[i];
+    if (!p || t < p.t0 || (p.t1 !== null && t > p.t1)) return null;
+    return { vis: true, x: p.x, y: p.y - p.height * 0.6 };
+  }
+  const lastAt = (list, t) => { let v = null; for (const e of list) if (e.t <= t) v = e; return v; };
+  // Props stand on the ground behind the characters (or float in the sky), drawn with the scenery so they share
+  // its time-of-day colour. They pop in, fade out, and glow or open when the story says so.
+  function drawProps(c, t, tau, PN) {
+    const light = { tau, tint: tod(tau, PN.tint) };
+    P.props.forEach(p => {
+      if (t < p.t0 || (p.t1 !== null && t >= p.t1)) return;
+      const a = p.t1 !== null ? clamp((p.t1 - t) / 0.5) : 1, pop = easeOutBack((t - p.t0) / 0.4);
+      const st = lastAt(p.states, t), gl = lastAt(p.glow, t), asset = p.asset && StudioAssets.ASSETS[p.asset];
+      const glowA = gl ? (gl.on ? ease((t - gl.t) / 0.4) : 1 - ease((t - gl.t) / 0.4)) : 0;
+      let state = st ? st.state : asset && asset.states.length ? asset.states[0] : 'closed';
+      if (glowA > 0.5 && asset && asset.states.includes('glowing')) state = 'glowing';
+      HP.cam(1);
+      c.save(); c.translate(p.x, p.y); c.globalAlpha = a; c.scale(pop, pop);
+      if (glowA > 0) { c.save(); c.globalCompositeOperation = 'lighter'; glow(c, 0, -p.height * 0.55, p.height * 1.3, '255,222,140', 0.45 * glowA * a); c.restore(); }
+      if (asset) asset.draw(c, t, state, light); else drawPropPlaceholder(c, p, st ? state : null);
+      c.restore();
+    });
+    c.setTransform(1, 0, 0, 1, 0, 0); c.globalAlpha = 1;
+  }
+  // a missing prop: a soft grey rounded box of its size class, with its name on it
+  function drawPropPlaceholder(c, p, state) {
+    const w = { small: 84, medium: 160, big: 380 }[p.size] || 84, h = p.height, r = Math.min(24, w / 4);
+    c.fillStyle = 'rgba(205,210,218,0.95)'; c.strokeStyle = '#7c8592'; c.lineWidth = 4; c.setLineDash([12, 8]);
+    c.beginPath(); c.roundRect(-w / 2, -h, w, h, r); c.fill(); c.stroke(); c.setLineDash([]);
+    c.fillStyle = '#4d5560'; c.textAlign = 'center'; c.textBaseline = 'middle';
+    const fs = p.size === 'small' ? 22 : 34, label = p.name + (state ? ` (${state})` : '');
+    c.font = `700 ${fs}px ${FONT}`;
+    if (p.size === 'small') c.fillText(label, 0, 22); else c.fillText(label, 0, -h / 2);
+  }
+  // a missing extra: a simple grey animal shape that still blinks, looks, talks and hops, with its name under it
+  function drawExtraPlaceholder(c, K, def) {
+    const H = def.height || 110;
+    c.save(); c.translate(K.x, K.y - K.h); c.scale(K.s * K.sx, K.s * K.sy);
+    c.fillStyle = '#aab1bb'; c.strokeStyle = '#6d7581'; c.lineWidth = 4;
+    c.beginPath(); c.ellipse(0, -H * 0.3, H * 0.3, H * 0.3, 0, 0, Math.PI * 2); c.fill(); c.stroke();
+    const hx = K.f * 8;
+    [-1, 1].forEach(i => { c.beginPath(); c.arc(hx + i * H * 0.15, -H * 0.84, H * 0.08, 0, Math.PI * 2); c.fill(); c.stroke(); });
+    c.beginPath(); c.arc(hx, -H * 0.62, H * 0.24, 0, Math.PI * 2); c.fill(); c.stroke();
+    [-1, 1].forEach(i => {
+      const ex = hx + i * H * 0.085 + (K.lookX || 0) * 3, ey = -H * 0.64 + (K.lookY || 0) * 2;
+      c.save(); c.translate(ex, ey); c.scale(1, 1 - 0.9 * (K.blink || 0));
+      c.fillStyle = '#fff'; c.beginPath(); c.arc(0, 0, H * 0.05, 0, Math.PI * 2); c.fill();
+      c.fillStyle = '#3a3f47'; c.beginPath(); c.arc(0, 0, H * 0.028, 0, Math.PI * 2); c.fill(); c.restore();
+    });
+    if (K.talk > 0) { c.fillStyle = '#3a3f47'; c.beginPath(); c.ellipse(hx, -H * 0.52, H * 0.04, H * 0.035 * K.talk + 1, 0, 0, Math.PI * 2); c.fill(); }
+    c.restore();
+    c.save(); c.fillStyle = '#4d5560'; c.textAlign = 'center'; c.font = `700 24px ${FONT}`; c.fillText(def.name, K.x, K.y + 32); c.restore();
+  }
 
   // ---------- text overlays ----------
   const FONT = '"Fredoka", "Arial Rounded MT Bold", Arial, sans-serif', SERIF = '"Lora", Georgia, serif';
@@ -537,6 +560,7 @@
     const PN = placeAt(t);
     HP.cam = p => applyCam(c, cam, p);
     PN.draw(c, t, cam, tau, HP);
+    if (P.props && P.props.length) drawProps(c, t, tau, PN);
     c.setTransform(1, 0, 0, 1, 0, 0); c.globalCompositeOperation = 'multiply'; c.fillStyle = tod(tau, PN.grade); c.fillRect(0, 0, W, H); c.globalCompositeOperation = 'source-over';
     const Ks = {}; CAST.forEach(id => { Ks[id] = actorState(id, t); });
     const k = layer.getContext('2d');
@@ -608,10 +632,18 @@
   }
 
   async function init(canvas, plan) {
-    P = plan; KS = plan.scale; CAST = plan.cast; REG = StudioCharacters.CHARACTERS;
-    PL = StudioPlaces.find(plan.meta.place) || StudioPlaces.PLACES.meadow;
+    P = plan; KS = plan.scale; CAST = plan.cast; REG = { ...StudioCharacters.CHARACTERS };
+    // places the story names that don't exist yet are shown as placeholders
+    (plan.missingPlaces || []).forEach(n => StudioPlaces.placeholder(n));
+    PL = StudioPlaces.PLACES[plan.meta.place] || StudioPlaces.find(plan.meta.place) || StudioPlaces.PLACES.meadow;
+    // extras act like small characters: drawn by their asset, or as a grey placeholder
+    Object.entries(plan.extras || {}).forEach(([id, d]) => {
+      const a = StudioAssets.ASSETS[id];
+      REG[id] = StudioAssets.extraCharacter(id, a || d);
+      DRAW[id] = a && a.draw ? (c, K) => a.draw(c, K) : (c, K) => drawExtraPlaceholder(c, K, REG[id]);
+    });
     HP = { W, H, duration: plan.duration, cam: null };
-    CAST.forEach(id => { DRAW[id] = window[REG[id].global][REG[id].draw]; });
+    CAST.forEach(id => { if (!DRAW[id]) DRAW[id] = window[REG[id].global][REG[id].draw]; });
     starSegs = plan.star.filter(s => s.type !== 'flicker').sort((a, b) => a.t0 - b.t0);
     flickers = plan.star.filter(s => s.type === 'flicker');
     ctx = canvas.getContext('2d');

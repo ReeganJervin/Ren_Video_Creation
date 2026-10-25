@@ -1,4 +1,5 @@
-// Place registry. Adding a place = a file in engine/places/ that calls register(id, {...}) plus its name in FILES.
+// Place registry. Adding a place = a file in engine/places/ that calls register(id, {...}); it is found automatically
+// (and joins the asset registry in assets.js as kind 'place').
 // A place provides:
 //   name           what a story writes after "place:"
 //   pos            x of the stage spots { left, center, right }
@@ -8,11 +9,13 @@
 //   front(...)     optional: things drawn in front of the characters (fireflies, ...)
 (function (root) {
   const PLACES = {};
-  const FILES = ['meadow', 'forest', 'river', 'snowy-hill', 'beach'];
-  const register = (id, def) => { PLACES[id] = { id, ...def }; };
+  const ASSETS = typeof module !== 'undefined' ? require('../assets.js') : root.StudioAssets;
+  // the place files: found in the folder (Node), or listed in the plan (browser)
+  const FILES = [];
+  const register = (id, def) => { PLACES[id] = { id, ...def }; ASSETS.register({ id, kind: 'place', names: [def.name], credit: def.credit || 'Claude Code' }); };
   // "snowy hill", "Snowy-Hill" and "snowy_hill" all mean the same place
   const find = name => { const n = String(name).toLowerCase().trim().replace(/[-_\s]+/g, ' '); return Object.values(PLACES).find(p => p.name === n); };
-  const names = () => FILES.map(f => f.replace(/-/g, ' '));
+  const names = () => Object.values(PLACES).filter(p => !p.missing).map(p => p.name);
 
   // ---------- shared drawing helpers (deterministic: time-based, seeded) ----------
   const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
@@ -94,6 +97,34 @@
   }
   const util = { clamp, lerp, hash, hex, tod, toda, glow, sparkle, sky, sunYAt, fireflies, STARS, CLOUDS };
 
-  const api = { PLACES, FILES, register, find, names, util };
-  if (typeof module !== 'undefined') { module.exports = api; FILES.forEach(f => require('./' + f + '.js')); } else root.StudioPlaces = api;
+  // A place a story names that doesn't exist yet: a plain grey-blue backdrop with a ground line and its name,
+  // so the story can still be previewed. It has the usual stage spots and a flat ground.
+  function placeholder(name) {
+    const id = 'missing-' + name.replace(/\s+/g, '-');
+    if (PLACES[id]) return PLACES[id];
+    const G = 880;
+    PLACES[id] = {
+      id, name, missing: true, pos: { left: 560, center: 960, right: 1360 }, ground: () => G,
+      grade: ['#ffffff', '#ffe6cc', '#c8b8e0', '#7d86b0'], tint: ['#ffffff', '#ffd7a8', '#b9a3d6', '#4a5590'],
+      draw(c, t, cam, tau, h) {
+        c.setTransform(1, 0, 0, 1, 0, 0);
+        const g = c.createLinearGradient(0, 0, 0, h.H); g.addColorStop(0, '#9fb0c6'); g.addColorStop(1, '#d6dee9');
+        c.fillStyle = g; c.fillRect(0, 0, h.W, h.H);
+        h.cam(1);
+        c.fillStyle = '#8e9caf'; c.fillRect(-400, G, 2720, 600);
+        c.strokeStyle = '#6f7d92'; c.lineWidth = 4; c.beginPath(); c.moveTo(-400, G); c.lineTo(2320, G); c.stroke();
+        c.fillStyle = 'rgba(60,70,90,0.55)'; c.textAlign = 'center';
+        c.font = '700 64px "Fredoka", Arial, sans-serif'; c.fillText(name, 960, 250);
+        c.font = '600 34px "Fredoka", Arial, sans-serif'; c.fillText('(missing place: shown as a placeholder)', 960, 305);
+      },
+    };
+    return PLACES[id];
+  }
+
+  const api = { PLACES, FILES, register, find, names, util, placeholder };
+  if (typeof module !== 'undefined') {
+    module.exports = api;
+    const fs = require('fs');
+    for (const f of fs.readdirSync(__dirname).sort()) if (f.endsWith('.js') && f !== 'index.js' && !f.startsWith('_')) { FILES.push(f.replace(/\.js$/, '')); require('./' + f); }
+  } else root.StudioPlaces = api;
 })(this);

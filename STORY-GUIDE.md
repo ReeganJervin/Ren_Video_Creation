@@ -125,6 +125,56 @@ Characters also blink, breathe, sway a little, twitch their ears and (Ren) wag h
 | `sparkles` | Sparkles burst around the character who acted or spoke last. `sparkles around yuki` picks who |
 | `title card: REN` | Big bouncy letters drop in one by one (up to 14 characters) |
 
+## Props, set pieces and animals (the asset kit)
+
+Besides Ren, Yuki and the star, a story can use **props** (small things like a lantern or a map), **set pieces** (big things that stand on the ground, like a cottage or a tent) and **extras** (simple animals or creatures, like an owl or a squirrel).
+
+### Props and set pieces
+
+| Line | What happens |
+|---|---|
+| `lantern appears at left` | It appears at the `left`, `center` or `right` spot. Also `on the ground` (next to whoever acted or spoke last), `in the sky`, or `next to ren` |
+| `the lantern disappears` | It fades away |
+| `the lantern glows` / `the lantern stops glowing` | A soft glow around it |
+| `the cottage opens` / `the cottage closes` | Opens or closes it (if it has a door or lid) |
+| `ren walks to the lantern` | Walks up beside it and looks at it |
+| `ren looks at the cottage` | Looks at it (and keeps looking until the next look) |
+| `ren waves at the cottage` | Waves while looking at it |
+
+Set pieces stand behind the characters. Props and set pieces stay where they are until they disappear, or until the story moves to another place.
+
+### Extras (animals and creatures)
+
+Extras can do the simple things characters do:
+
+| Line | What happens |
+|---|---|
+| `owl enters` / `owl enters from right` / `owl exits to left` | Comes in or goes out |
+| `owl flies in` / `owl flies away` | For flying extras (they stay up in the air) |
+| `fish swims by` | Swims across, from one side to the other |
+| `owl hops`, `owl looks at ren`, `owl feels happy` | Like the characters |
+| `owl: Hoo!` / `owl (happy): Hoo!` | Talks in a speech bubble (it needs a voice in `config/voices.json`) |
+| `ren looks at the owl`, `ren walks to the owl`, `ren waves at the owl` | Ren and Yuki can talk to and look at extras |
+
+### Things that don't exist yet
+
+You can write a story with things that don't exist yet. `check-story.bat` lists them instead of failing:
+
+```
+Your story needs 5 new things:
+  extra:      owl                  (lines 22, 23)
+  place:      cottage garden       (line 9)
+  set piece:  cottage              (lines 14, 15, 17)
+  prop:       lantern              (lines 18, 19, 20, 27)
+  voice:      voice for owl        (line 23)
+They are shown as grey placeholders for now, so you can still preview.
+```
+
+- In the preview and in stills, missing things are **grey placeholders** with their name on them: a box for a prop or set piece, a grey animal shape for an extra, and a plain grey-blue background for a place.
+- `make-video.bat` won't make the finished video until everything exists. For a test video anyway, run `node tools\make-video.js stories\my-story.txt --allow-placeholders`.
+- If a name is very close to something that exists, it's probably a typo, and the check tells you: *"Line 4: I don't know "hart". Did you mean "heart"?"*
+- The list is also saved as `build\<story>\missing-assets.json`, which Claude Code uses to create the missing things.
+
 ## Places
 
 | Place | What it looks like | What you hear |

@@ -34,6 +34,15 @@ async function main() {
   const parsed = parseStory(fs.readFileSync(storyPath, 'utf8'));
   if (parsed.errors.length) fail(`Please fix these lines in ${path.basename(storyPath)}:\n\n${parsed.errors.join('\n\n')}\n\nSee STORY-GUIDE.md for every line you can use.`);
   const speech = parsed.beats.filter(b => b.type === 'say');
+  // an extra that speaks needs a voice in config/voices.json: without one, the voice is missing too
+  const voices = JSON.parse(fs.readFileSync(path.join(ROOT, 'config/voices.json'), 'utf8'));
+  speech.forEach(b => {
+    if (voices[b.who] || b.who === 'narrator') return;
+    const e = parsed.missing.find(x => x.kind === 'voice' && x.id === b.who) || (parsed.missing.push({ kind: 'voice', id: b.who, name: `voice for ${parsed.extras[b.who] ? parsed.extras[b.who].name : b.who}`, lines: [], text: [], needs: ['speaks'], places: [], times: [] }), parsed.missing[parsed.missing.length - 1]);
+    e.lines.push(b.line); e.text.push(b.src);
+  });
+  const buildDir = path.join(ROOT, 'build', name);
+  fs.mkdirSync(buildDir, { recursive: true });
 
   if (opt('check')) {
     const plan = compileStory(parsed, {});
@@ -47,12 +56,12 @@ async function main() {
       say('');
       sceneChecks(plan).forEach(r => say(`  ${label(r)}  ${r.name}: ${r.detail}`));
     }
+    missingReport(plan, buildDir);
     return;
   }
 
   // 2. voices (cached, so unchanged lines are never re-made)
-  const voices = JSON.parse(fs.readFileSync(path.join(ROOT, 'config/voices.json'), 'utf8'));
-  const buildDir = path.join(ROOT, 'build', name), voiceDir = path.join(buildDir, 'voice'), cacheDir = path.join(ROOT, 'cache', 'voices');
+  const voiceDir = path.join(buildDir, 'voice'), cacheDir = path.join(ROOT, 'cache', 'voices');
   fs.mkdirSync(voiceDir, { recursive: true }); fs.mkdirSync(cacheDir, { recursive: true });
   const overrideDir = path.join(ROOT, 'voice-overrides', name);
   const lens = {}, jobs = [], pending = [];
@@ -60,6 +69,7 @@ async function main() {
     const v = voices[b.who], out = path.join(voiceDir, `${i}.wav`);
     const override = path.join(overrideDir, `line-${b.line}.wav`);
     if (fs.existsSync(override)) { levelVoice(override, out); say(`  using your recording for line ${b.line}`); return; }
+    if (!v) { if (fs.existsSync(out)) fs.unlinkSync(out); return; }   // no voice yet: estimated timing, no sound
     const key = crypto.createHash('sha1').update(JSON.stringify([b.text, v.voice, v.speed, v.pitch])).digest('hex').slice(0, 16);
     const cached = path.join(cacheDir, key + '.wav');
     pending.push({ cached, out, pitch: v.pitch });
@@ -90,12 +100,18 @@ async function main() {
     if (!fs.existsSync(levelled)) levelVoice(p.cached, levelled);
     fs.copyFileSync(levelled, p.out);
   }
-  speech.forEach((b, i) => { lens[i] = readWav(path.join(voiceDir, `${i}.wav`)).duration; });
+  speech.forEach((b, i) => { const w = path.join(voiceDir, `${i}.wav`); if (fs.existsSync(w)) lens[i] = readWav(w).duration; });
 
   // 3. compile the timeline
   const plan = compileStory(parsed, lens);
+  // a finished video needs every asset; stills and the preview show placeholders instead
+  if (plan.missing.length && !opt('stills') && !opt('preview')) {
+    missingReport(plan, buildDir);
+    if (!opt('allow-placeholders')) fail('The video can\'t be made until these are created (or add --allow-placeholders for a test video).');
+  }
   if (plan.errors.length) fail(`Please fix these lines:\n\n${plan.errors.join('\n')}`);
-  plan.voice.forEach(v => { v.file = `/build/${name}/voice/${v.id}.wav`; });
+  // (a line whose voice doesn't exist yet, like a new extra's, has no file and stays silent)
+  plan.voice.forEach(v => { if (fs.existsSync(path.join(voiceDir, `${v.id}.wav`))) v.file = `/build/${name}/voice/${v.id}.wav`; else v.missing = true; });
   fs.writeFileSync(path.join(buildDir, 'plan.json'), JSON.stringify(plan));
   plan.warnings.forEach(w => say('  note: ' + w));
   say(`"${plan.meta.title}": ${plan.duration.toFixed(1)} s, ${plan.voice.length} spoken lines.`);
@@ -131,7 +147,7 @@ async function main() {
 
   // the soundtrack (kept for --resume when nothing it depends on has changed)
   const voiceSum = crypto.createHash('sha1');
-  speech.forEach((_, i) => voiceSum.update(fs.readFileSync(path.join(voiceDir, `${i}.wav`))));
+  speech.forEach((_, i) => { const w = path.join(voiceDir, `${i}.wav`); voiceSum.update(fs.existsSync(w) ? fs.readFileSync(w) : 'none'); });
   const soundId = fingerprint(plan, ROOT) + voiceSum.digest('hex'), soundState = path.join(buildDir, 'soundtrack.json');
   const stems = ['mix', 'voice', 'sfx', 'master'].map(s => path.join(buildDir, `${s}.wav`));
   let soundOld = null;
@@ -163,6 +179,7 @@ async function main() {
   say('\nChecking the video...');
   const results = validate(plan, { root: ROOT, mp4, voice: path.join(buildDir, 'voice.wav'), sfx: path.join(buildDir, 'sfx.wav'), master: path.join(buildDir, 'master.wav') });
   results.push(...sceneChecks(plan));
+  if (plan.missing.length) results.push({ ok: true, note: true, name: 'Placeholders', detail: `rendered with ${plan.missing.length} placeholder${plan.missing.length === 1 ? '' : 's'}: ${plan.missing.map(m => m.name).join(', ')}` });
   // YouTube chapters, when the scenes allow it (an old file from an earlier render is removed otherwise)
   const chFile = path.join(outDir, `${name}-chapters.txt`), ch = chapters(plan);
   if (ch.text) fs.writeFileSync(chFile, ch.text); else if (fs.existsSync(chFile)) fs.unlinkSync(chFile);
@@ -172,6 +189,19 @@ async function main() {
   if (ch.text) say(`\nChapters for YouTube: videos/${name}-chapters.txt`);
   const bad = results.filter(r => !r.ok).length;
   say(bad ? `\nThe video was made, but ${bad} check(s) failed. See videos/${name}-report.txt` : `\nDone! Your video: videos/${name}.mp4`);
+}
+
+// The missing list, in plain words, and as build/<story>/missing-assets.json for the /new-asset command.
+function missingReport(plan, dir) {
+  const list = plan.missing;
+  fs.writeFileSync(path.join(dir, 'missing-assets.json'), JSON.stringify(list, null, 2));
+  if (!list.length) return;
+  const kindOf = m => (m.kind === 'prop' && m.size === 'big' ? 'set piece' : m.kind);
+  const where = m => { const L = m.lines.filter(Boolean); return L.length ? `(line${L.length > 1 ? 's' : ''} ${L.join(', ')})` : ''; };
+  say(`\nYour story needs ${list.length} new thing${list.length === 1 ? '' : 's'}:`);
+  list.forEach(m => say(`  ${(kindOf(m) + ':').padEnd(11)} ${m.name.padEnd(20)} ${where(m)}`));
+  say('They are shown as grey placeholders for now, so you can still preview.');
+  say('To create them: open Claude Code and type  /new-asset');
 }
 
 const label = r => (!r.ok ? 'FAIL' : r.warn ? 'WARN' : r.note ? 'NOTE' : 'PASS');

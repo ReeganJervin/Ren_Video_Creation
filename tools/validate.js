@@ -31,14 +31,16 @@ function validate(plan, files) {
   };
   const late = [], overlap = [];
   plan.voice.forEach((vc, i) => {
+    const n = plan.voice[i + 1], end = vc.t + vc.len;
+    if ((n && end > n.t - 0.05) || end > D - 0.5) overlap.push(`line ${vc.line}`);
+    if (vc.missing) return;   // no voice made yet (a placeholder extra): nothing to hear
     const expected = vc.t + leadIn(path.join(files.root, vc.file));
     let onset = null;
     for (let k = Math.max(0, Math.floor((vc.t - 0.3) / 0.01)); k < Math.min(env.length, Math.floor((expected + 0.6) / 0.01)); k++) if (env[k] > -40) { onset = k * 0.01; break; }
     if (onset === null || Math.abs(onset - expected) > 0.1) late.push(`line ${vc.line} (speech expected ${expected.toFixed(2)} s, heard ${onset === null ? 'nothing' : onset.toFixed(2) + ' s'})`);
-    const n = plan.voice[i + 1], end = vc.t + vc.len;
-    if ((n && end > n.t - 0.05) || end > D - 0.5) overlap.push(`line ${vc.line}`);
   });
-  check('Voices start on time', !late.length, late.length ? `off: ${late.join('; ')}` : `${plan.voice.length} lines, speech heard within 0.1 s of plan`);
+  const heard = plan.voice.filter(v => !v.missing).length;
+  check('Voices start on time', !late.length, late.length ? `off: ${late.join('; ')}` : `${heard} lines, speech heard within 0.1 s of plan${heard < plan.voice.length ? ` (${plan.voice.length - heard} without a voice yet)` : ''}`);
   check('No overlapping or cut-off voices', !overlap.length, overlap.length ? `problem: ${overlap.join(', ')}` : 'every line ends before the next starts and before the ending');
 
   // text boxes hold their voice lines (bubbles belong to the characters' lines, in order)

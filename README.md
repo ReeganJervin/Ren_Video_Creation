@@ -57,6 +57,7 @@ The pieces that were already finished are kept. If you changed the story since t
 |---|---|
 | `--resume` | Carries on with a stopped video (this is what `resume-video.bat` does) |
 | `--workers 3` | Draws with 3 browser pages at once. The default is the number of processor threads minus 1. More workers are faster, until the computer is busy; the video looks exactly the same with any number of workers |
+| `--allow-placeholders` | Makes a test video even though the story uses things that don't exist yet (they appear as grey placeholders, and the report says so) |
 
 For example: `node tools\make-video.js stories\my-story.txt --workers 2 --resume`
 
@@ -94,7 +95,9 @@ The results are in `videos\<name>-report.txt`. Each line starts with `PASS`, `FA
 | `engine\ren.js` | Ren's fixed design (shape, colours, face, scarf) |
 | `engine\yuki.js` | Yuki's fixed design (shape, colours, face, ears, flower and bow) |
 | `engine\story.js` | Reads the story and works out the timing for everything |
-| `engine\places\` | The places (meadow, forest, river, snowy hill, beach): one drawing file each, plus the list in `index.js` |
+| `engine\places\` | The places (meadow, forest, river, snowy hill, beach): one drawing file each, found automatically (`index.js` has the shared helpers) |
+| `engine\assets.js` | The asset registry: every prop, set piece, extra and place, found automatically, plus spelling help |
+| `engine\props\`, `engine\extras\` | Props and set pieces (the star and heart so far), and extras (animals), one file each |
 | `engine\film.js` | Draws each frame: the place, the characters, the star, hearts, bubbles, captions and place changes |
 | `engine\audio.js` | Music, sound effects, the sound of each place, voice mixing (Web Audio) |
 | `tools\make-video.js` | The main program behind the `.bat` files |
@@ -106,11 +109,8 @@ The results are in `videos\<name>-report.txt`. Each line starts with `PASS`, `FA
 
 ## Adding new things later
 
-New props, like a butterfly, are added in code:
-- `engine/story.js` gets the new story words.
-- `engine/film.js` gets the drawing.
-- `engine/audio.js` gets the sounds.
+A new prop, set piece or extra (an animal) is one file in `engine/props/` or `engine/extras/`, found automatically; no list needs editing. The story lines for props and extras already work for any name (see "Props, set pieces and animals" in STORY-GUIDE.md), and anything a story uses before it exists is shown as a grey placeholder.
 
-A new place needs a drawing file in `engine/places/`, its name in the list in `engine/places/index.js` and a sound in `engine/audio.js`. A new character needs only a drawing file in `engine/` (like `engine/yuki.js`), one entry in `engine/characters.js` and a voice in `config/voices.json`. Every story line then works for the new name.
+A new place is one drawing file in `engine/places/` (found automatically) and a sound in `engine/audio.js`. A new character needs only a drawing file in `engine/` (like `engine/yuki.js`), one entry in `engine/characters.js` and a voice in `config/voices.json`. Every story line then works for the new name.
 
 Existing stories keep working unchanged.
