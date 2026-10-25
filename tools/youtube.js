@@ -82,6 +82,8 @@ async function thumbnail(page, plan) {
     ...plan.bubbles.map(b => [b.t0 - 0.2, b.t1 + 0.2]), ...plan.captions.map(c => [c.t0 - 0.2, c.t1 + 0.2]),
     ...plan.titles.map(x => [Math.min(...(x.letters || []).map(l => l.t).filter(isFinite), x.out0 - 5.2), x.out1 + 0.2]),
     ...(plan.places || []).map(p => [p.t0 - 0.2, p.t1 + 0.3]),
+    // the series intro and the end screen
+    ...Object.values(plan.youtube || {}).map(y => [y.t0 - 0.5, y.t1 + 0.5]),
     // props growing in or fading out
     ...(plan.props || []).flatMap(p => [[p.t0 - 0.1, p.t0 + 1.2], ...(p.t1 !== undefined && p.t1 !== null ? [[p.t1 - 1.2, p.t1 + 0.1]] : [])]),
   ];

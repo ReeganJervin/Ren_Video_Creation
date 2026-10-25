@@ -131,7 +131,7 @@ Work through the steps **in this order**. The F-numbers are names, not the order
 | 3 | F4 Asset Kit, Parts A–C (`ASSET-KIT.md`) | Done | `272fba8` (F4A), `5dcf1ef` (F4B), `2ca0af5` (F4C) |
 | 4 | F9 Studio App, Part A (`STUDIO-APP.md`) | Done | `4b1cf13` (F9A) |
 | 5 | **Milestone 1** (full test) | In progress | |
-| 6 | **F11 YouTube kit** (thumbnails, subtitles, description, series intro, end screen) | Part A done (approved); Part B next | F11A (see git log) |
+| 6 | **F11 YouTube kit** (thumbnails, subtitles, description, series intro, end screen) | Done (approved) | `b86d4fb` (F11A), F11B (see git log) |
 | 7 | F7 Vertical 9:16 and Shorts (reuses F11's thumbnails, subtitles and description) | Not started | |
 | 8 | **F12 Expression pack** (new moods, thought/whisper/shout bubbles, mood voices) | Not started | |
 | 9 | F3 Rig 2.0 (joints, movement library, lip-sync), in **4 review stops** | Not started | |
@@ -604,6 +604,14 @@ Each effect has its own sound and uses the lighting system from F5. All of them 
 4. **Docs and example:** STORY-GUIDE.md section "YouTube", plus a short example `stories/youtube-demo.txt` (under 1 minute, with a hook scene, intro, end screen and thumbnail).
 
 **Acceptance:** the demo passes all checks, R1 holds for stories without the new lines, and the owner approves the intro and jingle.
+
+**As built (F11B):**
+- The intro (5 s) and the end screen (the last 20 s) take their time in the story's timeline (story.js), so everything after them simply starts later; while they play, film.js draws them over the story (Ren and Yuki posed directly, so both appear even in a Ren-only story). `intro: after scene N` works for any scene. `ending text:` is a narrator line (its voice, caption and subtitle are made like any other).
+- Sound: the story's music fades out and the place's sounds go down to 30% under the jingle (music box and pads, 0.55 of the music bus). Measured on `stories/youtube-demo.txt`: intro -19.7 LUFS, story -18.8 / -20.0, end screen -22.0.
+- `docs/youtube-end-screen.png` is drawn by `tools/end-screen-guide.js` from the engine's own end screen.
+- **Loud starts (owner's decision):** a voice line that comes in much louder than what plays just before it (the owl's "Hoo!" after a quiet moment reached 2.79 LU) gets a softer first second. make-video measures it in the mix itself, the way the check does (the rise as the line starts, and the drop 3 s later as it leaves the 3 s window); only lines over 2.3 LU are softened, and the soundtrack is made again. Every other line stays exactly as it was. The owl's voice is also 2 dB quieter (`"gain": -2` in `config/voices.json`, a new optional setting per voice).
+- **Butterflies and fireflies go around faces** (thumbnails and video): the film tells the place where the faces are, and `util.clear(x, y)` moves anything small flying in front of the characters out to the edge of a face. Only frames where an insect was on a face change (R1: a few frames in asset-test, ren-and-the-sleepy-star, test-12min, test-scenes and the-fallen-star, checked: only fireflies moved off faces).
+- The end screen has soft cream panels without outlines (an edge would peek out from under YouTube's elements); the guide picture marks them in red.
 
 **Commit message:** `F11B: series intro, theme jingle, end screen`
 

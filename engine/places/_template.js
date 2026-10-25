@@ -31,6 +31,7 @@
       c.fillStyle = tod(tau, PAL.ground); c.fillRect(-400, G - 120, 2720, 600);
     },
     // optional: things in front of the characters
+    // (anything small flying in front of the characters: pass its position through util.clear(x, y) so it goes around faces)
     front(c, t, cam, tau) { fireflies(c, t, tau, flies); },
   });
 })(this);

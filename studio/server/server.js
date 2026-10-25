@@ -62,7 +62,7 @@ function storyInfo(abs) {
     const { check } = engine();
     let title = path.basename(abs, '.txt'), duration = null, status = 'Ready', errors = 0, missing = 0;
     try {
-      const r = check.checkStory(fs.readFileSync(abs, 'utf8'));
+      const r = check.checkStory(fs.readFileSync(abs, 'utf8'), {}, abs);
       title = r.parsed.meta.title || title;
       errors = r.parsed.errors.length + (r.plan ? r.plan.errors.length : 0);
       if (r.plan) { duration = r.plan.duration; missing = r.plan.missing.length; }
@@ -86,7 +86,7 @@ function lineError(text) {
 // in build/_studio/<name>/ that uses every voice line already made (the rest have estimated timing and no sound).
 function checkText(file, text) {
   const { check, wav } = engine(), name = check.storyName(file);
-  let r = check.checkStory(text);
+  let r = check.checkStory(text, {}, file);
   const out = { name, title: r.parsed.meta.title || name, errors: r.parsed.errors.map(lineError), missing: [], warnings: [], duration: null, scenes: [], voices: [], lineTimes: [], planUrl: null, voicesToMake: 0 };
   if (!r.plan) return out;
   // voice lines already made: recordings in voice-overrides/, or levelled clips in cache/voices/
@@ -95,11 +95,11 @@ function checkText(file, text) {
     const v = r.voices[b.who], over = check.overrideFile(name, b.line);
     let f = null;
     if (fs.existsSync(over)) f = over;
-    else if (v) { const lv = check.levelledVoice(check.cachedVoice(b.text, v)); if (fs.existsSync(lv)) f = lv; }
+    else if (v) { const lv = check.levelledVoice(check.cachedVoice(b.text, v), v.gain || 0); if (fs.existsSync(lv)) f = lv; }
     if (f) { try { lens[i] = wav.readWav(f).duration; files[i] = '/' + relOf(f); } catch (_) { /* unreadable: estimated */ } }
     else if (v) out.voicesToMake++;
   });
-  if (Object.keys(lens).length) r = check.checkStory(text, lens);
+  if (Object.keys(lens).length) r = check.checkStory(text, lens, file);
   const plan = r.plan;
   out.errors.push(...plan.errors.map(lineError));
   out.missing = plan.missing.map(m => ({ kind: m.kind === 'prop' && m.size === 'big' ? 'set piece' : m.kind, name: m.name, lines: m.lines.filter(Boolean) }));

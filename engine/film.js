@@ -560,6 +560,110 @@
 
   // ---------- frame ----------
   let ctx, layer, aux, half;
+  // ---------- YouTube kit: the series intro and the end screen ----------
+  // They have their own time in the story's timeline (story.js); while they play they are drawn over the story,
+  // fading in and out. Ren and Yuki are posed here directly, since they aren't acting in the story then.
+  // Where YouTube's end-screen elements go (two videos and the subscribe button), in 1920×1080 pixels:
+  const END_LAYOUT = { videos: [{ x: 880, y: 330, w: 480, h: 270 }, { x: 1400, y: 330, w: 480, h: 270 }], subscribe: { x: 1380, y: 790, r: 120 } };
+  const CAM0 = { z: 1, cx: 960, cy: 540 };
+  function posedK(id, t, o) {
+    const look = moodLook(id, o.mood || 'happy'), n = id === 'yuki' ? 1 : 0;
+    let blink = 0;
+    if (look.eyes !== 'happy') for (let b = (o.t0 || 0) + 1.3 + n * 0.7; b < t + 1; b += 3.4 + n * 0.6) { const u = (t - b) / 0.18; if (u > 0 && u < 1) blink = Math.sin(u * Math.PI); }
+    const idle = Math.sin(t * 2 + n * 2.1) * 0.04;
+    return {
+      id, t, x: o.x, y: o.y, h: 0, sx: 1, sy: 1 + 0.012 * Math.sin(t * 2.6 + n * 1.7), s: KS * (o.scale || 1), f: o.f || 0, walk: 0, phase: 0, hopping: false,
+      armL: 0.16 + idle, armR: (o.wave ? 2.35 + Math.sin(t * 9) * 0.35 * o.wave : 0.16) + idle,
+      lookX: o.lookX || 0, lookY: clamp((o.lookY || 0) + (look.lookY || 0), -1, 1), tilt: Math.sin(t * 0.9 + n * 1.3) * 0.025 + (o.tilt || 0),
+      eyes: look.eyes, mouth: look.mouth, wide: look.wide || 0, brows: look.brows || 0, blushBoost: look.blush || 0, puff: look.puff || 0, flop: look.flop || 0,
+      pawPose: look.pawPose, pawW: look.pawPose ? 1 : 0, talk: 0, blink,
+      earL: look.droop || 0, earR: look.droop || 0, tail: Math.sin(t * 2.3) * 0.15 + (look.wag || 0) * Math.sin(t * 9) * 0.2,
+    };
+  }
+  // a soft meadow, the same in every video
+  function backdrop(g, t, tau) {
+    const M = StudioPlaces.PLACES.meadow;
+    g.setTransform(1, 0, 0, 1, 0, 0);
+    M.draw(g, t, CAM0, tau, { ...HP, cam: p => applyCam(g, CAM0, p) });
+    g.setTransform(1, 0, 0, 1, 0, 0); g.globalCompositeOperation = 'multiply'; g.fillStyle = tod(tau, M.grade); g.fillRect(0, 0, W, H);
+    g.globalCompositeOperation = 'source-over'; g.fillStyle = 'rgba(255,247,235,0.22)'; g.fillRect(0, 0, W, H);
+  }
+  // the "Ren & Yuki" logo: letters drop in one by one and bounce, like a title card (Ren orange, Yuki pink)
+  const LOGO = [...'Ren & Yuki'], LOGO_COL = i => (i < 3 ? ['#ffb35c', '#f07a2a'] : i === 4 ? ['#ffe08a', '#f4b350'] : ['#ffc4d4', '#ee7f9c']);
+  function drawLogo(g, t, t0, base, size) {
+    g.save(); g.setTransform(1, 0, 0, 1, 0, 0); g.font = `700 ${size}px ${FONT}`; g.textAlign = 'center'; g.textBaseline = 'alphabetic'; g.lineJoin = 'round';
+    const gap = size * 0.06, widths = LOGO.map(ch => g.measureText(ch).width), total = widths.reduce((a, b) => a + b, 0) + gap * (LOGO.length - 1);
+    let x = W / 2 - total / 2, k = 0;
+    LOGO.forEach((ch, i) => {
+      const cx = x + widths[i] / 2; x += widths[i] + gap;
+      if (ch === ' ') return;
+      const lt = t0 + 0.35 + (k++) * 0.13, u = (t - lt) / 0.5;
+      if (u < 0) return;
+      const y = base - (1 - easeOutBounce(u)) * 380, wob = Math.sin(t * 2.2 + i) * 4 * clamp(u - 1), [c0, c1] = LOGO_COL(i);
+      g.save(); g.translate(cx, y + wob); g.rotate(Math.sin(i * 1.7) * 0.06); g.globalAlpha = clamp(u * 4);
+      g.lineWidth = size * 0.13; g.strokeStyle = '#5a2a14'; g.strokeText(ch, 0, 0);
+      const gr = g.createLinearGradient(0, -size * 0.76, 0, 0); gr.addColorStop(0, c0); gr.addColorStop(1, c1); g.fillStyle = gr; g.fillText(ch, 0, 0);
+      g.fillStyle = 'rgba(255,255,255,0.55)'; g.beginPath(); g.ellipse(-widths[i] * 0.18, -size * 0.62, size * 0.07, size * 0.04, -0.5, 0, Math.PI * 2); g.fill();
+      g.restore();
+      burst(g, t, lt + 0.31, cx, base - size * 0.35, 5, i * 17 + 3, 80, 0.7, 13);
+    });
+    g.restore();
+  }
+  const drawPosed = (g, id, K) => { applyCam(g, CAM0, 1); DRAW[id](g, K); g.setTransform(1, 0, 0, 1, 0, 0); };
+  // the intro (5 s): the logo bounces in over the meadow, then Ren and Yuki peek in from below and wave
+  function drawIntro(g, t, u, seg) {
+    backdrop(g, t, 0);
+    drawLogo(g, t, seg.t0, 430, 210);
+    [['ren', 380, 1.9, 0.12], ['yuki', 1540, 2.2, -0.12]].forEach(([id, x, p0, f]) => {
+      const up = easeOutBack((u - p0) / 0.6);
+      if (up <= 0 || !DRAW[id]) return;
+      const wave = clamp((u - p0 - 0.6) / 0.3) * clamp((seg.t1 - seg.t0 - 0.3 - u) / 0.3);
+      drawPosed(g, id, posedK(id, t, { x, y: 1080 + 560 - 470 * up, scale: 1.3, f, lookX: Math.sign(f) * 0.5, lookY: -0.4, wave, t0: seg.t0 }));
+      burst(g, t, seg.t0 + p0 + 0.15, x, 760, 6, id === 'ren' ? 91 : 97, 120, 0.8, 14);
+    });
+  }
+  // the end screen (the last 20 s): Ren and Yuki wave on the left; room for YouTube's two videos and subscribe button
+  function drawEndScreen(g, t, u, seg) {
+    backdrop(g, t, 1);
+    const L = END_LAYOUT;
+    g.save(); g.setTransform(1, 0, 0, 1, 0, 0);
+    // soft cream panels, no outlines, where YouTube puts its elements (the owner adds them in YouTube Studio; an edge
+    // would peek out if an element isn't placed exactly on it). The panels are a little bigger and fade at their edges.
+    g.shadowColor = 'rgba(255,250,240,0.55)'; g.shadowBlur = 40; g.fillStyle = 'rgba(255,250,240,0.36)';
+    L.videos.forEach(v => { g.beginPath(); g.roundRect(v.x - 10, v.y - 10, v.w + 20, v.h + 20, 30); g.fill(); });
+    g.beginPath(); g.arc(L.subscribe.x, L.subscribe.y, L.subscribe.r + 10, 0, Math.PI * 2); g.fill();
+    g.shadowBlur = 0; g.shadowColor = 'transparent';
+    g.font = `700 64px ${FONT}`; g.textAlign = 'center'; g.lineJoin = 'round'; g.lineWidth = 11; g.strokeStyle = '#5a2a14'; g.fillStyle = '#fff4e4';
+    const hx = (L.videos[0].x + L.videos[1].x + L.videos[1].w) / 2;
+    g.strokeText('Watch next!', hx, 270); g.fillText('Watch next!', hx, 270);
+    g.restore();
+    [['ren', 330, [[0.8, 3.2], [9, 11.4]]], ['yuki', 640, [[1.6, 4], [10, 12.4]]]].forEach(([id, x, waves]) => {
+      if (!DRAW[id]) return;
+      const wave = Math.max(...waves.map(([a, b]) => win(u, a, b, 0.3, 0.3)));
+      drawPosed(g, id, posedK(id, t, { x, y: 1000, scale: 1.25, f: 0.22, lookX: 0.15, wave, t0: seg.t0 }));
+    });
+  }
+  function drawYouTube(c, t) {
+    const Y = P.youtube;
+    if (Y.intro) {
+      const sg = Y.intro, a = win(t, sg.t0, sg.t1, sg.t0 === 0 ? 1e-3 : 0.35, 0.3);
+      if (a > 0) {
+        const g = aux.getContext('2d'); g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 1; g.globalCompositeOperation = 'source-over'; g.clearRect(0, 0, W, H);
+        drawIntro(g, t, t - sg.t0, sg);
+        c.save(); c.setTransform(1, 0, 0, 1, 0, 0); c.globalAlpha = a; c.drawImage(aux, 0, 0); c.restore();
+      }
+    }
+    if (Y.end) {
+      const sg = Y.end, a = ease((t - sg.t0) / 0.6);
+      if (a > 0) {
+        const g = aux.getContext('2d'); g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 1; g.globalCompositeOperation = 'source-over'; g.clearRect(0, 0, W, H);
+        drawEndScreen(g, t, t - sg.t0, sg);
+        c.save(); c.setTransform(1, 0, 0, 1, 0, 0); c.globalAlpha = a; c.drawImage(aux, 0, 0); c.restore();
+        // the narrator's "ending text" shows over the end screen
+        P.captions.forEach(cap => { if (cap.t0 >= sg.t0 - 0.2) drawCaption(c, cap, t); });
+      }
+    }
+  }
   // The thumbnail's framing (YouTube kit): the characters on stage fill a share of the picture height, standing
   // low with room above for the title. null = the story's own camera (always, except while making a thumbnail).
   let framing = null;
@@ -600,7 +704,12 @@
     const segNow = starSegs.filter(q => q.t0 <= t).pop();
     const held = S && segNow && ['held', 'pickup', 'raise', 'lower'].includes(segNow.type);
     if (S && held) { c.save(); c.globalCompositeOperation = 'lighter'; glow(c, S.x, S.y, 560, '255,190,90', 0.12 * S.bright); c.restore(); }
-    if (PN.front) PN.front(c, t, cam, tau, HP);
+    if (PN.front) {
+      // butterflies and fireflies go around faces (the head, with room for ears and whiskers)
+      StudioPlaces.util.faces(CAST.filter(id => onStage(id, t)).map(id => { const K = Ks[id], h = toWorld(K, K.f * 6, REG[id].head); return { x: h.x, y: h.y, r: (REG[id].height ? REG[id].height * 0.5 : 160) * K.s }; }));
+      PN.front(c, t, cam, tau, HP);
+      StudioPlaces.util.faces([]);
+    }
     starSegs.forEach((s, i) => { if (s.type === 'fall' || s.type === 'rise') trail(c, t, s.t0, s.t1, 11 + i * 30); });
     if (S) drawStar(c, S, t);
     const heads = {}; CAST.forEach(id => { heads[id] = toWorld(Ks[id], Ks[id].f * 6, REG[id].head); });
@@ -647,6 +756,7 @@
     P.captions.forEach(cap => drawCaption(c, cap, t));
     const F = cam.framed ? faceBoxes(cam, Ks, heads) : null;
     P.bubbles.forEach(b => drawBubble(c, b, t, toScreen(cam, heads[b.who]), cam, F));
+    if (P.youtube) drawYouTube(c, t);
     c.setTransform(1, 0, 0, 1, 0, 0);
     const vg = c.createRadialGradient(W / 2, H / 2, H * 0.45, W / 2, H / 2, H * 1.05);
     vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, `rgba(20,10,30,${0.12 + 0.07 * tau})`);
@@ -670,6 +780,7 @@
     });
     HP = { W, H, duration: plan.duration, cam: null };
     CAST.forEach(id => { if (!DRAW[id]) DRAW[id] = window[REG[id].global][REG[id].draw]; });
+    if (plan.youtube) Object.keys(StudioCharacters.CHARACTERS).forEach(id => { const d = REG[id]; if (!DRAW[id] && window[d.global]) DRAW[id] = window[d.global][d.draw]; });
     starSegs = plan.star.filter(s => s.type !== 'flicker').sort((a, b) => a.t0 - b.t0);
     flickers = plan.star.filter(s => s.type === 'flicker');
     ctx = canvas.getContext('2d');
@@ -705,5 +816,5 @@
   // frame('medium' | 'close', ids, top) for a thumbnail (top: where the characters' heads may start, below a title);
   // frame(null) goes back to the story's camera
   const frame = (size, ids, top) => { framing = size && FRAMES[size] ? { size, ids: ids && ids.length ? ids : CAST, top: top || 0 } : null; };
-  window.StudioFilm = { init, render, faces, pose, mood, frame };
+  window.StudioFilm = { init, render, faces, pose, mood, frame, END_LAYOUT };
 })();

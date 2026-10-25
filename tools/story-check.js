@@ -22,17 +22,25 @@ function addMissingVoices(parsed, voices) {
 // where a voice line is kept in cache/voices/: the raw clip and the levelled one
 const voiceKey = (text, v) => crypto.createHash('sha1').update(JSON.stringify([text, v.voice, v.speed, v.pitch])).digest('hex').slice(0, 16);
 const cachedVoice = (text, v) => path.join(ROOT, 'cache', 'voices', voiceKey(text, v) + '.wav');
-const levelledVoice = cached => cached.replace(/\.wav$/, `.lv${-VOICE_LUFS}s.wav`);
+// gain: a voice's own level in dB from config/voices.json ("gain": -2 makes it 2 dB quieter than the others)
+const levelledVoice = (cached, gain = 0) => cached.replace(/\.wav$/, `.lv${-(VOICE_LUFS + gain)}s.wav`);
 const overrideFile = (name, line) => path.join(ROOT, 'voice-overrides', name, `line-${line}.wav`);
 
+// Settings that depend on the story's folder: stories in episodes/ and shorts/ start with the series intro
+// (unless they say "intro: none").
+function folderDefaults(parsed, file) {
+  if (file && /(^|[\\/])(episodes|shorts)[\\/]/.test(path.relative(ROOT, path.resolve(ROOT, file))) && !parsed.meta.intro) parsed.meta.intro = { at: 'start', line: 0 };
+  return parsed;
+}
+
 // Checks a story's text: { parsed, plan, speech, voices }. plan is null when the lines themselves have errors.
-// lens: voice lengths by speech index (estimated when left out).
-function checkStory(text, lens = {}) {
-  const parsed = parseStory(text), voices = readVoices();
+// lens: voice lengths by speech index (estimated when left out); file: the story file, for folder defaults.
+function checkStory(text, lens = {}, file = null) {
+  const parsed = folderDefaults(parseStory(text), file), voices = readVoices();
   if (parsed.errors.length) return { parsed, plan: null, speech: [], voices };
   const speech = parsed.beats.filter(b => b.type === 'say');
   addMissingVoices(parsed, voices);
   return { parsed, plan: compileStory(parsed, lens), speech, voices };
 }
 
-module.exports = { ROOT, VOICE_LUFS, readVoices, storyName, addMissingVoices, voiceKey, cachedVoice, levelledVoice, overrideFile, checkStory };
+module.exports = { ROOT, VOICE_LUFS, readVoices, storyName, addMissingVoices, voiceKey, cachedVoice, levelledVoice, overrideFile, checkStory, folderDefaults };

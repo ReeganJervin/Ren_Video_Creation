@@ -60,11 +60,39 @@
     const voice = ctx.createGain(); voice.gain.value = 1.0 * stems.voice; voice.connect(master);
     const vSend = ctx.createGain(); vSend.gain.value = 0.12; voice.connect(vSend); vSend.connect(reverb);
 
+    // ---- YouTube kit: the series intro ----
+    // The theme jingle is made like the music (music box and soft pads), the same in every video, a little softer than
+    // the story's music between lines. While it plays, the story's music fades out and the place's sounds go down.
+    if (T.youtube && T.youtube.intro) {
+      const I = T.youtube.intro, a0 = at(Math.max(0, I.t0 - 0.4)), sfxLevel = sfx.gain.value;
+      section.gain.setValueAtTime(1, a0); section.gain.linearRampToValueAtTime(0, at(I.t0 + 0.05));
+      section.gain.setValueAtTime(0, at(I.t1 - 0.3)); section.gain.linearRampToValueAtTime(1, at(I.t1 + 0.8));
+      sfx.gain.setValueAtTime(sfxLevel, a0); sfx.gain.linearRampToValueAtTime(sfxLevel * 0.3, at(I.t0 + 0.05));
+      sfx.gain.setValueAtTime(sfxLevel * 0.3, at(I.t1 - 0.3)); sfx.gain.linearRampToValueAtTime(sfxLevel, at(I.t1 + 0.8));
+      if (stems.music) {
+        const jingle = ctx.createGain(); jingle.gain.value = 0.42 * 1.3; jingle.connect(master);
+        const jSend = ctx.createGain(); jSend.gain.value = 0.35; jingle.connect(jSend); jSend.connect(reverb);
+        const j = x => at(I.t0 + x);
+        // a rising "Ren" phrase as his letters land, an answering "Yuki" phrase, then a bright hello as they peek in
+        [[0.66, 72], [0.79, 76], [0.92, 79], [1.18, 84], [1.31, 83], [1.44, 81], [1.57, 79], [1.70, 81],
+          [2.0, 84], [2.3, 86], [2.6, 88], [2.9, 84], [3.2, 86], [3.5, 83], [3.8, 84]].forEach(([x, m]) => musicBox(j(x), m, 0.8, jingle));
+        [[2.0, 60], [2.6, 65], [3.2, 67], [3.8, 60]].forEach(([x, m]) => musicBox(j(x), m - 12, 0.6, jingle));
+        musicBox(j(3.8), 76, 0.45, jingle); musicBox(j(3.8), 79, 0.4, jingle);
+        pad(j(0.5), [60, 64, 67], 1.6, jingle, 0.035); pad(j(2.0), [65, 69, 72], 1.2, jingle, 0.035); pad(j(3.2), [60, 64, 67, 72], 1.6, jingle, 0.035);
+      }
+    }
+
     // ---- voices + ducking (overlapping/near windows are merged so ramps stay ordered) ----
     const wins = [];
     for (const v of T.voice) {
       const buf = voices[v.id]; if (!buf) continue;
-      const src = ctx.createBufferSource(); src.buffer = buf; src.connect(voice); src.start(at(v.t));
+      const src = ctx.createBufferSource(); src.buffer = buf; src.start(at(v.t));
+      // a line that came in much louder than what played before it: its first second is softer (see make-video.js)
+      if (v.calm) {
+        const g = ctx.createGain(), k = Math.pow(10, -v.calm / 20);
+        g.gain.setValueAtTime(k, at(v.t)); g.gain.setValueAtTime(k, at(v.t + 0.8)); g.gain.linearRampToValueAtTime(1, at(v.t + 1.6));
+        src.connect(g); g.connect(voice);
+      } else src.connect(voice);
       const w = [v.t, v.t + buf.duration];
       // (closer than the music needs to come back up and dip again, they count as one)
       if (wins.length && w[0] - wins[wins.length - 1][1] < 1.6) wins[wins.length - 1][1] = w[1]; else wins.push(w);

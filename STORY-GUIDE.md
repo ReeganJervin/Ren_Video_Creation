@@ -432,6 +432,18 @@ Two lines choose the thumbnail. Put them anywhere in the story; they take no tim
 | `thumbnail shot: medium` | How close the thumbnail is: `medium` (the characters fill about half the picture's height; this is what you get without the line), `close` (bigger faces) or `wide` (the whole scene, like the video) |
 | `thumbnail text: The Owl's Lantern` | Big, bold, rounded letters with a warm outline at the top, with the characters standing below them (60 characters at most; long titles go on two lines) |
 
+### The series intro and the end screen
+
+| Line | What it does |
+|---|---|
+| `intro: series` | The **series intro** at the start (about 5 s): the "Ren & Yuki" logo bounces in letter by letter over the meadow, Ren and Yuki peek in and wave, and the theme jingle plays (the same in every video, never louder than the story). Stories in the `episodes` and `shorts` folders get it automatically |
+| `intro: after scene 1` | The intro after the first scene instead, so viewers see your **hook** first (any scene number works) |
+| `intro: none` | No intro (also for stories in `episodes` and `shorts`) |
+| `ending: end screen` | The **end screen**: the last 20 s, with Ren and Yuki waving on one side, calm music, and room for YouTube's end-screen elements |
+| `ending text: See you next time!` | The narrator says this in the end screen (it adds the end screen by itself) |
+
+To add YouTube's end-screen elements: in YouTube Studio, open the video's **Editor**, then **End screen**, and put two **Video** elements and one **Subscribe** element over the dashed shapes, as shown in `docs\youtube-end-screen.png`.
+
 The check report has a line about these files. It warns you if the thumbnail shows a speech bubble or a face cut off at the edge, so you can choose another moment.
 
 To make only these three files, without making the video again (the voices are made if needed): `node tools\make-video.js stories\my-story.txt --youtube`. An example: `stories\youtube-demo.txt`. In the studio app, the finished video shows the thumbnail, with **Open subtitles** and **Copy description**. The subtitles are off in the app's player (the narrator's words are already on screen); the **CC** button turns them on.

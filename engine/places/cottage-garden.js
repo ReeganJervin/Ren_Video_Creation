@@ -3,7 +3,7 @@
 // Butterflies by day, fireflies at night. Sounds like the meadow (a breeze and birds).
 (function (root) {
   const { register, util } = typeof module !== 'undefined' ? require('./index.js') : root.StudioPlaces;
-  const { hash, tod, sky, fireflies, clamp } = util;
+  const { hash, tod, sky, fireflies, clamp, clear } = util;
   const PAL = {
     skyTop: ['#6ec3f4', '#ff9d5c', '#5b4a9e', '#0b1236'], skyMid: ['#a8dcf7', '#ffc488', '#c0709a', '#1d2a66'], skyBot: ['#e6f6ff', '#ffe7c2', '#f5a77a', '#3b3f8c'],
     sun: ['#fffbe8', '#fff4d6', '#ffcf9a', '#ffcf9a'], cloud: ['#ffffff', '#fff8ef', '#e9b8c8', '#4a4f8f'],
@@ -126,7 +126,7 @@
     front(c, t, cam, tau) {
       const a = clamp(1.4 - tau);
       if (a > 0) butterflies.forEach(b => {
-        const x = b.x + Math.sin(t * b.sp + b.ph) * 260, y = b.y + Math.sin(t * b.sp * 2.3 + b.ph) * 50, flap = Math.abs(Math.sin(t * 11 + b.ph));
+        const { x, y } = clear(b.x + Math.sin(t * b.sp + b.ph) * 260, b.y + Math.sin(t * b.sp * 2.3 + b.ph) * 50), flap = Math.abs(Math.sin(t * 11 + b.ph));
         c.save(); c.globalAlpha = a; c.translate(x, y); c.fillStyle = b.c;
         [-1, 1].forEach(i => { c.save(); c.scale(i * (0.3 + 0.7 * flap), 1); c.beginPath(); c.ellipse(9, -5, 10, 7, -0.4, 0, Math.PI * 2); c.ellipse(7, 6, 7, 5, 0.4, 0, Math.PI * 2); c.fill(); c.restore(); });
         c.fillStyle = '#6b4a2e'; c.beginPath(); c.ellipse(0, 0, 2.5, 9, 0, 0, Math.PI * 2); c.fill();

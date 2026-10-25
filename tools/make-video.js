@@ -19,7 +19,7 @@ const { parseStory, compileStory, PICTURES, CHARACTERS } = require('../engine/st
 const { readWav } = require('./wav');
 const { validate } = require('./validate');
 const { clock, hasScenes, chapters, sceneChecks } = require('./scenes');
-const { readVoices, storyName, addMissingVoices, cachedVoice, levelledVoice, overrideFile, VOICE_LUFS } = require('./story-check');
+const { readVoices, storyName, addMissingVoices, cachedVoice, levelledVoice, overrideFile, VOICE_LUFS, folderDefaults } = require('./story-check');
 const { youtubeFiles } = require('./youtube');
 
 const ROOT = path.resolve(__dirname, '..');
@@ -38,7 +38,7 @@ async function main() {
   const opt = k => args.includes('--' + k);
 
   // 1. read + check the story
-  const parsed = parseStory(fs.readFileSync(storyPath, 'utf8'));
+  const parsed = folderDefaults(parseStory(fs.readFileSync(storyPath, 'utf8')), storyPath);
   if (parsed.errors.length) fail(`Please fix these lines in ${path.basename(storyPath)}:\n\n${parsed.errors.join('\n\n')}\n\nSee STORY-GUIDE.md for every line you can use.`);
   const speech = parsed.beats.filter(b => b.type === 'say');
   // an extra that speaks needs a voice in config/voices.json: without one, the voice is missing too
@@ -74,7 +74,7 @@ async function main() {
     if (fs.existsSync(override)) { levelVoice(override, out); say(`  using your recording for line ${b.line}`); return; }
     if (!v) { if (fs.existsSync(out)) fs.unlinkSync(out); return; }   // no voice yet: estimated timing, no sound
     const cached = cachedVoice(b.text, v);
-    pending.push({ cached, out, pitch: v.pitch });
+    pending.push({ cached, out, pitch: v.pitch, gain: v.gain || 0 });
     if (!fs.existsSync(cached)) jobs.push({ text: b.text, voice: v.voice, speed: v.speed, out: cached + (v.pitch !== 1 ? '.raw.wav' : '') });
   });
   if (jobs.length) {
@@ -99,8 +99,8 @@ async function main() {
   }
   // every line at the same loudness, whichever voice says it (levelled once, kept beside the cached clip)
   for (const p of pending) {
-    const levelled = levelledVoice(p.cached);
-    if (!fs.existsSync(levelled)) levelVoice(p.cached, levelled);
+    const levelled = levelledVoice(p.cached, p.gain);
+    if (!fs.existsSync(levelled)) levelVoice(p.cached, levelled, p.gain);
     fs.copyFileSync(levelled, p.out);
   }
   speech.forEach((b, i) => { const w = path.join(voiceDir, `${i}.wav`); if (fs.existsSync(w)) lens[i] = readWav(w).duration; });
@@ -171,9 +171,26 @@ async function main() {
     say('Making the soundtrack...');
     progress({ step: 'soundtrack' });
     if (fs.existsSync(soundState)) fs.unlinkSync(soundState);
-    for (const stem of ['mix', 'voice', 'sfx']) {
-      const { wav, missing } = await page.evaluate(s => FILM.renderAudio(s), stem);
-      if (missing.length && stem === 'mix') say('  warning: missing voice clips: ' + missing.join(', '));
+    // A voice line that comes in much louder than what plays just before it (like the owl's "Hoo!" after a quiet
+    // moment) gets a softer start, so the "No sudden volume changes" check passes. Measured in the mix itself, the
+    // way the check measures; lines that don't jump are left exactly as they are.
+    const calm = {}, mixFile = path.join(buildDir, 'mix.wav');
+    for (let pass = 0; pass < 3; pass++) {
+      const { wav, missing } = await page.evaluate(([s, c]) => FILM.renderAudio(s, c), ['mix', calm]);
+      if (missing.length && !pass) say('  warning: missing voice clips: ' + missing.join(', '));
+      fs.writeFileSync(mixFile, Buffer.from(wav, 'base64'));
+      const loud = loudStarts(mixFile, plan);
+      if (!loud.length) break;
+      loud.forEach(({ id, step }) => { calm[id] = +((calm[id] || 0) + step - CALM_TO).toFixed(2); });
+    }
+    const softened = Object.keys(calm);
+    if (softened.length) {
+      say(`  softened the start of ${softened.length} loud line${softened.length > 1 ? 's' : ''}: ${softened.map(id => `"${plan.voice[id].text.slice(0, 40)}" (${plan.voice[id].who}, -${calm[id]} dB)`).join(', ')}`);
+      plan.voice.forEach(v => { if (calm[v.id]) v.calm = calm[v.id]; });
+      fs.writeFileSync(path.join(buildDir, 'plan.json'), JSON.stringify(plan));
+    }
+    for (const stem of ['voice', 'sfx']) {
+      const { wav } = await page.evaluate(([s, c]) => FILM.renderAudio(s, c), [stem, calm]);
       fs.writeFileSync(path.join(buildDir, `${stem}.wav`), Buffer.from(wav, 'base64'));
     }
     await master(path.join(buildDir, 'mix.wav'), path.join(buildDir, 'master.wav'));
@@ -278,14 +295,15 @@ function stillTimes(list, plan) {
 // Some voices also start with a punch, so the first SOFT_START seconds of speech fade up from about -9 dB:
 // the line still starts clearly, without a jump in volume. The length never changes.
 // Clips too short or quiet to measure are copied as they are.
+// A voice can have its own level ("gain" in config/voices.json, in dB).
 const SOFT_START = 0.4;
-function levelVoice(src, dst) {
+function levelVoice(src, dst, voiceGain = 0) {
   const r = spawnSync(ffmpeg, ['-hide_banner', '-i', src, '-af', 'loudnorm=print_format=json', '-f', 'null', '-'], { encoding: 'utf8' });
   let m = null;
   try { m = JSON.parse(r.stderr.slice(r.stderr.lastIndexOf('{'), r.stderr.lastIndexOf('}') + 1)); } catch (_) { /* unmeasurable */ }
   const I = m && parseFloat(m.input_i), tp = m && parseFloat(m.input_tp);
   if (!isFinite(I) || I < -60) { fs.copyFileSync(src, dst); return; }
-  const gain = Math.max(-15, Math.min(15, VOICE_LUFS - I, -2 - tp));
+  const gain = Math.max(-15, Math.min(15, VOICE_LUFS + voiceGain - I, -2 - tp));
   // where the speech starts: the first 10 ms that rise above -40 dB (from the very start if it can't be read)
   let s0 = 0;
   try {
@@ -296,6 +314,26 @@ function levelVoice(src, dst) {
   const tmp = dst + '.part.wav';
   spawnSync(ffmpeg, ['-loglevel', 'error', '-y', '-i', src, '-af', ramp, '-c:a', 'pcm_s16le', tmp]);
   fs.renameSync(tmp, dst);
+}
+
+// Voice lines that make the short-term loudness of the mix (3 s window, as in the "No sudden volume changes" check)
+// jump by more than CALM_AT LU within a 0.1 s step, as they start or 3 s later: [{ id, step }]. They are softened to about CALM_TO.
+const CALM_AT = 2.3, CALM_TO = 1.6;
+function loudStarts(wav, plan) {
+  const eb = spawnSync(ffmpeg, ['-hide_banner', '-i', wav, '-af', 'ebur128=metadata=1,ametadata=print:key=lavfi.r128.S', '-f', 'null', '-'], { encoding: 'utf8', maxBuffer: 1 << 28 }).stderr;
+  const pts = [...eb.matchAll(/pts_time:([\d.]+)/g)].map(m => +m[1]), S = [...eb.matchAll(/lavfi\.r128\.S=(-?[\d.]+)/g)].map(m => +m[1]);
+  const out = [];
+  plan.voice.forEach(v => {
+    let step = 0;
+    // the rise as the line comes in, and the drop 3 s later as its loud start leaves the measuring window
+    for (let i = 1; i < S.length; i++) {
+      if (pts[i] < 4) continue;
+      if (pts[i] >= v.t - 0.2 && pts[i] <= v.t + 1.5) step = Math.max(step, S[i] - S[i - 1]);
+      if (pts[i] >= v.t + 2.8 && pts[i] <= v.t + 4.6) step = Math.max(step, S[i - 1] - S[i]);
+    }
+    if (step > CALM_AT) out.push({ id: v.id, step });
+  });
+  return out;
 }
 
 // Mastering: one fixed gain to about -16 LUFS, capped so true peak stays at or below -1.5 dBTP.

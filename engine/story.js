@@ -42,6 +42,7 @@
     'hearts float up', 'heart floats down', 'sparkles [around <name>]', 'title card: <WORD>',
     `place: ${PLACES.names().join('|')}`, 'time: day|sunset|dusk|night', 'camera: wide|close|closer', 'wait <seconds>',
     'scene: <name>', `music: ${MUSIC.join('|')}`, 'thumbnail: auto|<seconds>|scene <number>', 'thumbnail shot: wide|medium|close', 'thumbnail text: <text>',
+    'intro: series|none|after scene <number>', 'ending: end screen|none', 'ending text: <text>',
     'shot: wide|medium|close|extreme close [on <name>|both|the star]', 'shot: over the shoulder of <name>',
     'camera: push in|pull out|pan to <name|the star|left|center|right>|follow <name>|shake|hold',
     'editing: auto', 'beat', 'slow motion <seconds>', 'reveal: the star|<name>|<place>',
@@ -97,7 +98,7 @@
 
   // Extras: names in the story that enter, fly, swim, hop or talk but aren't characters. Known extras come from
   // the asset registry; unknown ones are missing extras, shown as placeholders. Typos of known names are errors.
-  const KEYS = /^(title|title card|place|time|camera|shot|scene|music|editing|reveal|narrator|wait|pause|weather|light|format|type|thumbnail|thumbnail text|thumbnail shot)$/;
+  const KEYS = /^(title|title card|place|time|camera|shot|scene|music|editing|reveal|narrator|wait|pause|weather|light|format|type|thumbnail|thumbnail text|thumbnail shot|intro|ending|ending text)$/;
   function findExtras(lines, errors) {
     const found = {};
     lines.forEach((raw, i) => {
@@ -172,6 +173,28 @@
       };
       let m;
 
+      // YouTube: the series intro and the end screen (anywhere in the story; they take no time where they are written)
+      if ((m = line.match(/^intro\s*:\s*(.+)$/i))) {
+        const v = m[1].trim().toLowerCase().replace(/\s+/g, ' ');
+        let k;
+        if (v === 'series') meta.intro = { at: 'start', line: lineNo };
+        else if (v === 'none' || v === 'off') meta.intro = { at: 'none', line: lineNo };
+        else if ((k = v.match(/^after scene (\d+)$/))) meta.intro = { at: 'after', scene: +k[1], line: lineNo };
+        else return err(`Unknown intro "${m[1].trim()}". Use: series, none, or after scene 1`);
+        return;
+      }
+      if ((m = line.match(/^ending\s+text\s*:\s*(.+)$/i))) {
+        const v = m[1].trim();
+        if (v.length > 160) return err('This line is too long (max 160 characters).');
+        meta.endingText = { text: v, line: lineNo, src: raw.trim() };
+        return;
+      }
+      if ((m = line.match(/^ending\s*:\s*(.+)$/i))) {
+        const v = m[1].trim().toLowerCase().replace(/\s+/g, ' ');
+        if (v === 'end screen' || v === 'none') meta.ending = v;
+        else return err(`Unknown ending "${m[1].trim()}". Use: end screen, or none`);
+        return;
+      }
       // YouTube thumbnail: which moment, and its text (anywhere in the story; they take no time)
       if ((m = line.match(/^thumbnail\s+text\s*:\s*(.+)$/i))) {
         const v = m[1].trim();
@@ -344,6 +367,10 @@
       }
       err('I don\'t understand this line.');
     });
+    if (meta.endingText) {
+      if (meta.ending === 'none') errors.push(`Line ${meta.endingText.line}: "ending text" is said in the end screen. Remove "ending: none", or this line.`);
+      else { meta.ending = 'end screen'; beats.push({ type: 'say', line: meta.endingText.line, together: false, src: meta.endingText.src, who: 'narrator', text: meta.endingText.text, endScreen: true }); }
+    }
     if (!beats.some(b => b.type === 'say')) errors.push('The story has no narrator or character lines.');
     // scene heads: the place/time/music lines right after "scene:" all happen at the scene's start.
     // When the scene changes place, its new time of day is already set as the page turns.
@@ -547,7 +574,25 @@
     });
     const log = [];   // every beat with its start, for automatic editing
 
+    // YouTube kit: the series intro (5 s) and the end screen (the last 20 s) take their time in the story's timeline,
+    // so everything after them simply starts later. While they play, the film draws them over the story.
+    const INTRO = 5, END = 20, wantIntro = meta.intro && meta.intro.at !== 'none' ? meta.intro : null, wantEnd = meta.ending === 'end screen';
+    let introDone = false, endAt = null, scenesStarted = 0;
+    const startIntro = at => { (P.youtube || (P.youtube = {})).intro = { t0: at, t1: at + INTRO }; t = at + INTRO + 0.4; prevStart = t; introDone = true; };
+    const startEnd = () => {
+      endAt = t + 0.5; (P.youtube || (P.youtube = {})).end = { t0: endAt };
+      music.push({ t: endAt, mood: 'calm', line: 0 });   // calm music under the end screen
+      t = endAt + 1.2; prevStart = t;
+    };
+    if (wantIntro && wantIntro.at === 'start') startIntro(0);
+
     for (const b of beats) {
+      // the intro after a scene: just before the next scene starts
+      if (wantIntro && wantIntro.at === 'after' && !introDone && b.type === 'scene') {
+        if (scenesStarted + (scenesStarted === 0 && content ? 1 : 0) >= wantIntro.scene) startIntro(t + 0.3);
+      }
+      if (b.type === 'scene') scenesStarted += scenesStarted === 0 && content ? 2 : 1;
+      if (b.endScreen && wantEnd && endAt === null) startEnd();
       const s = b.together ? prevStart : t;
       const who = (b.who && typeof b.who !== 'string' ? b.who : []).map(id => A[id]);
       if (who.length) focus = who[0].id;
@@ -824,6 +869,10 @@
       t = Math.max(t, s + dur);
     }
     if (slow) errors.push(`Line ${slow.line}: slow motion needs an action after it.`);
+    if (wantIntro && !introDone) errors.push(`Line ${wantIntro.line}: "intro: after scene ${wantIntro.scene}", but the story doesn't have a scene after scene ${wantIntro.scene}.`);
+    if (wantEnd && endAt === null) startEnd();
+    // the end screen lasts 20 s, to the very end of the video
+    if (endAt !== null) t = Math.max(endAt + END, t + 1.5) - 1.8;
 
     // a change of place: the props stay behind (they go as the page turns)
     function leavePlace(at) { Object.values(props).forEach(p => { p.t1 = at; }); props = {}; }
@@ -943,6 +992,7 @@
     Object.values(turned).forEach(list => list.forEach(w => set(w.q, 'facing', w.t1 + 0.35, 0, 0.45)));
     cast.forEach(id => closeLook(A[id], t));
     const duration = Math.ceil((t + 1.8) * 30) / 30;
+    if (endAt !== null) P.youtube.end.t1 = duration;
     // bubbles fade out before the next one pops in, so two bubbles are never on screen together
     P.bubbles.forEach((b, i) => { const n = P.bubbles[i + 1]; if (n) b.t1 = Math.min(b.t1, n.t0 - 0.1); b.t1 = Math.min(b.t1, duration - 0.3); });
     P.captions.forEach((c, i) => { const n = P.captions[i + 1]; if (n) c.t1 = Math.min(c.t1, n.t0 - 0.05); });
@@ -987,6 +1037,8 @@
     P.sfx.sort((a, b) => a.t - b.t);
     // scenes run until the next one starts; a story without "scene:" lines is one scene
     if (!scenes.length) scenes.push({ name: meta.title, line: 0, t0: 0, implicit: true });
+    // an intro at the very start belongs to the first scene (chapters start at 0:00)
+    if (P.youtube && P.youtube.intro && P.youtube.intro.t0 === 0 && scenes.length) scenes[0].t0 = 0;
     scenes.forEach((c, i) => { c.t1 = i + 1 < scenes.length ? scenes[i + 1].t0 : duration; delete c.turn; });
     // music changes ([] means the classic music all story long)
     if (music.length) P.music = music;

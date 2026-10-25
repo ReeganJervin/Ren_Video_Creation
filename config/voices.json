@@ -18,6 +18,7 @@
   "owl": {
     "voice": "bm_fable:0.7+bm_george:0.3",
     "speed": 0.92,
-    "pitch": 1.08
+    "pitch": 1.08,
+    "gain": -2
   }
 }

@@ -11,7 +11,8 @@ const fs = require('fs'), path = require('path'), http = require('http');
 const { spawnSync } = require('child_process');
 
 const ROOT = path.resolve(__dirname, '..');
-const ref = process.argv.slice(2).find(a => !a.startsWith('--')) || 'HEAD';
+// the git ref: the first word that isn't an option (or the story name after --only)
+const ref = process.argv.slice(2).find((a, i, all) => !a.startsWith('--') && all[i - 1] !== '--only') || 'HEAD';
 const FRAMES = 12, SELF = process.argv.includes('--self');   // --self: old engine against itself (how repeatable rendering is)
 const SOUND = process.argv.includes('--sound');               // rule R14: frames and timing by default
 const work = path.join(ROOT, 'build', '_compare'), oldDir = path.join(work, 'old'), planDir = path.join(work, 'plans'), diffDir = path.join(work, 'diff');
