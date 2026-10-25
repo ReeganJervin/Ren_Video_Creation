@@ -40,5 +40,5 @@ Kitsu Studio turns a story written as a plain text file into a finished animated
 ## Current status
 
 - **Next step:** see the **build order in `ENGINE-ROADMAP.md` section 2**. The first step there whose status isn't "Done" is the one to work on.
-- Right now: **F1 and F2 are done, and F4 Parts A–B** (asset registry, missing list, placeholders, picture drop-in). Next is **F4 Asset Kit, Part C** (`ASSET-KIT.md`): style guide, `/new-asset` skill, first four assets.
-- After that: F4 Part C, then F9 Studio App Part A (`STUDIO-APP.md`), then **milestone 1** (full test, rule R14), then F3 Rig 2.0.
+- Right now: **F1 and F2 are done, and F4 Parts A–B** (asset registry, missing list, placeholders, picture drop-in). F4 **Part C** (style guide, `/new-asset` skill, the first four assets: lantern, cottage, cottage garden, owl) is done and approved. Next is **F9 Studio App Part A** (`STUDIO-APP.md`).
+- After that: F9 Studio App Part A (`STUDIO-APP.md`), then **milestone 1** (full test, rule R14), then F3 Rig 2.0.

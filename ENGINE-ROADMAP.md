@@ -106,7 +106,7 @@ Work through the steps **in this order**. The F-numbers are names, not the order
 |---|---|---|---|
 | 1 | F1 Long episodes (scenes, music moods, chapters, fast rendering) | Done | `7ff0e59` (F1A), `97a1ecd` (F1B) |
 | 2 | F2 Camera and editing | Done | `a2ca81a` (F2A), `87030e1` (F2B) |
-| 3 | F4 Asset Kit, Parts A–C: registry and missing list, picture drop-in, `/new-asset` (`ASSET-KIT.md`) | Parts A–B done (approved); Part C next | `272fba8` (F4A), F4B (see git log) |
+| 3 | F4 Asset Kit, Parts A–C: registry and missing list, picture drop-in, `/new-asset` (`ASSET-KIT.md`) | Done (Parts A–C approved) | `272fba8` (F4A), `5dcf1ef` (F4B), F4C (see git log) |
 | 4 | F9 Studio App, Part A: editor, live check, preview, render with progress (`STUDIO-APP.md`) | Not started | |
 | 5 | F3 Rig 2.0 (joints, movement library, lip-sync) | Not started | |
 | 6 | F4 Asset Kit, Part D: prop acting and Season 1 props (needs F3) | Not started | |
