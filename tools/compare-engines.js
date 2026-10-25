@@ -34,6 +34,7 @@ function diffPlans(a, b, at = '', out = { onlyOld: [], onlyNew: [], changed: [] 
   if (a && b && typeof a === 'object' && typeof b === 'object') {
     for (const k of new Set([...Object.keys(a), ...Object.keys(b)])) {
       const p = at ? `${at}.${k}` : k;
+      if (!at && (k === 'assetFiles' || k === 'pictures')) continue;   // the library grows with every new asset; that isn't a change to the story
       if (!(k in b)) out.onlyOld.push(p); else if (!(k in a)) out.onlyNew.push(p); else diffPlans(a[k], b[k], p, out);
     }
   } else if (JSON.stringify(a) !== JSON.stringify(b)) out.changed.push(at);

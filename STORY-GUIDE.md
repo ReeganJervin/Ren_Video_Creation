@@ -156,6 +156,16 @@ Extras can do the simple things characters do:
 | `owl: Hoo!` / `owl (happy): Hoo!` | Talks in a speech bubble (it needs a voice in `config/voices.json`) |
 | `ren looks at the owl`, `ren walks to the owl`, `ren waves at the owl` | Ren and Yuki can talk to and look at extras |
 
+### Assets you can use
+
+| Name | Kind | Story lines it supports |
+|---|---|---|
+| `star` | prop | Everything in "The star" above, plus `star appears at left`, `the star glows` |
+| `heart` | prop | `hearts float up`, `heart floats down`, plus `heart appears at right` |
+| `lantern` | prop (also `little lantern`, `old lantern`) | `lantern appears next to ren`, `the lantern glows` (the candle lights; brightest at night), `the lantern stops glowing`, `ren walks to the lantern`, `ren looks at the lantern` |
+
+Places are listed in "Places" below. New assets are added here as they are created (with `/new-asset` in Claude Code).
+
 ### Things that don't exist yet
 
 You can write a story with things that don't exist yet. `check-story.bat` lists them instead of failing:
