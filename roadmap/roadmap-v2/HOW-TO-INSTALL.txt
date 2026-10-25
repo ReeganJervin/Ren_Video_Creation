@@ -21,5 +21,3 @@ Then give Claude Code this prompt:
      build order in ENGINE-ROADMAP.md section 2.
   4. Show me what changed, then commit as "Docs: roadmap version 2".
   Then continue with F2 Part B as normal.
-
-  From now on, use quick tests for each Part A/B review: run --check on all stories, do the R1 comparison using the 12 frames and the timing data only (no full renders of old stories), and render one demo video of 2 minutes or less for the new feature, with all 10 checks. Keep the F2 demo stories to 2 minutes or less. Full renders of every story and the 12-minute test happen only at milestones (after build steps 4, 7, 10, 13), or if a step changes rendering, audio or voices. Add this as rule R14 when we install roadmap version 2.
