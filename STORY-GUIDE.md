@@ -175,11 +175,11 @@ You can write a story with things that don't exist yet. `check-story.bat` lists 
 
 ```
 Your story needs 5 new things:
-  extra:      owl                  (lines 22, 23)
-  place:      cottage garden       (line 9)
-  set piece:  cottage              (lines 14, 15, 17)
-  prop:       lantern              (lines 18, 19, 20, 27)
-  voice:      voice for owl        (line 23)
+  extra:      squirrel             (lines 22, 23)
+  place:      flower field         (line 9)
+  set piece:  tent                 (lines 14, 15, 17)
+  prop:       treasure chest       (lines 18, 19, 20, 27)
+  voice:      voice for squirrel   (line 23)
 They are shown as grey placeholders for now, so you can still preview.
 ```
 
@@ -194,29 +194,31 @@ The quickest way to create a missing thing is a PNG picture in the `assets` fold
 
 | Put this file | And you get |
 |---|---|
-| `assets\props\lantern.png` | the prop `lantern` (a name with dashes, like `old-map.png`, becomes `old map`) |
+| `assets\props\lamp.png` | the prop `lamp` (a name with dashes, like `old-map.png`, becomes `old map`) |
 | `assets\props\chest.png` + `chest-open.png` | a chest that opens: `the chest opens` shows the second picture |
-| `assets\props\lantern-glowing.png` | the picture for `the lantern glows` |
-| `assets\extras\owl.png` | the animal `owl` |
-| `assets\extras\owl-1.png`, `owl-2.png`, … | an owl that moves, like a flipbook. Add `owl-blink.png` for blinks and `owl-talk.png` for talking |
-| `assets\places\cottage-garden\back.png` | the place `cottage garden` (1920×1080 or bigger) |
+| `assets\props\lamp-glowing.png` | the picture for `the lamp glows` |
+| `assets\extras\squirrel.png` | the animal `squirrel` |
+| `assets\extras\squirrel-1.png`, `squirrel-2.png`, … | a squirrel that moves, like a flipbook. Add `squirrel-blink.png` for blinks and `squirrel-talk.png` for talking |
+| `assets\places\flower-field\back.png` | the place `flower field` (1920×1080 or bigger) |
+
+A picture needs a name that isn't taken yet: a picture called `lantern.png`, `cottage.png`, `owl.png` or `cottage-garden` is ignored, because those are already drawn in the engine (the check tells you).
 
 Pictures of props and animals need a **see-through (transparent) background**. They face right; if yours faces left, say so in the settings file.
 
-**Settings** (optional): a text file with the same name, like `assets\props\lantern.txt`, with simple lines you can write in Notepad. Every setting has a sensible default:
+**Settings** (optional): a text file with the same name, like `assets\props\lamp.txt`, with simple lines you can write in Notepad. Every setting has a sensible default:
 
 ```
 size: small          # small, medium or big (big = a set piece like a house)
 height: 90           # how tall, in pixels, next to Ren and Yuki
 hold: one paw        # one paw or both paws
-glow: yes            # so "the lantern glows" works
+glow: yes            # so "the lamp glows" works
 moves: fly           # animals only: walk, hop, fly, swim or float
 fps: 6               # animals only: flipbook speed
 faces: left          # if the picture faces left
 credit: drawn by me  # who made the picture (required)
 ```
 
-**Places:** in `assets\places\cottage-garden\` you can also add `front.png` (a see-through picture drawn in front of the characters, like flowers), `back-sunset.png`, `back-dusk.png` and `back-night.png` (without them, `back.png` is coloured for the time of day, and the sky shows through any see-through part), and `place.txt`:
+**Places:** in `assets\places\flower-field\` you can also add `front.png` (a see-through picture drawn in front of the characters, like flowers), `back-sunset.png`, `back-dusk.png` and `back-night.png` (without them, `back.png` is coloured for the time of day, and the sky shows through any see-through part), and `place.txt`:
 
 ```
 ground: 0.85               # where feet stand, as a share of the height (0.85 = 85% down)
@@ -225,9 +227,9 @@ ambient: birds             # the place's sound: birds, leaves, water, wind, wave
 credit: drawn by me
 ```
 
-Pictures change colour with the time of day, like everything else, so a daytime picture still looks right at night. **Things that give light are the exception:** the lit parts of a glowing picture (the parts of `lantern-glowing.png` that are brighter than `lantern.png`), the star, and the soft glow around anything that glows keep their full colour, so they look brightest at night.
+Pictures change colour with the time of day, like everything else, so a daytime picture still looks right at night. **Things that give light are the exception:** the lit parts of a glowing picture (the parts of `lamp-glowing.png` that are brighter than `lamp.png`), the star, and the soft glow around anything that glows keep their full colour, so they look brightest at night.
 
-**Examples:** `docs\examples\pictures\` has a full set to copy and try: a lantern that glows, a cottage whose door opens, an owl that flies, blinks and talks, and the place "cottage garden" with flowers in front. Copy a folder's files into `assets\` (for example `docs\examples\pictures\props\lantern*.*` into `assets\props\`) and they work in your stories straight away. `bad-example-crate.png` shows what the check says about a picture without a see-through background or a credit. The engine never loads pictures from `docs\`, only from `assets\`.
+**Examples:** `docs\examples\pictures\` has a full set to copy and try: a lantern that glows, a cottage whose door opens, an owl that flies, blinks and talks, and the place "cottage garden" with flowers in front. These four now also exist as drawn assets, so to try the pictures, copy them into `assets\` **with a new name**: for example `lantern.png`, `lantern-glowing.png` and `lantern.txt` from `docs\examples\pictures\props\` become `assets\props\paper-lantern.png`, `paper-lantern-glowing.png` and `paper-lantern.txt`, and then `paper lantern appears at center` works. (With their own names they are ignored, and the check says so.) `bad-example-crate.png` shows what the check says about a picture without a see-through background or a credit. The engine never loads pictures from `docs\`, only from `assets\`.
 
 **Credits:** every picture needs a `credit:` line (who made it). The check reminds you, and a finished video can't be made with an uncredited picture. Every video also gets `videos\<story>-credits.txt`, listing everything in it and who made it. **Only use pictures you made yourself, or from a tool whose terms allow selling videos. Don't use pictures found on the internet.**
 

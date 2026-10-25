@@ -101,14 +101,14 @@ The results are in `videos\<name>-report.txt`. Each line starts with `PASS`, `FA
 | Folder or file | What it is |
 |---|---|
 | `stories\` | Your stories, plus the template and examples |
-| `config\voices.json` | The fixed voices: the narrator is `af_heart`, Ren is `af_sky` pitched up, and Yuki is `af_bella` pitched up more |
+| `config\voices.json` | The voices: the narrator, Ren, Yuki, and the owl (a Kokoro voice or a blend of two, with speed and pitch) |
 | `engine\characters.js` | The list of characters: their names, how they move, their sounds and how each mood looks on them |
 | `engine\ren.js` | Ren's fixed design (shape, colours, face, scarf) |
 | `engine\yuki.js` | Yuki's fixed design (shape, colours, face, ears, flower and bow) |
 | `engine\story.js` | Reads the story and works out the timing for everything |
-| `engine\places\` | The places (meadow, forest, river, snowy hill, beach): one drawing file each, found automatically (`index.js` has the shared helpers) |
+| `engine\places\` | The places (meadow, forest, river, snowy hill, beach, cottage garden): one drawing file each, found automatically (`index.js` has the shared helpers) |
 | `engine\assets.js` | The asset registry: every prop, set piece, extra and place, found automatically, plus spelling help |
-| `engine\props\`, `engine\extras\` | Props and set pieces (the star and heart so far), and extras (animals), one file each |
+| `engine\props\`, `engine\extras\` | Props and set pieces (star, heart, lantern, cottage) and extras (the owl), one file each; `_template.js` in each folder is the starting point for a new one |
 | `assets\` | Your own pictures: `props\`, `extras\` and `places\` (see "Adding your own pictures" in STORY-GUIDE.md). `engine\pictures.js` turns them into props, animals and places |
 | `engine\film.js` | Draws each frame: the place, the characters, the star, hearts, bubbles, captions and place changes |
 | `engine\audio.js` | Music, sound effects, the sound of each place, voice mixing (Web Audio) |
