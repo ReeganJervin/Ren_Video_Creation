@@ -221,6 +221,49 @@ music: tense
 | `camera: close` | The camera slowly moves closer to the characters on stage. Also `closer`, or `wide` to go back |
 | `wait 2` | A pause of 2 seconds |
 
+## Camera & editing
+
+Without any of these lines, the camera works by itself, exactly as before. Use them to make a story feel like a TV show.
+
+### Shots (an instant cut, like an edit)
+
+| Line | What you see |
+|---|---|
+| `shot: wide` | The whole place, with everyone in it |
+| `shot: medium on ren` | Ren from head to toe, a little closer |
+| `shot: close on yuki` | Yuki's head and shoulders |
+| `shot: extreme close on ren` | Ren's face fills the screen (good for big surprises) |
+| `shot: over the shoulder of ren` | Ren's shoulder, big and soft at the edge of the screen, with the character Ren is talking to on the other side |
+
+After `shot: medium`, `close` or `extreme close`, you can write `on ren`, `on yuki`, `on both` or `on the star`. Without it, the shot shows whoever acted or spoke last (a wide shot shows everyone).
+
+The camera follows the rules of good framing by itself:
+- Nobody's head is ever cut off in a close shot.
+- One character stands on a third of the screen, with room in front of where they're looking.
+- If the characters move, the shot follows them smoothly.
+- Speech bubbles get smaller in close shots and move to where they don't cover anyone's face.
+
+```
+yuki (playful): Let's play hide and seek!
+shot: extreme close on ren
+ren (surprised): Hide and seek? I love hide and seek!
+shot: over the shoulder of ren
+yuki (happy): Then close your eyes and count to ten!
+```
+
+### Camera moves (smooth glides)
+
+| Line | What the camera does |
+|---|---|
+| `camera: push in` | Glides closer (about 2 seconds) |
+| `camera: pull out` | Glides further away |
+| `camera: pan to yuki` | Turns to look at Yuki. Also `pan to the star`, `pan to left`, `pan to center`, `pan to right` |
+| `camera: follow ren` | Keeps Ren in the picture while Ren moves |
+| `camera: shake` | A short, light shake, for surprises |
+| `camera: hold` | Stops still, even if the characters move (they can walk out of the picture) |
+
+Moves happen while the story carries on, like `camera: close`. The old lines `camera: close`, `closer` and `wide` still work, and in a story with shots they glide too. Background layers move at different speeds as the camera moves, so the picture has depth.
+
 ## Sounds you get automatically
 
 You don't write sounds. They come from the actions:

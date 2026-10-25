@@ -50,7 +50,7 @@
 | Feature | Status | Commit(s) |
 |---|---|---|
 | F1 Long episodes (scenes, music moods, chapters, fast rendering) | Done (approved) | F1A, F1B (branch `Improvment`) |
-| F2 Camera and editing | Not started | |
+| F2 Camera and editing | Part A approved; Part B next | F2A (branch `Improvment`) |
 | F3 Rig 2.0 (joints, movement library, lip-sync) | Not started | |
 | F4 Prop system | Not started | |
 | F5 Lighting and indoor places (cave kit) | Not started | |

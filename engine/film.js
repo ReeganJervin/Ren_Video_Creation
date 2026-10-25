@@ -267,6 +267,97 @@
     cx = clamp(cx, -220 + hw, 2140 - hw); cy = clamp(cy, -40 + hh, 1140 - hh);
     return { z: zz, cx, cy };
   }
+  // ---------- shots and camera moves (stories with "shot:" or camera-move lines) ----------
+  const SIZES = { wide: 1, medium: 1.75, close: 2.7, 'extreme close': 4.2 }, OTS_Z = 2.2;
+  let RIGS = [], SHAKES = [], baseMemo = [];
+  // What a shot looks at, as one box: left/right x, top of the head, eye line, feet, facing (one subject only).
+  function aimBox(on, t) {
+    let S = [];
+    if (on.star) { const s = starAt(t); if (s) S = [{ x: s.x, top: s.y - 70, eye: s.y, feet: s.y + 70, f: 0 }]; }
+    else if (on.x !== undefined) { const y = placeAt(t).ground(on.x); S = [{ x: on.x, top: y - 430, eye: y - 240, feet: y, f: 0 }]; }
+    else {
+      let ids = on.actors || CAST.filter(id => onStage(id, t));
+      if (!ids.length) ids = CAST.slice(0, 1);
+      S = ids.map(id => {
+        const B = actorBody(id, t), d = REG[id];
+        return { x: B.x, top: toWorld(B, 0, d.overhead * 0.92).y, eye: toWorld(B, 0, d.head).y, feet: B.y, f: B.f };
+      });
+    }
+    if (!S.length) return aimBox({ all: true }, t);
+    return { x0: Math.min(...S.map(s => s.x)), x1: Math.max(...S.map(s => s.x)), top: Math.min(...S.map(s => s.top)), eye: Math.min(...S.map(s => s.eye)), feet: Math.max(...S.map(s => s.feet)), f: S.length === 1 ? S[0].f : 0 };
+  }
+  // the same box averaged over the last half second, so the framing follows movement smoothly
+  function aimSmooth(on, t) {
+    const n = 4, acc = { x0: 0, x1: 0, top: 0, eye: 0, feet: 0, f: 0 };
+    for (let k = 0; k < n; k++) { const b = aimBox(on, Math.max(0, t - k * 0.15)); for (const q in acc) acc[q] += b[q] / n; }
+    return acc;
+  }
+  const bounds = c => { const hw = 960 / c.z, hh = 540 / c.z; return { z: c.z, cx: clamp(c.cx, -220 + hw, 2140 - hw), cy: clamp(c.cy, -40 + hh, 1140 - hh) }; };
+  // A shot of size z on its subject: subject on a third with room in front of where it faces, the top of the
+  // head inside the frame, and (in an extreme close-up) the eyes a little above the middle.
+  function frameCam(z, on, t, lead = 1) {
+    const g = aimSmooth(on, t);
+    // two or more subjects: never so close that someone is cut off (the classic camera's rule)
+    if (g.x1 - g.x0 > 1) z = Math.min(z, 1700 / (g.x1 - g.x0 + 560));
+    z = Math.max(1, z);
+    const hw = 960 / z, hh = 540 / z, v = clamp((z - 1) / 0.75), u = clamp((z - SIZES.close) / (SIZES['extreme close'] - SIZES.close));
+    let cx = (g.x0 + g.x1) / 2 + (g.x0 === g.x1 ? clamp(g.f * 1.5, -1, 1) * hw / 3 * lead * v : 0);
+    const byTop = g.top + hh * (1 - 2 * (z < 2.2 ? 0.1 : 0.08)), byEye = g.eye + 0.16 * hh;
+    let cy = lerp(540, lerp(byTop, byEye, u), v);
+    if (z < 3.4 && g.top < cy - hh + 6) cy = g.top + hh - 6;
+    return bounds({ z, cx, cy });
+  }
+  // over the shoulder: the other character on the third away from the shoulder, facing it
+  function otsCam(rig, t) {
+    const g = aimSmooth(rig.on, t), a = actorX(rig.of, t), dir = Math.sign(a - g.x0) || 1, z = OTS_Z, hw = 960 / z, hh = 540 / z;
+    return bounds({ z, cx: g.x0 + dir * hw / 3, cy: g.top + hh * (1 - 2 * 0.12) });
+  }
+  const camBlend = (a, b, w) => ({ z: Math.exp(lerp(Math.log(a.z), Math.log(b.z), w)), cx: lerp(a.cx, b.cx, w), cy: lerp(a.cy, b.cy, w) });
+  const rigCam = (i, t) => { const r = RIGS[i]; return r.kind === 'fixed' ? r.cam : r.kind === 'ots' ? otsCam(r, t) : frameCam(r.z, r.on, t); };
+  // the camera after shots/moves 0..i (i < 0: the classic automatic camera)
+  function camUpTo(i, t) {
+    if (i < 0) return camAt(t);
+    const r = RIGS[i], to = rigCam(i, t);
+    if (r.dur > 0 && t < r.t + r.dur) return camBlend(camUpTo(i - 1, t), to, ease((t - r.t) / r.dur));
+    return to;
+  }
+  // where the camera is just as shot/move i begins (moves start from there)
+  const camBefore = i => baseMemo[i] || (baseMemo[i] = camUpTo(i - 1, RIGS[i].t));
+  function buildRigs() {
+    RIGS = []; SHAKES = []; baseMemo = [];
+    let on = { all: true };
+    for (const s of P.shots) {
+      if (s.op === 'shake') { SHAKES.push(s); continue; }
+      const r = { t: s.t, dur: s.dur, op: s.op };
+      RIGS.push(r);
+      const i = RIGS.length - 1, base = () => camBefore(i), p = RIGS[i - 1];
+      // the zoom a move builds on: where the previous shot or move is heading (so moves in a row add up)
+      const z0 = () => (!p ? base().z : p.kind === 'frame' ? p.z : p.kind === 'ots' ? OTS_Z : p.cam.z);
+      if (s.op === 'cut') Object.assign(r, { kind: 'frame', z: SIZES[s.size], on: on = s.on });
+      else if (s.op === 'ots') Object.assign(r, { kind: 'ots', of: s.of, on: on = s.on });
+      else if (s.op === 'zoom') Object.assign(r, { kind: 'frame', z: s.z, on: on = s.on });
+      else if (s.op === 'push') Object.assign(r, { kind: 'frame', z: Math.min(SIZES['extreme close'], z0() * 1.4), on });
+      else if (s.op === 'pull') Object.assign(r, { kind: 'frame', z: Math.max(1, z0() / 1.4), on });
+      else if (s.op === 'pan' || s.op === 'follow') Object.assign(r, { kind: 'frame', z: z0(), on: on = s.on });
+      else if (s.op === 'hold') Object.assign(r, { kind: 'fixed', cam: base() });
+    }
+  }
+  // the camera at t with shots: { z, cx, cy, framed, ots: { of, a } } (a = how visible the shoulder is)
+  function camShot(t) {
+    let i = -1; while (i + 1 < RIGS.length && RIGS[i + 1].t <= t) i++;
+    const c = { ...camUpTo(i, t), framed: i >= 0 };
+    const r = RIGS[i], prev = RIGS[i - 1];
+    if (r && r.kind === 'ots') c.ots = { of: r.of, on: r.on, a: 1 };
+    else if (r && prev && prev.kind === 'ots' && r.dur > 0 && t < r.t + r.dur) c.ots = { of: prev.of, on: prev.on, a: 1 - ease((t - r.t) / r.dur) };
+    // a short, light shake for surprises, fading out
+    for (const s of SHAKES) {
+      const u = (t - s.t) / s.dur; if (u < 0 || u > 1) continue;
+      const a = 14 / c.z * Math.pow(1 - u, 2);
+      c.cx += a * (Math.sin(t * 61) + Math.sin(t * 37 + 1)) / 2; c.cy += a * (Math.sin(t * 53 + 2) + Math.sin(t * 29)) / 2;
+    }
+    return c;
+  }
+
   function applyCam(c, cam, p) {
     const z = 1 + (cam.z - 1) * p;
     c.setTransform(1, 0, 0, 1, 0, 0); c.translate(W / 2, H / 2); c.scale(z, z);
@@ -301,18 +392,85 @@
     lines.forEach((l, i) => c.fillText(l, W / 2, y + 22 + lh / 2 + i * lh));
     c.restore();
   }
-  function drawBubble(c, b, t, head, cam) {
+  // In framed shots a bubble shrinks with the zoom and goes where it covers no face: beside the speaker's face
+  // (on its usual side first), above it, or in a top corner, getting smaller until it fits.
+  function framedBubble(c, b, head, cam, F) {
+    const me = F.boxes.find(q => q.id === b.who) || { x0: head.x - 90, x1: head.x + 90, y0: head.y - 90, y1: head.y + 90 };
+    const fits = (x, y, w, h) => !F.boxes.some(q => x + w / 2 + 16 > q.x0 && x - w / 2 - 16 < q.x1 && y + h / 2 + 16 > q.y0 && y - h / 2 - 16 < q.y1);
+    // near the speaker first (getting smaller if needed), and only then the corners of the frame
+    const start = Math.round(clamp(52 - (cam.z - 1) * 7, 34, 52) / 2) * 2;
+    let last = null;
+    for (const near of [true, false]) {
+      for (let size = start; size >= 28 && !(last && last.ok); size -= 2) {
+        c.font = `700 ${size}px ${FONT}`;
+        const lines = wrap(c, b.text, 560 * size / 52);
+        if (lines.length > 3) continue;
+        const lh = size * 1.18, w = Math.max(...lines.map(l => c.measureText(l).width)) + 84 * size / 52, h = lines.length * lh + 56 * size / 52;
+        const into = (x, y) => [clamp(x, 40 + w / 2, W - 40 - w / 2), clamp(y, 40 + h / 2, H - 40 - h / 2)];
+        const sides = [b.side, -b.side];
+        const cands = near
+          ? sides.map(s => into(s > 0 ? me.x1 + 36 + w / 2 : me.x0 - 36 - w / 2, me.y0 + h / 2)).concat(
+            [into(head.x, me.y0 - 20 - h / 2)], sides.map(s => into(head.x + s * w / 2, me.y0 - 20 - h / 2)))
+          : sides.map(s => into(s > 0 ? W : 0, 0)).concat(sides.map(s => into(s > 0 ? W : 0, H)));
+        const ok = cands.find(([x, y]) => fits(x, y, w, h));
+        if (ok || !near && !last) last = { size, lines, lh, w, h, bx: (ok || cands[0])[0], by: (ok || cands[0])[1], ok: !!ok };
+      }
+      if (last && last.ok) break;
+    }
+    // the tail reaches toward the speaker but stops before the face
+    const d = Math.hypot(head.x - last.bx, head.y - last.by), e = Math.min(last.w / 2, last.h / 2), faceR = (me.x1 - me.x0) / 2;
+    last.L = clamp(d - e - faceR * 0.9, 24, 120);
+    return last;
+  }
+  // screen boxes around every visible face (and where each head is on screen, for the shoulder in an over-the-shoulder shot)
+  function faceBoxes(cam, Ks, heads) {
+    const boxes = [], at = {};
+    CAST.forEach(id => {
+      let p = toScreen(cam, heads[id]), s = KS * cam.z;
+      if (cam.ots && cam.ots.of === id) { const o = otsPlace(cam, Ks, id); p = o.head; s = o.K.s; }
+      at[id] = p;
+      if (p.x < -400 || p.x > W + 400) return;
+      boxes.push({ id, x0: p.x - 128 * s, x1: p.x + 128 * s, y0: p.y - 105 * s, y1: p.y + 120 * s });
+    });
+    return { boxes, heads: at };
+  }
+  // the shoulder in an over-the-shoulder shot: big, at the frame edge on its own side, turned toward the other
+  function otsPlace(cam, Ks, id) {
+    const K = Ks[id], on = cam.ots.on.actors[0], dir = Math.sign(Ks[on].x - K.x) || 1, s = KS * cam.z * 1.6;
+    const head = { x: dir > 0 ? W * 0.07 : W * 0.93, y: H * 0.62 };
+    return { head, K: { ...K, x: head.x, y: head.y - REG[id].head * s * K.sy, h: K.h * cam.z * 1.6, s, f: dir * 0.85, lookX: dir * 0.8, lookY: 0 } };
+  }
+  function drawOts(k, cam, Ks) {
+    const A = cam.ots.of, ax = aux.getContext('2d');
+    applyCam(k, cam, 1); CAST.forEach(id => { if (id !== A) DRAW[id](k, Ks[id]); });
+    const put = (alpha, filter) => { k.save(); k.setTransform(1, 0, 0, 1, 0, 0); k.globalAlpha = alpha; k.filter = filter; k.drawImage(aux, 0, 0); k.restore(); };
+    // as the shot moves on, the shoulder character fades back to where it really stands
+    if (cam.ots.a < 1) { ax.setTransform(1, 0, 0, 1, 0, 0); ax.clearRect(0, 0, W, H); applyCam(ax, cam, 1); DRAW[A](ax, Ks[A]); put(1 - cam.ots.a, 'none'); }
+    // close to the camera: big, soft and a little darker. It is blurred anyway, so it is drawn at half size
+    // and only on its own half of the frame, which keeps the blur quick.
+    const o = otsPlace(cam, Ks, A), hx = o.head.x < W / 2 ? 0 : W / 2, sx = half.getContext('2d');
+    sx.setTransform(1, 0, 0, 1, 0, 0); sx.clearRect(0, 0, W / 2, H / 2);
+    sx.setTransform(0.5, 0, 0, 0.5, 0, 0); DRAW[A](sx, o.K);
+    k.save(); k.setTransform(1, 0, 0, 1, 0, 0); k.globalAlpha = cam.ots.a; k.filter = 'blur(3px) brightness(0.6)';
+    k.drawImage(half, hx / 2, 0, W / 4, H / 2, hx, 0, W / 2, H); k.restore();
+  }
+  function drawBubble(c, b, t, head, cam, F) {
     if (t < b.t0 || t > b.t1) return;
     const pin = easeOutBack((t - b.t0) / 0.38), out = ease((b.t1 - t) / 0.3), a = clamp((t - b.t0) / 0.12) * out, sc = (0.35 + 0.65 * pin) * (0.92 + 0.08 * out);
     c.save(); c.setTransform(1, 0, 0, 1, 0, 0);
-    let size = 52, lines;
-    for (; size >= 34; size -= 2) { c.font = `700 ${size}px ${FONT}`; lines = wrap(c, b.text, 560); if (lines.length <= 2) break; }
-    const lh = size * 1.18, w = Math.max(...lines.map(l => c.measureText(l).width)) + 84, h = lines.length * lh + 56;
-    let bx = head.x + b.side * (w / 2 + 170 * cam.z), by = head.y - 190;
-    bx = clamp(bx, 40 + w / 2, W - 40 - w / 2); by = clamp(by, 40 + h / 2, H - 40 - h / 2);
-    if (Math.abs(bx - head.x) < w / 2 + 110 * cam.z) by = Math.max(40 + h / 2, head.y - 150 * cam.z - h / 2 - 60);
+    let size = 52, lines, lh, w, h, bx, by, L = 120;
+    if (F) {
+      head = F.heads[b.who] || head;
+      ({ size, lines, lh, w, h, bx, by, L } = framedBubble(c, b, head, cam, F));
+    } else {
+      for (; size >= 34; size -= 2) { c.font = `700 ${size}px ${FONT}`; lines = wrap(c, b.text, 560); if (lines.length <= 2) break; }
+      lh = size * 1.18; w = Math.max(...lines.map(l => c.measureText(l).width)) + 84; h = lines.length * lh + 56;
+      bx = head.x + b.side * (w / 2 + 170 * cam.z); by = head.y - 190;
+      bx = clamp(bx, 40 + w / 2, W - 40 - w / 2); by = clamp(by, 40 + h / 2, H - 40 - h / 2);
+      if (Math.abs(bx - head.x) < w / 2 + 110 * cam.z) by = Math.max(40 + h / 2, head.y - 150 * cam.z - h / 2 - 60);
+    }
     const ang = Math.atan2(head.y - by, head.x - bx), dx = Math.cos(ang), dy = Math.sin(ang), px = -dy, py = dx;
-    const ex = dx * (w / 2 - 34), ey = dy * (h / 2 - 16), L = 120, tx = ex + dx * L, ty = ey + dy * L, bw = 24;
+    const ex = dx * (w / 2 - 34), ey = dy * (h / 2 - 16), tx = ex + dx * L, ty = ey + dy * L, bw = 24;
     c.globalAlpha = a; c.translate(bx, by); c.scale(sc, sc);
     const body = () => { c.beginPath(); c.roundRect(-w / 2, -h / 2, w, h, Math.min(h / 2, 60)); };
     const tail = () => { c.beginPath(); c.moveTo(ex + px * bw, ey + py * bw); c.quadraticCurveTo((ex + tx) / 2 + px * 9, (ey + ty) / 2 + py * 9, tx, ty); c.quadraticCurveTo((ex + tx) / 2 - px * 3, (ey + ty) / 2 - py * 3, ex - px * bw, ey - py * bw); c.closePath(); };
@@ -354,10 +512,10 @@
   }
 
   // ---------- frame ----------
-  let ctx, layer;
+  let ctx, layer, aux, half;
   function render(t) {
     t = clamp(t, 0, P.duration);
-    const c = ctx, cam = camAt(t), tau = K_('tau', t);
+    const c = ctx, cam = P.shots ? camShot(t) : camAt(t), tau = K_('tau', t);
     c.setTransform(1, 0, 0, 1, 0, 0); c.globalAlpha = 1; c.globalCompositeOperation = 'source-over';
     const PN = placeAt(t);
     HP.cam = p => applyCam(c, cam, p);
@@ -366,7 +524,7 @@
     const Ks = {}; CAST.forEach(id => { Ks[id] = actorState(id, t); });
     const k = layer.getContext('2d');
     k.setTransform(1, 0, 0, 1, 0, 0); k.globalCompositeOperation = 'source-over'; k.clearRect(0, 0, W, H);
-    applyCam(k, cam, 1); CAST.forEach(id => DRAW[id](k, Ks[id]));
+    if (cam.ots) drawOts(k, cam, Ks); else { applyCam(k, cam, 1); CAST.forEach(id => DRAW[id](k, Ks[id])); }
     k.setTransform(1, 0, 0, 1, 0, 0); k.globalCompositeOperation = 'source-atop';
     k.globalAlpha = tau < 1 ? 0.06 * tau : 0.06 + 0.08 * (tau - 1); k.fillStyle = tod(tau, PN.tint); k.fillRect(0, 0, W, H);
     k.globalAlpha = 1; k.globalCompositeOperation = 'source-over';
@@ -409,7 +567,8 @@
     });
     P.titles.forEach(T => drawTitle(c, T, t));
     P.captions.forEach(cap => drawCaption(c, cap, t));
-    P.bubbles.forEach(b => drawBubble(c, b, t, toScreen(cam, heads[b.who]), cam));
+    const F = cam.framed ? faceBoxes(cam, Ks, heads) : null;
+    P.bubbles.forEach(b => drawBubble(c, b, t, toScreen(cam, heads[b.who]), cam, F));
     c.setTransform(1, 0, 0, 1, 0, 0);
     const vg = c.createRadialGradient(W / 2, H / 2, H * 0.45, W / 2, H / 2, H * 1.05);
     vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, `rgba(20,10,30,${0.12 + 0.07 * tau})`);
@@ -427,6 +586,9 @@
     flickers = plan.star.filter(s => s.type === 'flicker');
     ctx = canvas.getContext('2d');
     layer = document.createElement('canvas'); layer.width = W; layer.height = H;
+    aux = document.createElement('canvas'); aux.width = W; aux.height = H;
+    half = document.createElement('canvas'); half.width = W / 2; half.height = H / 2;
+    if (P.shots) buildRigs();
     await Promise.all(['700 52px Fredoka', 'italic 500 40px Lora'].map(f => document.fonts.load(f)));
     render(0);
   }

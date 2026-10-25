@@ -68,6 +68,7 @@ There are example stories to try first:
 - `stories\ren-meets-yuki.txt` is a one-minute story where Ren meets Yuki: talking, every Yuki mood, a hug and hopping together.
 - `stories\a-trip-around.txt` takes Ren and Yuki to every place: the meadow, forest, river, snowy hill and beach.
 - `stories\test-scenes.txt` is a story in three scenes, with three music moods and YouTube chapters.
+- `stories\test-camera.txt` shows every kind of shot and camera move.
 
 ## Every video is checked automatically
 

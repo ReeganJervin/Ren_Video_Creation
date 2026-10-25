@@ -1,6 +1,7 @@
 // Checks that engine changes leave existing stories alone (rule R1 in ENGINE-ROADMAP.md).
 //
 //   node tools/compare-engines.js [git-ref]      compare the engine at git-ref (default HEAD) with the working copy
+//   ... --only the-fallen-star                    only that story
 //
 // For every story in stories/: the timing plan, 12 frames (pixel by pixel) and the music + effects soundtrack.
 // Timing uses estimated voice lengths (the same for both engines), so no voices need to be made.
@@ -51,7 +52,8 @@ function serve() {
 async function main() {
   checkoutEngine();
   const NEW = require('../engine/story.js'), OLD = require(path.join(oldDir, 'engine', 'story.js'));
-  const stories = fs.readdirSync(path.join(ROOT, 'stories')).filter(f => f.endsWith('.txt'));
+  // --only name: just that story
+  const only = process.argv.indexOf('--only'), stories = fs.readdirSync(path.join(ROOT, 'stories')).filter(f => f.endsWith('.txt') && (only < 0 || f === process.argv[only + 1] + '.txt'));
   const server = await serve(), base = `http://127.0.0.1:${server.address().port}`;
   const browser = await require('./browser').launch({ exact: true });
   const open = async (engine, plan) => {

@@ -29,6 +29,8 @@
     'hearts float up', 'heart floats down', 'sparkles [around <name>]', 'title card: <WORD>',
     `place: ${PLACES.names().join('|')}`, 'time: day|sunset|dusk|night', 'camera: wide|close|closer', 'wait <seconds>',
     'scene: <name>', `music: ${MUSIC.join('|')}`,
+    'shot: wide|medium|close|extreme close [on <name>|both|the star]', 'shot: over the shoulder of <name>',
+    'camera: push in|pull out|pan to <name|the star|left|center|right>|follow <name>|shake|hold',
     `Characters: ${NAMES.join(', ')}`,
   ];
 
@@ -107,6 +109,28 @@
         if (!(v in TIMES)) return err(`Unknown time "${m[1]}". Use: day, sunset, dusk or night`);
         if (!started) meta.time = v; else beat('time', { value: v });
         return;
+      }
+      // shots cut instantly, like an edit: "shot: close on yuki", "shot: over the shoulder of ren"
+      if ((m = line.match(/^shot\s*:\s*(.+)$/i))) {
+        const v = m[1].toLowerCase().replace(/[.!]+$/, '').replace(/\s+/g, ' ').replace(/close-?up/, 'close').replace(/^extreme-close/, 'extreme close');
+        let k;
+        if ((k = v.match(new RegExp(`^over (?:the )?shoulder (?:of )?(${NAME})$`))) || (k = v.match(new RegExp(`^over (${NAME})'s shoulder$`)))) return beat('shot', { size: 'ots', of: k[1] });
+        if ((k = v.match(new RegExp(`^(wide|medium|close|extreme close)(?: on (${NAME}|both|everyone|(?:the )?star))?$`)))) {
+          return beat('shot', { size: k[1], on: k[2] && k[2].replace(/^the /, '').replace('everyone', 'both') });
+        }
+        return err(`Unknown shot "${m[1]}". Use: wide, medium, close or extreme close (optionally "on ren", "on yuki", "on both", "on the star"), or "over the shoulder of ren".`);
+      }
+      // camera moves glide smoothly: push in, pull out, pan to …, follow …, shake, hold
+      if ((m = line.match(/^camera\s*:\s*(.+\s.+|shake|hold)$/i))) {
+        const v = m[1].toLowerCase().replace(/[.!]+$/, '').replace(/\s+/g, ' ');
+        let k;
+        if (/^(push|zoom) in$/.test(v)) return beat('cam', { move: 'push' });
+        if (/^(pull|zoom) out$/.test(v)) return beat('cam', { move: 'pull' });
+        if ((k = v.match(new RegExp(`^pan (?:over )?to (?:the )?(${NAME}|both|everyone|star|left|center|centre|right)$`)))) return beat('cam', { move: 'pan', on: spot(k[1]).replace('everyone', 'both') });
+        if ((k = v.match(new RegExp(`^follows? (${NAME})$`)))) return beat('cam', { move: 'follow', on: k[1] });
+        if (v === 'shake') return beat('cam', { move: 'shake' });
+        if (v === 'hold' || v === 'hold still') return beat('cam', { move: 'hold' });
+        return err(`Unknown camera move "${m[1]}". Use: push in, pull out, pan to <name|the star|left|center|right>, follow <name>, shake, hold, or wide, close, closer.`);
       }
       if ((m = line.match(/^camera\s*:\s*(\w+)$/i))) {
         const v = m[1].toLowerCase(), z = { wide: 1, normal: 1, close: 1.3, closer: 1.55 }[v];
@@ -294,6 +318,17 @@
     }
     const talks = [];   // conversation lines: who spoke to whom, used to turn them toward each other
     const scenes = [], music = meta.music ? [{ t: 0, mood: meta.music }] : [];
+    // shots and camera moves (a story without them keeps the classic automatic camera)
+    const shotMode = beats.some(b => b.type === 'shot' || b.type === 'cam'), shots = [];
+    // what a shot or move looks at: { all } on-stage characters, { actors }, { star } or a stage spot { x }
+    const aim = (on, line) => {
+      if (!on || on === 'both') return { all: true };
+      if (on === 'star') { if (star.state === 'none') errors.push(`Line ${line}: there is no star to look at. Use "star appears" first.`); return { star: true }; }
+      if (/^(left|center|right)$/.test(on)) return { x: spots()[on] };
+      if (!A[on]) { errors.push(`Line ${line}: ${title(on)} isn't in this story.`); return { all: true }; }
+      if (!onStage(A[on])) P.warnings.push(`Line ${line}: ${title(on)} isn't on stage at this moment.`);
+      return { actors: [on] };
+    };
     let scene = null, content = false;   // the scene going on now; whether anything has happened yet
 
     for (const b of beats) {
@@ -463,7 +498,27 @@
           dur = PT;
           break;
         }
-        case 'camera': setG('zoom', s, b.zoom, 1.6); dur = 0; break;
+        case 'camera':
+          if (shotMode) shots.push({ t: s, op: 'zoom', z: b.zoom, on: { all: true }, dur: 1.6 }); else setG('zoom', s, b.zoom, 1.6);
+          dur = 0; break;
+        case 'shot': {
+          if (b.size === 'ots') {
+            const a = A[b.of], o = a && others(a)[0];
+            if (!a) errors.push(`Line ${b.line}: ${title(b.of)} isn't in this story.`);
+            else if (!o || !onStage(a)) errors.push(`Line ${b.line}: an over-the-shoulder shot needs ${title(b.of)} and someone else on stage.`);
+            else shots.push({ t: s, op: 'ots', of: a.id, on: { actors: [o.id] }, dur: 0 });
+            break;
+          }
+          // without "on …", a wide shot shows everyone and a closer one whoever acted or spoke last
+          const on = b.on || (b.size === 'wide' || !A[focus] || !onStage(A[focus]) ? 'both' : focus);
+          shots.push({ t: s, op: 'cut', size: b.size, on: aim(on, b.line), dur: 0 });
+          break;
+        }
+        case 'cam': {
+          const D = { push: 2, pull: 2, pan: 1.8, follow: 1, shake: 0.6, hold: 0 }[b.move];
+          shots.push({ t: s, op: b.move, on: b.on ? aim(b.on, b.line) : undefined, dur: D });
+          break;
+        }
         case 'scene': {
           // lines before the first scene make an opening scene named after the story
           if (!scenes.length && content) scenes.push({ name: meta.title, line: 0, t0: 0, opening: true });
@@ -606,6 +661,7 @@
     scenes.forEach((c, i) => { c.t1 = i + 1 < scenes.length ? scenes[i + 1].t0 : duration; delete c.turn; });
     // music changes ([] means the classic music all story long)
     if (music.length) P.music = music;
+    if (shotMode) P.shots = shots;
 
     return {
       version: 2, duration, fps: 30, width: 1920, height: 1080, scale: KS, errors, cast, ...P, keys, scenes,
