@@ -1,7 +1,7 @@
 # Kitsu Studio: Asset Kit (new F4, replaces "F4: Prop system")
 
 > **For Claude Code.** This file replaces the "F4: Prop system" section of `ENGINE-ROADMAP.md`. Everything the old F4 promised is still here (props, starter props, prop actions), plus a way to add **any** new thing a story needs.
-> **Read first:** `HANDOFF.md`, `PRODUCTION-SYSTEM.md`, `ENGINE-ROADMAP.md`. The global rules **R1–R13** and the review package from `ENGINE-ROADMAP.md` section 1 apply to every part below.
+> **Read first:** `HANDOFF.md`, `PRODUCTION-SYSTEM.md`, `ENGINE-ROADMAP.md`. The global rules **R1–R14** and the review package from `ENGINE-ROADMAP.md` section 1 apply to every part below.
 > **Owner:** not a programmer, on Windows. They review every step from images and reports.
 
 ---
@@ -252,4 +252,4 @@ F5 (places) and F8 (creatures) should **use this kit** rather than build their o
 
 ## Prompt to give Claude Code
 
-> Read HANDOFF.md, PRODUCTION-SYSTEM.md, ENGINE-ROADMAP.md and ASSET-KIT.md. Implement ASSET-KIT.md Part A only, follow rules R1–R13, and stop for my review with the full review package.
+> Read HANDOFF.md, PRODUCTION-SYSTEM.md, ENGINE-ROADMAP.md and ASSET-KIT.md. Implement ASSET-KIT.md Part A only, follow rules R1–R14, and stop for my review with the full review package.
