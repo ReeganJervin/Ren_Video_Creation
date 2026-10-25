@@ -1,5 +1,18 @@
 {
-  "narrator": { "voice": "af_heart", "speed": 0.92, "pitch": 1.0 },
-  "ren": { "voice": "af_sky", "speed": 1.0, "pitch": 1.12 },
-  "yuki": { "voice": "af_bella", "speed": 1.0, "pitch": 1.18 }
+  "narrator": {
+    "voice": "am_onyx:0.7+jm_kumo:0.3",
+    "speed": 0.86,
+    "pitch": 0.94,
+    "echo": true
+  },
+  "ren": {
+    "voice": "am_puck",
+    "speed": 1.0,
+    "pitch": 1.12
+  },
+  "yuki": {
+    "voice": "af_bella:0.6+af_nicole:0.4",
+    "speed": 1.0,
+    "pitch": 1.18
+  }
 }

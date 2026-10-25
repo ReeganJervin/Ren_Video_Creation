@@ -128,8 +128,10 @@
     c.restore();
   }
 
-  function drawScarf(c, K) {
+  // farKnot: the knot is on the far side of the neck (three-quarter view seen from Ren's left) and only peeks out
+  function drawScarf(c, K, farKnot = false) {
     const cx = K.f * 8, bx = K.f * 18, kx = cx - 46;
+    if (farKnot) return drawScarfFarKnot(c, cx, bx);
     // two hanging ends below the knot at the side
     path(c, () => { c.moveTo(kx - 2, -140); c.quadraticCurveTo(kx - 22, -124, kx - 28, -106); c.lineTo(kx - 16, -110); c.lineTo(kx - 10, -100); c.quadraticCurveTo(kx - 4, -122, kx + 6, -134); });
     fillStroke(c, C.scarfD, 3.5);
@@ -153,6 +155,24 @@
     // knot
     path(c, () => c.ellipse(kx + 2, -140, 10, 8, 0.3, 0, Math.PI * 2));
     fillStroke(c, C.scarf, 3);
+    drawFlower(c, bx + 10, -122, 7.5);
+  }
+
+  // the scarf with its knot on the far side: the knot and the tips of its ends peek out behind the band
+  function drawScarfFarKnot(c, cx, bx) {
+    const kx = cx + 40;
+    path(c, () => { c.moveTo(kx - 6, -140); c.quadraticCurveTo(kx + 8, -124, kx + 12, -112); c.lineTo(kx + 18, -118); c.quadraticCurveTo(kx + 12, -130, kx + 6, -140); });
+    fillStroke(c, C.scarfD, 3);
+    path(c, () => c.ellipse(kx + 2, -148, 9, 7, 0.3, 0, Math.PI * 2)); fillStroke(c, C.scarfD, 3);
+    path(c, () => c.ellipse(cx, -140, 54, 16, 0, 0, Math.PI * 2));
+    const g = c.createLinearGradient(0, -156, 0, -124);
+    g.addColorStop(0, C.scarfL); g.addColorStop(0.55, C.scarf); g.addColorStop(1, C.scarfD);
+    fillStroke(c, g);
+    path(c, () => { c.moveTo(bx - 38, -138); c.quadraticCurveTo(bx - 14, -106, bx + 2, -96); c.quadraticCurveTo(bx + 16, -106, bx + 38, -138); });
+    fillStroke(c, C.scarf);
+    c.strokeStyle = C.scarfD; c.lineWidth = 2.5;
+    c.beginPath(); c.moveTo(bx - 20, -132); c.quadraticCurveTo(bx - 8, -114, bx + 1, -104); c.stroke();
+    c.beginPath(); c.moveTo(bx + 18, -134); c.quadraticCurveTo(bx + 12, -126, bx + 6, -120); c.stroke();
     drawFlower(c, bx + 10, -122, 7.5);
   }
 
@@ -379,48 +399,49 @@
   // ---------- THREE-QUARTER view (0.3 <= |f| < 0.7), drawn facing right ----------
   // The near cheek (left) keeps its full tuft; on the right the face turns into a short snout that
   // stays part of one outline, with the far eye small and close to the edge.
+  // Like the sheet's three-quarter view: the round front head turned a little. Fluffy cheeks on both sides,
+  // no protruding snout; the face (eyes, nose, mouth) shifts toward the side Ren is facing.
+  const CHEEK_RF = [[100, 12], [92, 20], [100, 30], [88, 38], [80, 46]];   // the far cheek, slightly smaller
   function threeHeadPath(c, K) {
     c.beginPath();
     c.moveTo(-92, 4);
     c.bezierCurveTo(-98, -48, -54, -86, 2, -86);
-    c.bezierCurveTo(56, -86, 94, -54, 92, -14);
-    c.bezierCurveTo(92, -2, 96, 4, 102, 10);
-    c.quadraticCurveTo(108, 18, 102, 26);
-    c.bezierCurveTo(98, 34, 90, 38, 84, 42);
-    c.bezierCurveTo(74, 62, 40, 78, 2, 78);
+    c.bezierCurveTo(56, -86, 96, -50, 90, 2);
+    tufts(c, [90, 2], CHEEK_RF, 5, -1);
+    c.bezierCurveTo(64, 66, 32, 78, 2, 78);
     c.bezierCurveTo(-30, 78, -66, 66, -84, 48);
     tufts(c, [-84, 48], [...CHEEK_L.slice(1), [-92, 4]], 5, -1);
     c.closePath();
-    topTuft(c, 6);
-    puffs(c, K, [[-66, 44, 30], [70, 48, 20]]);
+    topTuft(c, 8);
+    puffs(c, K, [[-66, 44, 30], [72, 44, 24]]);
   }
   function drawThreeHead(c, K) {
     c.save();
     headFrame(c, K, 6);
-    earAt(c, 40, -56, 0.24 + K.earR * 0.8, 0.8, 0.95);   // far ear, partly behind the head
-    earAt(c, -46, -50, -0.32 - K.earL);                    // near ear
+    earAt(c, 44, -56, 0.2 + K.earR * 0.8, 0.9, 0.97);    // far ear
+    earAt(c, -46, -50, -0.4 - K.earL);                    // near ear
     threeHeadPath(c, K); fillUnion(c, C.fur);
     c.save(); c.clip();
-    sheen(c, 14, -56);
+    sheen(c, 18, -56);
     shade(c, -96, 0, 34, 90, 0.18);
+    // cream on the whole lower face: under the near eye, up around the nose and mouth, under the far eye to the far cheek
     c.fillStyle = C.cream;
     c.beginPath();
     c.moveTo(-70, 80);
     tufts(c, [-70, 80], [[-70, 58], [-62, 62], [-58, 48], [-50, 52], [-44, 42]], 3, -1);
-    c.bezierCurveTo(-32, 52, -6, 52, 6, 40);
-    c.quadraticCurveTo(14, 20, 32, 20);
-    c.bezierCurveTo(44, 20, 50, 34, 66, 36);
-    c.bezierCurveTo(78, 36, 86, 26, 96, 24);
-    c.lineTo(140, 24); c.lineTo(140, 120); c.lineTo(-70, 120); c.closePath(); c.fill();
+    c.bezierCurveTo(-30, 46, -8, 44, 8, 34);
+    c.bezierCurveTo(22, 24, 30, 14, 44, 14);
+    c.bezierCurveTo(58, 14, 62, 30, 76, 30);
+    c.bezierCurveTo(86, 30, 92, 22, 100, 20);
+    c.lineTo(140, 20); c.lineTo(140, 120); c.lineTo(-70, 120); c.closePath(); c.fill();
     noseBand(c, 40, 28, K, 70);
     c.restore();
-    browDot(c, -20, -42); browDot(c, 56, -42, 0.65);
-    blushAt(c, -54, 38, K); blushAt(c, 80, 42, K, 0.6);
-    drawEye(c, -20, 2, -1, K);
-    drawEye(c, 58, 2, 1, K, 0.66);
-    brow(c, -20, K, 1); brow(c, 58, K, -1, 0.66);
-    drawNose(c, 98, 18, 0.15);
-    c.save(); c.translate(86, 34); c.scale(0.85, 0.85); drawMouth(c, K); c.restore();
+    browDot(c, 4, -40, 0.85); browDot(c, 58, -40, 0.7);
+    blushAt(c, -34, 40, K); blushAt(c, 88, 36, K, 0.7);
+    c.save(); c.translate(8, 2); c.scale(0.9, 0.9); drawEye(c, 0, 0, -1, K); brow(c, 0, K, 1); c.restore();
+    c.save(); c.translate(72, 2); c.scale(0.8, 0.82); drawEye(c, 0, 0, 1, K, 0.85); brow(c, 0, K, -1, 0.85); c.restore();
+    drawNose(c, 58, 22, 0.1);
+    c.save(); c.translate(56, 31); c.scale(0.85, 0.85); drawMouth(c, K); c.restore();
     c.restore();
   }
   function drawThree(c, K) {
@@ -429,140 +450,166 @@
     drawLegs(c, B);
     c.translate(0, -Math.abs(Math.sin(K.phase)) * 5 * K.walk);
     drawBody(c, B);
-    drawScarf(c, B);
+    drawScarf(c, B, K.flipped);   // the knot is on Ren's right side: near when he faces right
     drawThreeHead(c, K);
     drawArm(c, -1, K.armL, K);
     drawArm(c, 1, K.armR, K);
   }
 
   // ---------- SIDE profile (|f| >= 0.7), drawn facing right ----------
-  // One outline: skull -> forehead -> short upturned snout -> chin -> throat; cheek tuft at the back of the jaw.
+  // Head: round, positioned slightly forward of the body; the face fills the front half.
+  // A SHORT small snout with a black nose tip and a gentle smile under it.
   function sideHeadPath(c, K) {
     c.beginPath();
-    c.moveTo(-88, 14);
-    c.bezierCurveTo(-98, -46, -56, -88, -4, -88);
-    c.bezierCurveTo(40, -88, 72, -64, 76, -34);
-    c.bezierCurveTo(78, -20, 80, -8, 86, -2);
-    c.bezierCurveTo(96, 2, 98, 14, 92, 20);
-    c.bezierCurveTo(88, 26, 80, 28, 74, 30);
-    c.bezierCurveTo(70, 34, 68, 40, 66, 46);
-    c.bezierCurveTo(62, 62, 44, 72, 22, 78);
-    c.bezierCurveTo(-8, 84, -40, 78, -60, 64);
-    tufts(c, [-60, 64], [[-84, 70], [-78, 58], [-104, 54], [-90, 42], [-106, 32], [-88, 14]], 6, -1);
+    c.moveTo(-88, 20);
+    c.bezierCurveTo(-98, -40, -58, -92, -2, -94);              // back of the skull to the top
+    c.bezierCurveTo(44, -94, 70, -70, 74, -40);                // crown to the forehead
+    c.bezierCurveTo(78, -20, 88, -6, 102, 0);                  // brow sloping into the snout bridge
+    c.bezierCurveTo(110, 3, 112, 13, 106, 17);                 // round snout tip
+    c.bezierCurveTo(100, 22, 92, 24, 86, 26);                  // under the snout
+    c.bezierCurveTo(80, 28, 80, 34, 74, 38);                   // chin
+    c.bezierCurveTo(58, 52, 30, 62, 2, 66);                    // jaw
+    c.bezierCurveTo(-22, 70, -46, 70, -62, 60);
+    tufts(c, [-62, 60], [[-80, 66], [-76, 54], [-98, 50], [-88, 40], [-100, 30], [-88, 20]], 6, -1);
     c.closePath();
-    topTuft(c, -14);
-    puffs(c, K, [[42, 44, 26]]);
+    topTuft(c, -18);
+    puffs(c, K, [[50, 36, 22]]);
   }
   function sideMouth(c, K) {
     c.strokeStyle = C.line; c.lineWidth = 3; c.lineCap = 'round';
-    const line = (dip) => { c.beginPath(); c.moveTo(90, 22); c.quadraticCurveTo(84, 26 + dip, 76, 26); c.stroke(); };
+    // a gentle smile running back from under the nose
+    const line = (dip) => { c.beginPath(); c.moveTo(100, 21); c.quadraticCurveTo(92, 26 + dip, 80, 24); c.stroke(); };
     switch (K.mouth) {
-      case 'smile': line(6); break;
-      case 'soft': line(4); break;
+      case 'smile': line(5); break;
+      case 'soft': line(3); break;
       case 'frown': case 'tinyfrown': case 'pout': line(-4); break;
-      default: c.save(); c.translate(77, 22); c.scale(0.7, 0.7); drawMouth(c, K); c.restore();
+      default: c.save(); c.translate(93, 17); c.scale(0.5, 0.5); drawMouth(c, K); c.restore();
     }
   }
   function drawSideHead(c, K) {
     c.save();
-    headFrame(c, K, 4);
-    earAt(c, 18, -66, 0.14 - K.earR * 0.5, 0.72, 0.9);     // far ear, just visible in front
-    earAt(c, -30, -58, -0.26 - K.earL * 0.8, 0.86, 1);      // near ear at the back of the head
+    headFrame(c, K, -13);
+    c.scale(1.1, 1.1);
+    // two big pointed ears close together on the top-back of the head; the far ear shows just in front of the near ear
+    earAt(c, -4, -72, 0.06 - K.earR * 0.5, 0.76, 0.92);    // far ear
+    earAt(c, -24, -66, -0.08 - K.earL * 0.8, 0.9, 1);      // near ear
     sideHeadPath(c, K); fillUnion(c, C.fur);
     c.save(); c.clip();
-    sheen(c, 4, -58);
+    sheen(c, -6, -62);
     shade(c, -86, 4, 30, 80, 0.22);
-    // muzzle, chin and throat as one cream shape that flows down into the chest
+    // cream: the lower half of the snout, the cheek under the eye back toward the ear, the chin and jaw (fur-edged);
+    // the top of the snout stays orange
     c.fillStyle = C.cream;
     c.beginPath();
-    c.moveTo(130, 14); c.lineTo(92, 14);
-    c.bezierCurveTo(84, 18, 78, 24, 70, 26);
-    c.bezierCurveTo(56, 32, 40, 32, 26, 28);
-    tufts(c, [26, 28], [[14, 36], [10, 28], [-2, 40], [-6, 32], [-18, 48], [-16, 60], [-28, 70], [-26, 90]], 3, -1);
-    c.lineTo(-26, 130); c.lineTo(130, 130); c.closePath(); c.fill();
-    noseBand(c, 74, 18, K, 44);
+    c.moveTo(140, 2); c.lineTo(106, 2);
+    c.bezierCurveTo(94, 6, 82, 16, 62, 17);
+    c.bezierCurveTo(44, 18, 24, 16, 6, 14);
+    tufts(c, [6, 14], [[-6, 24], [-12, 16], [-24, 30], [-30, 22], [-42, 38], [-40, 50], [-56, 58], [-54, 90]], 3, -1);
+    c.lineTo(-54, 130); c.lineTo(140, 130); c.closePath(); c.fill();
+    noseBand(c, 78, 12, K, 44);
     c.restore();
-    browDot(c, 46, -44, 0.9);
-    blushAt(c, 44, 34, K, 0.9);
-    drawEye(c, 46, -2, 1, K, 0.84, true);
-    brow(c, 46, K, 1, 0.84);
-    drawNose(c, 91, 8, -0.2);
+    browDot(c, 56, -38, 0.8);
+    blushAt(c, 38, 10, K, 1.05);
+    // the eye: an upright oval close above the snout
+    c.save(); c.translate(62, 1); c.scale(0.8, 0.76);
+    drawEye(c, 0, 0, 1, K, 0.82, true);
+    brow(c, 0, K, 1, 0.82);
+    c.restore();
+    drawNose(c, 106, 7, -0.2);
     sideMouth(c, K);
     c.restore();
   }
+  // Body: an upright pear shape; cream chest running down to the belly
   function sideBodyPath(c) {
     path(c, () => {
-      c.moveTo(-38, -34);
-      c.bezierCurveTo(-52, -80, -38, -140, -6, -146);
-      c.bezierCurveTo(14, -148, 28, -142, 34, -130);
-      tufts(c, [34, -130], [[46, -122], [42, -112], [54, -102], [48, -92], [56, -80]], 5, -1);
-      c.bezierCurveTo(60, -58, 52, -34, 40, -26);
-      c.bezierCurveTo(22, -10, -30, -12, -38, -34);
+      c.moveTo(-50, -34);
+      c.bezierCurveTo(-64, -80, -46, -138, -8, -146);
+      c.bezierCurveTo(14, -150, 28, -142, 36, -130);
+      tufts(c, [36, -130], [[48, -122], [44, -112], [56, -102], [50, -92], [58, -80]], 5, -1);
+      c.bezierCurveTo(62, -58, 54, -32, 40, -22);
+      c.bezierCurveTo(18, -6, -40, -8, -50, -34);
     });
   }
   function drawSideBody(c) {
     sideBodyPath(c); c.fillStyle = C.fur; c.fill();
     c.save(); c.clip();
-    shade(c, -34, -80, 20, 70, 0.3);
-    // chest fluff on the front of the body, fur-edged toward the back
+    shade(c, -44, -76, 18, 66, 0.3);
+    // cream chest running down to the belly, fur-edged toward the back
     c.fillStyle = C.cream;
-    c.beginPath(); c.moveTo(-2, -152);
-    tufts(c, [-2, -152], [[-8, -138], [2, -128], [-6, -116], [4, -104], [-2, -92], [8, -80], [4, -66]], 4, 1);
-    c.bezierCurveTo(8, -48, 20, -34, 36, -26);
-    c.lineTo(70, -28); c.lineTo(70, -152); c.closePath(); c.fill();
+    c.beginPath(); c.moveTo(4, -150);
+    tufts(c, [4, -150], [[-4, -136], [6, -124], [-2, -112], [8, -100], [2, -88], [12, -76], [8, -62]], 4, 1);
+    c.bezierCurveTo(12, -44, 22, -30, 38, -22);
+    c.lineTo(72, -24); c.lineTo(72, -150); c.closePath(); c.fill();
     c.restore();
     sideBodyPath(c); c.lineWidth = 4; c.strokeStyle = C.line; c.stroke();
   }
-  // legs one slightly in front of the other, swapping while walking; small paws pointing forward
+  // legs one slightly in front of the other, with dark socks; one foot slightly ahead
   function drawSideLegs(c, K) {
-    [[-17, Math.PI, true], [15, 0, false]].forEach(([x0, off, far]) => {
+    [[-14, Math.PI, true], [20, 0, false]].forEach(([x0, off, far]) => {
       const ph = K.phase + off, lx = x0 + Math.sin(ph) * 14 * K.walk, lift = Math.max(0, Math.cos(ph)) * 9 * K.walk;
-      const g = c.createLinearGradient(0, -66 - lift, 0, -lift);
+      const g = c.createLinearGradient(0, -62 - lift, 0, -lift);
       g.addColorStop(0, C.fur); g.addColorStop(0.3, C.fur); g.addColorStop(0.62, C.paw); g.addColorStop(1, C.paw);
-      c.beginPath(); c.roundRect(lx - 14, -66 - lift, 28, 62, [12, 12, 8, 8]); c.ellipse(lx + 6, -9 - lift, 16, 9, 0, 0, Math.PI * 2);
+      c.beginPath(); c.roundRect(lx - 13, -62 - lift, 26, 58, [11, 11, 8, 8]); c.ellipse(lx + 5, -8 - lift, 15, 8, 0, 0, Math.PI * 2);
       fillUnion(c, g, 3.5);
       if (far) { c.fillStyle = 'rgba(60,30,15,0.3)'; c.fill(); }
     });
   }
-  // arm angles map to swinging forward in profile; folded (holding) brings the paw to the chest
+  // short bent arm hanging at the front with a dark paw at belly height
   function drawSideArm(c, ang, far) {
-    const a = ang < 0 ? 0.7 - ang * 0.35 : ang, len = 64 - 16 * clamp(-ang / 1.2);
+    const a = ang < 0 ? 0.7 - ang * 0.35 : ang, len = 58 - 14 * clamp(-ang / 1.2);
     c.save();
-    c.translate(far ? -4 : 22, -122);
+    c.translate(far ? -12 : 6, -120);
     c.rotate(-a - (far ? 0 : 0.12));
     armShape(c, len);
     if (far) { c.fillStyle = 'rgba(60,30,15,0.25)'; c.fill(); }
     c.restore();
   }
-  function drawSideScarf(c) {
+  function drawSideScarf(c, farKnot) {
+    if (farKnot) {
+      // the knot is on the far side: only the tops of its loops peek over the band
+      [[-1, C.scarfD], [1, C.scarfD]].forEach(([d, col]) => { path(c, () => c.ellipse(-42 + d * 7, -160 - d * 2, 8, 5.5, d * 0.5, 0, Math.PI * 2)); fillStroke(c, col, 3); });
+    } else drawSideBow(c);
+    drawSideBand(c, !farKnot);
+  }
+  function drawSideBow(c) {
     // small bow at the back of the neck with short ends
-    path(c, () => { c.moveTo(-36, -134); c.quadraticCurveTo(-44, -122, -46, -112); c.lineTo(-38, -116); c.quadraticCurveTo(-36, -124, -30, -132); });
+    path(c, () => { c.moveTo(-46, -138); c.quadraticCurveTo(-56, -124, -58, -112); c.lineTo(-50, -116); c.quadraticCurveTo(-46, -126, -40, -136); });
     fillStroke(c, C.scarfD, 3);
-    path(c, () => { c.moveTo(-32, -132); c.quadraticCurveTo(-32, -120, -28, -110); c.lineTo(-22, -116); c.quadraticCurveTo(-26, -124, -26, -132); });
+    path(c, () => { c.moveTo(-42, -136); c.quadraticCurveTo(-42, -122, -38, -112); c.lineTo(-32, -118); c.quadraticCurveTo(-36, -126, -36, -136); });
     fillStroke(c, C.scarf, 3);
-    [[-1, C.scarfD], [1, C.scarf]].forEach(([d, col]) => { path(c, () => c.ellipse(-36 + d * 8, -138 - d * 2, 10, 6.5, d * 0.5, 0, Math.PI * 2)); fillStroke(c, col, 3); });
-    // thin band around the neck
-    path(c, () => { c.moveTo(-36, -145); c.quadraticCurveTo(0, -154, 38, -139); c.lineTo(37, -123); c.quadraticCurveTo(0, -136, -36, -129); });
-    const g = c.createLinearGradient(0, -154, 0, -123);
+    [[-1, C.scarfD], [1, C.scarf]].forEach(([d, col]) => { path(c, () => c.ellipse(-46 + d * 8, -146 - d * 2, 10, 6.5, d * 0.5, 0, Math.PI * 2)); fillStroke(c, col, 3); });
+  }
+  function drawSideBand(c, near = true) {
+    // a thick wrapped band around the neck, slightly lower at the front
+    path(c, () => {
+      c.moveTo(-48, -160); c.quadraticCurveTo(4, -168, 58, -152);
+      c.quadraticCurveTo(64, -140, 60, -124);
+      c.quadraticCurveTo(6, -134, -46, -130);
+      c.quadraticCurveTo(-52, -146, -48, -160);
+    });
+    const g = c.createLinearGradient(0, -166, 0, -124);
     g.addColorStop(0, C.scarfL); g.addColorStop(0.55, C.scarf); g.addColorStop(1, C.scarfD);
     fillStroke(c, g);
-    path(c, () => c.ellipse(-36, -137, 6, 6, 0, 0, Math.PI * 2)); fillStroke(c, C.scarf, 3);
-    // bib under the chin, pointing forward
-    path(c, () => { c.moveTo(6, -130); c.quadraticCurveTo(16, -108, 50, -99); c.quadraticCurveTo(50, -116, 38, -130); });
-    fillStroke(c, C.scarf);
     c.strokeStyle = C.scarfD; c.lineWidth = 2.5;
-    c.beginPath(); c.moveTo(15, -125); c.quadraticCurveTo(25, -110, 42, -103); c.stroke();
-    drawFlower(c, 34, -116, 6.5);
+    c.beginPath(); c.moveTo(-30, -152); c.quadraticCurveTo(0, -148, 30, -144); c.stroke();
+    c.beginPath(); c.moveTo(-10, -140); c.quadraticCurveTo(14, -138, 40, -136); c.stroke();
+    if (near) { path(c, () => c.ellipse(-46, -145, 6, 7, 0, 0, Math.PI * 2)); fillStroke(c, C.scarf, 3); }
+    // a small bib tip at the front of the throat with the flower
+    path(c, () => { c.moveTo(42, -132); c.quadraticCurveTo(50, -114, 62, -108); c.quadraticCurveTo(66, -120, 62, -132); });
+    fillStroke(c, C.scarf, 3.5);
+    drawFlower(c, 52, -142, 6.5);
   }
   function drawSide(c, K) {
-    drawTail(c, K, -26, -0.95);
+    // big fluffy tail rising and curling up behind the body, with a white tip
+    drawTail(c, K, -42, -0.95);
     drawSideArm(c, K.armL, true);
     drawSideLegs(c, K);
     c.translate(0, -Math.abs(Math.sin(K.phase)) * 5 * K.walk);
     drawSideBody(c);
     drawSideHead(c, K);
     drawSideArm(c, K.armR, false);
-    drawSideScarf(c);   // wraps over the throat and the top of the arm, as on the sheet
+    // scarf: a band around the neck seen from the side, the flower at the front of the throat
+    drawSideScarf(c, K.flipped);
   }
 
   // ---------- views ----------
@@ -570,7 +617,8 @@
   const viewAt = a => (a < 0.3 ? 'front' : a < 0.7 ? 'three' : 'side');
   const FADES = [[0.26, 0.34], [0.65, 0.75]];   // brief crossfades around the switch points
   // Three-quarter and side views are drawn facing right; facing left mirrors them.
-  const mirror = K => ({ ...K, f: -K.f, lookX: -K.lookX, tilt: -K.tilt, earL: K.earR, earR: K.earL });
+  // `flipped` tells the turned views we see Ren's left side, so one-sided details (the scarf knot) go to the far side
+  const mirror = K => ({ ...K, f: -K.f, lookX: -K.lookX, tilt: -K.tilt, earL: K.earR, earR: K.earL, flipped: true });
 
   function drawView(c, K, view) {
     c.save();

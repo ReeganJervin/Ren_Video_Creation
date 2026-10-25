@@ -1,0 +1,23 @@
+ROADMAP VERSION 2 - how to add these files to your project
+==========================================================
+
+Files:
+  ENGINE-ROADMAP.md   (version 2 - replaces your current one)
+  ASSET-KIT.md        (new - detail file for F4)
+  STUDIO-APP.md       (new - detail file for F9)
+
+WHEN: after you approve F2 Part A and Claude Code has committed it.
+      (Don't mix it into the F2 review.)
+
+Then give Claude Code this prompt:
+
+  I have a new ENGINE-ROADMAP.md (version 2), plus ASSET-KIT.md and
+  STUDIO-APP.md. They are in <the folder where you saved them>.
+  1. Copy ASSET-KIT.md and STUDIO-APP.md into the project root.
+  2. Replace ENGINE-ROADMAP.md with version 2, but carry over from the
+     current file: the commit hashes for F1 and F2, and any changes made
+     to the plan during F1 and F2 work. Set F2 to its real status.
+  3. Update the "Current status" section of HANDOFF.md to point to the
+     build order in ENGINE-ROADMAP.md section 2.
+  4. Show me what changed, then commit as "Docs: roadmap version 2".
+  Then continue with F2 Part B as normal.

@@ -325,38 +325,39 @@
   }
 
   // ---------- THREE-QUARTER view (0.3 <= |f| < 0.7), drawn facing right ----------
+  // Like the sheet's three-quarter view: the round head turned a little, no bump; the face shifts toward the
+  // side Yuki is facing, with the nose and mouth between the eyes, closer to the far eye.
   function threeHeadPath(c, K) {
     c.beginPath();
     c.moveTo(0, -80);
-    c.bezierCurveTo(56, -80, 94, -46, 96, -2);
-    c.bezierCurveTo(98, 10, 104, 18, 102, 28);
-    c.bezierCurveTo(100, 40, 92, 46, 86, 48);
-    c.bezierCurveTo(70, 66, 40, 72, 0, 72);
+    c.bezierCurveTo(56, -80, 98, -44, 98, 6);
+    c.bezierCurveTo(98, 46, 66, 72, 0, 72);
     c.bezierCurveTo(-62, 72, -96, 48, -96, 6);
     c.bezierCurveTo(-96, -44, -56, -80, 0, -80);
     c.closePath();
     const p = K.puff || 0;
-    if (p > 0) { c.moveTo(-74 + 28 * p, 36); c.ellipse(-74, 36, 28 * p, 24 * p, 0, 0, Math.PI * 2); c.closePath(); c.moveTo(80 + 18 * p, 38); c.ellipse(80, 38, 18 * p, 18 * p, 0, 0, Math.PI * 2); c.closePath(); }
+    if (p > 0) { c.moveTo(-74 + 28 * p, 36); c.ellipse(-74, 36, 28 * p, 24 * p, 0, 0, Math.PI * 2); c.closePath(); c.moveTo(80 + 22 * p, 36); c.ellipse(80, 36, 22 * p, 20 * p, 0, 0, Math.PI * 2); c.closePath(); }
   }
   function drawThreeHead(c, K) {
     c.save();
     headFrame(c, K, 6);
-    const eN = earPose(K, -1, K.flop || 0), eF = earPose(K, 1);
-    earAt(c, 34, -62, eF.rot + 0.06, eF.bend, 0.82);   // far ear
-    earAt(c, -26, -62, eN.rot, eN.bend);               // near ear (flower ear)
+    // the flower is on Yuki's left ear: the near ear when we see her left side (facing left), else the far ear
+    const nearFlower = !!K.flipped;
+    const eN = earPose(K, -1, nearFlower ? K.flop || 0 : 0), eF = earPose(K, 1, nearFlower ? 0 : K.flop || 0);
+    earAt(c, 40, -62, eF.rot + 0.2, eF.bend, 0.92);    // far ear
+    if (!nearFlower) { bow(c, 70, -62, 0.6, false, 0.7); sakura(c, 54, -72, 16, 0.3); }   // peeking out behind the head
+    earAt(c, -34, -60, eN.rot - 0.22, eN.bend);         // near ear
     threeHeadPath(c, K); fillUnion(c, C.fur);
     c.save(); c.clip();
-    shade(c, -96, 30, 56, 70, 0.7); shade(c, 70, 50, 40, 30, 0.35);
-    noseBand(c, 40, 26, K, 64);
+    shade(c, -96, 30, 56, 70, 0.7); shade(c, 92, 30, 36, 56, 0.35);
+    noseBand(c, 40, 24, K, 64);
     c.restore();
-    blushAt(c, -50, 34, K, 1 + 0.2 * (K.puff || 0)); blushAt(c, 78, 36, K, 0.62);
-    drawEye(c, -16, 6, -1, K);
-    drawEye(c, 60, 6, 1, K, 0.68);
-    brow(c, -16, K, 1); brow(c, 60, K, -1, 0.68);
-    drawNose(c, 88, 24, 0.2);
-    c.save(); c.translate(84, 31); c.scale(0.9, 0.9); drawMouth(c, K); c.restore();
-    bow(c, -76, -44, 0.8, false, -0.7);
-    sakura(c, -56, -58, 21, -0.2);
+    blushAt(c, -22, 34, K, 1 + 0.2 * (K.puff || 0)); blushAt(c, 84, 28, K, 0.72);
+    c.save(); c.translate(0, 6); c.scale(0.92, 0.92); drawEye(c, 0, 0, -1, K); brow(c, 0, K, 1); c.restore();
+    c.save(); c.translate(68, 6); c.scale(0.82, 0.84); drawEye(c, 0, 0, 1, K, 0.85); brow(c, 0, K, -1, 0.85); c.restore();
+    drawNose(c, 44, 22, 0.1);
+    c.save(); c.translate(44, 28); c.scale(0.9, 0.9); drawMouth(c, K); c.restore();
+    if (nearFlower) { bow(c, -80, -54, 0.8, false, -0.7); sakura(c, -60, -70, 21, -0.2); }
     c.restore();
   }
   function cottonTail(c, x, y, r) {
@@ -378,84 +379,117 @@
     collar(c, 20, 0.4);
     drawThreeHead(c, K);
     bow(c, 20, -98, 1.15);
-    const tgt = K.pawPose === 'cheeks' ? [headPt(6, 8, 48), headPt(6, 50, 44)] : K.pawPose === 'yawn' ? [null, headPt(6, 78, 36)] : [null, null];
+    const tgt = K.pawPose === 'cheeks' ? [headPt(6, -14, 48), headPt(6, 66, 44)] : K.pawPose === 'yawn' ? [null, headPt(6, 46, 36)] : [null, null];
     const sh = [[-46, -88], [54, -88]], inner = [[-36, -86], [44, -86]];
     [-1, 1].forEach((i, k) => armFrom(c, sh[k], inner[k], toward(pawFrom(sh[k], i < 0 ? K.armL : K.armR, i, k ? 30 : 34), tgt[k], K), i));
   }
 
   // ---------- SIDE profile (|f| >= 0.7), drawn facing right ----------
+  // Head: a big PERFECTLY ROUND ball, about 60% of her height without ears.
+  // No muzzle bump or beak at all: just a tiny pink nose and a small smile right on the front edge.
   function sideHeadPath(c, K) {
+    // a round head, a little wider than tall, with only a tiny soft nub at the nose
     c.beginPath();
-    c.moveTo(-86, 10);
-    c.bezierCurveTo(-92, -44, -52, -80, 0, -80);
-    c.bezierCurveTo(50, -80, 84, -50, 88, -10);
-    c.bezierCurveTo(90, 2, 96, 10, 98, 18);
-    c.bezierCurveTo(100, 28, 96, 36, 86, 40);
-    c.bezierCurveTo(78, 58, 48, 72, 6, 72);
-    c.bezierCurveTo(-40, 72, -80, 50, -86, 10);
+    c.ellipse(-9, -18, 85, 78, 0, 0, Math.PI * 2);
     c.closePath();
+    c.moveTo(78, 8); c.ellipse(68, 8, 10, 9, 0, 0, Math.PI * 2); c.closePath();
     const p = K.puff || 0;
-    if (p > 0) { c.moveTo(56 + 26 * p, 40); c.ellipse(56, 40, 26 * p, 22 * p, 0, 0, Math.PI * 2); c.closePath(); }
+    if (p > 0) { c.moveTo(48 + 22 * p, 24); c.ellipse(48, 24, 22 * p, 18 * p, 0, 0, Math.PI * 2); c.closePath(); }
   }
   function sideMouth(c, K) {
+    // small smile just under the nose, on the front edge of the head
     c.strokeStyle = C.line; c.lineWidth = 3; c.lineCap = 'round';
-    const line = dip => { c.beginPath(); c.moveTo(92, 30); c.quadraticCurveTo(86, 34 + dip, 78, 34); c.stroke(); };
+    const line = dip => { c.beginPath(); c.moveTo(74, 15); c.quadraticCurveTo(68, 20 + dip, 60, 18); c.stroke(); };
     switch (K.mouth) {
-      case 'smile': line(4); break;
-      case 'soft': line(3); break;
+      case 'smile': line(3); break;
+      case 'soft': line(2.5); break;
       case 'frown': case 'tinyfrown': case 'pout': line(-3); break;
-      default: c.save(); c.translate(82, 30); c.scale(0.7, 0.7); drawMouth(c, K); c.restore();
+      default: c.save(); c.translate(68, 14); c.scale(0.55, 0.55); drawMouth(c, K); c.restore();
     }
+  }
+  // the near arm in profile: a short curve drawn INSIDE the body outline (not a separate stick arm)
+  function sideArm(c, S, P) {
+    // a small rounded arm with a paw, growing from inside the body at S; only its own edges are outlined
+    const [sx, sy] = S, [px, py] = P, dx = px - sx, dy = py - sy, d = Math.hypot(dx, dy) || 1;
+    const mx = (sx + px) / 2 + (-dy / d) * -6, my = (sy + py) / 2 + (dx / d) * -6;
+    const N = 10, A = [], B = [];
+    for (let k = 0; k <= N; k++) {
+      const u = k / N, v = 1 - u;
+      const x = v * v * sx + 2 * v * u * mx + u * u * px, y = v * v * sy + 2 * v * u * my + u * u * py;
+      const tx = 2 * v * (mx - sx) + 2 * u * (px - mx), ty = 2 * v * (my - sy) + 2 * u * (py - my), tn = Math.hypot(tx, ty) || 1;
+      const w = 10.5 - 1.5 * u;
+      A.push([x - ty / tn * w, y + tx / tn * w]); B.push([x + ty / tn * w, y - tx / tn * w]);
+    }
+    const a0 = Math.atan2(A[N][1] - py, A[N][0] - px);
+    const outline = close => {
+      c.beginPath(); c.moveTo(...A[0]); A.forEach(p => c.lineTo(...p));
+      c.arc(px, py, 9, a0, a0 + Math.PI, true);
+      [...B].reverse().forEach(p => c.lineTo(...p));
+      if (close) c.closePath();
+    };
+    const g = c.createRadialGradient(px, py, 0, px, py, 13);
+    g.addColorStop(0, C.pad); g.addColorStop(1, C.fur);
+    outline(true); c.fillStyle = g; c.fill();
+    outline(false); c.lineWidth = 3.5; c.strokeStyle = C.line; c.stroke();
   }
   function drawSideHead(c, K) {
     c.save();
-    headFrame(c, K, 4);
-    const eN = earPose(K, -1, K.flop || 0), eF = earPose(K, -1);
-    earAt(c, -2, -66, eF.rot - 0.12, eF.bend * 0.8, 0.8);   // far ear, just behind
-    earAt(c, -30, -60, eN.rot - 0.2, eN.bend);              // near ear toward the back (flower ear)
+    headFrame(c, K, 12);
+    // the flower is on Yuki's left ear: near when we see her left side (facing left), else on the far ear
+    const nearFlower = !!K.flipped;
+    const eN = earPose(K, -1, nearFlower ? K.flop || 0 : 0), eF = earPose(K, -1, nearFlower ? 0 : K.flop || 0);
+    // two long ears close together on top of the head, leaning slightly back; the far ear just in front of the near ear
+    earAt(c, 4, -88, eF.rot - 0.02, eF.bend * 0.8, 0.98, 126);   // far ear
+    if (!nearFlower) { bow(c, 22, -98, 0.6, false, 0.4); sakura(c, 6, -104, 16, 0.15); }
+    earAt(c, -22, -86, eN.rot - 0.08, eN.bend, 1.2, 126);       // near ear
     sideHeadPath(c, K); fillUnion(c, C.fur);
     c.save(); c.clip();
-    shade(c, -86, 20, 50, 70, 0.75); shade(c, 30, 64, 60, 20, 0.5);
-    noseBand(c, 70, 24, K, 40);
+    shade(c, -76, -4, 50, 76, 0.6); shade(c, 10, 50, 64, 20, 0.45);
+    noseBand(c, 48, 10, K, 36);
     c.restore();
-    blushAt(c, 46, 34, K, 0.9 + 0.2 * (K.puff || 0));
-    drawEye(c, 44, 2, 1, K, 0.84, true);
-    brow(c, 44, K, 1, 0.84);
-    drawNose(c, 96, 20, -0.3);
+    blushAt(c, 24, 20, K, 1.3 + 0.2 * (K.puff || 0));   // a big soft blush behind and below the eye
+    // the eye: an upright oval toward the front, at mid-height
+    c.save(); c.translate(42, -1); c.scale(0.8, 0.74);
+    drawEye(c, 0, 0, 1, K, 0.9, true);
+    brow(c, 0, K, 1, 0.9);
+    c.restore();
+    drawNose(c, 75, 4, -0.2);
     sideMouth(c, K);
-    bow(c, -60, -40, 0.8, false, -0.7);
-    sakura(c, -40, -54, 21, -0.2);
+    if (nearFlower) { bow(c, -46, -70, 0.85, false, -0.7); sakura(c, -26, -86, 23, -0.2); }
     c.restore();
   }
+  // Body: a small egg shape, clearly smaller than the head
   function sideBodyPath(c) {
     path(c, () => {
-      c.moveTo(-50, -24);
-      c.bezierCurveTo(-64, -60, -46, -112, 0, -114);
-      c.bezierCurveTo(38, -112, 62, -82, 60, -50);
-      c.bezierCurveTo(58, -20, 34, -8, 2, -8);
-      c.bezierCurveTo(-24, -8, -44, -12, -50, -24);
+      c.moveTo(-58, -24);
+      c.bezierCurveTo(-72, -60, -58, -114, 0, -118);
+      c.bezierCurveTo(40, -118, 64, -94, 64, -60);
+      c.bezierCurveTo(64, -24, 42, -6, 4, -4);
+      c.bezierCurveTo(-24, -4, -48, -8, -58, -24);
     });
   }
   function drawSide(c, K) {
-    cottonTail(c, -68, -40, 21);
-    // far foot behind, near foot in front; small feet pointing forward
+    // round cotton tail at the lower back
+    cottonTail(c, -70, -38, 21);
+    // small feet with one slightly forward
     [[-14, Math.PI, true], [14, 0, false]].forEach(([x0, off, far]) => {
-      const ph = K.phase + off, lx = x0 + Math.sin(ph) * 10 * K.walk, lift = Math.max(0, Math.cos(ph)) * 6 * K.walk;
-      path(c, () => c.ellipse(lx + 6, -10 - lift, 26, 11, 0, 0, Math.PI * 2)); fillStroke(c, C.fur);
+      const ph = K.phase + off, lx = x0 + Math.sin(ph) * 8 * K.walk, lift = Math.max(0, Math.cos(ph)) * 5 * K.walk;
+      path(c, () => c.ellipse(lx + 4, -8 - lift, 20, 10, 0, 0, Math.PI * 2)); fillStroke(c, C.fur);
       if (far) { c.fillStyle = 'rgba(200,150,160,0.25)'; c.fill(); }
     });
     c.translate(0, -Math.abs(Math.sin(K.phase)) * 4 * K.walk);
     sideBodyPath(c); c.fillStyle = C.fur; c.fill();
-    c.save(); c.clip(); shade(c, -54, -54, 40, 56, 0.8); shade(c, 10, -12, 60, 18, 0.6); c.restore();
+    c.save(); c.clip(); shade(c, -44, -46, 34, 48, 0.7); shade(c, 8, -8, 50, 14, 0.5); c.restore();
     sideBodyPath(c); c.lineWidth = 4; c.strokeStyle = C.line; c.stroke();
-    collar(c, 20, 1);
+    // No neck: the head sits directly on the body; a small bow at the throat
+    collar(c, 26, 1);
     drawSideHead(c, K);
-    // near arm growing from the front of the shoulder; the paw rests on the front of the chest
-    const S = [34, -88], ang = K.armR, a = ang < 0 ? 0.7 - ang * 0.35 : ang + 0.2, len = 30;
+    // the arm is a short curve drawn INSIDE the body outline hanging at the front
+    const S = [22, -92], ang = K.armR, a = ang < 0 ? 0.7 - ang * 0.35 : ang + 0.15, len = 44;
     const P = [S[0] + len * Math.sin(a), S[1] + len * Math.cos(a)];
-    const tgt = K.pawPose === 'cheeks' ? headPt(4, 60, 46) : K.pawPose === 'yawn' ? headPt(4, 84, 32) : null;
-    bow(c, 48, -98, 0.95, true, 0.25);
-    armFrom(c, S, [24, -86], toward(P, tgt, K), -1);
+    const tgt = K.pawPose === 'cheeks' ? headPt(4, 56, 38) : K.pawPose === 'yawn' ? headPt(4, 74, 38) : null;
+    bow(c, 44, -100, 0.95, true, 0.25);
+    sideArm(c, [S[0] - 6, S[1] + 2], toward(P, tgt, K));
   }
 
   // ---------- views ----------
@@ -463,7 +497,8 @@
   const viewAt = a => (a < 0.3 ? 'front' : a < 0.7 ? 'three' : 'side');
   const FADES = [[0.26, 0.34], [0.65, 0.75]];   // brief crossfades around the switch points
   // Three-quarter and side views are drawn facing right; facing left mirrors them.
-  const mirror = K => ({ ...K, f: -K.f, lookX: -K.lookX, tilt: -K.tilt, earL: K.earR, earR: K.earL });
+  // `flipped` tells the turned views we see Yuki's left side, so the flower on her left ear is on the near side
+  const mirror = K => ({ ...K, f: -K.f, lookX: -K.lookX, tilt: -K.tilt, earL: K.earR, earR: K.earL, flipped: true });
 
   function drawView(c, K, view) {
     c.save();

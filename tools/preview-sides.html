@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Side-View Preview &amp; Overlay Comparison</title>
+<style>
+  html, body { margin: 0; background: #1a1520; color: #f4e9dc; font: 14px/1.5 system-ui, sans-serif; }
+  h1 { text-align: center; font-size: 22px; margin: 12px 0 6px; }
+  h2 { font-size: 17px; margin: 20px 0 8px; border-bottom: 1px solid #444; padding-bottom: 4px; }
+  h3 { font-size: 15px; margin: 14px 0 6px; color: #f9b46e; }
+  .section { max-width: 1800px; margin: 0 auto; padding: 0 16px; }
+  .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-start; margin-bottom: 12px; }
+  .card { background: #26202e; border-radius: 8px; padding: 6px; text-align: center; }
+  .card canvas { display: block; border-radius: 6px; }
+  .label { font-size: 12px; color: #cba; margin-top: 2px; }
+  .controls { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; padding: 8px 16px; background: #221c2a; position: sticky; top: 0; z-index: 10; }
+  button { font: 600 13px system-ui; padding: 5px 12px; border-radius: 6px; border: 0; background: #f39a4a; color: #2a1408; cursor: pointer; }
+  button.active { background: #6c2232; color: #fff; }
+  .warn { color: #fa6; font-size: 12px; }
+</style>
+</head>
+<body>
+<div class="controls">
+  <button onclick="renderAll()">🔄 Render All</button>
+  <span class="warn" id="status">Loading…</span>
+</div>
+<div class="section" id="content"></div>
+
+<script src="../engine/characters.js"></script>
+<script src="../engine/ren.js"></script>
+<script src="../engine/yuki.js"></script>
+<script>
+// ── defaults for K ──
+function baseK(overrides = {}) {
+  return {
+    x: 0, y: 0, s: 1, sx: 1, sy: 1, h: 0, f: 0, walk: 0, phase: 0,
+    tilt: 0, lookX: 0, lookY: 0, blink: 0, wide: 0, blushBoost: 0,
+    earL: 0, earR: 0, armL: 0.16, armR: 0.16, tail: 0,
+    eyes: 'normal', mouth: 'smile', brows: 0, puff: 0,
+    flop: 0, pawPose: null, pawW: 0, talk: 0.5, flipped: false,
+    ...overrides
+  };
+}
+
+// moods from characters.js
+const REN_MOODS = StudioCharacters.CHARACTERS.ren.moods;
+const YUKI_MOODS = StudioCharacters.CHARACTERS.yuki.moods;
+
+function drawChar(canvas, drawFn, K, w, h) {
+  canvas.width = w; canvas.height = h;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, w, h);
+  drawFn(ctx, K);
+}
+
+// render a single character pose to a canvas and return it
+function renderPose(drawFn, K, w = 400, h = 500) {
+  const c = document.createElement('canvas');
+  c.width = w; c.height = h;
+  const ctx = c.getContext('2d');
+  drawFn(ctx, K);
+  return c;
+}
+
+// overlay: draw our character at 50% opacity on top of the reference image
+function overlayCanvas(refImg, drawFn, K, w = 500, h = 620) {
+  const c = document.createElement('canvas');
+  c.width = w; c.height = h;
+  const ctx = c.getContext('2d');
+  // draw reference scaled to fill
+  const scale = Math.min(w / refImg.naturalWidth, h / refImg.naturalHeight);
+  const rw = refImg.naturalWidth * scale, rh = refImg.naturalHeight * scale;
+  const rx = (w - rw) / 2, ry = (h - rh) / 2;
+  ctx.drawImage(refImg, rx, ry, rw, rh);
+  // draw our character on top at 50% opacity
+  ctx.globalAlpha = 0.5;
+  drawFn(ctx, K);
+  ctx.globalAlpha = 1;
+  return c;
+}
+
+// side-by-side: reference on the left, ours on the right
+function sideBySideCanvas(refImg, drawFn, K, w = 400, h = 500) {
+  const c = document.createElement('canvas');
+  c.width = w * 2 + 20; c.height = h;
+  const ctx = c.getContext('2d');
+  ctx.fillStyle = '#f7f0e8';
+  ctx.fillRect(0, 0, c.width, c.height);
+  // reference
+  const scale = Math.min(w / refImg.naturalWidth, h / refImg.naturalHeight) * 0.9;
+  const rw = refImg.naturalWidth * scale, rh = refImg.naturalHeight * scale;
+  ctx.drawImage(refImg, (w - rw) / 2, (h - rh) / 2, rw, rh);
+  ctx.strokeStyle = '#aaa'; ctx.lineWidth = 1;
+  ctx.strokeRect(0, 0, w, h);
+  // ours
+  ctx.save(); ctx.translate(w + 20, 0);
+  drawFn(ctx, K);
+  ctx.restore();
+  ctx.strokeRect(w + 20, 0, w, h);
+  // labels
+  ctx.fillStyle = '#333'; ctx.font = '14px system-ui';
+  ctx.fillText('Reference', 10, 20);
+  ctx.fillText('Ours', w + 30, 20);
+  return c;
+}
+
+function makeCard(canvas, label) {
+  const div = document.createElement('div');
+  div.className = 'card';
+  div.appendChild(canvas);
+  if (label) { const l = document.createElement('div'); l.className = 'label'; l.textContent = label; div.appendChild(l); }
+  return div;
+}
+
+function addSection(parent, title) {
+  const h = document.createElement('h2');
+  h.textContent = title;
+  parent.appendChild(h);
+  const row = document.createElement('div');
+  row.className = 'row';
+  parent.appendChild(row);
+  return row;
+}
+
+function addSubSection(parent, title) {
+  const h = document.createElement('h3');
+  h.textContent = title;
+  parent.appendChild(h);
+  const row = document.createElement('div');
+  row.className = 'row';
+  parent.appendChild(row);
+  return row;
+}
+
+// load an image from a path
+function loadImg(src) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = () => reject(new Error('Failed to load: ' + src));
+    img.src = src;
+  });
+}
+
+async function renderAll() {
+  const content = document.getElementById('content');
+  content.innerHTML = '';
+  document.getElementById('status').textContent = 'Rendering…';
+
+  // load references
+  let renRef, yukiRef;
+  try {
+    renRef = await loadImg('../reference/ren-side.png');
+    yukiRef = await loadImg('../reference/yuki-side.png');
+  } catch (e) {
+    document.getElementById('status').textContent = 'Error: ' + e.message;
+    return;
+  }
+
+  const drawRen = RenCharacter.drawRen;
+  const drawYuki = YukiCharacter.drawYuki;
+
+  const W = 360, H = 460;
+
+  // ──────── REN ────────
+  const renTitle = document.createElement('h1');
+  renTitle.textContent = '🦊 Ren';
+  content.appendChild(renTitle);
+
+  // 1. Overlay: our side view on top of reference
+  {
+    const row = addSection(content, 'Ren Side — Overlay (50% opacity on reference)');
+    // facing right
+    const kR = baseK({ x: W / 2, y: H - 40, s: 0.85, f: 1.0 });
+    row.appendChild(makeCard(overlayCanvas(renRef, drawRen, kR, W, H), 'Facing Right'));
+    // facing left
+    const kL = baseK({ x: W / 2, y: H - 40, s: 0.85, f: -1.0 });
+    row.appendChild(makeCard(overlayCanvas(renRef, drawRen, kL, W, H), 'Facing Left'));
+  }
+
+  // 2. Side-by-side
+  {
+    const row = addSection(content, 'Ren Side — Side by Side with Reference');
+    const kR = baseK({ x: W / 2, y: H - 40, s: 0.85, f: 1.0 });
+    row.appendChild(makeCard(sideBySideCanvas(renRef, drawRen, kR, W, H), 'Left=Ref, Right=Ours'));
+  }
+
+  // 3. Side-view moods
+  {
+    const row = addSection(content, 'Ren Side — All Moods');
+    for (const [name, mood] of Object.entries(REN_MOODS)) {
+      const k = baseK({ x: W / 2, y: H - 40, s: 0.8, f: 1.0, ...mood });
+      row.appendChild(makeCard(renderPose(drawRen, k, W, H), name));
+    }
+  }
+
+  // 4. Five-view sheet: front, three-quarter-left, side-left, back, side-right
+  {
+    const row = addSection(content, 'Ren — 5-View Sheet');
+    const views = [
+      ['Front', 0],
+      ['Three-Quarter R', 0.5],
+      ['Side R', 1.0],
+      ['Three-Quarter L', -0.5],
+      ['Side L', -1.0],
+    ];
+    for (const [label, f] of views) {
+      const k = baseK({ x: W / 2, y: H - 40, s: 0.8, f });
+      row.appendChild(makeCard(renderPose(drawRen, k, W, H), label));
+    }
+  }
+
+  // 5. Walking stills (three-quarter default)
+  {
+    const row = addSection(content, 'Ren — Walking Stills (Three-Quarter)');
+    for (let i = 0; i < 6; i++) {
+      const phase = i * Math.PI / 3;
+      const k = baseK({ x: W / 2, y: H - 40, s: 0.8, f: 0.5, walk: 1, phase });
+      row.appendChild(makeCard(renderPose(drawRen, k, W, H), `Phase ${i}`));
+    }
+  }
+
+  // ──────── YUKI ────────
+  const yukiTitle = document.createElement('h1');
+  yukiTitle.textContent = '🐰 Yuki';
+  content.appendChild(yukiTitle);
+
+  // 1. Overlay
+  {
+    const row = addSection(content, 'Yuki Side — Overlay (50% opacity on reference)');
+    const kR = baseK({ x: W / 2, y: H - 40, s: 0.85, f: 1.0 });
+    row.appendChild(makeCard(overlayCanvas(yukiRef, drawYuki, kR, W, H), 'Facing Right'));
+    const kL = baseK({ x: W / 2, y: H - 40, s: 0.85, f: -1.0 });
+    row.appendChild(makeCard(overlayCanvas(yukiRef, drawYuki, kL, W, H), 'Facing Left'));
+  }
+
+  // 2. Side-by-side
+  {
+    const row = addSection(content, 'Yuki Side — Side by Side with Reference');
+    const kR = baseK({ x: W / 2, y: H - 40, s: 0.85, f: 1.0 });
+    row.appendChild(makeCard(sideBySideCanvas(yukiRef, drawYuki, kR, W, H), 'Left=Ref, Right=Ours'));
+  }
+
+  // 3. Side-view moods
+  {
+    const row = addSection(content, 'Yuki Side — All Moods');
+    for (const [name, mood] of Object.entries(YUKI_MOODS)) {
+      const k = baseK({ x: W / 2, y: H - 40, s: 0.8, f: 1.0, ...mood });
+      row.appendChild(makeCard(renderPose(drawYuki, k, W, H), name));
+    }
+  }
+
+  // 4. Five-view sheet
+  {
+    const row = addSection(content, 'Yuki — 5-View Sheet');
+    const views = [
+      ['Front', 0],
+      ['Three-Quarter R', 0.5],
+      ['Side R', 1.0],
+      ['Three-Quarter L', -0.5],
+      ['Side L', -1.0],
+    ];
+    for (const [label, f] of views) {
+      const k = baseK({ x: W / 2, y: H - 40, s: 0.8, f });
+      row.appendChild(makeCard(renderPose(drawYuki, k, W, H), label));
+    }
+  }
+
+  // 5. Walking stills
+  {
+    const row = addSection(content, 'Yuki — Walking Stills (Three-Quarter)');
+    for (let i = 0; i < 6; i++) {
+      const phase = i * Math.PI / 3;
+      const k = baseK({ x: W / 2, y: H - 40, s: 0.8, f: 0.5, walk: 1, phase });
+      row.appendChild(makeCard(renderPose(drawYuki, k, W, H), `Phase ${i}`));
+    }
+  }
+
+  document.getElementById('status').textContent = 'Done! Scroll down to see all sections.';
+}
+
+// auto-render on load
+window.addEventListener('load', renderAll);
+</script>
+</body>
+</html>
