@@ -1,0 +1,4 @@
+moves: fly
+height: 120
+fps: 4
+credit: test picture made by Claude Code

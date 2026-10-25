@@ -1,6 +1,6 @@
 # Story Guide: every line you can write
 
-A story is a plain text file in the `stories` folder. You can write it in Notepad. Each line is one thing that happens, and they happen **one after another, top to bottom**. The timing is automatic: each line waits until the one before it has finished. You never type seconds, except with `wait`.
+A story is a plain text file in the `stories` folder. You can write it in Notepad, or in the studio app (double-click `Kitsu Studio.bat`), which checks every line as you type and shows a live preview. Each line is one thing that happens, and they happen **one after another, top to bottom**. The timing is automatic: each line waits until the one before it has finished. You never type seconds, except with `wait`.
 
 ```
 title: Ren and the Fallen Star
@@ -29,7 +29,7 @@ ren (surprised): Whoa! A little fallen star!
 | Line | What it does |
 |---|---|
 | `title: My Story Name` | The story's name, shown in the preview |
-| `place: meadow` | Where the story starts: `meadow`, `forest`, `river`, `snowy hill` or `beach` (see "Places" below) |
+| `place: meadow` | Where the story starts: `meadow`, `forest`, `river`, `snowy hill`, `beach` or `cottage garden` (see "Places" below) |
 | `time: sunset` | How the sky starts: `day`, `sunset`, `dusk` or `night` |
 
 ## The characters
@@ -125,6 +125,116 @@ Characters also blink, breathe, sway a little, twitch their ears and (Ren) wag h
 | `sparkles` | Sparkles burst around the character who acted or spoke last. `sparkles around yuki` picks who |
 | `title card: REN` | Big bouncy letters drop in one by one (up to 14 characters) |
 
+## Props, set pieces and animals (the asset kit)
+
+Besides Ren, Yuki and the star, a story can use **props** (small things like a lantern or a map), **set pieces** (big things that stand on the ground, like a cottage or a tent) and **extras** (simple animals or creatures, like an owl or a squirrel).
+
+### Props and set pieces
+
+| Line | What happens |
+|---|---|
+| `lantern appears at left` | It appears at the `left`, `center` or `right` spot. Also `on the ground` (next to whoever acted or spoke last), `in the sky`, or `next to ren` |
+| `the lantern disappears` | It fades away |
+| `the lantern glows` / `the lantern stops glowing` | A soft glow around it |
+| `the cottage opens` / `the cottage closes` | Opens or closes it (if it has a door or lid) |
+| `ren walks to the lantern` | Walks up beside it and looks at it |
+| `ren looks at the cottage` | Looks at it (and keeps looking until the next look) |
+| `ren waves at the cottage` | Waves while looking at it |
+
+Set pieces stand behind the characters. Props and set pieces stay where they are until they disappear, or until the story moves to another place.
+
+### Extras (animals and creatures)
+
+Extras can do the simple things characters do:
+
+| Line | What happens |
+|---|---|
+| `owl enters` / `owl enters from right` / `owl exits to left` | Comes in or goes out |
+| `owl flies in` / `owl flies away` | For flying extras (they stay up in the air) |
+| `owl lands` / `owl takes off` | A flying extra settles on the ground where it is (wings folded), for example during a long talk, and flies up again. `flies away` takes off by itself |
+| `fish swims by` | Swims across, from one side to the other |
+| `owl hops`, `owl looks at ren`, `owl feels happy` | Like the characters |
+| `owl: Hoo!` / `owl (happy): Hoo!` | Talks in a speech bubble (it needs a voice in `config/voices.json`) |
+| `ren looks at the owl`, `ren walks to the owl`, `ren waves at the owl` | Ren and Yuki can talk to and look at extras |
+
+### Assets you can use
+
+| Name | Kind | Story lines it supports |
+|---|---|---|
+| `star` | prop | Everything in "The star" above, plus `star appears at left`, `the star glows` |
+| `heart` | prop | `hearts float up`, `heart floats down`, plus `heart appears at right` |
+| `lantern` | prop (also `little lantern`, `old lantern`) | `lantern appears next to ren`, `the lantern glows` (the candle lights; brightest at night), `the lantern stops glowing`, `ren walks to the lantern`, `ren looks at the lantern` |
+| `cottage` | set piece (also `little cottage`) | `cottage appears at right`, `the cottage opens` / `closes` (the door), `ren walks to the cottage`, `ren looks at the cottage`. About twice Ren's height, with a door his size; its windows (and an open door) glow warm at dusk and night |
+| `owl` | extra (also `little owl`) | `owl flies in from left`, `owl flies away`, `owl lands`, `owl takes off`, `owl (happy): Hoo!` (it has its own voice), `ren waves at the owl`, `ren walks to the owl`. A small round brown owl that blinks, looks around and opens its beak to talk |
+
+Places are listed in "Places" below. New assets are added here as they are created (with `/new-asset` in Claude Code).
+
+### Things that don't exist yet
+
+You can write a story with things that don't exist yet. `check-story.bat` lists them instead of failing:
+
+```
+Your story needs 5 new things:
+  extra:      squirrel             (lines 22, 23)
+  place:      flower field         (line 9)
+  set piece:  tent                 (lines 14, 15, 17)
+  prop:       treasure chest       (lines 18, 19, 20, 27)
+  voice:      voice for squirrel   (line 23)
+They are shown as grey placeholders for now, so you can still preview.
+```
+
+- In the preview and in stills, missing things are **grey placeholders** with their name on them: a box for a prop or set piece, a grey animal shape for an extra, and a plain grey-blue background for a place.
+- `make-video.bat` won't make the finished video until everything exists. For a test video anyway, run `node tools\make-video.js stories\my-story.txt --allow-placeholders`.
+- If a name is very close to something that exists, it's probably a typo, and the check tells you: *"Line 4: I don't know "hart". Did you mean "heart"?"*
+- The list is also saved as `build\<story>\missing-assets.json`, which Claude Code uses to create the missing things.
+
+### Adding your own pictures (no code)
+
+The quickest way to create a missing thing is a PNG picture in the `assets` folder of the project:
+
+| Put this file | And you get |
+|---|---|
+| `assets\props\lamp.png` | the prop `lamp` (a name with dashes, like `old-map.png`, becomes `old map`) |
+| `assets\props\chest.png` + `chest-open.png` | a chest that opens: `the chest opens` shows the second picture |
+| `assets\props\lamp-glowing.png` | the picture for `the lamp glows` |
+| `assets\extras\squirrel.png` | the animal `squirrel` |
+| `assets\extras\squirrel-1.png`, `squirrel-2.png`, … | a squirrel that moves, like a flipbook. Add `squirrel-blink.png` for blinks and `squirrel-talk.png` for talking |
+| `assets\places\flower-field\back.png` | the place `flower field` (1920×1080 or bigger) |
+
+A picture needs a name that isn't taken yet: a picture called `lantern.png`, `cottage.png`, `owl.png` or `cottage-garden` is ignored, because those are already drawn in the engine (the check tells you).
+
+Pictures of props and animals need a **see-through (transparent) background**. They face right; if yours faces left, say so in the settings file.
+
+**Settings** (optional): a text file with the same name, like `assets\props\lamp.txt`, with simple lines you can write in Notepad. Every setting has a sensible default:
+
+```
+size: small          # small, medium or big (big = a set piece like a house)
+height: 90           # how tall, in pixels, next to Ren and Yuki
+hold: one paw        # one paw or both paws
+glow: yes            # so "the lamp glows" works
+moves: fly           # animals only: walk, hop, fly, swim or float
+fps: 6               # animals only: flipbook speed
+faces: left          # if the picture faces left
+credit: drawn by me  # who made the picture (required)
+```
+
+**Places:** in `assets\places\flower-field\` you can also add `front.png` (a see-through picture drawn in front of the characters, like flowers), `back-sunset.png`, `back-dusk.png` and `back-night.png` (without them, `back.png` is coloured for the time of day, and the sky shows through any see-through part), and `place.txt`:
+
+```
+ground: 0.85               # where feet stand, as a share of the height (0.85 = 85% down)
+spots: 0.29, 0.5, 0.71     # the left, center and right spots, as shares of the width
+ambient: birds             # the place's sound: birds, leaves, water, wind, waves or none
+credit: drawn by me
+```
+
+Pictures change colour with the time of day, like everything else, so a daytime picture still looks right at night. **Things that give light are the exception:** the lit parts of a glowing picture (the parts of `lamp-glowing.png` that are brighter than `lamp.png`), the star, and the soft glow around anything that glows keep their full colour, so they look brightest at night.
+
+**Examples:** `docs\examples\pictures\` has a full set to copy and try: a lantern that glows, a cottage whose door opens, an owl that flies, blinks and talks, and the place "cottage garden" with flowers in front. These four now also exist as drawn assets, so to try the pictures, copy them into `assets\` **with a new name**: for example `lantern.png`, `lantern-glowing.png` and `lantern.txt` from `docs\examples\pictures\props\` become `assets\props\paper-lantern.png`, `paper-lantern-glowing.png` and `paper-lantern.txt`, and then `paper lantern appears at center` works. (With their own names they are ignored, and the check says so.) `bad-example-crate.png` shows what the check says about a picture without a see-through background or a credit. The engine never loads pictures from `docs\`, only from `assets\`.
+
+**Credits:** every picture needs a `credit:` line (who made it). The check reminds you, and a finished video can't be made with an uncredited picture. Every video also gets `videos\<story>-credits.txt`, listing everything in it and who made it. **Only use pictures you made yourself, or from a tool whose terms allow selling videos. Don't use pictures found on the internet.**
+
+The check also warns about pictures that are very large (over 4000 pixels), place backgrounds smaller than 1920×1080 (they look blurry), and prop or animal pictures without a see-through background.
+
 ## Places
 
 | Place | What it looks like | What you hear |
@@ -134,6 +244,7 @@ Characters also blink, breathe, sway a little, twitch their ears and (Ren) wag h
 | `river` | A wide river with a wooden footbridge, reeds and stones; the sun and moon shine on the water | Flowing water |
 | `snowy hill` | Snowy hills and pine trees, a snowman, paw prints and sparkling snow | A soft wind |
 | `beach` | The sea, waves washing up on the sand, shells and a palm tree; a beautiful sunset over the water | Gentle waves |
+| `cottage garden` | A lawn with a white picket fence, a little wooden gate, stepping stones, flower beds along the fence and an apple tree; butterflies by day, fireflies at night. Add `cottage appears at center` for the cottage behind the gate | A breeze, and birds in the day and at sunset |
 
 Every place works at every time of day (`day`, `sunset`, `dusk`, `night`).
 
@@ -221,6 +332,86 @@ music: tense
 | `camera: close` | The camera slowly moves closer to the characters on stage. Also `closer`, or `wide` to go back |
 | `wait 2` | A pause of 2 seconds |
 
+## Camera & editing
+
+Without any of these lines, the camera works by itself, exactly as before. Use them to make a story feel like a TV show.
+
+### Shots (an instant cut, like an edit)
+
+| Line | What you see |
+|---|---|
+| `shot: wide` | The whole place, with everyone in it |
+| `shot: medium on ren` | Ren from head to toe, a little closer |
+| `shot: close on yuki` | Yuki's head and shoulders |
+| `shot: extreme close on ren` | Ren's face fills the screen (good for big surprises) |
+| `shot: over the shoulder of ren` | Ren's shoulder, big and soft at the edge of the screen, with the character Ren is talking to on the other side |
+
+After `shot: medium`, `close` or `extreme close`, you can write `on ren`, `on yuki`, `on both` or `on the star`. Without it, the shot shows whoever acted or spoke last (a wide shot shows everyone).
+
+The camera follows the rules of good framing by itself:
+- Nobody's head is ever cut off in a close shot.
+- One character stands on a third of the screen, with room in front of where they're looking.
+- If the characters move, the shot follows them smoothly.
+- Speech bubbles get smaller in close shots and move to where they don't cover anyone's face.
+
+```
+yuki (playful): Let's play hide and seek!
+shot: extreme close on ren
+ren (surprised): Hide and seek? I love hide and seek!
+shot: over the shoulder of ren
+yuki (happy): Then close your eyes and count to ten!
+```
+
+### Camera moves (smooth glides)
+
+| Line | What the camera does |
+|---|---|
+| `camera: push in` | Glides closer (about 2 seconds) |
+| `camera: pull out` | Glides further away |
+| `camera: pan to yuki` | Turns to look at Yuki. Also `pan to the star`, `pan to left`, `pan to center`, `pan to right` |
+| `camera: follow ren` | Keeps Ren in the picture while Ren moves |
+| `camera: shake` | A short, light shake, for surprises |
+| `camera: hold` | Stops still, even if the characters move (they can walk out of the picture) |
+
+Moves happen while the story carries on, like `camera: close`. The old lines `camera: close`, `closer` and `wide` still work, and in a story with shots they glide too. Background layers move at different speeds as the camera moves, so the picture has depth.
+
+### Automatic editing
+
+Write `editing: auto` at the top of the story (next to `title:`), and the camera chooses the shots by itself, like a TV editor:
+
+- When a conversation starts, it shows both characters together (a medium shot).
+- Then it cuts to a close-up of whoever is talking.
+- After a **surprised**, **shy** or **sad** line, it shows the other character's reaction for a moment.
+- When someone enters, walks, exits or hugs, and when the narrator speaks, it shows the whole place (a wide shot).
+
+Your own `shot:` and `camera:` lines always win. After one of them, the automatic editor waits until the next character line has been spoken. Without `editing: auto`, nothing changes.
+
+```
+title: The Missing Cookie
+editing: auto
+```
+
+### Timing
+
+| Line | What happens |
+|---|---|
+| `beat` | A short pause (0.6 seconds), for comic timing |
+| `pause 2` | A quiet pause of 2 seconds (the same as `wait 2`) |
+| `slow motion 3` | The **next action** happens slowly and takes about 3 seconds, with a soft dreamy glow. Use it for magical moments, like a falling star. It works on actions, not on voice lines |
+| `reveal: the star` | The camera glides slowly to the star, with a gentle magical swell in the music. Also `reveal: yuki` |
+| `reveal: river` | Shows a place: if the story isn't there yet, the page turns first. Then the camera starts close on the characters and slowly pulls back to show the whole place |
+
+```
+ren looks around
+beat
+ren (surprised): Wait... where did it go?
+
+star appears
+reveal: the star
+slow motion 4
+star falls
+```
+
 ## Sounds you get automatically
 
 You don't write sounds. They come from the actions:
@@ -228,7 +419,7 @@ You don't write sounds. They come from the actions:
 - Music-box music runs through the whole story (choose its mood with `music:`, see "Music" above). It's quieter while someone talks, comes up a little in the pauses between lines, and fades out at the end.
 - Hops make boings (Yuki's are lighter and higher), and walking rustles the grass.
 - Title letters chime, hearts pop, and star moments twinkle and sparkle.
-- Each place has its own sound: a breeze and birds in the meadow, birds and leaves in the forest, flowing water at the river, wind on the snowy hill and waves at the beach.
+- Each place has its own sound: a breeze and birds in the meadow, birds and leaves in the forest, flowing water at the river, wind on the snowy hill and waves at the beach. These sounds get softer at night and when the music is `calm` or `bedtime`, so quiet scenes stay quiet.
 
 ## Using your own voice recording for a line
 
@@ -238,7 +429,7 @@ Put a WAV file in `voice-overrides\<story-file-name>\line-<number>.wav`, where t
 voice-overrides\my-story\line-12.wav
 ```
 
-The timing adapts to your recording automatically.
+The timing adapts to your recording automatically, and its volume is matched to the other voices, so it doesn't sound louder or quieter than the rest. (Every voice line is volume-matched this way, whichever voice says it.)
 
 ## When something is wrong
 

@@ -1,0 +1,3 @@
+size: big
+height: 360
+credit: test picture made by Claude Code

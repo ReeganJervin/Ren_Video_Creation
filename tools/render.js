@@ -90,7 +90,7 @@ async function join(files, wav, duration, mp4, dir) {
 
 const mmss = s => { s = Math.round(s); return (s >= 3600 ? `${Math.floor(s / 3600)} h ` : '') + (s >= 60 ? `${Math.floor(s / 60) % 60} min ` : '') + `${s % 60} s`; };
 
-// Renders the whole video. o: { browser, url, workers, resume, buildDir, mp4, root, wav, say }
+// Renders the whole video. o: { browser, url, workers, resume, buildDir, mp4, root, wav, say, progress }
 async function renderVideo(plan, o) {
   const dir = path.join(o.buildDir, 'chunks'), state = path.join(dir, 'state.json');
   const id = fingerprint(plan, o.root), chunks = chunksOf(plan);
@@ -126,12 +126,14 @@ async function renderVideo(plan, o) {
       if (now - shown < 1000 && drawn < left) return;
       shown = now;
       const el = (now - started) / 1000, fps = drawn / el, done = (total - left + drawn) / total;
+      if (o.progress) o.progress({ step: 'drawing', done, scene: label, fps: +fps.toFixed(1), left: Math.round(Math.max(0, (left - drawn) / fps)) });
       process.stdout.write(`\r  ${String(Math.floor(done * 100)).padStart(3)}%  ${label}  ${fps.toFixed(1)} frames/s  about ${mmss(Math.max(0, (left - drawn) / fps))} left      `.slice(0, 118));
     });
   }
   await Promise.all(pages.map(p => p.close()));
   const el = (Date.now() - started) / 1000;
   if (left) process.stdout.write(`\r  100%  drew ${left} frames in ${mmss(el)} (${(left / el).toFixed(1)} frames/s)${' '.repeat(50)}\n`);
+  if (o.progress) o.progress({ step: 'joining' });
   await join(chunks.map(file), o.wav, plan.duration, o.mp4, dir);
   return { frames: total, drawn: left, seconds: el };
 }

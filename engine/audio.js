@@ -209,6 +209,16 @@
     }
 
     // ---- sound effects ----
+    // A place's background sound is half as loud (-6 dB) at night and under calm or bedtime music,
+    // changing smoothly as night falls or the music changes.
+    const evalKeys = window.StudioStory.evalKeys, QUIET = { calm: 1, bedtime: 1 };
+    const quietMood = s => {
+      if (!T.music) return 0;
+      let q = 0;
+      T.music.forEach(m => { if (m.t <= s) q = q + ((QUIET[m.mood] || 0) - q) * Math.min(1, (s - m.t) / 2); });
+      return q;
+    };
+    const soft = s => 1 - 0.5 * Math.max(Math.min(1, Math.max(0, evalKeys(T.keys.tau, s) - 2)), quietMood(s));
     const noise = noiseBuffer(ctx);
     const noiseSrc = (t, dur) => { const n = ctx.createBufferSource(); n.buffer = noise; n.loop = true; n.start(t, (t * 0.37) % 1.5); n.stop(t + dur + 0.1); return n; };
     const chime = (t, m, g = 0.2, d = 0.9) => { tone(sfx, t, mtof(m), g, d); tone(sfx, t, mtof(m) * 2.76, g * 0.35, d * 0.5); };
@@ -216,8 +226,8 @@
       breeze(c) {
         const n = noiseSrc(at(c.t), c.t1 - c.t), bp = ctx.createBiquadFilter(), g = ctx.createGain();
         bp.type = 'bandpass'; bp.frequency.value = 520; bp.Q.value = 0.5; n.connect(bp); bp.connect(g); g.connect(sfx);
-        g.gain.setValueAtTime(0, at(c.t)); g.gain.linearRampToValueAtTime(0.05, at(c.t + 1.5));
-        for (let s = c.t + 2; s < c.t1 - 3; s += 1.5) g.gain.linearRampToValueAtTime(0.03 + 0.03 * Math.abs(Math.sin(s * 0.7)), at(s));
+        g.gain.setValueAtTime(0, at(c.t)); g.gain.linearRampToValueAtTime(0.05 * soft(c.t + 1.5), at(c.t + 1.5));
+        for (let s = c.t + 2; s < c.t1 - 3; s += 1.5) g.gain.linearRampToValueAtTime((0.03 + 0.03 * Math.abs(Math.sin(s * 0.7))) * soft(s), at(s));
         g.gain.linearRampToValueAtTime(0, at(c.t1));
       },
       windSwell(c) {
@@ -255,7 +265,7 @@
           filters.reduce((a, b) => (a.connect(b), b), n).connect(lg); lg.connect(g);
         };
         // a gentle level that changes over time, set every 0.25 s (no sudden jumps)
-        const shape = fn => { g.gain.setValueAtTime(fn(t0), at(t0)); for (let s = t0 + 0.25; s <= t1; s += 0.25) g.gain.linearRampToValueAtTime(fn(s), at(s)); };
+        const shape = f => { const fn = s => f(s) * soft(s); g.gain.setValueAtTime(fn(t0), at(t0)); for (let s = t0 + 0.25; s <= t1; s += 0.25) g.gain.linearRampToValueAtTime(fn(s), at(s)); };
         g.connect(out);
         switch (c.kind) {
           case 'meadow': layer([band('bandpass', 520, 0.5)], 1); shape(s => 0.03 + 0.03 * Math.abs(Math.sin(s * 0.7))); break;
@@ -301,6 +311,18 @@
         lfo.frequency.value = 32; lg.gain.setValueAtTime(30, t); lg.gain.exponentialRampToValueAtTime(1, t + 0.25);
         lfo.connect(lg); lg.connect(o.frequency);
         o.connect(g); g.connect(sfx); env(g, t, 0.17 * (c.gain || 1), 0.006, 0.26); o.start(t); o.stop(t + 0.32); lfo.start(t); lfo.stop(t + 0.32);
+      },
+      // a reveal: a soft major chord that swells up and fades, with a few twinkles rising on top
+      swell(c) {
+        const t0 = at(c.t), t1 = at(c.t1), mid = t0 + (t1 - t0) * 0.6, g = ctx.createGain(), lp = ctx.createBiquadFilter();
+        lp.type = 'lowpass'; lp.frequency.setValueAtTime(600, t0); lp.frequency.linearRampToValueAtTime(2200, mid);
+        g.connect(lp); lp.connect(sfx);
+        g.gain.setValueAtTime(0, t0); g.gain.linearRampToValueAtTime(0.05, mid); g.gain.linearRampToValueAtTime(0, t1);
+        for (const m of [60, 64, 67, 72, 76]) for (const det of [-5, 5]) {
+          const o = ctx.createOscillator(); o.type = 'triangle'; o.frequency.value = mtof(m); o.detune.value = det;
+          o.connect(g); o.start(t0); o.stop(t1 + 0.05);
+        }
+        [84, 88, 91, 96, 100].forEach((m, i) => chime(t0 + (mid - t0) * (0.2 + i * 0.18), m, 0.06, 1.0));
       },
       chime(c) { chime(at(c.t), c.midi, c.gain || 0.2); },
       twinkle(c) { const g = c.gain || 0.2; chime(at(c.t), c.midi, g, 0.7); chime(at(c.t + 0.07), c.midi + 7, g * 0.6, 0.6); },

@@ -73,13 +73,13 @@
     }
     const th = travelHop(id, t);
     if (th) { h += th.h; sy *= 1 - 0.1 * th.land; sx *= 1 + 0.08 * th.land; }
-    const crouch = A_(id, 'crouch', t);
+    const crouch = A_(id, 'crouch', t), air = a.keys.air ? A_(id, 'air', t) : 1;   // air: 1 flying, 0 landed
     // breathing and idle sway, each character on its own phase
     sy *= crouch * (1 + 0.012 * Math.sin(t * 2.6 + n * 1.7)); sx *= 1 + (1 - crouch) * 0.45;
     const phase = x / 160 * Math.PI * 2, swing = Math.sin(phase) * 0.35 * walk, idle = Math.sin(t * 2 + n * 2.1) * 0.04;
     let wave = 0; for (const w of a.waves) wave += Math.sin((t - w.a) * 9) * 0.35 * win(t, w.a, w.b, 0.2, 0.3);
     return {
-      id, x, y: placeAt(t).ground(x), h, sx, sy, s: KS, f: A_(id, 'facing', t), walk, phase, hopping,
+      id, t, x, y: placeAt(t).ground(x) - (REG[id].fly || 0) * air, air, h, sx, sy, s: KS, f: A_(id, 'facing', t), walk, phase, hopping,
       armL: A_(id, 'armL', t) + swing + idle, armR: A_(id, 'armR', t) - swing + idle + wave,
     };
   }
@@ -106,7 +106,7 @@
     const head = toWorld(K, K.f * 6, def.head);
     for (const L of a.lookAt) {
       const w = win(t, L.a, L.b, 0.3, 0.4); if (w <= 0) continue;
-      const p = L.target === 'star' ? starAt(t) : L.target === 'heart' ? heartAt(t) : headOf(L.target.actor, t);
+      const p = L.target === 'star' ? starAt(t) : L.target === 'heart' ? heartAt(t) : L.target.prop !== undefined ? propPoint(L.target.prop, t) : headOf(L.target.actor, t);
       if (!p || !p.vis) continue;
       const dx = p.x - head.x, dy = p.y - head.y, nn = Math.hypot(dx, dy) || 1;
       lx = lerp(lx, clamp(dx / nn * 1.3, -1, 1), w); ly = lerp(ly, clamp(dy / nn * 1.3, -1, 1), w);
@@ -196,43 +196,9 @@
     g.addColorStop(0, `rgba(${col},${a})`); g.addColorStop(1, `rgba(${col},0)`);
     c.fillStyle = g; c.fillRect(x - r, y - r, r * 2, r * 2);
   }
-  function starPath(c, r) { c.beginPath(); for (let k = 0; k < 10; k++) { const a = -Math.PI / 2 + k * Math.PI / 5, rr = k % 2 ? r * 0.5 : r; c.lineTo(Math.cos(a) * rr, Math.sin(a) * rr); } c.closePath(); }
-  function drawStar(c, S, t) {
-    c.save(); c.globalCompositeOperation = 'lighter';
-    glow(c, S.x, S.y, S.r * (3.5 + S.bright * 2.5), '255,214,110', 0.4 * S.bright * S.alpha);
-    if (S.flare > 0) {
-      c.translate(S.x, S.y); c.rotate(t * 0.3);
-      for (const rot of [0, Math.PI / 2, Math.PI / 4, -Math.PI / 4]) {
-        c.save(); c.rotate(rot);
-        const L = S.r * (rot % (Math.PI / 2) ? 2.5 + 3 * S.flare : 3 + 5 * S.flare), g = c.createLinearGradient(-L, 0, L, 0);
-        g.addColorStop(0, 'rgba(255,240,180,0)'); g.addColorStop(0.5, `rgba(255,240,180,${0.9 * S.flare})`); g.addColorStop(1, 'rgba(255,240,180,0)');
-        c.fillStyle = g; c.fillRect(-L, -2.5, L * 2, 5); c.restore();
-      }
-    }
-    c.restore();
-    c.save(); c.translate(S.x, S.y); c.rotate(Math.sin(t * 1.7) * 0.12); c.globalAlpha = S.alpha;
-    const g = c.createRadialGradient(-S.r * 0.3, -S.r * 0.3, 0, 0, 0, S.r);
-    g.addColorStop(0, '#fff8d0'); g.addColorStop(1, S.bright > 0.6 ? '#ffc93c' : '#f2c25a');
-    starPath(c, S.r); c.fillStyle = g; c.fill(); c.lineJoin = 'round'; c.lineWidth = S.r * 0.16; c.strokeStyle = '#e8a21a'; c.stroke();
-    const fa = clamp((S.r - 15) / 5) * S.alpha;
-    if (fa > 0) {
-      c.globalAlpha = fa; c.strokeStyle = c.fillStyle = '#6b3a10'; c.lineWidth = 2; c.lineCap = 'round';
-      const e = S.r * 0.22;
-      if (S.happy) [-1, 1].forEach(i => { c.beginPath(); c.arc(i * e, -1, 2.3, 0, Math.PI * 2); c.fill(); });
-      else [-1, 1].forEach(i => { c.beginPath(); c.moveTo(i * e - 3, -1); c.quadraticCurveTo(i * e, 2, i * e + 3, -1); c.stroke(); });
-      c.beginPath(); c.moveTo(-3, 4); c.quadraticCurveTo(0, 7, 3, 4); c.stroke();
-      c.fillStyle = 'rgba(255,120,120,0.5)'; [-1, 1].forEach(i => { c.beginPath(); c.ellipse(i * e * 1.9, 4, 3, 2, 0, 0, Math.PI * 2); c.fill(); });
-    }
-    c.restore();
-  }
-  function drawHeart(c, x, y, r, a, col = '#ff7a9a', glowCol = '255,150,170') {
-    c.save(); c.globalCompositeOperation = 'lighter'; glow(c, x, y, r * 2.6, glowCol, 0.3 * a); c.restore();
-    c.save(); c.translate(x, y); c.globalAlpha = clamp(a);
-    c.beginPath(); c.moveTo(0, r * 0.35);
-    c.bezierCurveTo(-r * 1.1, -r * 0.35, -r * 0.5, -r * 1.05, 0, -r * 0.45); c.bezierCurveTo(r * 0.5, -r * 1.05, r * 1.1, -r * 0.35, 0, r * 0.35); c.closePath();
-    c.fillStyle = col; c.fill(); c.lineWidth = 3; c.strokeStyle = '#ffffffaa'; c.stroke();
-    c.restore();
-  }
+  // the star and the heart are props in the asset registry (engine/props/)
+  const drawStar = (c, S, t) => StudioAssets.ASSETS.star.drawAt(c, t, S);
+  const drawHeart = (c, ...rest) => StudioAssets.ASSETS.heart.drawAt(c, ...rest);
   function sparkle(c, x, y, s, a, col = '255,246,200') {
     if (a <= 0 || s <= 0) return;
     c.save(); c.translate(x, y); c.globalAlpha = clamp(a); c.fillStyle = `rgb(${col})`;
@@ -267,12 +233,184 @@
     cx = clamp(cx, -220 + hw, 2140 - hw); cy = clamp(cy, -40 + hh, 1140 - hh);
     return { z: zz, cx, cy };
   }
+  // ---------- shots and camera moves (stories with "shot:" or camera-move lines) ----------
+  const SIZES = { wide: 1, medium: 1.75, close: 2.7, 'extreme close': 4.2 }, OTS_Z = 2.2;
+  let RIGS = [], SHAKES = [], baseMemo = [];
+  // What a shot looks at, as one box: left/right x, top of the head, eye line, feet, facing (one subject only).
+  function aimBox(on, t) {
+    let S = [];
+    if (on.star) { const s = starAt(t); if (s) S = [{ x: s.x, top: s.y - 70, eye: s.y, feet: s.y + 70, f: 0 }]; }
+    if (on.x !== undefined) { const y = placeAt(t).ground(on.x); S = [{ x: on.x, top: y - 430, eye: y - 240, feet: y, f: 0 }]; }
+    // the star together with everyone watching it ({ star, all }): their faces count, not their feet
+    if (on.star && on.all) S.push(...CAST.filter(id => onStage(id, t)).map(id => { const B = actorBody(id, t), e = toWorld(B, 0, REG[id].head).y; return { x: B.x, top: e - 90, eye: e, feet: e + 110, f: B.f }; }));
+    else if (!on.star && on.x === undefined) {
+      let ids = on.actors || CAST.filter(id => onStage(id, t));
+      if (!ids.length) ids = CAST.slice(0, 1);
+      S = ids.map(id => {
+        const B = actorBody(id, t), d = REG[id];
+        return { x: B.x, top: toWorld(B, 0, d.overhead * 0.92).y, eye: toWorld(B, 0, d.head).y, feet: B.y, f: B.f };
+      });
+    }
+    if (!S.length) return aimBox({ all: true }, t);
+    return { x0: Math.min(...S.map(s => s.x)), x1: Math.max(...S.map(s => s.x)), top: Math.min(...S.map(s => s.top)), eye: Math.min(...S.map(s => s.eye)), feet: Math.max(...S.map(s => s.feet)), f: S.length === 1 ? S[0].f : 0 };
+  }
+  // the same box averaged over the last half second, so the framing follows movement smoothly
+  function aimSmooth(on, t) {
+    const n = 4, acc = { x0: 0, x1: 0, top: 0, eye: 0, feet: 0, f: 0 };
+    for (let k = 0; k < n; k++) { const b = aimBox(on, Math.max(0, t - k * 0.15)); for (const q in acc) acc[q] += b[q] / n; }
+    return acc;
+  }
+  const bounds = c => { const hw = 960 / c.z, hh = 540 / c.z; return { z: c.z, cx: clamp(c.cx, -220 + hw, 2140 - hw), cy: clamp(c.cy, -40 + hh, 1140 - hh) }; };
+  // A shot of size z on its subject: subject on a third with room in front of where it faces, the top of the
+  // head inside the frame, and (in an extreme close-up) the eyes a little above the middle.
+  function frameCam(z, on, t, lead = 1) {
+    const g = aimSmooth(on, t);
+    // two or more subjects: never so close that someone is cut off (the classic camera's rule)
+    if (g.x1 - g.x0 > 1) z = Math.min(z, 1700 / (g.x1 - g.x0 + 560));
+    z = Math.max(1, z);
+    const hw = 960 / z, hh = 540 / z, v = clamp((z - 1) / 0.75), u = clamp((z - SIZES.close) / (SIZES['extreme close'] - SIZES.close));
+    let cx = (g.x0 + g.x1) / 2 + (g.x0 === g.x1 ? clamp(g.f * 1.5, -1, 1) * hw / 3 * lead * v : 0);
+    const byTop = g.top + hh * (1 - 2 * (z < 2.2 ? 0.1 : 0.08)), byEye = g.eye + 0.16 * hh;
+    let cy = lerp(540, lerp(byTop, byEye, u), v);
+    if (z < 3.4 && g.top < cy - hh + 6) cy = g.top + hh - 6;
+    if (g.x0 === g.x1 && on.actors && z > 1.2) cx = noHalfFaces(cx, hw, g.x0, on.actors[0], t);
+    return bounds({ z, cx, cy });
+  }
+  // In a shot of one character, nobody else's face sits half in the frame: slide the frame (as little as
+  // possible, keeping the subject's own face well inside) so each other face is fully in or fully out.
+  function noHalfFaces(cx, hw, x, id, t) {
+    const fw = 105 * KS, keep = [x - fw * 1.05, x + fw * 1.05];
+    for (const o of CAST) {
+      if (o === id || !onStage(o, t)) continue;
+      const ox = aimSmooth({ actors: [o] }, t).x0, lo = ox - fw, hi = ox + fw, L = cx - hw, R = cx + hw;
+      if (hi <= L || lo >= R || lo >= L && hi <= R) continue;   // already fully out or fully in
+      const shifts = ox > cx ? [hi - R + 12, lo - R - 12] : [lo - L - 12, hi - L + 12];   // bring it in / push it out
+      const ok = shifts.filter(d => keep[0] >= L + d && keep[1] <= R + d).sort((a, b) => Math.abs(a) - Math.abs(b));
+      if (ok.length) cx += ok[0];
+    }
+    return cx;
+  }
+  // over the shoulder: the other character on the third away from the shoulder, facing it
+  function otsCam(rig, t) {
+    const g = aimSmooth(rig.on, t), a = actorX(rig.of, t), dir = Math.sign(a - g.x0) || 1, z = OTS_Z, hw = 960 / z, hh = 540 / z;
+    return bounds({ z, cx: g.x0 + dir * hw / 3, cy: g.top + hh * (1 - 2 * 0.12) });
+  }
+  const camBlend = (a, b, w) => ({ z: Math.exp(lerp(Math.log(a.z), Math.log(b.z), w)), cx: lerp(a.cx, b.cx, w), cy: lerp(a.cy, b.cy, w) });
+  const rigCam = (i, t) => { const r = RIGS[i]; return r.kind === 'fixed' ? r.cam : r.kind === 'ots' ? otsCam(r, t) : frameCam(r.z, r.on, t); };
+  // the camera after shots/moves 0..i (i < 0: the classic automatic camera)
+  function camUpTo(i, t) {
+    if (i < 0) return camAt(t);
+    const r = RIGS[i], to = rigCam(i, t);
+    if (r.dur > 0 && t < r.t + r.dur) return camBlend(camUpTo(i - 1, t), to, ease((t - r.t) / r.dur));
+    return to;
+  }
+  // where the camera is just as shot/move i begins (moves start from there)
+  const camBefore = i => baseMemo[i] || (baseMemo[i] = camUpTo(i - 1, RIGS[i].t));
+  function buildRigs() {
+    RIGS = []; SHAKES = []; baseMemo = [];
+    let on = { all: true };
+    for (const s of P.shots) {
+      if (s.op === 'shake') { SHAKES.push(s); continue; }
+      const r = { t: s.t, dur: s.dur, op: s.op };
+      RIGS.push(r);
+      const i = RIGS.length - 1, base = () => camBefore(i), p = RIGS[i - 1];
+      // the zoom a move builds on: where the previous shot or move is heading (so moves in a row add up)
+      const z0 = () => (!p ? base().z : p.kind === 'frame' ? p.z : p.kind === 'ots' ? OTS_Z : p.cam.z);
+      if (s.op === 'cut') Object.assign(r, { kind: 'frame', z: SIZES[s.size], on: on = s.on });
+      else if (s.op === 'ots') Object.assign(r, { kind: 'ots', of: s.of, on: on = s.on });
+      else if (s.op === 'zoom' || s.op === 'reveal') Object.assign(r, { kind: 'frame', z: s.z, on: on = s.on });
+      else if (s.op === 'push') Object.assign(r, { kind: 'frame', z: Math.min(SIZES['extreme close'], z0() * 1.4), on });
+      else if (s.op === 'pull') Object.assign(r, { kind: 'frame', z: Math.max(1, z0() / 1.4), on });
+      else if (s.op === 'pan' || s.op === 'follow') Object.assign(r, { kind: 'frame', z: z0(), on: on = s.on });
+      else if (s.op === 'hold') Object.assign(r, { kind: 'fixed', cam: base() });
+    }
+  }
+  // the camera at t with shots: { z, cx, cy, framed, ots: { of, a } } (a = how visible the shoulder is)
+  function camShot(t) {
+    let i = -1; while (i + 1 < RIGS.length && RIGS[i + 1].t <= t) i++;
+    const c = { ...camUpTo(i, t), framed: i >= 0 };
+    const r = RIGS[i], prev = RIGS[i - 1];
+    if (r && r.kind === 'ots') c.ots = { of: r.of, on: r.on, a: 1 };
+    else if (r && prev && prev.kind === 'ots' && r.dur > 0 && t < r.t + r.dur) c.ots = { of: prev.of, on: prev.on, a: 1 - ease((t - r.t) / r.dur) };
+    // a short, light shake for surprises, fading out
+    for (const s of SHAKES) {
+      const u = (t - s.t) / s.dur; if (u < 0 || u > 1) continue;
+      const a = 14 / c.z * Math.pow(1 - u, 2);
+      c.cx += a * (Math.sin(t * 61) + Math.sin(t * 37 + 1)) / 2; c.cy += a * (Math.sin(t * 53 + 2) + Math.sin(t * 29)) / 2;
+    }
+    return c;
+  }
+
   function applyCam(c, cam, p) {
     const z = 1 + (cam.z - 1) * p;
     c.setTransform(1, 0, 0, 1, 0, 0); c.translate(W / 2, H / 2); c.scale(z, z);
     c.translate(-(W / 2 + (cam.cx - W / 2) * p), -(H / 2 + (cam.cy - H / 2) * p));
   }
   const toScreen = (cam, p) => ({ x: (p.x - cam.cx) * cam.z + W / 2, y: (p.y - cam.cy) * cam.z + H / 2 });
+
+  // ---------- props, set pieces and extras (asset kit) ----------
+  // where a prop is (for looking at it), or null when it isn't on stage
+  function propPoint(i, t) {
+    const p = P.props[i];
+    if (!p || t < p.t0 || (p.t1 !== null && t > p.t1)) return null;
+    return { vis: true, x: p.x, y: p.y - p.height * 0.6 };
+  }
+  const lastAt = (list, t) => { let v = null; for (const e of list) if (e.t <= t) v = e; return v; };
+  // Props stand on the ground behind the characters (or float in the sky), drawn with the scenery so they share
+  // its time-of-day colour. They pop in, fade out, and glow or open when the story says so.
+  // Two passes: 'base' before the time-of-day colour, 'light' after it, for everything that gives light
+  // (the glow, emissive assets, and an asset's drawLight parts), so light is never darkened at night.
+  function drawProps(c, t, tau, PN, pass) {
+    const light = { tau, tint: tod(tau, PN.tint) };
+    P.props.forEach(p => {
+      if (t < p.t0 || (p.t1 !== null && t >= p.t1)) return;
+      const a = p.t1 !== null ? clamp((p.t1 - t) / 0.5) : 1, pop = easeOutBack((t - p.t0) / 0.4);
+      const st = lastAt(p.states, t), gl = lastAt(p.glow, t), asset = p.asset && StudioAssets.ASSETS[p.asset];
+      const glowA = gl ? (gl.on ? ease((t - gl.t) / 0.4) : 1 - ease((t - gl.t) / 0.4)) : 0;
+      let state = st ? st.state : asset && asset.states.length ? asset.states[0] : 'closed';
+      if (glowA > 0.5 && asset && asset.states.includes('glowing')) state = 'glowing';
+      HP.cam(1);
+      c.save(); c.translate(p.x, p.y); c.globalAlpha = a; c.scale(pop, pop);
+      if (pass === 'base') {
+        if (!asset) drawPropPlaceholder(c, p, st ? state : null); else if (!asset.emissive) asset.draw(c, t, state, light);
+      } else {
+        if (glowA > 0) { c.save(); c.globalCompositeOperation = 'lighter'; glow(c, 0, -p.height * 0.55, p.height * 1.3, '255,222,140', 0.45 * glowA * a); c.restore(); }
+        if (asset && asset.emissive) asset.draw(c, t, state, light);
+        else if (asset && asset.drawLight) asset.drawLight(c, t, state, light);
+      }
+      c.restore();
+    });
+    c.setTransform(1, 0, 0, 1, 0, 0); c.globalAlpha = 1;
+  }
+  // a missing prop: a soft grey rounded box of its size class, with its name on it
+  function drawPropPlaceholder(c, p, state) {
+    const w = { small: 84, medium: 160, big: 380 }[p.size] || 84, h = p.height, r = Math.min(24, w / 4);
+    c.fillStyle = 'rgba(205,210,218,0.95)'; c.strokeStyle = '#7c8592'; c.lineWidth = 4; c.setLineDash([12, 8]);
+    c.beginPath(); c.roundRect(-w / 2, -h, w, h, r); c.fill(); c.stroke(); c.setLineDash([]);
+    c.fillStyle = '#4d5560'; c.textAlign = 'center'; c.textBaseline = 'middle';
+    const fs = p.size === 'small' ? 22 : 34, label = p.name + (state ? ` (${state})` : '');
+    c.font = `700 ${fs}px ${FONT}`;
+    if (p.size === 'small') c.fillText(label, 0, 22); else c.fillText(label, 0, -h / 2);
+  }
+  // a missing extra: a simple grey animal shape that still blinks, looks, talks and hops, with its name under it
+  function drawExtraPlaceholder(c, K, def) {
+    const H = def.height || 110;
+    c.save(); c.translate(K.x, K.y - K.h); c.scale(K.s * K.sx, K.s * K.sy);
+    c.fillStyle = '#aab1bb'; c.strokeStyle = '#6d7581'; c.lineWidth = 4;
+    c.beginPath(); c.ellipse(0, -H * 0.3, H * 0.3, H * 0.3, 0, 0, Math.PI * 2); c.fill(); c.stroke();
+    const hx = K.f * 8;
+    [-1, 1].forEach(i => { c.beginPath(); c.arc(hx + i * H * 0.15, -H * 0.84, H * 0.08, 0, Math.PI * 2); c.fill(); c.stroke(); });
+    c.beginPath(); c.arc(hx, -H * 0.62, H * 0.24, 0, Math.PI * 2); c.fill(); c.stroke();
+    [-1, 1].forEach(i => {
+      const ex = hx + i * H * 0.085 + (K.lookX || 0) * 3, ey = -H * 0.64 + (K.lookY || 0) * 2;
+      c.save(); c.translate(ex, ey); c.scale(1, 1 - 0.9 * (K.blink || 0));
+      c.fillStyle = '#fff'; c.beginPath(); c.arc(0, 0, H * 0.05, 0, Math.PI * 2); c.fill();
+      c.fillStyle = '#3a3f47'; c.beginPath(); c.arc(0, 0, H * 0.028, 0, Math.PI * 2); c.fill(); c.restore();
+    });
+    if (K.talk > 0) { c.fillStyle = '#3a3f47'; c.beginPath(); c.ellipse(hx, -H * 0.52, H * 0.04, H * 0.035 * K.talk + 1, 0, 0, Math.PI * 2); c.fill(); }
+    c.restore();
+    c.save(); c.fillStyle = '#4d5560'; c.textAlign = 'center'; c.font = `700 24px ${FONT}`; c.fillText(def.name, K.x, K.y + 32); c.restore();
+  }
 
   // ---------- text overlays ----------
   const FONT = '"Fredoka", "Arial Rounded MT Bold", Arial, sans-serif', SERIF = '"Lora", Georgia, serif';
@@ -301,18 +439,85 @@
     lines.forEach((l, i) => c.fillText(l, W / 2, y + 22 + lh / 2 + i * lh));
     c.restore();
   }
-  function drawBubble(c, b, t, head, cam) {
+  // In framed shots a bubble shrinks with the zoom and goes where it covers no face: beside the speaker's face
+  // (on its usual side first), above it, or in a top corner, getting smaller until it fits.
+  function framedBubble(c, b, head, cam, F) {
+    const me = F.boxes.find(q => q.id === b.who) || { x0: head.x - 90, x1: head.x + 90, y0: head.y - 90, y1: head.y + 90 };
+    const fits = (x, y, w, h) => !F.boxes.some(q => x + w / 2 + 16 > q.x0 && x - w / 2 - 16 < q.x1 && y + h / 2 + 16 > q.y0 && y - h / 2 - 16 < q.y1);
+    // near the speaker first (getting smaller if needed), and only then the corners of the frame
+    const start = Math.round(clamp(52 - (cam.z - 1) * 7, 34, 52) / 2) * 2;
+    let last = null;
+    for (const near of [true, false]) {
+      for (let size = start; size >= 28 && !(last && last.ok); size -= 2) {
+        c.font = `700 ${size}px ${FONT}`;
+        const lines = wrap(c, b.text, 560 * size / 52);
+        if (lines.length > 3) continue;
+        const lh = size * 1.18, w = Math.max(...lines.map(l => c.measureText(l).width)) + 84 * size / 52, h = lines.length * lh + 56 * size / 52;
+        const into = (x, y) => [clamp(x, 40 + w / 2, W - 40 - w / 2), clamp(y, 40 + h / 2, H - 40 - h / 2)];
+        const sides = [b.side, -b.side];
+        const cands = near
+          ? sides.map(s => into(s > 0 ? me.x1 + 36 + w / 2 : me.x0 - 36 - w / 2, me.y0 + h / 2)).concat(
+            [into(head.x, me.y0 - 20 - h / 2)], sides.map(s => into(head.x + s * w / 2, me.y0 - 20 - h / 2)))
+          : sides.map(s => into(s > 0 ? W : 0, 0)).concat(sides.map(s => into(s > 0 ? W : 0, H)));
+        const ok = cands.find(([x, y]) => fits(x, y, w, h));
+        if (ok || !near && !last) last = { size, lines, lh, w, h, bx: (ok || cands[0])[0], by: (ok || cands[0])[1], ok: !!ok };
+      }
+      if (last && last.ok) break;
+    }
+    // the tail reaches toward the speaker but stops before the face
+    const d = Math.hypot(head.x - last.bx, head.y - last.by), e = Math.min(last.w / 2, last.h / 2), faceR = (me.x1 - me.x0) / 2;
+    last.L = clamp(d - e - faceR * 0.9, 24, 120);
+    return last;
+  }
+  // screen boxes around every visible face (and where each head is on screen, for the shoulder in an over-the-shoulder shot)
+  function faceBoxes(cam, Ks, heads) {
+    const boxes = [], at = {};
+    CAST.forEach(id => {
+      let p = toScreen(cam, heads[id]), s = KS * cam.z;
+      if (cam.ots && cam.ots.of === id) { const o = otsPlace(cam, Ks, id); p = o.head; s = o.K.s; }
+      at[id] = p;
+      if (p.x < -400 || p.x > W + 400) return;
+      boxes.push({ id, x0: p.x - 128 * s, x1: p.x + 128 * s, y0: p.y - 105 * s, y1: p.y + 120 * s });
+    });
+    return { boxes, heads: at };
+  }
+  // the shoulder in an over-the-shoulder shot: big, at the frame edge on its own side, turned toward the other
+  function otsPlace(cam, Ks, id) {
+    const K = Ks[id], on = cam.ots.on.actors[0], dir = Math.sign(Ks[on].x - K.x) || 1, s = KS * cam.z * 1.6;
+    const head = { x: dir > 0 ? W * 0.07 : W * 0.93, y: H * 0.62 };
+    return { head, K: { ...K, x: head.x, y: head.y - REG[id].head * s * K.sy, h: K.h * cam.z * 1.6, s, f: dir * 0.85, lookX: dir * 0.8, lookY: 0 } };
+  }
+  function drawOts(k, cam, Ks) {
+    const A = cam.ots.of, ax = aux.getContext('2d');
+    applyCam(k, cam, 1); CAST.forEach(id => { if (id !== A) DRAW[id](k, Ks[id]); });
+    const put = (alpha, filter) => { k.save(); k.setTransform(1, 0, 0, 1, 0, 0); k.globalAlpha = alpha; k.filter = filter; k.drawImage(aux, 0, 0); k.restore(); };
+    // as the shot moves on, the shoulder character fades back to where it really stands
+    if (cam.ots.a < 1) { ax.setTransform(1, 0, 0, 1, 0, 0); ax.clearRect(0, 0, W, H); applyCam(ax, cam, 1); DRAW[A](ax, Ks[A]); put(1 - cam.ots.a, 'none'); }
+    // close to the camera: big, soft and a little darker. It is blurred anyway, so it is drawn at half size
+    // and only on its own half of the frame, which keeps the blur quick.
+    const o = otsPlace(cam, Ks, A), hx = o.head.x < W / 2 ? 0 : W / 2, sx = half.getContext('2d');
+    sx.setTransform(1, 0, 0, 1, 0, 0); sx.clearRect(0, 0, W / 2, H / 2);
+    sx.setTransform(0.5, 0, 0, 0.5, 0, 0); DRAW[A](sx, o.K);
+    k.save(); k.setTransform(1, 0, 0, 1, 0, 0); k.globalAlpha = cam.ots.a; k.filter = 'blur(3px) brightness(0.6)';
+    k.drawImage(half, hx / 2, 0, W / 4, H / 2, hx, 0, W / 2, H); k.restore();
+  }
+  function drawBubble(c, b, t, head, cam, F) {
     if (t < b.t0 || t > b.t1) return;
     const pin = easeOutBack((t - b.t0) / 0.38), out = ease((b.t1 - t) / 0.3), a = clamp((t - b.t0) / 0.12) * out, sc = (0.35 + 0.65 * pin) * (0.92 + 0.08 * out);
     c.save(); c.setTransform(1, 0, 0, 1, 0, 0);
-    let size = 52, lines;
-    for (; size >= 34; size -= 2) { c.font = `700 ${size}px ${FONT}`; lines = wrap(c, b.text, 560); if (lines.length <= 2) break; }
-    const lh = size * 1.18, w = Math.max(...lines.map(l => c.measureText(l).width)) + 84, h = lines.length * lh + 56;
-    let bx = head.x + b.side * (w / 2 + 170 * cam.z), by = head.y - 190;
-    bx = clamp(bx, 40 + w / 2, W - 40 - w / 2); by = clamp(by, 40 + h / 2, H - 40 - h / 2);
-    if (Math.abs(bx - head.x) < w / 2 + 110 * cam.z) by = Math.max(40 + h / 2, head.y - 150 * cam.z - h / 2 - 60);
+    let size = 52, lines, lh, w, h, bx, by, L = 120;
+    if (F) {
+      head = F.heads[b.who] || head;
+      ({ size, lines, lh, w, h, bx, by, L } = framedBubble(c, b, head, cam, F));
+    } else {
+      for (; size >= 34; size -= 2) { c.font = `700 ${size}px ${FONT}`; lines = wrap(c, b.text, 560); if (lines.length <= 2) break; }
+      lh = size * 1.18; w = Math.max(...lines.map(l => c.measureText(l).width)) + 84; h = lines.length * lh + 56;
+      bx = head.x + b.side * (w / 2 + 170 * cam.z); by = head.y - 190;
+      bx = clamp(bx, 40 + w / 2, W - 40 - w / 2); by = clamp(by, 40 + h / 2, H - 40 - h / 2);
+      if (Math.abs(bx - head.x) < w / 2 + 110 * cam.z) by = Math.max(40 + h / 2, head.y - 150 * cam.z - h / 2 - 60);
+    }
     const ang = Math.atan2(head.y - by, head.x - bx), dx = Math.cos(ang), dy = Math.sin(ang), px = -dy, py = dx;
-    const ex = dx * (w / 2 - 34), ey = dy * (h / 2 - 16), L = 120, tx = ex + dx * L, ty = ey + dy * L, bw = 24;
+    const ex = dx * (w / 2 - 34), ey = dy * (h / 2 - 16), tx = ex + dx * L, ty = ey + dy * L, bw = 24;
     c.globalAlpha = a; c.translate(bx, by); c.scale(sc, sc);
     const body = () => { c.beginPath(); c.roundRect(-w / 2, -h / 2, w, h, Math.min(h / 2, 60)); };
     const tail = () => { c.beginPath(); c.moveTo(ex + px * bw, ey + py * bw); c.quadraticCurveTo((ex + tx) / 2 + px * 9, (ey + ty) / 2 + py * 9, tx, ty); c.quadraticCurveTo((ex + tx) / 2 - px * 3, (ey + ty) / 2 - py * 3, ex - px * bw, ey - py * bw); c.closePath(); };
@@ -354,19 +559,21 @@
   }
 
   // ---------- frame ----------
-  let ctx, layer;
+  let ctx, layer, aux, half;
   function render(t) {
     t = clamp(t, 0, P.duration);
-    const c = ctx, cam = camAt(t), tau = K_('tau', t);
+    const c = ctx, cam = P.shots ? camShot(t) : camAt(t), tau = K_('tau', t);
     c.setTransform(1, 0, 0, 1, 0, 0); c.globalAlpha = 1; c.globalCompositeOperation = 'source-over';
     const PN = placeAt(t);
     HP.cam = p => applyCam(c, cam, p);
     PN.draw(c, t, cam, tau, HP);
+    if (P.props && P.props.length) drawProps(c, t, tau, PN, 'base');
     c.setTransform(1, 0, 0, 1, 0, 0); c.globalCompositeOperation = 'multiply'; c.fillStyle = tod(tau, PN.grade); c.fillRect(0, 0, W, H); c.globalCompositeOperation = 'source-over';
+    if (P.props && P.props.length) drawProps(c, t, tau, PN, 'light');
     const Ks = {}; CAST.forEach(id => { Ks[id] = actorState(id, t); });
     const k = layer.getContext('2d');
     k.setTransform(1, 0, 0, 1, 0, 0); k.globalCompositeOperation = 'source-over'; k.clearRect(0, 0, W, H);
-    applyCam(k, cam, 1); CAST.forEach(id => DRAW[id](k, Ks[id]));
+    if (cam.ots) drawOts(k, cam, Ks); else { applyCam(k, cam, 1); CAST.forEach(id => DRAW[id](k, Ks[id])); }
     k.setTransform(1, 0, 0, 1, 0, 0); k.globalCompositeOperation = 'source-atop';
     k.globalAlpha = tau < 1 ? 0.06 * tau : 0.06 + 0.08 * (tau - 1); k.fillStyle = tod(tau, PN.tint); k.fillRect(0, 0, W, H);
     k.globalAlpha = 1; k.globalCompositeOperation = 'source-over';
@@ -407,9 +614,23 @@
       for (let k = 0; k < 9; k++) sparkle(c, 260 + hash(i * 31 + k) * 1400, 200 + hash(i * 31 + k + 9) * 680, 18 * a, a * 0.9, '255,214,120');
       c.restore();
     });
+    // slow motion: a soft, dreamy glow at the edges and a few drifting sparkles
+    if (P.slowmo) P.slowmo.forEach((sm, i) => {
+      const a = win(t, sm.t0, sm.t1, 0.4, 0.5); if (a <= 0) return;
+      c.save(); c.setTransform(1, 0, 0, 1, 0, 0);
+      const g = c.createRadialGradient(W / 2, H / 2, H * 0.35, W / 2, H / 2, H * 0.95);
+      g.addColorStop(0, 'rgba(255,248,230,0)'); g.addColorStop(1, `rgba(255,244,220,${0.32 * a})`);
+      c.fillStyle = g; c.fillRect(0, 0, W, H);
+      for (let k = 0; k < 14; k++) {
+        const u = ((t - sm.t0) * 0.12 + hash(i * 41 + k)) % 1;
+        sparkle(c, 120 + hash(i * 41 + k + 7) * 1680, H * (0.95 - u * 0.9), 10 + 8 * hash(k + 3), a * Math.sin(u * Math.PI) * 0.8, '255,236,170');
+      }
+      c.restore();
+    });
     P.titles.forEach(T => drawTitle(c, T, t));
     P.captions.forEach(cap => drawCaption(c, cap, t));
-    P.bubbles.forEach(b => drawBubble(c, b, t, toScreen(cam, heads[b.who]), cam));
+    const F = cam.framed ? faceBoxes(cam, Ks, heads) : null;
+    P.bubbles.forEach(b => drawBubble(c, b, t, toScreen(cam, heads[b.who]), cam, F));
     c.setTransform(1, 0, 0, 1, 0, 0);
     const vg = c.createRadialGradient(W / 2, H / 2, H * 0.45, W / 2, H / 2, H * 1.05);
     vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, `rgba(20,10,30,${0.12 + 0.07 * tau})`);
@@ -419,16 +640,44 @@
   }
 
   async function init(canvas, plan) {
-    P = plan; KS = plan.scale; CAST = plan.cast; REG = StudioCharacters.CHARACTERS;
-    PL = StudioPlaces.find(plan.meta.place) || StudioPlaces.PLACES.meadow;
+    P = plan; KS = plan.scale; CAST = plan.cast; REG = { ...StudioCharacters.CHARACTERS };
+    // picture assets (PNG files in assets/): registered from the plan, every picture loaded before drawing
+    if (plan.pictures && plan.pictures.length) { StudioPictures.register(plan.pictures); await StudioPictures.preload(plan.pictures); }
+    // places the story names that don't exist yet are shown as placeholders
+    (plan.missingPlaces || []).forEach(n => StudioPlaces.placeholder(n));
+    PL = StudioPlaces.PLACES[plan.meta.place] || StudioPlaces.find(plan.meta.place) || StudioPlaces.PLACES.meadow;
+    // extras act like small characters: drawn by their asset, or as a grey placeholder
+    Object.entries(plan.extras || {}).forEach(([id, d]) => {
+      const a = StudioAssets.ASSETS[id];
+      REG[id] = StudioAssets.extraCharacter(id, a || d);
+      DRAW[id] = a && a.draw ? (c, K) => a.draw(c, K) : (c, K) => drawExtraPlaceholder(c, K, REG[id]);
+    });
     HP = { W, H, duration: plan.duration, cam: null };
-    CAST.forEach(id => { DRAW[id] = window[REG[id].global][REG[id].draw]; });
+    CAST.forEach(id => { if (!DRAW[id]) DRAW[id] = window[REG[id].global][REG[id].draw]; });
     starSegs = plan.star.filter(s => s.type !== 'flicker').sort((a, b) => a.t0 - b.t0);
     flickers = plan.star.filter(s => s.type === 'flicker');
     ctx = canvas.getContext('2d');
     layer = document.createElement('canvas'); layer.width = W; layer.height = H;
+    aux = document.createElement('canvas'); aux.width = W; aux.height = H;
+    half = document.createElement('canvas'); half.width = W / 2; half.height = H / 2;
+    if (P.shots) buildRigs();
     await Promise.all(['700 52px Fredoka', 'italic 500 40px Lora'].map(f => document.fonts.load(f)));
     render(0);
   }
-  window.StudioFilm = { init, render };
+  // For checks: where each visible face (eyes to chin) is on screen at t, and whether the frame cuts it.
+  // The shoulder in an over-the-shoulder shot is cut on purpose and is left out.
+  function faces(t) {
+    const cam = P.shots ? camShot(t) : camAt(t), out = [];
+    CAST.forEach(id => {
+      if (!onStage(id, t) || cam.ots && cam.ots.of === id) return;
+      const K = actorBody(id, t), p = toScreen(cam, toWorld(K, K.f * 6, REG[id].head)), s = KS * cam.z;
+      const box = { x0: p.x - 90 * s, x1: p.x + 90 * s, y0: p.y - 70 * s, y1: p.y + 75 * s };
+      if (box.x1 < 0 || box.x0 > W || box.y1 < 0 || box.y0 > H) return;   // not in the picture at all
+      out.push({ id, z: +cam.z.toFixed(2), cut: box.x0 < 0 || box.x1 > W || box.y0 < 0 || box.y1 > H, box });
+    });
+    return out;
+  }
+  // For checks: a character's pose at t (facing, look, mood...), exactly as it is drawn
+  const pose = (id, t) => actorState(id, t);
+  window.StudioFilm = { init, render, faces, pose };
 })();

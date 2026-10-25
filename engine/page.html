@@ -19,6 +19,10 @@
   body.export #wrap { padding: 0; max-width: none; }
   body.export h1, body.export #controls, body.export #status { display: none; }
   body.export canvas { width: 1920px; height: 1080px; border-radius: 0; }
+  body.embed { background: #000; }
+  body.embed #wrap { padding: 0; max-width: none; }
+  body.embed h1, body.embed #controls, body.embed #status { display: none; }
+  body.embed canvas { border-radius: 0; }
 </style>
 </head>
 <body>
@@ -34,20 +38,24 @@
   <p id="status"></p>
 </div>
 <script src="characters.js"></script>
+<script src="assets.js"></script>
 <script src="places/index.js"></script>
+<script src="pictures.js"></script>
 <script src="story.js"></script>
 <script src="film.js"></script>
 <script src="audio.js"></script>
 <script>
   const qs = new URLSearchParams(location.search);
   if (qs.has('export')) document.body.classList.add('export');
+  if (qs.has('embed')) document.body.classList.add('embed');
   const $ = id => document.getElementById(id);
   const ready = (async () => {
     const plan = await (await fetch(qs.get('plan'))).json();
-    // load the drawing file of every character in the story (listed in characters.js) and every place (places/index.js)
+    // load the drawing file of every character in the story (listed in characters.js) and every asset file
+    // (props, extras and places, as found when the story was compiled)
     const load = src => new Promise((ok, fail) => { const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = fail; document.head.appendChild(s); });
-    for (const id of plan.cast) await load(StudioCharacters.CHARACTERS[id].script);
-    for (const f of StudioPlaces.FILES) await load(`places/${f}.js`);
+    for (const id of plan.cast) if (StudioCharacters.CHARACTERS[id]) await load(StudioCharacters.CHARACTERS[id].script);
+    for (const f of plan.assetFiles) await load(f);
     $('title').textContent = plan.meta.title;
     $('scrub').max = plan.duration;
     await StudioFilm.init($('film'), plan);
@@ -77,6 +85,43 @@
   $('play').onclick = play;
   $('stop').onclick = stop;
   $('scrub').oninput = e => { stop(); show(+e.target.value); };
+
+  // Embedded in the studio app (?embed=1): the app drives the player through window.PREVIEW.
+  // The sound is the whole soundtrack mixed once, offline, the same way as for the video, so it can play from any moment.
+  let mix = null, src = null, from = 0, startAt = 0, onTime = () => {};
+  async function mixed() {
+    if (mix) return mix;
+    const plan = await ready, sr = 48000, oc = new OfflineAudioContext(2, Math.max(1, Math.round(sr * plan.duration)), sr);
+    const { buffers, missing } = await StudioAudio.loadVoices(oc, plan);
+    StudioAudio.buildAudio(oc, 0, plan, buffers);
+    mix = { buffer: await oc.startRendering(), missing };
+    return mix;
+  }
+  const embedStop = () => { cancelAnimationFrame(raf); if (src) { src.stop(); src = null; } if (actx) { actx.close(); actx = null; } };
+  window.PREVIEW = {
+    ready: ready.then(p => ({ duration: p.duration })),
+    // play from t seconds; the picture follows the sound clock
+    async play(t) {
+      embedStop();
+      const plan = await ready, m = await mixed();
+      from = Math.max(0, Math.min(t, plan.duration)); actx = new AudioContext();
+      src = actx.createBufferSource(); src.buffer = m.buffer; src.connect(actx.destination);
+      startAt = actx.currentTime + 0.05; src.start(startAt, from);
+      const tick = () => {
+        if (!actx) return;
+        const now = from + Math.max(0, actx.currentTime - startAt);
+        StudioFilm.render(Math.min(now, plan.duration)); onTime(now, true);
+        if (now < plan.duration) raf = requestAnimationFrame(tick); else { embedStop(); onTime(plan.duration, false); }
+      };
+      raf = requestAnimationFrame(tick);
+      return m.missing;
+    },
+    pause() { embedStop(); },
+    async seek(t) { embedStop(); const plan = await ready; StudioFilm.render(Math.max(0, Math.min(t, plan.duration))); onTime(t, false); },
+    onTime(cb) { onTime = cb; },
+    // the current frame as a PNG (data URL), full size
+    still: () => $('film').toDataURL('image/png'),
+  };
 </script>
 </body>
 </html>

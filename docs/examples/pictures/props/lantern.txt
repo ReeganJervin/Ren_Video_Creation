@@ -1,0 +1,5 @@
+size: small
+height: 95
+hold: one paw
+glow: yes
+credit: test picture made by Claude Code

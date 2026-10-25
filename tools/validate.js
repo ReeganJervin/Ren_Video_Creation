@@ -31,14 +31,16 @@ function validate(plan, files) {
   };
   const late = [], overlap = [];
   plan.voice.forEach((vc, i) => {
+    const n = plan.voice[i + 1], end = vc.t + vc.len;
+    if ((n && end > n.t - 0.05) || end > D - 0.5) overlap.push(`line ${vc.line}`);
+    if (vc.missing) return;   // no voice made yet (a placeholder extra): nothing to hear
     const expected = vc.t + leadIn(path.join(files.root, vc.file));
     let onset = null;
     for (let k = Math.max(0, Math.floor((vc.t - 0.3) / 0.01)); k < Math.min(env.length, Math.floor((expected + 0.6) / 0.01)); k++) if (env[k] > -40) { onset = k * 0.01; break; }
     if (onset === null || Math.abs(onset - expected) > 0.1) late.push(`line ${vc.line} (speech expected ${expected.toFixed(2)} s, heard ${onset === null ? 'nothing' : onset.toFixed(2) + ' s'})`);
-    const n = plan.voice[i + 1], end = vc.t + vc.len;
-    if ((n && end > n.t - 0.05) || end > D - 0.5) overlap.push(`line ${vc.line}`);
   });
-  check('Voices start on time', !late.length, late.length ? `off: ${late.join('; ')}` : `${plan.voice.length} lines, speech heard within 0.1 s of plan`);
+  const heard = plan.voice.filter(v => !v.missing).length;
+  check('Voices start on time', !late.length, late.length ? `off: ${late.join('; ')}` : `${heard} lines, speech heard within 0.1 s of plan${heard < plan.voice.length ? ` (${plan.voice.length - heard} without a voice yet)` : ''}`);
   check('No overlapping or cut-off voices', !overlap.length, overlap.length ? `problem: ${overlap.join(', ')}` : 'every line ends before the next starts and before the ending');
 
   // text boxes hold their voice lines (bubbles belong to the characters' lines, in order)
@@ -62,10 +64,20 @@ function validate(plan, files) {
   const L = JSON.parse(ln.slice(ln.lastIndexOf('{'), ln.lastIndexOf('}') + 1));
   check('Loudness, no clipping', +L.input_i >= -22 && +L.input_i <= -13 && +L.input_tp < -1, `${L.input_i} LUFS, true peak ${L.input_tp} dBTP`);
   const eb = spawnSync(ffmpeg, ['-hide_banner', '-i', files.mp4, '-af', 'ebur128=metadata=1,ametadata=print:key=lavfi.r128.S', '-f', 'null', '-'], { encoding: 'utf8', maxBuffer: 1 << 28 }).stderr;
+  // Limit 2.5 LU (raised from 2.0 with the owner's approval on 2026-10-25: with the new, livelier voices a loud
+  // word after a quiet moment in a long story reaches about 2.5, which the owner listened to and found fine).
+  // Moments between 2.0 and 2.5 are listed as a NOTE so they stay visible.
   const pts = [...eb.matchAll(/pts_time:([\d.]+)/g)].map(m => +m[1]), S = [...eb.matchAll(/lavfi\.r128\.S=(-?[\d.]+)/g)].map(m => +m[1]);
-  const st = S.filter((_, i) => pts[i] >= 4 && pts[i] <= D - 3);
-  let step = 0; for (let i = 1; i < st.length; i++) step = Math.max(step, Math.abs(st[i] - st[i - 1]));
-  check('No sudden volume changes', !st.length || step < 2.0, st.length ? `largest 0.1 s change in short-term loudness: ${step.toFixed(2)} LU` : 'too short to measure');
+  const idx = S.map((_, i) => i).filter(i => pts[i] >= 4 && pts[i] <= D - 3);
+  let step = 0; const near = [];
+  for (let k = 1; k < idx.length; k++) {
+    const d = Math.abs(S[idx[k]] - S[idx[k - 1]]);
+    step = Math.max(step, d);
+    if (d >= 2.0 && d <= 2.5 && !near.some(n => Math.abs(n.t - pts[idx[k]]) < 2)) near.push({ t: pts[idx[k]], d });
+  }
+  const clock = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+  R.push({ ok: !idx.length || step <= 2.5, note: near.length > 0 && step <= 2.5, name: 'No sudden volume changes',
+    detail: idx.length ? `largest 0.1 s change in short-term loudness: ${step.toFixed(2)} LU (limit 2.5)${near.length ? `; between 2.0 and 2.5 at ${near.map(n => `${clock(n.t)} (${n.d.toFixed(2)})`).join(', ')}` : ''}` : 'too short to measure' });
   const mw = readWav(files.master), ms = mw.samples(), msr = mw.rate;
   const head = db(ms, 0, Math.round(0.1 * msr)), tail = db(ms, ms.length - Math.round(0.25 * msr), ms.length);
   check('Music fades in and out cleanly', head < -35 && tail < -50, `first 0.1 s ${head.toFixed(1)} dB, last 0.25 s ${tail.toFixed(1)} dB`);

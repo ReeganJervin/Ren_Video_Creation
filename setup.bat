@@ -30,15 +30,17 @@ if not defined PY (
 echo  Using Python: %PY%
 
 echo.
-echo  [1/4] Installing video tools (Node packages)...
+echo  [1/5] Installing video tools (Node packages)...
 call npm install --no-audit --no-fund || goto :failed
 
 echo.
-echo  [2/4] Installing the browser used for drawing frames...
+echo  [2/5] Installing the browser used for drawing frames...
 call npx playwright install chromium || goto :failed
+rem the screen recorder, only used by the studio app's tests (small; setup carries on without it)
+call npx playwright install ffmpeg >nul 2>nul
 
 echo.
-echo  [3/4] Installing the voice tool (Python)...
+echo  [3/5] Installing the voice tool (Python)...
 if not exist ".venv\Scripts\python.exe" (
   %PY% -m venv .venv || goto :failed
 )
@@ -46,12 +48,20 @@ if not exist ".venv\Scripts\python.exe" (
 ".venv\Scripts\python.exe" -m pip install -r requirements.txt || goto :failed
 
 echo.
-echo  [4/4] Downloading the voice model (about 120 MB, once)...
+echo  [4/5] Downloading the voice model (about 120 MB, once)...
 node tools\download-models.js || goto :failed
+
+echo.
+echo  [5/5] Installing the studio app...
+pushd studio
+call npm install --no-audit --no-fund || (popd & goto :failed)
+call npm run build || (popd & goto :failed)
+popd
 
 echo.
 echo  ===== All set! =====
 echo  Try it:  make-video.bat stories\the-fallen-star.txt
+echo  Or double-click "Kitsu Studio.bat" to write and make videos in your browser.
 echo.
 pause
 exit /b 0

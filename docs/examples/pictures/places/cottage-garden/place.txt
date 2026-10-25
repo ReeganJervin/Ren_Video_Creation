@@ -1,0 +1,3 @@
+ground: 0.85
+ambient: birds
+credit: test picture made by Claude Code

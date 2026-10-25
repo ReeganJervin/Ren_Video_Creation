@@ -1,21 +1,43 @@
-# Kitsu Studio: Engine Foundation Roadmap (F1–F8)
+# Kitsu Studio: Engine Foundation Roadmap (F1–F10), version 2
 
 > **For Claude Code.** This is the implementation plan for upgrading Kitsu Studio into a production engine for the series **"Ren & Yuki: The Secrets Beyond the Enchanted Forest"**: 10 episodes of 8–10 minutes, plus Shorts.
 > **Read first:** `HANDOFF.md` (the current engine, status and way of working) and `PRODUCTION-SYSTEM.md` (the three video formats).
 > **Owner:** not a programmer, on Windows. They review every step from images and reports.
+> **Version 2 (2026-10-25):** adds the big picture (section 0.5), the Asset Kit (F4, detailed in `ASSET-KIT.md`), the Studio App (F9, detailed in `STUDIO-APP.md`), the World system (F10), rules R12–R14 (including quick and full test levels), and a **build order** that no longer follows the F-numbers exactly.
 
 ---
 
 ## 0. How to use this file
 
-1. **Do one feature (F1, F2, …) at a time, in order,** in a fresh chat if possible. Start each session with:
-   *"Read HANDOFF.md, PRODUCTION-SYSTEM.md and ENGINE-ROADMAP.md. Implement the next feature whose status is 'Not started', beginning with Part A."*
+1. **Do one step at a time, in the build order of section 2** (not in F-number order), in a fresh chat if possible. Start each session with:
+   *"Read HANDOFF.md, PRODUCTION-SYSTEM.md and ENGINE-ROADMAP.md. Implement the next step in the build order (section 2) whose status is 'Not started'. Read its detail file if it has one."*
 2. **Every feature has Part A and Part B.**
    - **Stop for the owner's review after Part A,** and again after Part B.
    - **Never start Part B, or the next feature, without explicit approval.**
 3. **Commit Part A and Part B separately** after approval, using the commit message given in each section.
 4. **When a feature is approved, update the status table (section 2)** and the "Current status" section of `HANDOFF.md`.
 5. **If something in this file conflicts with the code,** the code is the truth. Explain the conflict, then adapt the plan.
+
+---
+
+## 0.5 The big picture: building a whole world, bit by bit
+
+The goal is not a video maker with a fixed set of things. It's a **world-building studio**: every episode can add something new to the Ren & Yuki world, and once something exists, every later story can use it. Each feature in this roadmap fills one of four layers:
+
+| Layer | What it holds | Built by |
+|---|---|---|
+| **1. Engine** | Drawing, movement, camera, sound, rendering, checks | F1 long episodes, F2 camera, F3 Rig 2.0, F6 effects, F7 vertical |
+| **2. Library** | Everything that can appear in a story: characters, extras (simple animals), places, props, set pieces, voices, music moods, sound effects | F4 Asset Kit, F5 places and lighting, F8 creature kit |
+| **3. World** | What is *true* in the world: who everyone is, where places are, which items exist, what happened in earlier episodes | F10 World system |
+| **4. Studio** | How the owner works: editor, preview, rendering, Shorts, publishing files | F9 Studio App, F7 Shorts workflows |
+
+**The growth loop**, which every new story follows:
+1. Write the story using any names, even for things that don't exist yet.
+2. The checker lists what's missing (F4).
+3. Create the missing things with `/new-asset` or a picture (F4), or with a bigger feature if it's a new kind of thing.
+4. The new thing joins the library and the world, and every later story can use it.
+
+**When a story needs something no layer can do yet** (a new kind of action, a weather type, a new kind of effect), don't fake it in the story. Add it as a small, separate step to this roadmap, with Part A and Part B, in the same format.
 
 ---
 
@@ -34,6 +56,32 @@
 | R9 | **Windows first:** `.bat` files keep CRLF line endings (enforced by `.gitattributes`); messages to the owner stay simple and friendly. |
 | R10 | **Performance:** a new feature must not make rendering more than about 10% slower without saying so and explaining why. |
 | R11 | **No fighting or violence.** Danger is shown through suspense, chases, hiding and puzzles. Every video stays suitable for children. |
+| R12 | **Everything new goes into a registry, never hard-coded.** Characters, extras, places, props, voices, music moods and sounds are each one entry or one file in their registry, found automatically. A story or the engine core must never contain a one-off drawing. This is what lets the world keep growing. |
+| R13 | **One engine, many front ends.** The CMD tools (`check-story.bat`, `preview.bat`, `make-video.bat`) keep working forever. The Studio App (F9) and Claude Code skills only *call* the engine; they never copy its logic. |
+| R14 | **Quick tests per step, full tests at milestones.** See "Test levels" below. Never render a long video just to test a single step. |
+
+### Test levels
+
+**Quick test: every Part A and Part B stop.** Aim for under 15–20 minutes in total.
+1. `--check` on every story (seconds).
+2. **R1 by frames, not by videos:** compare the 12 frames per story and the timing data. Don't render the old stories as full videos.
+3. **One short demo story, 1–2 minutes long,** that uses the new feature. Render it in full and run all 10 checks on it. The demo stories in this roadmap (camera-demo, treasure-demo and so on) must be kept to **2 minutes or less**.
+4. Stills and frame strips for the visual review.
+5. Reuse the voice cache. Never delete `cache/` to test.
+
+**Full test: at each milestone only.** A milestone comes every 3–4 steps of the build order:
+- **Milestone 1:** after step 4 (F2, F4 A–C, F9 A)
+- **Milestone 2:** after step 7 (F3, F4 D, Episode 1)
+- **Milestone 3:** after step 10 (F5, F6, F7)
+- **Milestone 4:** after step 13 (F9 B, F10, F8)
+
+A full test means:
+1. Render **every** example story in `stories/` as a full video. All 10 checks must pass on each.
+2. Render the 12-minute stress test (`stories/test-12min.txt`) and report the time and memory.
+3. Do R1 by frames against the commit from the previous milestone.
+4. Write a short milestone report: what passed, what failed, the render times.
+
+**Exception:** if a step changes rendering itself, audio, the voice step or the joining of chunks, also render the 12-minute test at that step. Some problems only show up in long videos. Say so in the review package.
 
 **Review package**, included at every stop:
 1. a summary of what changed
@@ -43,20 +91,40 @@
 5. the image paths
 6. open questions and decisions you made yourself
 
+**How the rules are checked (tools added during F1 and F2):**
+- **R1:** `node tools/compare-engines.js` compares every story in `stories/` against the last commit: the timing plan and 12 frames pixel by pixel (R14: no full videos). `--only <story>` checks one story. `--sound` also compares the music and effects soundtrack (slow on long stories; use it when a step changes audio). Soundtracks count as the same when no sample differs by more than 2 in 32768, because the browser's reverb is not bit-exact between runs (about -100 dB).
+- **R3, one check changed with the owner's approval (2026-10-25):** "No sudden volume changes" fails only above **2.5 LU** (it was 2.0). Moments between 2.0 and 2.5 are listed in the report as a NOTE, so they stay visible. **Why:** the owner's new voices (Ren `am_puck`, Yuki and narrator blends) are livelier, and in long, dialogue-heavy stories a loud word after a quiet moment reaches about 2.5 LU. The owner listened to the loudest such moment (a 10-second clip from the 12-minute test) and found it fine. At the same time, every voice line got volume-matching and a soft start, and place sounds became half as loud at night and under calm or bedtime music.
+- **R4:** frames are drawn by the browser in software mode (`tools/browser.js`, `launch({ exact: true })`), because drawing with the graphics card is not pixel-repeatable. `make-video` always uses this mode.
+
 ---
 
-## 2. Status
+## 2. Status and build order
 
-| Feature | Status | Commit(s) |
-|---|---|---|
-| F1 Long episodes (scenes, music moods, chapters, fast rendering) | Done (approved) | F1A, F1B (branch `Improvment`) |
-| F2 Camera and editing | Not started | |
-| F3 Rig 2.0 (joints, movement library, lip-sync) | Not started | |
-| F4 Prop system | Not started | |
-| F5 Lighting and indoor places (cave kit) | Not started | |
-| F6 Magic and comedy effects | Not started | |
-| F7 Vertical 9:16 and Shorts | Not started | |
-| F8 Creature kit (new characters) | Not started | |
+Work through the steps **in this order**. The F-numbers are names, not the order.
+
+| Step | Feature | Status | Commit(s) |
+|---|---|---|---|
+| 1 | F1 Long episodes (scenes, music moods, chapters, fast rendering) | Done | `7ff0e59` (F1A), `97a1ecd` (F1B) |
+| 2 | F2 Camera and editing | Done | `a2ca81a` (F2A), `87030e1` (F2B) |
+| 3 | F4 Asset Kit, Parts A–C: registry and missing list, picture drop-in, `/new-asset` (`ASSET-KIT.md`) | Done (Parts A–C approved) | `272fba8` (F4A), `5dcf1ef` (F4B), F4C (see git log) |
+| 4 | F9 Studio App, Part A: editor, live check, preview, render with progress (`STUDIO-APP.md`) | Done (approved) | F9A (see git log) |
+| 5 | F3 Rig 2.0 (joints, movement library, lip-sync) | Not started | |
+| 6 | F4 Asset Kit, Part D: prop acting and Season 1 props (needs F3) | Not started | |
+| 7 | **Episode 1:** remake `episode-01-the-day-our-adventure-began.txt` with the `# LATER:` lines upgraded | Not started | |
+| 8 | F5 Lighting and indoor places (cave kit) | Not started | |
+| 9 | F6 Magic and comedy effects | Not started | |
+| 10 | F7 Vertical 9:16 and Shorts | Not started | |
+| 11 | F9 Studio App, Part B: voices, library, videos, Shorts screens | Not started | |
+| 12 | F10 World system (world bible, continuity, series memory) | Not started | |
+| 13 | F8 Creature kit (new main characters) | Not started | |
+
+**Why this order:**
+- **The Asset Kit comes early,** because every new story needs new things, and the Studio App shows its missing list.
+- **The Studio App comes early,** so the owner can write and preview in the browser as soon as possible.
+- **Rig 2.0 comes before prop acting,** so holding and carrying are built once on the new rig.
+- **Episode 1** is made as soon as its missing actions (sitting, crouching, the leaf, paw touch) exist.
+
+All work is committed on the git branch `Improvment` (never directly on `main`).
 
 ---
 
@@ -107,6 +175,14 @@
 
 **Commit message:** `F1B: parallel and chunked rendering, resume, 12-minute stress test`
 
+### As built (changes and decisions made during F1, approved by the owner)
+- **Scenes:** lines before the first `scene:` line become an opening scene named after the story title. When a scene's first lines change the place, its `time:` switches while the page is white, instead of the usual 4-second sky change.
+- **Music:** before the first `music:` line of a story that uses moods, the music is `happy` (the classic tune). Stories without `music:` lines keep the classic music code exactly.
+- **Rendering:** chunks are scenes, and long scenes are split into pieces of at most 60 s. Frames are captured in the page (`toDataURL`) and encoded with x264 `veryfast` at CRF 18: twice as fast as `medium`, and it looks the same on flat cartoon colours (SSIM 0.997). `resume-video.bat` was added for the owner, and the soundtrack is also kept on `--resume` when nothing changed. If Playwright's browser can't be installed, `tools/browser.js` uses the installed Chrome or Edge.
+- **Measured on the owner's laptop** (Intel i3, 2 cores, 8 GB): 3 workers draw about 1.4× faster than 1 and about 2.5× faster than the old method; an 11-minute episode renders in about 30 minutes; peak memory about 2.1 GB.
+- **Sound (owner-approved change to every story's soundtrack):** the music comes up a little in the pauses between lines and dips under speech, so long episodes pass the "No sudden volume changes" check. The final music fade-out is curved, and the star's "arrival" chime is softer. Pictures and timing of existing stories did not change.
+- **`stories/test-12min.txt`** ended up at about 11 minutes and about 200 lines, with no `wait` lines (a pause before a loud line trips the volume check).
+
 ---
 
 ## F2: Camera and editing
@@ -134,6 +210,14 @@
 
 **Commit message:** `F2A: shot types, cuts and camera moves`
 
+**As built (F2A):**
+- A shot without `on …` frames whoever acted or spoke last (a wide shot frames everyone). Shots follow moving characters smoothly. Moves in a row build on each other (e.g. `pull out` then `follow`).
+- The old `camera: wide | close | closer` lines are unchanged in stories without shots; in stories with shots they glide like the new moves.
+- **Over the shoulder is a 2D trick** until F3 adds a back view: the shoulder character is drawn big, soft and darker at the frame edge, turned toward the other character.
+- Speech bubbles in shots shrink with the zoom and try spots beside or above the speaker before the frame corners; they never cover a face, and the tail stops before the face.
+- **R10:** stories with shots draw about 15% slower. The camera's own work is about 1%; the rest is close-ups painting more pixels. Stories without shots are not affected.
+- Example story: `stories/test-camera.txt`.
+
 ### Part B: automatic editing and timing
 1. **Automatic coverage, optional:**
    - `editing: auto` at the top of a story. During conversations the engine picks shots automatically: a medium two-shot to set up, close-ups on the speaker, and quick reaction shots on surprised, shy or sad moods.
@@ -152,6 +236,15 @@
 - no face is cut off in any of the 30 stills sampled from the demo
 
 **Commit message:** `F2B: automatic editing, beats, slow motion, reveals`
+
+**As built (F2B):**
+- Automatic editing rules: wide for entrances, walks, exits, hugs and the narrator; a medium two-shot to start a conversation; a close-up on each new speaker; a 1-cut reaction shot of the listener after a surprised, shy or sad line; never more than about one cut a second. A manual shot or camera line holds until the next character line has been spoken, and no automatic cut lands less than 1 s before a manual one.
+- `slow motion N` stretches everything the next action creates so it takes about N seconds (never faster than normal), with a soft dreamy glow. `beat` is a 0.6 s pause.
+- `reveal: the star` frames the star together with everyone watching it; `reveal: <name>` pushes in close; `reveal: <place>` turns the page if needed, then pulls back from the characters to the whole place. A gentle magical swell plays under every reveal.
+- In a shot of one character, nobody else's face is ever half in the frame (it is slid fully in or fully out). In an extreme close-up this wins over look room.
+- Acceptance: a face check (`StudioFilm.faces(t)`) over the whole demo, every 0.1 s: no face cut off in any framed shot.
+- **Voices (owner-approved):** every voice line is volume-matched to -22 LUFS with a 0.4 s soft start (also the owner's recordings), and place sounds are half as loud at night and under calm or bedtime music. The volume check limit became 2.5 LU (see section 1).
+- Demo: `stories/camera-demo.txt` (97 s).
 
 ---
 
@@ -200,6 +293,7 @@
    - `<name> covers its eyes`
    - `<name> stretches`, `<name> yawns`
    - `<name> sighs`
+   - **Needed by Episode 1:** `<name> crouches` and `<name> stands up` (from a crouch), `<name> counts on its paws`, `<name> writes in the air`, `<name> holds out its paw`, `<name> touches paws with <name>`, `<name> wobbles` (a small loss of balance, then recovers), `<name> stretches its paws wide`, `<name> leans closer`
    - Yuki keeps hopping instead of walking, and her runs are fast hops.
 2. **Blending:** smooth transitions between actions (about 0.15–0.3 s blends), with no popping.
 3. **Real lip-sync:**
@@ -217,67 +311,23 @@
 
 ---
 
-## F4: Prop system
+## F4: Asset Kit (replaces the old "Prop system")
 
-**Goal:** treasure hunting needs objects. Any prop can appear, be held, carried, used, given, put down, opened or glow.
+**Goal:** when a story needs something new, such as a house, an animal, an object or a place, adding it is quick and easy. The checker lists what's missing, placeholders allow a preview straight away, and each missing thing is created with a picture or the `/new-asset` Claude Code command.
 
-### Part A: props and their drawings
-1. **Prop list** in `engine/props/`, one file per prop, like the place list. Each prop defines:
-   - its drawing
-   - its size
-   - where it's held (one paw or both)
-   - its states, for example closed and open
-   - optional glow
-   - its sounds
-2. **Season 1 starter props:**
-   - golden coin (with the tree symbol)
-   - legendary sword (with runes that can glow)
-   - old map (it unrolls, and can show marks)
-   - treasure chest (closed, open, overflowing)
-   - pile of gold
-   - lantern
-   - ancient book
-   - artefact orb
-   - stone door (closed, open)
-   - lever
-   - shiny pebble
-   - cookie
-   - umbrella
-   - flower
-   - Keep the existing star and heart working exactly as now.
-3. **Style:** the same line weight and palette as the characters. Every prop must work in all four times of day and in dark scenes (ready for F5).
+**The full specification is in `ASSET-KIT.md`.** It has four parts:
+- **Part A:** asset registry, missing list, placeholders (`F4A`)
+- **Part B:** picture drop-in for props, extras and places (`F4B`)
+- **Part C:** style guide, `/new-asset` skill, first four assets (`F4C`)
+- **Part D:** prop acting and the Season 1 props. **Do this after F3.** (`F4D`)
 
-**Part A review:** a sheet showing every prop in each state, at character scale next to Ren and Yuki, by day and at night.
-
-**Commit message:** `F4A: prop registry and Season 1 props`
-
-### Part B: prop actions
-1. **Story lines** (`<prop>` = the prop's name, optionally with "the"):
-   - `<prop> appears at left|center|right|on the ground|in the sky`
-   - `<name> finds the <prop>` (an excited reaction, with a sparkle)
-   - `<name> picks up the <prop>`, `<name> holds up the <prop>` (a proud pose)
-   - `<name> carries the <prop>` (walking with it; heavy props slow the character down)
-   - `<name> gives the <prop> to <name>`
-   - `<name> puts down the <prop>`
-   - `<name> drops the <prop>` (a comic drop with a sound)
-   - `<name> opens the <prop>` and `<name> closes the <prop>`
-   - `<name> uses the <prop> on the <prop>` (for example the coin on the stone door)
-   - `<name> pulls the <prop>` (a lever)
-   - `the <prop> glows` and `the <prop> stops glowing`
-   - `the <prop> opens`
-   - `the <prop> disappears`
-   - `the map shows <text>` (a mark or label appears on the map)
-2. **Clear errors for impossible actions,** for example *"Line 22: Ren isn't holding the sword."* or *"Line 30: there is no chest here."*
-3. **Props carry over** between scenes and places when held, and stay where they were left otherwise.
-4. **Docs and example:** STORY-GUIDE.md section "Props", plus `stories/treasure-demo.txt`, a mini treasure hunt of about 2 min that uses most props.
-
-**Acceptance:** the demo passes all checks, R1 holds, and the error messages are tested with a deliberately broken story.
-
-**Commit message:** `F4B: prop actions, continuity and errors`
+It includes everything the old F4 promised: the prop registry, the Season 1 starter props, the prop actions and the error messages.
 
 ---
 
 ## F5: Lighting and indoor places (cave kit)
+
+> **Uses the Asset Kit (F4):** new caves and indoor places are registered as places, and cave objects as props or set pieces. Don't build a separate list.
 
 **Goal:** half of Season 1 happens underground or indoors.
 
@@ -414,6 +464,8 @@ Each effect has its own sound and uses the lighting system from F5. All of them 
 
 ## F8: Creature kit (new characters)
 
+> **Uses the Asset Kit (F4):** a simple creature can start as an *extra* and be upgraded to a full character here, keeping its name and voice.
+
 **Goal:** add the Season 1 cast quickly. **Do this only after the owner confirms that Episodes 1–3 are in production.**
 
 ### Part A: the kit, plus the first two creatures
@@ -441,9 +493,48 @@ Each effect has its own sound and uses the lighting system from F5. All of them 
 
 ---
 
-## After F1–F8
+## F9: Studio App (the browser front end)
 
-1. Write the **lore bible** and the **Episode 1 script** in the story template.
-2. Do a **production feasibility review:** list any line the engine still can't do and plan small additions.
-3. Make **Episode 1** at about 6–8 minutes, review it, then produce Episodes 2–3 as one block.
-4. Throughout, publish **independent Shorts** (F7) while the episodes are in production.
+**Goal:** the owner does everything in a web browser on their own computer instead of CMD: write, check, preview, render, and manage voices, assets and videos.
+
+**The full specification is in `STUDIO-APP.md`.**
+- **Part A** (build-order step 4): editor, live check, preview and render with progress.
+- **Part B** (build-order step 11): voices, library, videos and Shorts screens.
+
+---
+
+## F10: World system (world bible, continuity, series memory)
+
+**Goal:** the engine knows what's *true* in the Ren & Yuki world, so a whole season stays consistent, and each episode can build on the last.
+
+### Part A: the world as data
+1. **A `world/` folder** of simple text files the owner can read and edit in Notepad:
+   - `world/characters/<name>.txt`: who they are, personality, how they talk, catchphrases, likes and fears, relationships, voice. This links to the registry entry; it doesn't replace it.
+   - `world/places/<name>.txt`: what the place is like, what's near it, which places connect to it, its secrets.
+   - `world/items/<name>.txt`: important story items (the golden coin, the legendary sword): what they do, who has them.
+   - `world/lore.txt`: the rules of the world (magic, history, the Enchanted Forest's secrets).
+   - `world/season-1.txt`: the episode list, each with a one-line summary, its status and its story file.
+2. **Every name in a world file must exist in the library,** or be marked `planned`. `--check` warns about mismatches, e.g. *"world/items/golden-coin.txt: there is no prop called golden coin yet."*
+3. **`world-check.bat`** checks the whole world folder and lists everything that's planned but not built, by episode. This is the to-do list for the season.
+
+**Part A review:** the world folder filled in for Season 1 from the owner's series bible, with the `world-check` output.
+
+**Commit message:** `F10A: world bible as data, world-check`
+
+### Part B: continuity and series memory
+1. **Episode start and end state:** each episode's plan records the state at the end: who holds which item, which places are discovered, which doors are open, relationships. The next episode can start from that state with `continues: e01`.
+2. **Continuity checks:** for example *"Line 40: Ren gave the golden coin to Yuki in Episode 2, but Ren is holding it here."* or *"The stone door was opened in Episode 3, but it's closed here."* These are warnings the owner can accept, never hard errors.
+3. **Recaps:** `recap: e01-e02` creates a "Previously on Ren & Yuki" opening from scenes marked `recap: yes` in earlier episodes, re-rendered with a short narration.
+4. **Story helper (optional):** a Claude Code skill `/draft-episode` that reads the world folder and the episode summary and writes a first draft in the story language, with the missing-assets list. **A human always edits the draft.**
+
+**Acceptance:** two short linked test episodes, where the second continues from the first. Show a deliberate continuity mistake being caught, and a recap that passes all checks.
+
+**Commit message:** `F10B: continuity, series memory, recaps`
+
+---
+
+## After the roadmap
+
+1. The roadmap is a living document. When a story needs something new, add a small step here (see section 0.5) rather than faking it.
+2. Produce Episodes 2–3 as one block, then keep the cycle going: **write → missing list → create → check → render → publish.**
+3. Throughout, publish **independent Shorts** (F7) while the episodes are in production.
