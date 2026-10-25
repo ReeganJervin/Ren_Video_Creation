@@ -29,7 +29,7 @@ Kitsu Studio turns a story written as a plain text file into a finished animated
 
 1. Follow the **build order** in `ENGINE-ROADMAP.md` section 2, one part at a time, and **stop for the owner's review** after every part, with the full review package (roadmap section 1).
 2. **Never commit to `main`.** Commit only on the branch **`Improvment`**, and only after the owner approves, with the roadmap's commit message.
-3. Check rule R1 with `node tools/compare-engines.js` (compares every story with the last commit). Check R2 with `--check` on every story.
+3. Test as rule **R14** says: a quick test at every review stop (`--check` on every story; R1 with `node tools/compare-engines.js`, which compares 12 frames and the timing of every story with the last commit; one demo of 2 minutes or less, rendered with all checks). Full renders of every story and the 12-minute test only at milestones, or when a step changes rendering, audio, voices or chunk joining.
 4. Look at your own stills before showing the owner (R7). Put review images in the session's scratchpad and give their full paths.
 5. Keep messages to the owner short, simple and friendly.
 
