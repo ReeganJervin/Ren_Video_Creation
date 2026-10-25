@@ -2,9 +2,9 @@
 
 > **For Claude Code.** This is the detail file for **F9** in `ENGINE-ROADMAP.md`.
 > - **Part A** is build-order step 4. It needs F1 (done) and Asset Kit Part A.
-> - **Part B** is build-order step 11.
+> - **Part B** is build-order step 16.
 >
-> **Read first:** `HANDOFF.md`, `PRODUCTION-SYSTEM.md`, `ENGINE-ROADMAP.md`, `ASSET-KIT.md`. Global rules **R1–R14** and the review package apply.
+> **Read first:** `HANDOFF.md`, `PRODUCTION-SYSTEM.md`, `ENGINE-ROADMAP.md`, `ASSET-KIT.md`. Global rules **R1–R15** and the review package apply.
 > **Owner:** not a programmer, on Windows. They review every step from screenshots and reports.
 
 ---
@@ -129,4 +129,4 @@
 
 ## Prompt to give Claude Code (for Part A, at build-order step 4)
 
-> Read HANDOFF.md, PRODUCTION-SYSTEM.md, ENGINE-ROADMAP.md, ASSET-KIT.md and STUDIO-APP.md. Implement STUDIO-APP.md Part A only, follow rules R1–R14, and stop for my review with the full review package.
+> Read HANDOFF.md, PRODUCTION-SYSTEM.md, ENGINE-ROADMAP.md, ASSET-KIT.md and STUDIO-APP.md. Implement STUDIO-APP.md Part A only, follow rules R1–R15, and stop for my review with the full review package.

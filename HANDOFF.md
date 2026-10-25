@@ -8,7 +8,7 @@
 Kitsu Studio turns a story written as a plain text file into a finished animated video (1920×1080, 30 fps) starring **Ren** the fox and **Yuki** the bunny, with narration, character voices, music, sound effects and speech bubbles. It is being built into a production engine for the series **"Ren & Yuki: The Secrets Beyond the Enchanted Forest"** (10 episodes of 8–10 minutes, plus Shorts).
 
 - How to use it: `README.md`. Every story line: `STORY-GUIDE.md`.
-- The plan: `ENGINE-ROADMAP.md` (version 2), with the detail files `ASSET-KIT.md` (F4) and `STUDIO-APP.md` (F9).
+- The plan: `ENGINE-ROADMAP.md` (version 3.1), with the detail files `ASSET-KIT.md` (F4) and `STUDIO-APP.md` (F9).
 - `PRODUCTION-SYSTEM.md` (the three video formats) is referred to by the roadmap but is not in the project yet.
 
 ## How the engine works
@@ -35,10 +35,14 @@ Kitsu Studio turns a story written as a plain text file into a finished animated
 
 **Owner-approved exceptions to the rules:** the "No sudden volume changes" check fails only above 2.5 LU (was 2.0), with 2.0–2.5 shown as a NOTE. Approved 2026-10-25 after the owner listened to the loudest moment of the 12-minute test; the reason is the livelier new voices. Details in `ENGINE-ROADMAP.md` section 1.
 
+**Audience and content (roadmap section 0.6, rules R11 and R15):** Ren & Yuki is a **family show, for kids and adults together**. The look stays cute and soft; the stories can be deep: real emotions (loneliness, fear, loss, courage, growing up), mystery and lore across episodes, suspense, danger and big magic, witty dialogue and running jokes. **Never:** fighting or violence, gore, horror or jump scares, swearing, crude or mean-spirited humour. Danger is shown through suspense, chases, hiding, puzzles and courage. Romance between Ren and Yuki stays sweet and innocent. Every feature needs a convincing serious range (sad, scared, mysterious, epic), not only a cute one; when in doubt, show the owner both versions. Whether a video is "Made for Kids" on YouTube is the owner's choice for each video; the engine never assumes it.
+
 **Notes about the owner's computer:** an Intel i3 laptop with 2 cores and 8 GB of memory that slows itself down when hot, so speed measurements vary a lot; compare runs side by side. Playwright's own browser could not be downloaded there, so the installed Chrome is used automatically.
 
 ## Current status
 
 - **Next step:** see the **build order in `ENGINE-ROADMAP.md` section 2**. The first step there whose status isn't "Done" is the one to work on.
-- Right now: **F1 and F2 are done, and F4 Parts A–B** (asset registry, missing list, placeholders, picture drop-in). F4 **Part C** (style guide, `/new-asset` skill, the first four assets: lantern, cottage, cottage garden, owl) is done and approved. **F9 Studio App Part A** (`STUDIO-APP.md`) is done and approved: `Kitsu Studio.bat` starts it, the code is in `studio/`, tests in `studio/tests/`.
-- After that: **milestone 1** (full test, rule R14), then F3 Rig 2.0.
+- Done: **F1, F2, F4 Parts A–C and F9 Part A** (build-order steps 1–4). The first four assets are the lantern, cottage, cottage garden and owl; the studio app starts with `Kitsu Studio.bat` (code in `studio/`, tests in `studio/tests/`).
+- Right now: **Milestone 1** (step 5): every story rendered in full with all checks, the 12-minute test with its time and memory, R1 against the previous milestone, a short report, and one of the owner's real stories (ask which one).
+- Then: **F11 YouTube kit**, then **F7 Vertical and Shorts** (moved there by the owner in version 3.1; it reuses F11's thumbnail, subtitles and description), then F12 Expression pack, F3 Rig 2.0, F4 Part D and Milestone 2.
+- `PRODUCTION-SYSTEM.md` is mentioned in the plan but is not in the project yet (the owner has been told).
