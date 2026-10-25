@@ -560,9 +560,25 @@
 
   // ---------- frame ----------
   let ctx, layer, aux, half;
+  // The thumbnail's framing (YouTube kit): the characters on stage fill a share of the picture height, standing
+  // low with room above for the title. null = the story's own camera (always, except while making a thumbnail).
+  let framing = null;
+  const FRAMES = { medium: { fill: 0.55, top: 0.36 }, close: { fill: 0.78, top: 0.26 } };
+  function camFramed(t) {
+    const F0 = FRAMES[framing.size], tp = Math.max(F0.top, framing.top || 0), F = { top: tp, fill: Math.min(F0.fill, 0.95 - tp) }, on = framing.ids.filter(id => onStage(id, t)), Bs = (on.length ? on : CAST.slice(0, 1)).map(id => actorBody(id, t));
+    const xs = Bs.map(b => b.x), spread = Math.max(...xs) - Math.min(...xs), top = Math.min(...Bs.map(b => b.y)) - 345;   // Ren is about 345 px tall, ears included
+    const bottom = Math.max(...Bs.map(b => b.y));
+    // as big as asked, but everyone fits across with some room
+    const z = Math.max(1, Math.min(F.fill * H / (bottom - top), W * 0.86 / (spread + 300)));
+    let cx = (Math.max(...xs) + Math.min(...xs)) / 2, cy = top + (H / 2 - F.top * H) / z;
+    const hw = 960 / z, hh = 540 / z;
+    cx = clamp(cx, -220 + hw, 2140 - hw); cy = clamp(cy, -40 + hh, 1140 - hh);
+    return { z, cx, cy };
+  }
+  const camFor = t => (framing ? camFramed(t) : P.shots ? camShot(t) : camAt(t));
   function render(t) {
     t = clamp(t, 0, P.duration);
-    const c = ctx, cam = P.shots ? camShot(t) : camAt(t), tau = K_('tau', t);
+    const c = ctx, cam = camFor(t), tau = K_('tau', t);
     c.setTransform(1, 0, 0, 1, 0, 0); c.globalAlpha = 1; c.globalCompositeOperation = 'source-over';
     const PN = placeAt(t);
     HP.cam = p => applyCam(c, cam, p);
@@ -667,7 +683,7 @@
   // For checks: where each visible face (eyes to chin) is on screen at t, and whether the frame cuts it.
   // The shoulder in an over-the-shoulder shot is cut on purpose and is left out.
   function faces(t) {
-    const cam = P.shots ? camShot(t) : camAt(t), out = [];
+    const cam = camFor(t), out = [];
     CAST.forEach(id => {
       if (!onStage(id, t) || cam.ots && cam.ots.of === id) return;
       const K = actorBody(id, t), p = toScreen(cam, toWorld(K, K.f * 6, REG[id].head)), s = KS * cam.z;
@@ -679,5 +695,15 @@
   }
   // For checks: a character's pose at t (facing, look, mood...), exactly as it is drawn
   const pose = (id, t) => actorState(id, t);
-  window.StudioFilm = { init, render, faces, pose };
+  // the mood a character shows at t, by name (used to pick a thumbnail; drawing doesn't use it)
+  const mood = (id, t) => {
+    const a = P.actors[id]; let cur = 'normal';
+    for (const m of a.moods) if (m.t <= t) cur = m.mood;
+    for (const e of a.exprs) if (t >= e.a && t < e.b) cur = e.mood;
+    return cur;
+  };
+  // frame('medium' | 'close', ids, top) for a thumbnail (top: where the characters' heads may start, below a title);
+  // frame(null) goes back to the story's camera
+  const frame = (size, ids, top) => { framing = size && FRAMES[size] ? { size, ids: ids && ids.length ? ids : CAST, top: top || 0 } : null; };
+  window.StudioFilm = { init, render, faces, pose, mood, frame };
 })();

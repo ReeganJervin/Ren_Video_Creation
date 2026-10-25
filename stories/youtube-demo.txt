@@ -1,0 +1,25 @@
+# ============================================================
+#  YouTube demo (F11): the thumbnail, subtitles and description
+#  that come with every video. Under 1 minute.
+#  Make only the YouTube files:
+#    node tools\make-video.js stories\youtube-demo.txt --youtube
+# ============================================================
+
+title: The Lantern in the Garden
+place: cottage garden
+time: sunset
+thumbnail: auto
+thumbnail text: The Lantern in the Garden
+
+ren enters from left to left
++ narrator: One golden evening, Ren found a little lantern in the cottage garden.
+lantern appears at center
+ren (surprised): Whoa! Yuki, come and look at this!
+yuki enters from right to right
+yuki (happy): A lantern! Do you think it still works?
+the lantern glows
+ren (playful): It's glowing! It must be magic!
+owl flies in from left
+owl (happy): Hoo! That lantern lights the way home for everyone in the garden.
+yuki (surprised): Then we'll keep it shining, every single night!
+narrator: And from that evening on, the little lantern never went dark.

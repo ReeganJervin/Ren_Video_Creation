@@ -34,7 +34,7 @@ The command files below keep working exactly as before.
 3. Watch it live with sound (optional): `preview.bat stories\my-story.txt`. This opens in your browser. Press Ctrl+C in the window to stop.
 4. Make the video: `make-video.bat stories\my-story.txt`. You can also drag the story file onto `make-video.bat`.
 
-The video appears in the `videos` folder as `my-story.mp4`, along with a check report, `my-story-report.txt`, and `my-story-credits.txt`, which lists everything in the video and who made it. A story with at least 3 scenes also gets `my-story-chapters.txt`, ready to paste into a YouTube description (see "Scenes" in STORY-GUIDE.md).
+The video appears in the `videos` folder as `my-story.mp4`, along with a check report, `my-story-report.txt`, and `my-story-credits.txt`, which lists everything in the video and who made it. A story with at least 3 scenes also gets `my-story-chapters.txt`, ready to paste into a YouTube description (see "Scenes" in STORY-GUIDE.md). For uploading, every video also gets `my-story-thumbnail.jpg`, `my-story.srt` (subtitles) and `my-story-description.txt` (a description draft); see "YouTube" in STORY-GUIDE.md.
 
 ### Still images (for checking)
 
@@ -115,6 +115,7 @@ The results are in `videos\<name>-report.txt`. Each line starts with `PASS`, `FA
 | `tools\make-video.js` | The main program behind the `.bat` files |
 | `tools\story-check.js` | The story check and voice bookkeeping that `make-video.js` and the studio app share |
 | `studio\` | The studio app: `server\server.js` (the local server), `src\` (the screens, React + TypeScript), `tests\` (`node studio\tests\api.test.js` and `node studio\tests\e2e.test.js`) |
+| `tools\youtube.js` | The YouTube files: thumbnail, subtitles and description draft |
 | `tools\scenes.js` | Chapters and the extra checks for stories with scenes |
 | `tools\render.js` | Draws the frames: several workers at once, scene by scene in pieces that `--resume` can keep |
 | `tools\browser.js` | Starts the drawing browser (or Chrome/Edge if setup couldn't download it) |

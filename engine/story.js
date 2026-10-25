@@ -41,7 +41,7 @@
     'star appears', 'star falls', 'star glows', 'star twinkles', 'star rises', 'star disappears',
     'hearts float up', 'heart floats down', 'sparkles [around <name>]', 'title card: <WORD>',
     `place: ${PLACES.names().join('|')}`, 'time: day|sunset|dusk|night', 'camera: wide|close|closer', 'wait <seconds>',
-    'scene: <name>', `music: ${MUSIC.join('|')}`,
+    'scene: <name>', `music: ${MUSIC.join('|')}`, 'thumbnail: auto|<seconds>|scene <number>', 'thumbnail shot: wide|medium|close', 'thumbnail text: <text>',
     'shot: wide|medium|close|extreme close [on <name>|both|the star]', 'shot: over the shoulder of <name>',
     'camera: push in|pull out|pan to <name|the star|left|center|right>|follow <name>|shake|hold',
     'editing: auto', 'beat', 'slow motion <seconds>', 'reveal: the star|<name>|<place>',
@@ -97,7 +97,7 @@
 
   // Extras: names in the story that enter, fly, swim, hop or talk but aren't characters. Known extras come from
   // the asset registry; unknown ones are missing extras, shown as placeholders. Typos of known names are errors.
-  const KEYS = /^(title|title card|place|time|camera|shot|scene|music|editing|reveal|narrator|wait|pause|weather|light|format|type)$/;
+  const KEYS = /^(title|title card|place|time|camera|shot|scene|music|editing|reveal|narrator|wait|pause|weather|light|format|type|thumbnail|thumbnail text|thumbnail shot)$/;
   function findExtras(lines, errors) {
     const found = {};
     lines.forEach((raw, i) => {
@@ -172,6 +172,28 @@
       };
       let m;
 
+      // YouTube thumbnail: which moment, and its text (anywhere in the story; they take no time)
+      if ((m = line.match(/^thumbnail\s+text\s*:\s*(.+)$/i))) {
+        const v = m[1].trim();
+        if (v.length > 60) return err('The thumbnail text must be 60 characters or fewer, so it stays big and readable.');
+        meta.thumbnailText = v;
+        return;
+      }
+      if ((m = line.match(/^thumbnail\s+shot\s*:\s*(.+)$/i))) {
+        const v = m[1].trim().toLowerCase();
+        if (!/^(wide|medium|close)$/.test(v)) return err(`Unknown thumbnail shot "${m[1].trim()}". Use: wide, medium or close`);
+        meta.thumbnailShot = v;
+        return;
+      }
+      if ((m = line.match(/^thumbnail\s*:\s*(.+)$/i))) {
+        const v = m[1].trim().toLowerCase();
+        let k;
+        if (v === 'auto') meta.thumbnail = { auto: true };
+        else if ((k = v.match(/^(\d+(?:\.\d+)?)\s*(?:s|sec|seconds)?$/))) meta.thumbnail = { t: +k[1] };
+        else if ((k = v.match(/^scene\s+(\d+)$/))) meta.thumbnail = { scene: +k[1] };
+        else return err(`Unknown thumbnail "${m[1].trim()}". Use: auto, a time in seconds like 12.5, or scene 3`);
+        return;
+      }
       if ((m = line.match(/^(title|place)\s*:\s*(.+)$/i))) {
         const key = m[1].toLowerCase(), val = m[2].trim();
         if (key === 'place') {

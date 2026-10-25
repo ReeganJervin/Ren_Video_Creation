@@ -131,7 +131,7 @@ Work through the steps **in this order**. The F-numbers are names, not the order
 | 3 | F4 Asset Kit, Parts A–C (`ASSET-KIT.md`) | Done | `272fba8` (F4A), `5dcf1ef` (F4B), `2ca0af5` (F4C) |
 | 4 | F9 Studio App, Part A (`STUDIO-APP.md`) | Done | `4b1cf13` (F9A) |
 | 5 | **Milestone 1** (full test) | In progress | |
-| 6 | **F11 YouTube kit** (thumbnails, subtitles, description, series intro, end screen) | Not started | |
+| 6 | **F11 YouTube kit** (thumbnails, subtitles, description, series intro, end screen) | Part A done (approved); Part B next | F11A (see git log) |
 | 7 | F7 Vertical 9:16 and Shorts (reuses F11's thumbnails, subtitles and description) | Not started | |
 | 8 | **F12 Expression pack** (new moods, thought/whisper/shout bubbles, mood voices) | Not started | |
 | 9 | F3 Rig 2.0 (joints, movement library, lip-sync), in **4 review stops** | Not started | |
@@ -582,6 +582,12 @@ Each effect has its own sound and uses the lighting system from F5. All of them 
 5. **Check:** the report notes whether the thumbnail, subtitles and description were written, and warns if the thumbnail has a speech bubble or a face cut off.
 
 **Part A review:** the thumbnail (auto and with text), the .srt opened next to the video, and the description for `stories/the-owls-lantern.txt` (ask the owner for their latest version of it).
+
+**As built (F11A, with the owner's review changes):**
+- The thumbnail is drawn with its own framing, a **medium shot** by default (the characters fill about 55% of the height, standing below the title); `thumbnail shot: wide | medium | close` chooses. Auto prefers surprised or excited faces, eyes open, nobody in front of a face, and skips moments where a prop is still appearing. The title is measured first, so the framing leaves room for one or two lines.
+- `--youtube` makes only the three files (no video), for quick tests. A full render adds a "YouTube files" line to the report (NOTE, or WARN for a bubble or a cut-off face).
+- In the studio app's player the subtitles start **off** (the narrator's words are already on screen); CC turns them on.
+- Review story: `stories/youtube-demo.txt` (39 s, all checks pass). The owner's `beginning-of-a-friendship.txt` was not in the project yet.
 
 **Commit message:** `F11A: thumbnails, subtitles, description draft`
 

@@ -6,7 +6,7 @@ import type { CompletionContext, CompletionResult, Completion } from '@codemirro
 import type { Vocab } from './api';
 
 const T = { scene: Tag.define(), setting: Tag.define(), value: Tag.define(), narrator: Tag.define(), ren: Tag.define(), yuki: Tag.define(), speaker: Tag.define(), speech: Tag.define(), action: Tag.define() };
-const SETTINGS = /^\s*(title card|title|place|time|music|camera|shot|editing|reveal)\s*:/i;
+const SETTINGS = /^\s*(thumbnail text|thumbnail|title card|title|place|time|music|camera|shot|editing|reveal)\s*:/i;
 
 interface LineState { head: boolean; speech: boolean; setting: boolean }
 export const storyLanguage = StreamLanguage.define<LineState>({
@@ -68,8 +68,8 @@ export function storyCompletions(getVocab: () => Vocab | null) {
     const word = /[\w' ]*$/;
     let m: RegExpMatchArray | null;
     // settings: place:, time:, music:
-    if ((m = before.match(/^\s*(place|time|music)\s*:\s*([\w ]*)$/i))) {
-      const list = { place: v.places, time: v.times, music: v.music }[m[1].toLowerCase() as 'place' | 'time' | 'music'];
+    if ((m = before.match(/^\s*(place|time|music|thumbnail)\s*:\s*([\w ]*)$/i))) {
+      const list = { place: v.places, time: v.times, music: v.music, thumbnail: ['auto', 'scene 1'] }[m[1].toLowerCase() as 'place' | 'time' | 'music' | 'thumbnail'];
       return { from: cx.pos - m[2].length, options: list.map(x => opt(x, m![1].toLowerCase(), 'enum')), validFor: word };
     }
     const actors = [...v.characters, ...v.extras], who = actors.join('|').replace(/ /g, '\\s+');
@@ -105,7 +105,7 @@ export function storyCompletions(getVocab: () => Vocab | null) {
       const options: Completion[] = [
         ...v.characters.map(c => opt(c, 'character', 'variable')), opt('narrator: ', 'the narrator says', 'variable'),
         ...v.extras.map(e => opt(e, 'extra', 'variable')),
-        ...['title: ', 'place: ', 'time: ', 'music: ', 'scene: ', 'shot: ', 'camera: ', 'wait ', 'beat', 'title card: '].map(s => opt(s, 'setting')),
+        ...['title: ', 'place: ', 'time: ', 'music: ', 'scene: ', 'shot: ', 'camera: ', 'wait ', 'beat', 'title card: ', 'thumbnail: ', 'thumbnail text: '].map(s => opt(s, 'setting')),
         ...v.props.flatMap(p => [`${p} appears at center`, `${p} appears next to ren`, `${p} disappears`].map(x => opt(x, 'prop', 'function'))),
         ...['star appears', 'star falls', 'star glows', 'star twinkles', 'star rises', 'star disappears', 'hearts float up', 'sparkles'].map(x => opt(x, 'star and effects', 'function')),
       ];

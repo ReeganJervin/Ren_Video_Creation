@@ -9,6 +9,7 @@
 //     --workers N   draw with N browser pages at once (default: number of processor cores minus 1)
 //     --resume      carry on with a render that was stopped, keeping the parts already drawn
 //   node tools/make-video.js stories/my-story.txt --voices   only make the voices (used by the studio app)
+//   node tools/make-video.js stories/my-story.txt --youtube  only make the YouTube files (thumbnail, subtitles, description)
 // With the environment variable KITSU_PROGRESS=1, progress is also printed as "@@{json}" lines (for the studio app).
 const fs = require('fs'), path = require('path'), http = require('http'), crypto = require('crypto'), os = require('os');
 const { spawn, spawnSync } = require('child_process');
@@ -19,6 +20,7 @@ const { readWav } = require('./wav');
 const { validate } = require('./validate');
 const { clock, hasScenes, chapters, sceneChecks } = require('./scenes');
 const { readVoices, storyName, addMissingVoices, cachedVoice, levelledVoice, overrideFile, VOICE_LUFS } = require('./story-check');
+const { youtubeFiles } = require('./youtube');
 
 const ROOT = path.resolve(__dirname, '..');
 const say = (...a) => console.log(...a);
@@ -105,10 +107,11 @@ async function main() {
 
   // 3. compile the timeline
   const plan = compileStory(parsed, lens);
-  // a finished video needs every asset; stills and the preview show placeholders instead
+  // a finished video needs every asset; stills, the preview and the YouTube files show placeholders instead
   // every picture in the video needs a credit (who made it), because the videos may be sold later
-  if (!opt('stills') && !opt('preview') && pictureReport(plan).length) fail('The video can\'t be made until every picture it uses has a credit line.');
-  if (plan.missing.length && !opt('stills') && !opt('preview')) {
+  const draft = opt('stills') || opt('preview') || opt('youtube');
+  if (!draft && pictureReport(plan).length) fail('The video can\'t be made until every picture it uses has a credit line.');
+  if (plan.missing.length && !draft) {
     missingReport(plan, buildDir);
     if (!opt('allow-placeholders')) fail('The video can\'t be made until these are created (or add --allow-placeholders for a test video).');
   }
@@ -148,6 +151,13 @@ async function main() {
     say(`Saved ${shots.length} still(s) in videos/`);
     await browser.close(); server.close(); return;
   }
+  // only the YouTube files, without drawing the video
+  if (opt('youtube')) {
+    const row = await youtubeFiles(page, plan, name, outDir, creditsText(plan));
+    say(`${label(row)}  ${row.name}: ${row.detail}`);
+    say(`In videos/: ${name}-thumbnail.jpg, ${name}.srt and ${name}-description.txt`);
+    await browser.close(); server.close(); return;
+  }
 
   // the soundtrack (kept for --resume when nothing it depends on has changed)
   const voiceSum = crypto.createHash('sha1');
@@ -169,6 +179,9 @@ async function main() {
     await master(path.join(buildDir, 'mix.wav'), path.join(buildDir, 'master.wav'));
     fs.writeFileSync(soundState, JSON.stringify({ id: soundId }));
   }
+  // the YouTube files: thumbnail, subtitles and description draft
+  say('Making the thumbnail, subtitles and description...');
+  const youtube = await youtubeFiles(page, plan, name, outDir, creditsText(plan));
   await page.close();
 
   const mp4 = path.join(outDir, `${name}.mp4`);
@@ -185,6 +198,7 @@ async function main() {
   progress({ step: 'checking' });
   const results = validate(plan, { root: ROOT, mp4, voice: path.join(buildDir, 'voice.wav'), sfx: path.join(buildDir, 'sfx.wav'), master: path.join(buildDir, 'master.wav') });
   results.push(...sceneChecks(plan));
+  results.push(youtube);
   if (plan.missing.length) results.push({ ok: true, note: true, name: 'Placeholders', detail: `rendered with ${plan.missing.length} placeholder${plan.missing.length === 1 ? '' : 's'}: ${plan.missing.map(m => m.name).join(', ')}` });
   // YouTube chapters, when the scenes allow it (an old file from an earlier render is removed otherwise)
   const chFile = path.join(outDir, `${name}-chapters.txt`), ch = chapters(plan);

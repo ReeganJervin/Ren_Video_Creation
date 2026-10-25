@@ -412,6 +412,32 @@ slow motion 4
 star falls
 ```
 
+## YouTube
+
+Every video comes with three files for uploading it, next to it in the `videos` folder:
+
+| File | What it is |
+|---|---|
+| `my-story-thumbnail.jpg` | The thumbnail: 1280×720, drawn fresh from the story (sharper than a frame of the video) |
+| `my-story.srt` | English subtitles of every spoken line (the narrator too), timed to the voices. Upload it in YouTube Studio under "Subtitles" |
+| `my-story-description.txt` | A **draft** to edit: a title, a short summary, the chapters (if any), the credits and some hashtags. Nothing is ever published automatically |
+
+Two lines choose the thumbnail. Put them anywhere in the story; they take no time:
+
+| Line | What it does |
+|---|---|
+| `thumbnail: auto` | Picks a good moment by itself: everyone fully in the picture, facing you, surprised or excited (or happy), eyes open, no speech bubble, and nobody in front of someone's face. This is what you get without a `thumbnail` line |
+| `thumbnail: 12.5` | The moment 12.5 seconds in |
+| `thumbnail: scene 3` | The middle of scene 3 |
+| `thumbnail shot: medium` | How close the thumbnail is: `medium` (the characters fill about half the picture's height; this is what you get without the line), `close` (bigger faces) or `wide` (the whole scene, like the video) |
+| `thumbnail text: The Owl's Lantern` | Big, bold, rounded letters with a warm outline at the top, with the characters standing below them (60 characters at most; long titles go on two lines) |
+
+The check report has a line about these files. It warns you if the thumbnail shows a speech bubble or a face cut off at the edge, so you can choose another moment.
+
+To make only these three files, without making the video again (the voices are made if needed): `node tools\make-video.js stories\my-story.txt --youtube`. An example: `stories\youtube-demo.txt`. In the studio app, the finished video shows the thumbnail, with **Open subtitles** and **Copy description**. The subtitles are off in the app's player (the narrator's words are already on screen); the **CC** button turns them on.
+
+Before publishing, check YouTube's "altered or synthetic content" and "Made for Kids" settings. Whether a video is "Made for Kids" is your choice for each video.
+
 ## Sounds you get automatically
 
 You don't write sounds. They come from the actions:

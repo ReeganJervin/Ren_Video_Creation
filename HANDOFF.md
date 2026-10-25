@@ -43,6 +43,7 @@ Kitsu Studio turns a story written as a plain text file into a finished animated
 
 - **Next step:** see the **build order in `ENGINE-ROADMAP.md` section 2**. The first step there whose status isn't "Done" is the one to work on.
 - Done: **F1, F2, F4 Parts A–C and F9 Part A** (build-order steps 1–4). The first four assets are the lantern, cottage, cottage garden and owl; the studio app starts with `Kitsu Studio.bat` (code in `studio/`, tests in `studio/tests/`).
-- Right now: **Milestone 1** (step 5): every story rendered in full with all checks, the 12-minute test with its time and memory, R1 against the previous milestone, a short report, and one of the owner's real stories (ask which one).
+- **Milestone 1** (step 5) was cut short by the owner (2026-10-26: "I don't want to render any story"): 4 stories were rendered in full before it was stopped (a-sunny-hello, a-trip-around, asset-test, camera-demo), all checks passed. The rest of the full test, the 12-minute test and a real story are still to do when the owner wants them.
+- **F11 Part A** (thumbnails, subtitles, description draft) is done and approved. Right now: **F11 Part B** (series intro, theme jingle, end screen).
 - Then: **F11 YouTube kit**, then **F7 Vertical and Shorts** (moved there by the owner in version 3.1; it reuses F11's thumbnail, subtitles and description), then F12 Expression pack, F3 Rig 2.0, F4 Part D and Milestone 2.
 - `PRODUCTION-SYSTEM.md` is mentioned in the plan but is not in the project yet (the owner has been told).

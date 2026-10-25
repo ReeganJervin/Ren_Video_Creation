@@ -231,7 +231,7 @@ function readReport(name) {
 }
 
 // ---------- HTTP ----------
-const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.mjs': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.wav': 'audio/wav', '.mp4': 'video/mp4', '.png': 'image/png', '.svg': 'image/svg+xml', '.woff2': 'font/woff2', '.txt': 'text/plain; charset=utf-8', '.ico': 'image/x-icon' };
+const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.mjs': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.wav': 'audio/wav', '.mp4': 'video/mp4', '.png': 'image/png', '.svg': 'image/svg+xml', '.woff2': 'font/woff2', '.txt': 'text/plain; charset=utf-8', '.srt': 'text/plain; charset=utf-8', '.vtt': 'text/vtt; charset=utf-8', '.jpg': 'image/jpeg', '.ico': 'image/x-icon' };
 function sendFile(req, res, abs) {
   if (!fs.existsSync(abs) || fs.statSync(abs).isDirectory()) { res.writeHead(404); return res.end(); }
   const size = fs.statSync(abs).size, type = MIME[path.extname(abs).toLowerCase()] || 'application/octet-stream';
@@ -329,7 +329,24 @@ const api = {
     if (!j) throw new HttpError(404, 'There is no such job.');
     cancelJob(j); return publicJob(j);
   },
-  'GET /api/report': q => { const name = engine().check.storyName(storyPath(q.get('file'))); return { results: readReport(name), video: fs.existsSync(path.join(ROOT, 'videos', name + '.mp4')) ? `/videos/${name}.mp4` : null }; },
+  'GET /api/report': q => {
+    const name = engine().check.storyName(storyPath(q.get('file'))), has = f => fs.existsSync(path.join(ROOT, 'videos', f));
+    return {
+      results: readReport(name), video: has(name + '.mp4') ? `/videos/${name}.mp4` : null,
+      // the YouTube files (F11)
+      thumbnail: has(`${name}-thumbnail.jpg`) ? `/videos/${name}-thumbnail.jpg` : null,
+      subtitles: has(`${name}.srt`) ? `/videos/${name}.srt` : null,
+      description: has(`${name}-description.txt`) ? `/videos/${name}-description.txt` : null,
+    };
+  },
+  // the subtitles as WebVTT, for the video player in the app
+  'GET /api/subtitles.vtt': (q, req, res) => {
+    const f = path.join(ROOT, 'videos', engine().check.storyName(storyPath(q.get('file'))) + '.srt');
+    if (!fs.existsSync(f)) throw new HttpError(404, 'No subtitles yet.');
+    const vtt = 'WEBVTT\n\n' + fs.readFileSync(f, 'utf8').replace(/\r\n/g, '\n').replace(/(\d\d:\d\d:\d\d),(\d\d\d)/g, '$1.$2');
+    res.writeHead(200, { 'Content-Type': 'text/vtt; charset=utf-8', 'Cache-Control': 'no-store' }); res.end(vtt);
+    return undefined;
+  },
   // the preview's current frame -> videos/<name>-still-<t>s.png (named like the CMD tool's stills)
   'POST /api/still': async (q, req) => {
     const b = await body(req), name = engine().check.storyName(storyPath(b.file)), t = +b.t;
@@ -370,7 +387,8 @@ const server = http.createServer(async (req, res) => {
     if (p.startsWith('/api/')) {
       const h = api[`${req.method} ${p}`];
       if (!h) throw new HttpError(404, 'Unknown request.');
-      return json(res, 200, await h(url.searchParams, req));
+      const out = await h(url.searchParams, req, res);
+      return out === undefined ? undefined : json(res, 200, out);
     }
     if (req.method !== 'GET' && req.method !== 'HEAD') throw new HttpError(405, 'Not allowed.');
     const rel = p.replace(/^\/+/, '');

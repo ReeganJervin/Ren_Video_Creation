@@ -19,6 +19,8 @@ const EXPLAIN: Record<string, string> = {
 };
 const STEPS: Record<string, string> = { starting: 'Starting', waiting: 'Waiting for another job', voices: 'Making voices', soundtrack: 'Making the soundtrack', drawing: 'Drawing the frames', joining: 'Joining the parts', checking: 'Checking the video', done: 'Done' };
 
+// the last render's checks and files, YouTube files included (F11)
+interface Report { results: CheckRow[] | null; video: string | null; thumbnail: string | null; subtitles: string | null; description: string | null }
 interface Props { file: string; name: string; check: CheckResult | null; job: Job | undefined; dirty: boolean; save(): Promise<boolean> }
 
 export function RenderPanel({ file, name, check, job, dirty, save }: Props) {
@@ -26,10 +28,10 @@ export function RenderPanel({ file, name, check, job, dirty, save }: Props) {
   const [allow, setAllow] = useState(false);
   const [error, setError] = useState('');
   const [copied, setCopied] = useState(false);
-  const [last, setLast] = useState<{ results: CheckRow[] | null; video: string | null } | null>(null);
+  const [last, setLast] = useState<Report | null>(null);
   useEffect(() => { api.get<{ workers: number }>('/api/defaults').then(d => setWorkers(w => (w === '' ? d.workers : w))); }, []);
   // the result of the last render, also when it was made before the app was opened
-  useEffect(() => { api.get<{ results: CheckRow[] | null; video: string | null }>('/api/report?file=' + encodeURIComponent(file)).then(setLast).catch(() => {}); }, [file, job?.state]);
+  useEffect(() => { api.get<Report>('/api/report?file=' + encodeURIComponent(file)).then(setLast).catch(() => {}); }, [file, job?.state]);
 
   const missing = check?.missing.length || 0, errors = check?.errors.length || 0;
   const running = job && (job.state === 'running' || job.state === 'queued');
@@ -45,6 +47,11 @@ export function RenderPanel({ file, name, check, job, dirty, save }: Props) {
   const report = (rows: CheckRow[]) => `Kitsu Studio check report for ${file}\n` + rows.map(r => `${r.status}  ${r.name}: ${r.detail}`).join('\n');
   const copy = async (rows: CheckRow[]) => { try { await navigator.clipboard.writeText(report(rows)); setCopied(true); setTimeout(() => setCopied(false), 2000); } catch { setError('Copying did not work. The report is also in videos/' + name + '-report.txt'); } };
   const failed = results?.filter(r => r.status === 'FAIL') || [];
+  const [descCopied, setDescCopied] = useState(false);
+  const copyDescription = async () => {
+    try { const t = await (await fetch(last!.description!)).text(); await navigator.clipboard.writeText(t); setDescCopied(true); setTimeout(() => setDescCopied(false), 2000); }
+    catch { setError('Copying did not work. The description is in videos/' + name + '-description.txt'); }
+  };
 
   return (
     <section className="render">
@@ -74,7 +81,21 @@ export function RenderPanel({ file, name, check, job, dirty, save }: Props) {
       {error && <p className="bad-text small">{error}</p>}
       {video && results && (
         <div className="result">
-          <video controls preload="metadata" src={`${video}?v=${job?.ended || ''}#t=1`} />
+          <video controls preload="metadata" src={`${video}?v=${job?.ended || ''}#t=1`}>
+            {/* subtitles start off (the narrator's words are already on screen); the CC button turns them on */}
+            {last?.subtitles && <track kind="subtitles" srcLang="en" label="English" src={`/api/subtitles.vtt?file=${encodeURIComponent(file)}&v=${job?.ended || ''}`} />}
+          </video>
+          {last?.thumbnail && (
+            <div className="youtube">
+              <img className="thumb" alt="Thumbnail" src={`${last.thumbnail}?v=${job?.ended || ''}`} />
+              <div className="youtube-buttons">
+                <b>For YouTube</b>
+                {last.subtitles && <a className="button-link" href={last.subtitles} target="_blank" rel="noreferrer">Open subtitles</a>}
+                {last.description && <button onClick={copyDescription}>{descCopied ? 'Copied ✓' : 'Copy description'}</button>}
+                <button onClick={() => api.post('/api/open-folder', { path: `videos/${name}-thumbnail.jpg` })}>Show thumbnail file</button>
+              </div>
+            </div>
+          )}
           <ul className="checks">
             {results.map((r, i) => (
               <li key={i} className={'row-' + r.status.toLowerCase()}>
