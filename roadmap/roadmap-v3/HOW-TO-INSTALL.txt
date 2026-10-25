@@ -1,0 +1,41 @@
+ROADMAP VERSION 3 - how to add these files to your project
+==========================================================
+
+Files in this zip:
+  ENGINE-ROADMAP.md   version 3: the full plan
+  ASSET-KIT.md        updated step numbers only
+  STUDIO-APP.md       updated step numbers only
+
+What's new in version 3:
+  - Section 0.6 "Audience and tone": a FAMILY show, for kids AND adults
+    (deep stories, real emotions, mystery and magic; no fighting,
+    horror, gore, swearing or crude humour). Rules R11 and R15.
+  - F11 YouTube kit, F12 Expression pack (8 new moods incl. scared and
+    determined, bubbles, mood voices, epic/heartfelt music),
+    F13 Storytelling tools (weather, dreams and memories, sounds),
+    F14 Library growth.
+  - A new build order and milestones.
+
+WHEN: after Claude Code finishes its current review stop (Milestone 1).
+
+Then give Claude Code this prompt:
+
+  I have ENGINE-ROADMAP.md version 3, plus updated ASSET-KIT.md and
+  STUDIO-APP.md, in <the folder where you saved them>.
+  1. MERGE them into the project (don't just overwrite): keep the real
+     commit hashes, statuses and any changes you made to the plan
+     during earlier steps (for example the Part D task "extras land on
+     set pieces" in ASSET-KIT.md).
+  2. Our audience is kids AND adults (section 0.6). Update the
+     content guidelines in PRODUCTION-SYSTEM.md (section 6) and
+     HANDOFF.md to match, and any wording in STORY-GUIDE.md that says
+     the videos are only for children.
+  3. Update the "Current status" section of HANDOFF.md.
+  4. Show me what changed, then commit as "Docs: roadmap version 3".
+  5. Finish Milestone 1 if it isn't done yet, then start F11 Part A.
+
+For every next step, start a new chat with:
+
+  Read HANDOFF.md, PRODUCTION-SYSTEM.md and ENGINE-ROADMAP.md.
+  Implement the next step in the build order (section 2) whose
+  status is 'Not started'. Read its detail file if it has one.
