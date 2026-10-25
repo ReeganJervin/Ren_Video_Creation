@@ -49,7 +49,7 @@
 
 | Feature | Status | Commit(s) |
 |---|---|---|
-| F1 Long episodes (scenes, music moods, chapters, fast rendering) | Not started | |
+| F1 Long episodes (scenes, music moods, chapters, fast rendering) | Done (approved) | F1A, F1B (branch `Improvment`) |
 | F2 Camera and editing | Not started | |
 | F3 Rig 2.0 (joints, movement library, lip-sync) | Not started | |
 | F4 Prop system | Not started | |

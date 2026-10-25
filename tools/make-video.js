@@ -4,13 +4,18 @@
 //   node tools/make-video.js stories/my-story.txt --check    only check the story and show its timing
 //   node tools/make-video.js stories/my-story.txt --preview  open a live preview in your browser
 //   node tools/make-video.js stories/my-story.txt --stills 3,10.5   save still images (for checking)
-const fs = require('fs'), path = require('path'), http = require('http'), crypto = require('crypto');
+//   node tools/make-video.js stories/my-story.txt --stills scene:2,scene:3@4.5   the middle of scene 2, 4.5 s into scene 3
+//   options for making the video:
+//     --workers N   draw with N browser pages at once (default: number of processor cores minus 1)
+//     --resume      carry on with a render that was stopped, keeping the parts already drawn
+const fs = require('fs'), path = require('path'), http = require('http'), crypto = require('crypto'), os = require('os');
 const { spawn, spawnSync } = require('child_process');
-const { once } = require('events');
 const ffmpeg = require('ffmpeg-static');
+const { renderVideo, fingerprint } = require('./render');
 const { parseStory, compileStory } = require('../engine/story.js');
 const { readWav } = require('./wav');
 const { validate } = require('./validate');
+const { clock, hasScenes, chapters, sceneChecks } = require('./scenes');
 
 const ROOT = path.resolve(__dirname, '..');
 const say = (...a) => console.log(...a);
@@ -36,6 +41,12 @@ async function main() {
     say(`\n"${plan.meta.title}" looks good! Estimated length: ${plan.duration.toFixed(1)} s (exact length is known after voices are made).\n`);
     plan.voice.forEach(v => say(`  ${v.t.toFixed(1).padStart(6)} s  ${v.who.padEnd(8)} ${v.text}`));
     plan.warnings.forEach(w => say('  note: ' + w));
+    if (hasScenes(plan)) {
+      say(`\nScenes (estimated):`);
+      plan.scenes.forEach((c, i) => say(`  ${String(i + 1).padStart(2)}. ${clock(c.t0).padStart(7)}  ${(c.t1 - c.t0).toFixed(1).padStart(6)} s  ${c.name}`));
+      say('');
+      sceneChecks(plan).forEach(r => say(`  ${label(r)}  ${r.name}: ${r.detail}`));
+    }
     return;
   }
 
@@ -93,9 +104,8 @@ async function main() {
     return;
   }
 
-  // 4. render
-  const { chromium } = require('playwright');
-  const browser = await chromium.launch();
+  // 4. render (software drawing, so every frame comes out the same however it is rendered)
+  const browser = await require('./browser').launch({ exact: true });
   const page = await browser.newPage({ viewport: { width: 1920, height: 1080 } });
   page.on('pageerror', e => { console.error('[page error]', e.message); });
   await page.goto(url + '&export=1');
@@ -105,49 +115,79 @@ async function main() {
   fs.mkdirSync(outDir, { recursive: true });
 
   if (opt('stills')) {
-    const times = args[args.indexOf('--stills') + 1].split(',').map(Number);
-    for (const t of times) {
+    const shots = stillTimes(args[args.indexOf('--stills') + 1] || '', plan);
+    for (const { t, tag } of shots) {
       await page.evaluate(t => FILM.render(t), t);
-      await canvas.screenshot({ path: path.join(outDir, `${name}-still-${t.toFixed(1)}s.png`) });
+      await canvas.screenshot({ path: path.join(outDir, `${name}-still-${tag}${t.toFixed(1)}s.png`) });
     }
-    say(`Saved ${times.length} still(s) in videos/`);
+    say(`Saved ${shots.length} still(s) in videos/`);
     await browser.close(); server.close(); return;
   }
 
-  say('Making the soundtrack...');
-  for (const stem of ['mix', 'voice', 'sfx']) {
-    const { wav, missing } = await page.evaluate(s => FILM.renderAudio(s), stem);
-    if (missing.length && stem === 'mix') say('  warning: missing voice clips: ' + missing.join(', '));
-    fs.writeFileSync(path.join(buildDir, `${stem}.wav`), Buffer.from(wav, 'base64'));
-  }
-  await master(path.join(buildDir, 'mix.wav'), path.join(buildDir, 'master.wav'));
-
-  const frames = Math.round(plan.duration * plan.fps), mp4 = path.join(outDir, `${name}.mp4`);
-  say(`Drawing ${frames} frames...`);
-  const ff = spawn(ffmpeg, ['-loglevel', 'error', '-y', '-f', 'image2pipe', '-c:v', 'mjpeg', '-framerate', '30', '-i', 'pipe:0',
-    '-i', path.join(buildDir, 'master.wav'), '-map', '0:v', '-map', '1:a', '-c:v', 'libx264', '-preset', 'medium', '-crf', '18', '-pix_fmt', 'yuv420p',
-    '-c:a', 'aac', '-b:a', '192k', '-t', plan.duration.toFixed(3), '-movflags', '+faststart', mp4], { stdio: ['pipe', 'inherit', 'inherit'] });
-  const started = Date.now();
-  for (let i = 0; i < frames; i++) {
-    await page.evaluate(t => FILM.render(t), i / plan.fps);
-    const jpg = await canvas.screenshot({ type: 'jpeg', quality: 93 });
-    if (!ff.stdin.write(jpg)) await once(ff.stdin, 'drain');
-    if (i % 150 === 0 || i === frames - 1) {
-      const done = (i + 1) / frames, el = (Date.now() - started) / 1000;
-      process.stdout.write(`\r  ${Math.round(done * 100)}%  (about ${Math.max(0, Math.round(el / done - el))} s left)    `);
+  // the soundtrack (kept for --resume when nothing it depends on has changed)
+  const voiceSum = crypto.createHash('sha1');
+  speech.forEach((_, i) => voiceSum.update(fs.readFileSync(path.join(voiceDir, `${i}.wav`))));
+  const soundId = fingerprint(plan, ROOT) + voiceSum.digest('hex'), soundState = path.join(buildDir, 'soundtrack.json');
+  const stems = ['mix', 'voice', 'sfx', 'master'].map(s => path.join(buildDir, `${s}.wav`));
+  let soundOld = null;
+  try { soundOld = JSON.parse(fs.readFileSync(soundState, 'utf8')).id; } catch (_) { /* not made yet */ }
+  if (opt('resume') && soundOld === soundId && stems.every(f => fs.existsSync(f))) say('Using the soundtrack made last time.');
+  else {
+    say('Making the soundtrack...');
+    if (fs.existsSync(soundState)) fs.unlinkSync(soundState);
+    for (const stem of ['mix', 'voice', 'sfx']) {
+      const { wav, missing } = await page.evaluate(s => FILM.renderAudio(s), stem);
+      if (missing.length && stem === 'mix') say('  warning: missing voice clips: ' + missing.join(', '));
+      fs.writeFileSync(path.join(buildDir, `${stem}.wav`), Buffer.from(wav, 'base64'));
     }
+    await master(path.join(buildDir, 'mix.wav'), path.join(buildDir, 'master.wav'));
+    fs.writeFileSync(soundState, JSON.stringify({ id: soundId }));
   }
-  ff.stdin.end();
-  const [code] = await once(ff, 'close');
+  await page.close();
+
+  const mp4 = path.join(outDir, `${name}.mp4`);
+  const wn = args.indexOf('--workers'), workers = wn >= 0 ? parseInt(args[wn + 1], 10) : Math.max(1, os.cpus().length - 1);
+  if (!(workers >= 1 && workers <= 64)) fail('--workers needs a number of workers from 1 to 64, for example --workers 3');
+  try {
+    await renderVideo(plan, { browser, url, workers, resume: opt('resume'), buildDir, mp4, root: ROOT, wav: path.join(buildDir, 'master.wav'), say });
+  } catch (e) {
+    await browser.close(); server.close();
+    fail(`${e.message}\nYou can carry on where it stopped with:  resume-video.bat ${path.relative(ROOT, storyPath)}`);
+  }
   await browser.close(); server.close();
-  if (code !== 0) fail('Encoding the video failed.');
-  say('\n\nChecking the video...');
+  say('\nChecking the video...');
   const results = validate(plan, { root: ROOT, mp4, voice: path.join(buildDir, 'voice.wav'), sfx: path.join(buildDir, 'sfx.wav'), master: path.join(buildDir, 'master.wav') });
-  const report = results.map(r => `${r.ok ? 'PASS' : 'FAIL'}  ${r.name}: ${r.detail}`).join('\n');
+  results.push(...sceneChecks(plan));
+  // YouTube chapters, when the scenes allow it (an old file from an earlier render is removed otherwise)
+  const chFile = path.join(outDir, `${name}-chapters.txt`), ch = chapters(plan);
+  if (ch.text) fs.writeFileSync(chFile, ch.text); else if (fs.existsSync(chFile)) fs.unlinkSync(chFile);
+  const report = results.map(r => `${label(r)}  ${r.name}: ${r.detail}`).join('\n');
   fs.writeFileSync(path.join(outDir, `${name}-report.txt`), report + '\n');
   say(report);
+  if (ch.text) say(`\nChapters for YouTube: videos/${name}-chapters.txt`);
   const bad = results.filter(r => !r.ok).length;
   say(bad ? `\nThe video was made, but ${bad} check(s) failed. See videos/${name}-report.txt` : `\nDone! Your video: videos/${name}.mp4`);
+}
+
+const label = r => (!r.ok ? 'FAIL' : r.warn ? 'WARN' : r.note ? 'NOTE' : 'PASS');
+
+// "--stills 3,10.5,scene:2,scene:3@4.5" -> [{ t, tag }]: plain seconds, the middle of a scene, or seconds into a scene
+function stillTimes(list, plan) {
+  const out = list.split(',').filter(Boolean).map(item => {
+    const m = item.trim().match(/^scene:(\d+)(?:@([\d.]+))?$/i);
+    if (!m) {
+      const t = Number(item);
+      if (!isFinite(t)) fail(`"${item}" is not a time. Use seconds like 12.5, or scene:2, or scene:2@3.5`);
+      return { t, tag: '' };
+    }
+    const n = +m[1], c = plan.scenes[n - 1];
+    if (!c) fail(`There is no scene ${n}. This story has ${plan.scenes.length} scene(s).`);
+    const t = m[2] !== undefined ? c.t0 + +m[2] : (c.t0 + c.t1) / 2;
+    if (t > c.t1) fail(`Scene ${n} is only ${(c.t1 - c.t0).toFixed(1)} s long, so scene:${n}@${m[2]} is past its end.`);
+    return { t, tag: `scene${n}-` };
+  });
+  if (!out.length) fail('Tell me which moments to save, for example: --stills 3,10.5 or --stills scene:2');
+  return out;
 }
 
 // Mastering: one fixed gain to about -16 LUFS, capped so true peak stays at or below -1.5 dBTP.

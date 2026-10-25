@@ -46,7 +46,8 @@
     music.connect(duck); duck.connect(section); section.connect(mfade); mfade.connect(master);
     const mSend = ctx.createGain(); mSend.gain.value = 0.35; mfade.connect(mSend); mSend.connect(reverb);
     mfade.gain.setValueAtTime(0, at(0)); mfade.gain.linearRampToValueAtTime(1, at(T.musicFadeIn));
-    mfade.gain.setValueAtTime(1, at(T.musicFadeOut[0])); mfade.gain.linearRampToValueAtTime(0, at(T.musicFadeOut[1]));
+    // the ending fades on a curve that is nearly silent for its last moments
+    mfade.gain.setValueCurveAtTime(Float32Array.from({ length: 64 }, (_, i) => (1 - i / 63) ** 2), at(T.musicFadeOut[0]), T.musicFadeOut[1] - T.musicFadeOut[0]);
     // music softer during the act of kindness (scene 4)
     section.gain.setValueAtTime(1, at(0));
 
@@ -65,12 +66,16 @@
       const buf = voices[v.id]; if (!buf) continue;
       const src = ctx.createBufferSource(); src.buffer = buf; src.connect(voice); src.start(at(v.t));
       const w = [v.t, v.t + buf.duration];
-      if (wins.length && w[0] - wins[wins.length - 1][1] < 1.0) wins[wins.length - 1][1] = w[1]; else wins.push(w);
+      // (closer than the music needs to come back up and dip again, they count as one)
+      if (wins.length && w[0] - wins[wins.length - 1][1] < 1.6) wins[wins.length - 1][1] = w[1]; else wins.push(w);
     }
-    duck.gain.setValueAtTime(1, at(0));
+    // Under speech the music sits at UNDER; in the pauses between lines it fills in at FILL, so a voice
+    // starting after a pause is not a sudden jump. It comes back up slowly after a line ends.
+    const FILL = 1.5, UNDER = 0.55;
+    duck.gain.setValueAtTime(FILL, at(0));
     for (const [s, e] of wins) {
-      duck.gain.setValueAtTime(1, at(Math.max(0, s - 0.3))); duck.gain.linearRampToValueAtTime(0.55, at(s));
-      duck.gain.setValueAtTime(0.55, at(e)); duck.gain.linearRampToValueAtTime(1, at(e + 0.6));
+      duck.gain.setValueAtTime(FILL, at(Math.max(0, s - 0.3))); duck.gain.linearRampToValueAtTime(UNDER, at(s));
+      duck.gain.setValueAtTime(UNDER, at(e)); duck.gain.linearRampToValueAtTime(FILL, at(e + 1.2));
     }
 
     // ---- instruments ----
@@ -84,23 +89,24 @@
       env(g, t, peak, attack, decay); o.start(t); o.stop(t + attack + decay + 0.05);
       return o;
     }
-    function musicBox(t, m, v = 1) {
-      tone(music, t, mtof(m), 0.28 * v, 1.6);
-      tone(music, t, mtof(m) * 2, 0.07 * v, 0.5);
-      tone(music, t, mtof(m) * 5.4, 0.025 * v, 0.12);
+    function musicBox(t, m, v = 1, dest = music) {
+      tone(dest, t, mtof(m), 0.28 * v, 1.6);
+      tone(dest, t, mtof(m) * 2, 0.07 * v, 0.5);
+      tone(dest, t, mtof(m) * 5.4, 0.025 * v, 0.12);
     }
-    function pad(t, notes, dur) {
-      const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 900; lp.connect(music);
+    function pad(t, notes, dur, dest = music, level = 0.045, cutoff = 900) {
+      const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = cutoff; lp.connect(dest);
       const g = ctx.createGain(); g.connect(lp);
-      g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(0.045, t + 0.6);
-      g.gain.setValueAtTime(0.045, t + dur - 0.4); g.gain.linearRampToValueAtTime(0, t + dur + 0.3);
+      g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(level, t + 0.6);
+      g.gain.setValueAtTime(level, t + dur - 0.4); g.gain.linearRampToValueAtTime(0, t + dur + 0.3);
       for (const m of notes) for (const det of [-4, 4]) {
         const o = ctx.createOscillator(); o.type = 'triangle'; o.frequency.value = mtof(m); o.detune.value = det;
         o.connect(g); o.start(t); o.stop(t + dur + 0.4);
       }
     }
 
-    if (stems.music) {
+    if (stems.music && T.music) moodMusic();
+    else if (stems.music) {
       // 2.5 s bars (96 bpm). A 16-bar hand-written phrase repeats (an octave-lighter variation on
       // repeats) and the last two bars always resolve home, so any story length ends cleanly.
       const CH = { C: [60, 64, 67], Am: [57, 60, 64], F: [53, 57, 60], G: [55, 59, 62], Dm: [50, 53, 57], Em: [52, 55, 59] };
@@ -125,6 +131,81 @@
       }
       const last = at((nBars - 1) * bar);
       musicBox(last, 72, 0.5); musicBox(last, 76, 0.4); musicBox(last, 79, 0.35);
+    }
+
+    // ---- music moods ("music:" lines) ----
+    // Each mood is a short hand-written phrase in the same music-box + pad style: its own chords, tempo
+    // (bar length), melody (one entry per slot, 0 = rest), bass pattern, levels and an optional extra layer.
+    // A mood plays from its change until the next one, and the two cross-fade over XF seconds.
+    function moodMusic() {
+      const CH = {
+        C: [60, 64, 67], Am: [57, 60, 64], F: [53, 57, 60], G: [55, 59, 62], Dm: [50, 53, 57], Em: [52, 55, 59],
+        Bb: [58, 62, 65], D: [50, 54, 57], A: [57, 61, 64], Bm: [47, 50, 54], E: [52, 56, 59], B: [47, 51, 54],
+      };
+      const MOODS = {
+        happy: { bar: 2.5, slots: 4, box: 0.75, padLvl: 0.045, bass: [[0, 0, 0.7], [2, 2, 0.45]],
+          chords: ['C', 'Am', 'F', 'G', 'C', 'G', 'Am', 'F', 'C', 'G', 'F', 'C', 'Dm', 'G', 'C', 'Em'],
+          mel: [[76, 0, 79, 76], [74, 72, 0, 69], [72, 0, 69, 72], [74, 0, 71, 0], [76, 79, 84, 79], [77, 76, 74, 0], [72, 0, 76, 0], [77, 76, 72, 0],
+            [79, 0, 76, 72], [74, 0, 0, 79], [77, 0, 0, 72], [76, 0, 0, 0], [74, 0, 77, 0], [79, 0, 74, 0], [76, 79, 84, 0], [83, 79, 76, 0]],
+          end: [['F', [84, 0, 81, 77]], ['C', [76, 0, 72, 0]]], home: [72, 76, 79] },
+        calm: { bar: 3.2, slots: 4, box: 0.55, padLvl: 0.055, cutoff: 800, bass: [[0, 0, 0.55]],
+          chords: ['F', 'C', 'Dm', 'Bb', 'F', 'Am', 'Bb', 'C'],
+          mel: [[72, 0, 0, 69], [67, 0, 0, 0], [69, 0, 72, 0], [70, 0, 0, 0], [72, 0, 77, 0], [76, 0, 0, 72], [74, 0, 70, 0], [72, 0, 0, 0]],
+          end: [['C', [70, 0, 67, 0]], ['F', [69, 0, 0, 0]]], home: [65, 69, 72] },
+        magical: { bar: 2.8, slots: 8, box: 0.6, padLvl: 0.05, cutoff: 1100, bass: [[0, 0, 0.55], [4, 2, 0.35]], sparkle: 0.16,
+          chords: ['C', 'D', 'Am', 'F', 'C', 'Em', 'F', 'G'],
+          mel: [[76, 0, 0, 79, 0, 0, 83, 0], [78, 0, 0, 0, 74, 0, 0, 0], [76, 0, 0, 72, 0, 0, 69, 0], [72, 0, 0, 0, 0, 0, 0, 0],
+            [79, 0, 0, 76, 0, 0, 84, 0], [83, 0, 79, 0, 0, 0, 0, 0], [81, 0, 0, 77, 0, 0, 72, 0], [74, 0, 0, 0, 79, 0, 0, 0]],
+          end: [['F', [81, 0, 0, 77, 0, 0, 0, 0]], ['C', [79, 0, 0, 76, 0, 0, 0, 0]]], home: [72, 76, 79, 84] },
+        mystery: { bar: 3.0, slots: 4, box: 0.5, padLvl: 0.055, cutoff: 700, bass: [[0, 0, 0.6]], ping: 0.12,
+          chords: ['Am', 'F', 'Dm', 'E', 'Am', 'Dm', 'F', 'E'],
+          mel: [[64, 0, 0, 0], [0, 0, 65, 0], [62, 0, 0, 0], [0, 0, 68, 0], [64, 0, 0, 72], [69, 0, 0, 0], [0, 0, 72, 71], [68, 0, 0, 0]],
+          end: [['E', [68, 0, 71, 0]], ['Am', [69, 0, 0, 0]]], home: [57, 64, 69] },
+        adventure: { bar: 2.14, slots: 8, box: 0.62, padLvl: 0.04, cutoff: 1000, bass: [[0, 0, 0.5], [2, 2, 0.3], [4, 0, 0.45], [6, 2, 0.3]],
+          chords: ['D', 'A', 'Bm', 'G', 'D', 'A', 'G', 'A'],
+          mel: [[74, 0, 78, 0, 81, 0, 78, 0], [76, 0, 0, 73, 76, 0, 0, 0], [74, 0, 78, 0, 83, 0, 81, 0], [79, 0, 0, 0, 74, 0, 0, 0],
+            [81, 0, 78, 81, 86, 0, 81, 0], [85, 0, 81, 0, 76, 0, 0, 0], [79, 0, 83, 0, 86, 0, 83, 0], [81, 0, 0, 0, 85, 0, 0, 0]],
+          end: [['A', [85, 0, 81, 0, 76, 0, 0, 0]], ['D', [74, 0, 0, 0, 0, 0, 0, 0]]], home: [74, 78, 81] },
+        tense: { bar: 2.4, slots: 8, box: 0.5, padLvl: 0.05, cutoff: 650, bass: [[0, 0, 0.5]], pulse: 0.22,
+          chords: ['Em', 'Em', 'C', 'B', 'Em', 'Am', 'C', 'B'],
+          mel: [[0, 0, 0, 0, 71, 0, 0, 0], [72, 0, 71, 0, 0, 0, 0, 0], [0, 0, 0, 0, 76, 0, 0, 0], [75, 0, 0, 0, 0, 0, 71, 0],
+            [0, 0, 0, 0, 67, 0, 0, 0], [69, 0, 72, 0, 0, 0, 0, 0], [76, 0, 0, 0, 79, 0, 0, 0], [78, 0, 0, 0, 75, 0, 0, 0]],
+          end: [['B', [75, 0, 0, 0, 71, 0, 0, 0]], ['Em', [71, 0, 0, 0, 0, 0, 0, 0]]], home: [64, 67, 71] },
+        sad: { bar: 3.4, slots: 4, box: 0.55, padLvl: 0.05, cutoff: 750, bass: [[0, 0, 0.55], [2, 2, 0.3]],
+          chords: ['Am', 'F', 'C', 'E', 'Am', 'Dm', 'F', 'E'],
+          mel: [[76, 0, 74, 72], [72, 0, 0, 69], [67, 0, 72, 0], [71, 0, 0, 0], [72, 0, 71, 69], [69, 0, 65, 0], [64, 0, 65, 69], [68, 0, 0, 0]],
+          end: [['E', [71, 0, 68, 0]], ['Am', [69, 0, 0, 0]]], home: [57, 64, 69] },
+        bedtime: { bar: 2.7, slots: 3, box: 0.45, padLvl: 0.04, cutoff: 700, bass: [[0, 0, 0.45]],
+          chords: ['C', 'G', 'Am', 'F', 'C', 'F', 'G', 'C'],
+          mel: [[79, 76, 0], [74, 0, 71], [72, 76, 0], [77, 0, 72], [76, 79, 0], [77, 74, 0], [74, 0, 71], [72, 0, 0]],
+          end: [['G', [74, 0, 71]], ['C', [72, 0, 0]]], home: [60, 64, 67] },
+      };
+      const XF = 2, list = T.music[0].t > 0 ? [{ t: 0, mood: 'happy' }, ...T.music] : T.music;
+      // equal-power fades, so the music keeps its loudness through a cross-fade
+      const fade = (up, n = 32) => Float32Array.from({ length: n }, (_, i) => (up ? Math.sin : Math.cos)(i / (n - 1) * Math.PI / 2));
+      list.forEach((sec, i) => {
+        const M = MOODS[sec.mood], next = list[i + 1], t0 = sec.t, last = !next;
+        if (!M) return;   // 'none': the music before it simply fades out
+        const out = ctx.createGain(); out.connect(music);
+        // (a value curve may not share its start time with another event, so the curves alone shape the gain)
+        if (t0 > 0) { out.gain.value = 0; out.gain.setValueCurveAtTime(fade(true), at(t0), XF); }
+        if (next) out.gain.setValueCurveAtTime(fade(false), at(Math.max(t0 + XF, next.t)), XF);
+        const end = next ? Math.max(t0 + XF, next.t) + XF : T.duration - 0.5;
+        const nBars = Math.max(last ? 2 : 1, Math.ceil((end - t0) / M.bar)), slot = M.bar / M.slots;
+        for (let b = 0; b < nBars; b++) {
+          const fin = last && b >= nBars - 2, idx = b % M.chords.length, pass = Math.floor(b / M.chords.length);
+          const name = fin ? M.end[b - (nBars - 2)][0] : M.chords[idx], notes = fin ? M.end[b - (nBars - 2)][1] : M.mel[idx];
+          const t = at(t0 + b * M.bar), ch = CH[name];
+          pad(t, ch, M.bar, out, M.padLvl, M.cutoff || 900);
+          M.bass.forEach(([k, tone, v]) => musicBox(t + k * slot, ch[tone] - 12, v, out));
+          // on repeats the melody goes up an octave and plays lighter, as the classic music does
+          notes.forEach((m, k) => { if (m && !(pass % 2 && k % 2)) musicBox(t + k * slot, m + (pass % 2 ? 12 : 0), M.box * (pass % 2 ? 0.75 : 1), out); });
+          if (M.sparkle && !fin) for (let k = 0; k < 8; k++) musicBox(t + k * M.bar / 8 + M.bar / 16, ch[k % 3] + 24, M.sparkle, out);
+          if (M.ping && !fin && b % 2) musicBox(t + M.bar * 0.62, ch[0] + 24, M.ping, out);
+          if (M.pulse && !fin) for (let k = 0; k < 8; k++) musicBox(t + k * M.bar / 8, ch[0] - (k % 2 ? 0 : 12), M.pulse * (k % 2 ? 0.6 : 1), out);
+        }
+        if (last) { const h = at(t0 + (nBars - 1) * M.bar); M.home.forEach((m, k) => musicBox(h, m, 0.5 - k * 0.07, out)); }
+      });
     }
 
     // ---- sound effects ----

@@ -1,0 +1,289 @@
+# ============================================================
+#  Test: a 12-minute episode  (stress test for long videos)
+#  12 scenes, all five places, Ren and Yuki, every music mood.
+#  Check:  check-story.bat stories\test-12min.txt
+#  Make:   make-video.bat stories\test-12min.txt
+#  If it stops, carry on with:  resume-video.bat stories\test-12min.txt
+# ============================================================
+
+title: The Long Way Home
+
+scene: A Morning in the Meadow
+place: meadow
+time: day
+music: happy
+
+ren enters
++ narrator: Once upon a time, in a sunny meadow full of flowers, there lived a little fox called Ren.
+ren turns to you
+ren (happy): Hello! What a lovely morning for an adventure!
+narrator: Ren loved the meadow. Every morning, the birds sang and the flowers opened their petals to the sun.
+ren looks around
+ren (surprised): Hmm? I can hear somebody hopping!
+yuki enters from right
++ narrator: Over the hill came a little white bunny with a pink flower behind her ear.
+yuki (happy): Good morning, Ren! I was hoping to find you here!
+ren waves at yuki
+ren (happy): Good morning, Yuki! Do you want to go exploring with me today?
+yuki hops twice
+yuki (playful): Yes, yes, yes! Let's go all the way to the sea!
+narrator: And so the two friends set off together on a very long walk.
+ren (happy): I will bring my scarf, just in case it gets cold.
+yuki (playful): And I will bring my bravest hop!
+narrator: Ren laughed, and the two friends hopped and skipped down the little path.
+ren and yuki hop
+ren and yuki look at each other
+narrator: The meadow waved goodbye to them, and the butterflies fluttered along beside them for a little while.
+
+scene: The Shady Forest
+place: forest
+time: day
+music: calm
+
+narrator: First, the path led them into a cool and shady forest, where the trees were tall and the ferns were soft.
+yuki looks up
+yuki (surprised): Look at the sunbeams, Ren! They look like golden ribbons!
+ren looks up
+ren (happy): They are beautiful. The forest feels so peaceful today.
+narrator: They walked quietly between the trees, listening to the leaves whispering above them.
+ren walks to left slowly
+yuki hops to center
+yuki (shy): Ren, do you think there are other animals watching us?
+ren turns to yuki
+ren: Maybe a few curious squirrels. But they are very friendly.
+narrator: A little breeze danced through the branches, and the mushrooms seemed to nod hello.
+ren (surprised): Did that mushroom just wiggle?
+yuki (playful): Maybe it is saying hello to us!
+narrator: The mushroom did not say anything, but it did look very friendly indeed.
+yuki tilts its head
+yuki (playful): Hello, mushrooms! We are just passing through!
+yuki hops
+narrator: Deeper and deeper they went, following the winding sandy path between the great old trees.
+
+scene: The Forest at Dusk
+time: dusk
+music: mystery
+
+narrator: The two friends walked on and on, and slowly the light in the forest began to change.
+ren looks around
+ren (surprised): Oh! The sky is turning purple already.
+yuki walks to ren
+yuki (shy): It's getting a little dark in here. I don't like it very much.
+ren hugs yuki
++ narrator: Ren gave his friend a warm hug, and Yuki felt a little bit braver.
+ren (happy): Don't worry, Yuki. As long as we stay together, we are never lost.
+yuki (happy): You're right. Thank you, Ren.
+ren (playful): Besides, the dark is just the day having a little nap.
+yuki (happy): A nap? I like naps!
+narrator: And thinking about naps made the two of them giggle all the way along the path.
+narrator: Somewhere far ahead, they could hear the gentle sound of running water.
+ren and yuki look right
+ren (playful): Listen! I think there is a river over there!
+ren and yuki look up
+narrator: They held their breath and listened carefully, and the sound of the water grew louder and louder.
+
+scene: The Sparkling River
+place: river
+time: sunset
+music: adventure
+
+narrator: Sure enough, beyond the trees they found a wide river, sparkling in the evening sun.
+yuki hops twice
+yuki (happy): Wow! Look how the water shines!
+ren walks to right
+ren (happy): And there is a little wooden bridge, just for us!
+narrator: The river splashed and gurgled over the smooth round stones, as if it was laughing.
+yuki hops to left
+yuki (playful): I bet I can hop all the way across before you!
+ren (pouty): Hey, that's not fair! You have much bigger feet for hopping!
+narrator: Yuki giggled, and Ren couldn't help laughing too.
+yuki (happy): Okay, okay. Let's cross it together instead.
+ren (happy): Together is always better.
+narrator: A shiny fish jumped out of the water, as if it wanted to join the race too.
+ren and yuki hop
+ren walks to yuki
+narrator: Side by side, they crossed the little bridge and waved goodbye to the river.
+ren and yuki wave
+ren and yuki look right
+narrator: The little bridge creaked softly under their paws, and a family of frogs watched them from the reeds.
+
+scene: Night Falls
+time: night
+music: tense
+
+narrator: But by the time they reached the other side, the sun had gone down, and night was falling fast.
+yuki looks around
+yuki (sad): Ren, it's so dark now. How will we find our way?
+ren looks up
+ren (surprised): Hmm, I'm not sure. Everything looks different at night.
+narrator: The water rushed by in the dark, and the reeds rustled in the cold wind.
+yuki (shy): Maybe we should stay very close to each other.
+ren (happy): I'm right here, Yuki. I'm not going anywhere.
+yuki (shy): Promise?
+ren (happy): I promise. Foxes always keep their promises.
+ren turns to yuki
+ren: Good idea. Let's wait here for a moment and think.
+narrator: Then, high above the river, a tiny light began to twinkle.
+star appears
+star twinkles
+ren (surprised): Yuki, look up! A little star!
+yuki looks up
+narrator: The tiny light flickered and danced, as if it was trying very hard to say something important.
+
+scene: The Little Star
+music: magical
+
+narrator: The little star shone brighter and brighter, as if it wanted to help them.
+star glows
++ yuki (surprised): It's glowing! I think it's showing us the way!
+ren (happy): Let's follow it, Yuki!
+narrator: The star floated gently ahead of them, and the dark night didn't feel scary anymore.
+ren looks at the star
+yuki looks at the star
+yuki (happy): Thank you, little star!
+sparkles around yuki
+narrator: Little sparkles danced around Yuki, and she giggled with delight.
+yuki (playful): It tickles! The sparkles tickle!
+ren (happy): I have never seen a star so friendly before.
+narrator: The little star wiggled happily, glowing warm and golden in the night sky.
+hearts float up
+ren (playful): I think the star likes you, Yuki!
+star disappears
+narrator: And with a final twinkle, the star went to sleep behind a cloud.
+ren and yuki hop
+narrator: That night, the two friends slept under a blanket of stars, dreaming of snowy hills and sandy beaches.
+
+scene: The Snowy Hill
+place: snowy hill
+time: day
+music: happy
+
+narrator: The next morning, the friends woke up on the top of a snowy hill, all covered in soft white snow.
+yuki hops twice
+yuki (playful): Snow! I love the snow!
+ren looks around
+ren (surprised): Look, Yuki! Somebody built a snowman!
+narrator: The snowman had a carrot nose, two stone eyes, and a big happy smile.
+yuki walks to right
+yuki (happy): Hello, Mister Snowman! Are you cold?
+ren (playful): I don't think snowmen get cold, Yuki!
+yuki (pouty): Well, he looks a little bit cold to me.
+ren (playful): Then let's give him a big warm smile!
+narrator: So they both smiled their biggest smiles at the snowman, and the snowman smiled right back.
+narrator: Yuki laughed so hard that she fell over into the soft, sparkly snow.
+yuki feels happy
+ren walks to yuki
+ren (happy): Come on, let's make paw prints all the way down the hill!
+ren and yuki hop twice
+yuki tilts its head
+narrator: Ren and Yuki rolled and tumbled in the snow until their fur was covered in sparkling white flakes.
+
+scene: Wind on the Hill
+music: calm
+
+narrator: As they walked down the snowy hill, a soft wind began to blow, swirling the snowflakes around them.
+ren feels sleepy
+ren (sleepy): I'm getting a little tired. We have walked such a long way.
+yuki turns to ren
+yuki (happy): Let's rest for a moment. The view from here is so beautiful.
+narrator: From the hill, they could see the forest, the river, and, far away, a line of blue.
+yuki looks right
+yuki (surprised): Ren! Is that the sea over there?
+narrator: Far away, beyond the hills, the blue sea sparkled like a thousand tiny diamonds.
+yuki (happy): It's so big! Much bigger than the river!
+ren (happy): The sea is the biggest water in the whole world.
+ren feels happy
+ren (surprised): It is! We're almost there!
+narrator: With new energy in their paws, the two friends hurried on down the hill.
+ren and yuki exit to right
+narrator: The snowflakes swirled and twirled around them, like tiny dancers in the morning light.
+
+scene: The Beach
+place: beach
+time: day
+music: adventure
+
+ren enters from left
++ yuki enters from left to right
++ narrator: At last, the two friends ran out onto a wide, sandy beach.
+yuki hops twice
+yuki (happy): We made it! We really made it to the sea!
+ren (happy): Hooray! Listen to the waves, Yuki!
+narrator: The waves rolled in and out, and little shells glittered on the warm sand.
+ren walks to center
+ren (playful): I'm going to find the prettiest shell on the whole beach!
+yuki (pouty): Not if I find it first!
+narrator: Ren dug in the sand with his little paws, and Yuki peeked under a big round rock.
+ren (surprised): This one is shaped like a star!
+yuki (happy): Just like our little star friend!
+narrator: They searched up and down the beach, looking under every rock and every clump of seaweed.
+yuki tilts its head
+yuki (surprised): Ooh, this one is pink, just like my flower!
+ren walks to yuki
+ren (happy): It's perfect, Yuki. It looks just like you.
+ren and yuki hop
+narrator: They splashed in the little waves, chased the seagulls, and built a sandcastle with four tall towers.
+
+scene: Sunset by the Sea
+time: sunset
+music: sad
+
+narrator: The day went by, and soon the sun began to sink slowly into the sea.
+yuki looks right
+yuki (sad): Ren, I'm a little sad. Our adventure is almost over.
+ren turns to yuki
+ren (sad): I know. I wish it could last forever.
+narrator: They sat together and watched the sky turn orange and pink and gold.
+ren feels normal
+ren: But you know what, Yuki? Every ending is the start of something new.
+yuki (shy): Do you really think so?
+ren (happy): I know so. And every adventure is better with a friend.
+yuki (happy): Then let's always have our adventures together.
+narrator: The waves rolled in softly, as if they were agreeing with every word.
+ren (happy): And tomorrow, we can have a brand new adventure.
+yuki feels happy
+yuki hugs ren
++ narrator: Yuki smiled, and gave her friend the biggest hug of all.
+ren and yuki look right
+narrator: Slowly the sun dipped lower and lower, painting the whole sea with a soft golden light.
+
+scene: The Way Home
+place: meadow
+time: dusk
+music: calm
+
+narrator: Then, step by step and hop by hop, the two friends made their way back home to the meadow.
+ren and yuki look around
+yuki (happy): Our meadow! It feels so good to be home.
+ren (happy): It does. The flowers look like they missed us.
+yuki (playful): Hello, flowers! We're back!
+narrator: The flowers swayed gently in the evening breeze, as if they were waving hello.
+ren (sleepy): What a long, long day it has been.
+narrator: The fireflies were just waking up, and the first stars were peeking out of the sky.
+ren and yuki look up
++ yuki (surprised): Look, the little star is back!
+star appears
+star twinkles
+ren (happy): I think it came to say goodnight.
+narrator: The little star twinkled three times, as if to say, see you tomorrow.
+ren and yuki look at each other
+narrator: The night breeze carried the sweet smell of flowers, and the grass felt soft and warm beneath their paws.
+
+scene: Goodnight
+time: night
+music: bedtime
+
+narrator: And so the two tired friends lay down in the soft grass, under a sky full of stars.
+yuki feels sleepy
+yuki (sleepy): Goodnight, Ren. Thank you for the best day ever.
+ren feels sleepy
+ren (sleepy): Goodnight, Yuki. See you tomorrow.
+yuki (sleepy): Ren? Where shall we go tomorrow?
+ren (sleepy): Somewhere wonderful. I promise.
+narrator: And with that, the two friends closed their eyes and smiled in their sleep.
+narrator: The moon smiled down at them, and the fireflies glowed like tiny lanterns.
+star glows
++ narrator: And the little star kept watch over them, all night long.
+ren and yuki look up
+narrator: Far away, an owl hooted softly, and the whole meadow settled down to sleep.
+narrator: The end.

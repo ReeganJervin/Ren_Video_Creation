@@ -147,6 +147,72 @@ place: river
 narrator: Next, they found a sparkling river.
 ```
 
+## Scenes (for long episodes)
+
+Long stories are easier to write and watch in **scenes**. Start each scene with a `scene:` line and its name. Right after it, you can set the scene's place, time of day and music:
+
+```
+title: The Secret Forest
+
+scene: A Sunny Morning
+place: meadow
+time: day
+music: happy
+
+ren enters
++ narrator: One sunny morning, Ren went out to play.
+
+scene: Into the Forest
+place: forest
+time: dusk
+music: mystery
+
+narrator: The forest was quiet, and the shadows were growing long.
+```
+
+- When a scene goes to a new place, the page turns as usual, and its new time of day is already there when the page comes back.
+- When a scene stays in the same place, its `time:` line changes the sky slowly, as always.
+- Scenes are optional. A story without `scene:` lines works exactly as before.
+- Lines before the first `scene:` line make an opening scene named after the story's title.
+
+**Chapters for YouTube:** when a story has at least 3 scenes, each at least 10 seconds long, making the video also writes `videos\<name>-chapters.txt`, for example:
+
+```
+0:00 A Sunny Morning
+0:23 Into the Forest
+0:46 The Wishing Star
+```
+
+Paste these lines into the YouTube description, and YouTube shows them as chapters. If the scenes don't meet those rules, the report says why and no chapters file is made.
+
+**Extra checks for stories with scenes** (in the report and in `check-story.bat`):
+- each scene should be at least 20 seconds long (a warning if it's shorter)
+- something must happen (a voice line or an action) at least every 90 seconds
+- whether chapters could be made
+
+## Music
+
+Music plays through every story. With `music:` you choose its mood:
+
+| Line | What it sounds like |
+|---|---|
+| `music: happy` | The usual cheerful music-box tune |
+| `music: calm` | Slow and peaceful, with soft warm chords |
+| `music: magical` | Twinkling high notes over dreamy chords, for wonder and magic |
+| `music: mystery` | Quiet, low and curious, for exploring and secrets |
+| `music: adventure` | Faster and bouncy, for setting off and searching |
+| `music: tense` | A soft ticking pulse, for suspense (still gentle, never scary) |
+| `music: sad` | Slow and tender, in a minor key |
+| `music: bedtime` | A quiet lullaby |
+| `music: none` | The music fades away |
+
+Write `music:` at the top of the story, at the start of a scene, or anywhere in the middle. When the mood changes, the old music fades out as the new one fades in, over about 2 seconds. A story without `music:` lines plays the usual music, exactly as before.
+
+```
+narrator: Suddenly, the ground began to shake!
+music: tense
+```
+
 ## Scene and camera
 
 | Line | What happens |
@@ -159,7 +225,7 @@ narrator: Next, they found a sparkling river.
 
 You don't write sounds. They come from the actions:
 
-- Music-box music runs through the whole story. It's quieter while someone talks and fades out at the end.
+- Music-box music runs through the whole story (choose its mood with `music:`, see "Music" above). It's quieter while someone talks, comes up a little in the pauses between lines, and fades out at the end.
 - Hops make boings (Yuki's are lighter and higher), and walking rustles the grass.
 - Title letters chime, hearts pop, and star moments twinkle and sparkle.
 - Each place has its own sound: a breeze and birds in the meadow, birds and leaves in the forest, flowing water at the river, wind on the snowy hill and waves at the beach.
