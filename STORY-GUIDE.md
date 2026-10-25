@@ -29,7 +29,7 @@ ren (surprised): Whoa! A little fallen star!
 | Line | What it does |
 |---|---|
 | `title: My Story Name` | The story's name, shown in the preview |
-| `place: meadow` | Where the story starts: `meadow`, `forest`, `river`, `snowy hill` or `beach` (see "Places" below) |
+| `place: meadow` | Where the story starts: `meadow`, `forest`, `river`, `snowy hill`, `beach` or `cottage garden` (see "Places" below) |
 | `time: sunset` | How the sky starts: `day`, `sunset`, `dusk` or `night` |
 
 ## The characters
@@ -240,6 +240,7 @@ The check also warns about pictures that are very large (over 4000 pixels), plac
 | `river` | A wide river with a wooden footbridge, reeds and stones; the sun and moon shine on the water | Flowing water |
 | `snowy hill` | Snowy hills and pine trees, a snowman, paw prints and sparkling snow | A soft wind |
 | `beach` | The sea, waves washing up on the sand, shells and a palm tree; a beautiful sunset over the water | Gentle waves |
+| `cottage garden` | A lawn with a white picket fence, a little wooden gate, stepping stones, flower beds along the fence and an apple tree; butterflies by day, fireflies at night. Add `cottage appears at center` for the cottage behind the gate | A breeze, and birds in the day and at sunset |
 
 Every place works at every time of day (`day`, `sunset`, `dusk`, `night`).
 
