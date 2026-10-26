@@ -133,7 +133,7 @@ Work through the steps **in this order**. The F-numbers are names, not the order
 | 5 | **Milestone 1** (full test) | In progress | |
 | 6 | **F11 YouTube kit** (thumbnails, subtitles, description, series intro, end screen) | Done (approved) | `b86d4fb` (F11A), F11B (see git log) |
 | 7 | F7 Vertical 9:16 and Shorts (reuses F11's thumbnails, subtitles and description) | Done (Parts A and B approved) | F7A (see git log) |
-| 8 | **F12 Expression pack** (new moods, thought/whisper/shout bubbles, mood voices) | Part A done (approved); Part B next | |
+| 8 | **F12 Expression pack** (new moods, thought/whisper/shout bubbles, mood voices) | Done (Parts A and B approved) | |
 | 9 | F3 Rig 2.0 (joints, movement library, lip-sync), in **4 review stops** | Not started | |
 | 10 | F4 Asset Kit, Part D: prop acting, Season 1 props, extras landing on set pieces (needs F3) | Not started | |
 | 11 | **Milestone 2.** The owner then makes the real **Episode 1** | Not started | |
@@ -662,7 +662,7 @@ Each effect has its own sound and uses the lighting system from F5. All of them 
 - **Moods** in `engine/characters.js` (Ren and Yuki), as values the drawings already understand plus new ones: `lookX`, `tilt`, `lift` (chin up, standing taller), `lean` (away from the facing direction), `bounce`, `shake`, `tremble` (film.js moves the body), `tears`, `firm` (level brows). New eye kinds: `sparkle` (star highlights), `proud` (half lid, cheeks pushing the lower lid up), `worried` and `teary` (lids higher toward the nose), `determined` (lids lower toward the nose), `scared` (white all round a smaller brown iris that quivers). New mouths: `smirk`, `hmm`, `wobble` (trembles), `gasp`, `set`, `laugh`, each with its own talking shape (laughing talks wide open, determined talks with a firm square opening, worried/scared/crying talk with the small wobbly mouth).
 - **Tears:** a short tear track from the outer half of the lower lid that follows the curve of the cheek, ending in a glistening, slightly see-through drop that swells a little; wet eyes with water pooling at the lower lid. Restrained on purpose (section 0.6): no waterfalls, no horror faces. **Scared** eyes keep a clear shine and a small second glint, so they never look blank (both from the owner's review).
 - **Thinking:** the near paw goes to the chin in every view (Ren: the arm turns from the shoulder to the chin; Yuki: the existing paw-pose system). In Ren's side view the paw is drawn over the scarf.
-- **Extras** get the new mood names; they show the nearest older mood (`FALLBACK` in characters.js), and `--check` notes it ("the owl has no \"laughing\" face, so it looks happy").
+- **Extras** get the new mood names; they show the nearest older mood (`FALLBACK` in characters.js), and `--check` notes it (the owl has no "laughing" face, so it looks happy).
 - **Giggle:** `laughing` adds a soft `giggle` sound effect after the line (or when `feels laughing` starts); Yuki's is higher than Ren's. Peaks -14 to -20 dB in the effects stem; every check passes.
 - Auto editing also cuts to a reaction for `scared` and `crying` lines (as for surprised, shy and sad).
 - Thumbnails also prefer `excited` (as surprised) and `laughing`, `proud`, `determined` faces.
@@ -685,6 +685,15 @@ Each effect has its own sound and uses the lighting system from F5. All of them 
 4. **Docs and example:** STORY-GUIDE.md sections "Moods" and "Ways of talking", plus `stories/feelings-demo.txt` (about 90 s) using every mood and bubble style, with one funny scene and one serious, emotional scene.
 
 **Acceptance:** the demo passes all checks, R1 holds, and the owner approves the voice samples (one line in each mood, for Ren and Yuki).
+
+**As built (F12B):**
+- **Ways of talking** in the brackets, alone or with a mood (`ren (shouts, excited): …`): `thinks` (cloud bubble with circles to the head; voice -3 dB, a little slower, gentle echo), `thinks silently` (the cloud, no voice, up 0.9 s + 0.3 s a word, at least 1.8 s; it is not a voice line, so voice numbering and the bubble check skip it), `whispers` (86 % size, paler, dashed outline; voice -5 dB, a little slower, breath), `shouts` (spiky burst, 106 %, wedge tail; voice +2.5 dB, 8 % faster, a little higher; the camera shakes a little for 0.5 s as the voice starts).
+- **Voices per line** (`lineVoice` in tools/story-check.js, used by make-video and the studio): `config/voices.json` has `_styles` and `_moods` (speed and pitch multiply, gain in dB adds, `breath` and `echo` are effects); a voice can override moods with its own `moods`. Effects are ffmpeg filters on the raw clip: pitch as before, `aecho` + lowpass for echo, and for breath a pink noise gated by the voice itself (sidechaingate), band-passed, with less low end on the voice. The cache key includes the mood and way of talking only when they change something, so all existing clips are reused.
+- **Mood voices** are off unless a story says `mood voices: on`; the template (and so the studio's new stories) has it on. Existing stories sound exactly as before.
+- **Music:** `epic` (heroic tune, cello, soft drums) and `heartfelt` (slow singing tune with a cello); `music: deep tense` and `music: deep sad` add a low cello (and for tense a soft heartbeat drum) and a fuller pad. Measured on the music stem: epic -24.0, heartfelt -24.7, deep tense -23.9, deep sad -24.2 LUFS (the others -24.0 to -25.1, bedtime -26.8).
+- `tools/voice-sample.js <character> --moods`: one line in every mood and way of talking, each named by the narrator.
+- Studio: completions for the ways of talking (after `ren (`), `mood voices:`, and `deep tense` / `deep sad`.
+- Example: `stories/feelings-demo.txt` (every mood and way of talking; a funny scene and a serious one with deep tense, deep sad, heartfelt and epic music).
 
 **Commit message:** `F12B: thought, whisper and shout bubbles, mood voices`
 

@@ -20,7 +20,7 @@ const { parseStory, compileStory, PICTURES, CHARACTERS } = require('../engine/st
 const { readWav } = require('./wav');
 const { validate } = require('./validate');
 const { clock, hasScenes, chapters, sceneChecks } = require('./scenes');
-const { readVoices, storyName, addMissingVoices, cachedVoice, levelledVoice, overrideFile, VOICE_LUFS, folderDefaults } = require('./story-check');
+const { readVoices, storyName, addMissingVoices, lineVoice, cachedVoice, levelledVoice, overrideFile, VOICE_LUFS, folderDefaults } = require('./story-check');
 const { youtubeFiles } = require('./youtube');
 const { episodeSource, applyWindow, sliceWav, shortLength } = require('./shorts');
 
@@ -53,7 +53,7 @@ async function main() {
     say(`An episode Short from ${short.source}`);
   }
   const shortView = plan => { try { return short ? applyWindow(plan, short) : plan; } catch (e) { return fail(e.message); } };
-  const speech = parsed.beats.filter(b => b.type === 'say');
+  const speech = parsed.beats.filter(b => b.type === 'say' && !b.silent);   // (a silent thought has no voice)
   // an extra that speaks needs a voice in config/voices.json: without one, the voice is missing too
   const voices = readVoices();
   addMissingVoices(parsed, voices);
@@ -83,13 +83,14 @@ async function main() {
   fs.mkdirSync(voiceDir, { recursive: true }); fs.mkdirSync(cacheDir, { recursive: true });
   const lens = {}, jobs = [], pending = [];
   speech.forEach((b, i) => {
-    const v = voices[b.who], out = path.join(voiceDir, `${i}.wav`);
+    const v = lineVoice(b, voices, parsed.meta), out = path.join(voiceDir, `${i}.wav`);
     const override = overrideFile(name, b.line);
     if (fs.existsSync(override)) { levelVoice(override, out); say(`  using your recording for line ${b.line}`); return; }
     if (!v) { if (fs.existsSync(out)) fs.unlinkSync(out); return; }   // no voice yet: estimated timing, no sound
     const cached = cachedVoice(b.text, v);
-    pending.push({ cached, out, pitch: v.pitch, gain: v.gain || 0 });
-    if (!fs.existsSync(cached)) jobs.push({ text: b.text, voice: v.voice, speed: v.speed, out: cached + (v.pitch !== 1 ? '.raw.wav' : '') });
+    const fx = v.pitch !== 1 || v.echo || v.breath;
+    pending.push({ cached, out, pitch: v.pitch, gain: v.gain || 0, echo: v.echo, breath: v.breath });
+    if (!fs.existsSync(cached)) jobs.push({ text: b.text, voice: v.voice, speed: v.speed, out: cached + (fx ? '.raw.wav' : '') });
   });
   if (jobs.length) {
     say(`Making ${jobs.length} voice line(s)...`);
@@ -103,12 +104,7 @@ async function main() {
     if (r.status !== 0) fail('Making the voices failed (see the message above).');
     for (const p of pending) {
       const raw = p.cached + '.raw.wav';
-      if (p.pitch !== 1 && fs.existsSync(raw)) {
-        // Ren's brighter voice: raise pitch, keep timing.
-        const sr = readWav(raw).rate;
-        spawnSync(ffmpeg, ['-loglevel', 'error', '-y', '-i', raw, '-af', `asetrate=${Math.round(sr * p.pitch)},aresample=${sr},atempo=${(1 / p.pitch).toFixed(5)}`, p.cached]);
-        fs.unlinkSync(raw);
-      }
+      if (fs.existsSync(raw)) { voiceEffects(raw, p.cached, p); fs.unlinkSync(raw); }
     }
   }
   // every line at the same loudness, whichever voice says it (levelled once, kept beside the cached clip)
@@ -336,6 +332,21 @@ function levelVoice(src, dst, voiceGain = 0) {
   const tmp = dst + '.part.wav';
   spawnSync(ffmpeg, ['-loglevel', 'error', '-y', '-i', src, '-af', ramp, '-c:a', 'pcm_s16le', tmp]);
   fs.renameSync(tmp, dst);
+}
+
+// A voice clip's own sound: its pitch (Ren's brighter voice: raise pitch, keep timing), a gentle echo (thinking out
+// loud) and breath (whispers, scared lines: a soft hiss that follows the voice, and less low end).
+function voiceEffects(raw, out, p) {
+  const sr = readWav(raw).rate, chain = [];
+  if (p.pitch !== 1) chain.push(`asetrate=${Math.round(sr * p.pitch)},aresample=${sr},atempo=${(1 / p.pitch).toFixed(5)}`);
+  if (p.echo) chain.push('aecho=0.8:0.55:70|140:0.22|0.12', 'lowpass=f=6500');
+  const v = chain.join(',') || 'anull';
+  const graph = !p.breath ? `[0:a]${v}[v]`
+    : `[0:a]${v},asplit=2[dry][key];anoisesrc=r=${sr}:color=pink:amplitude=0.5[n];` +
+      `[n][key]sidechaingate=threshold=0.015:ratio=8:attack=5:release=60,highpass=f=1800,lowpass=f=7000,volume=${(p.breath * 0.35).toFixed(3)}[hiss];` +
+      `[dry]highpass=f=${Math.round(150 + 250 * p.breath)}[body];[body][hiss]amix=inputs=2:duration=first:normalize=0[v]`;
+  const r = spawnSync(ffmpeg, ['-loglevel', 'error', '-y', '-i', raw, '-filter_complex', graph, '-map', '[v]', '-c:a', 'pcm_s16le', out]);
+  if (r.status !== 0) fail(`Changing a voice line's sound failed: ${String(r.stderr).trim()}`);
 }
 
 // Voice lines that make the short-term loudness of the mix (3 s window, as in the "No sudden volume changes" check)

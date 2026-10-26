@@ -92,7 +92,7 @@ function checkText(file, text) {
   // voice lines already made: recordings in voice-overrides/, or levelled clips in cache/voices/
   const lens = {}, files = {};
   r.speech.forEach((b, i) => {
-    const v = r.voices[b.who], over = check.overrideFile(name, b.line);
+    const v = check.lineVoice(b, r.voices, r.parsed.meta), over = check.overrideFile(name, b.line);
     let f = null;
     if (fs.existsSync(over)) f = over;
     else if (v) { const lv = check.levelledVoice(check.cachedVoice(b.text, v), v.gain || 0); if (fs.existsSync(lv)) f = lv; }

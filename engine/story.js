@@ -23,7 +23,9 @@
   const POS = { left: 560, center: 960, right: 1360 };
   const OFF = { left: -280, right: 2200 };
   const TIMES = { day: 0, sunset: 1, dusk: 2, night: 3 };
-  const MUSIC = ['happy', 'calm', 'magical', 'mystery', 'adventure', 'tense', 'sad', 'bedtime', 'none'];
+  const MUSIC = ['happy', 'calm', 'magical', 'mystery', 'adventure', 'tense', 'sad', 'bedtime', 'epic', 'heartfelt', 'none'];
+  // ways of talking, written with a mood or alone: "ren (shouts, excited): …", "yuki (thinks silently): …"
+  const STYLES = { thinks: 'think', think: 'think', 'thinks silently': 'think', whispers: 'whisper', whisper: 'whisper', shouts: 'shout', shout: 'shout' };
   const KS = 1.15;              // character scale (fixed)
   const GAP = 280;              // closest two characters may stand (centre to centre)
   const HUG = 230;              // cheek to cheek
@@ -33,6 +35,7 @@
 
   const HELP = [
     'narrator: <text>', '<name>: <text>', `<name> (${MOODS.slice(1).join('|')}): <text>`,
+    '<name> (thinks|thinks silently|whispers|shouts): <text>', '<name> (shouts, <mood>): <text>', 'mood voices: on|off',
     '<name> enters [from left|right] [to left|center|right]', '<name> walks to left|center|right', '<name> walks to <other name>',
     '<name> exits [to] left|right', '<name> hops [twice]', '<name> waves', '<name> looks up|down|left|right|around|at you|at the star|at the heart',
     '<name> looks at <other name>', '<name> turns to you', '<name> turns to <other name>', '<name> tilts its head',
@@ -41,7 +44,7 @@
     'star appears', 'star falls', 'star glows', 'star twinkles', 'star rises', 'star disappears',
     'hearts float up', 'heart floats down', 'sparkles [around <name>]', 'title card: <WORD>',
     `place: ${PLACES.names().join('|')}`, 'time: day|sunset|dusk|night', 'camera: wide|close|closer', 'wait <seconds>',
-    'scene: <name>', `music: ${MUSIC.join('|')}`, 'thumbnail: auto|<seconds>|scene <number>', 'thumbnail shot: wide|medium|close', 'thumbnail text: <text>',
+    'scene: <name>', `music: ${MUSIC.join('|')}`, 'music: deep tense|deep sad', 'thumbnail: auto|<seconds>|scene <number>', 'thumbnail shot: wide|medium|close', 'thumbnail text: <text>',
     'format: wide|vertical', 'type: short|episode short', 'captions: narrator|all|off', 'loop: on', 'sting', 'hook: <text>', 'framing: close|medium|wide',
     'from: <story>', 'scenes: <number>|<number>-<number>', 'lines: <number>-<number>', 'ending: <text> (the end card of a Short)', 'intro: series|none|after scene <number>', 'ending: end screen|none', 'ending text: <text>',
     'shot: wide|medium|close|extreme close [on <name>|both|the star]', 'shot: over the shoulder of <name>',
@@ -99,14 +102,14 @@
 
   // Extras: names in the story that enter, fly, swim, hop or talk but aren't characters. Known extras come from
   // the asset registry; unknown ones are missing extras, shown as placeholders. Typos of known names are errors.
-  const KEYS = /^(title|title card|place|time|camera|shot|scene|music|editing|reveal|narrator|wait|pause|weather|light|format|type|thumbnail|thumbnail text|thumbnail shot|intro|ending|ending text|type|captions|loop|from|scenes|lines|hook|framing|sting)$/;
+  const KEYS = /^(title|title card|place|time|camera|shot|scene|music|editing|reveal|narrator|wait|pause|weather|light|format|type|thumbnail|thumbnail text|thumbnail shot|intro|ending|ending text|type|captions|loop|from|scenes|lines|hook|framing|sting|mood voices)$/;
   function findExtras(lines, errors) {
     const found = {};
     lines.forEach((raw, i) => {
       const line = raw.trim().replace(/^\+\s*/, '');
       if (!line || line.startsWith('#')) return;
       const act = line.match(/^(?:the |a |an )?([a-z][a-z' ]{0,30}?)\s+(enters?|exits?|leaves?|flies|fly|floats?|swims?|hops?|lands?|takes? off)\b/i);
-      const talk = line.match(/^([a-z][a-z' ]{0,30}?)\s*(?:\(\s*[a-z]+\s*\))?\s*:\s*\S/i);
+      const talk = line.match(/^([a-z][a-z' ]{0,30}?)\s*(?:\(\s*[a-z ,]+\s*\))?\s*:\s*\S/i);
       const n = ASSETS.norm((act || talk || [])[1] || '');
       if (!n || n.split(' ').length > 3 || KEYS.test(n) || / and /.test(` ${n} `) || CHARACTERS[n] || /^(star|stars|heart|hearts|sparkles?)$/.test(n)) return;
       if (ASSETS.find(n, 'prop') || ASSETS.find(n, 'place')) return;
@@ -279,10 +282,18 @@
         beats.push({ type: 'scene', line: lineNo, together: false, src: raw.trim(), name });
         return;
       }
-      if ((m = line.match(/^music\s*:\s*(\w+)$/i))) {
-        const v = m[1].toLowerCase();
-        if (!MUSIC.includes(v)) return err(`Unknown music "${m[1]}". Use: ${MUSIC.join(', ')}`);
-        if (!started) meta.music = v; else beat('music', { mood: v });
+      if ((m = line.match(/^music\s*:\s*(deep\s+)?(\w+)$/i))) {
+        const v = m[2].toLowerCase(), deep = !!m[1];
+        if (!MUSIC.includes(v)) return err(`Unknown music "${m[2]}". Use: ${MUSIC.join(', ')}`);
+        // deeper, fuller and more dramatic (a low cello and soft drums), still never horror
+        if (deep && !/^(tense|sad)$/.test(v)) return err(`"deep" works with tense and sad music: music: deep tense, or music: deep sad`);
+        if (!started) { meta.music = v; if (deep) meta.musicDeep = true; } else beat('music', deep ? { mood: v, deep } : { mood: v });
+        return;
+      }
+      if ((m = line.match(/^mood voices\s*:\s*(.+)$/i))) {
+        const v = m[1].trim().toLowerCase();
+        if (!/^(on|off)$/.test(v)) return err(`Use: mood voices: on, or mood voices: off`);
+        meta.moodVoices = v === 'on';
         return;
       }
       if ((m = line.match(/^time\s*:\s*(\w+)$/i))) {
@@ -318,13 +329,19 @@
         if (!z) return err(`Unknown camera "${m[1]}". Use: wide, close or closer`);
         return beat('camera', { zoom: z });
       }
-      if ((m = line.match(new RegExp(`^(narrator|${NAME})\\s*(?:\\(\\s*([a-z]+)\\s*\\))?\\s*:\\s*(.+)$`, 'i')))) {
-        const who = m[1].toLowerCase(), mood = m[2] && m[2].toLowerCase(), say = m[3].trim();
-        if (mood && who === 'narrator') return err('The narrator has no mood. Remove the (…) part.');
-        if (mood && !MOODS.includes(mood)) return err(`Unknown mood "${m[2]}". Use: ${MOODS.join(', ')}`);
+      if ((m = line.match(new RegExp(`^(narrator|${NAME})\\s*(?:\\(\\s*([a-z ,]+?)\\s*\\))?\\s*:\\s*(.+)$`, 'i')))) {
+        const who = m[1].toLowerCase(), say = m[3].trim();
+        if (m[2] && who === 'narrator') return err('The narrator has no mood or way of talking. Remove the (…) part.');
+        // the (…) part: a mood, a way of talking, or both ("shouts, excited")
+        let mood = null, style = null, silent = false;
+        for (const w of (m[2] || '').toLowerCase().split(',').map(x => x.trim().replace(/\s+/g, ' ')).filter(Boolean)) {
+          if (STYLES[w]) { if (style) return err('A line can only have one way of talking (thinks, whispers or shouts).'); style = STYLES[w]; silent = w === 'thinks silently'; }
+          else if (MOODS.includes(w)) { if (mood) return err('A line can only have one mood.'); mood = w; }
+          else return err(`Unknown mood or way of talking "${w}". Moods: ${MOODS.join(', ')}. Ways of talking: thinks, thinks silently, whispers, shouts`);
+        }
         if (say.length > 160) return err('This line is too long (max 160 characters). Split it into two lines.');
         if (EXTRAS[toId(who)]) { const e = Object.values(found).find(f => f.id === toId(who)); if (!e.asset) needs('extra', e.name, 'speaks'); }
-        return beat('say', { who, mood, text: say });
+        return beat('say', { who, mood, text: say, ...(style ? { style } : {}), ...(silent ? { silent } : {}) });
       }
       if ((m = line.match(/^(?:wait|pause)\s+([\d.]+)\s*(?:s|sec|seconds?)?$/i))) return beat('wait', { secs: Math.min(20, parseFloat(m[1])) });
       // a short pause for comic timing
@@ -604,7 +621,7 @@
       a.toYou = false;
     }
     const talks = [];   // conversation lines: who spoke to whom, used to turn them toward each other
-    const scenes = [], music = meta.music ? [{ t: 0, mood: meta.music }] : [];
+    const scenes = [], music = meta.music ? [{ t: 0, mood: meta.music, ...(meta.musicDeep ? { deep: true } : {}) }] : [];
     // shots and camera moves (a story without them keeps the classic automatic camera)
     const shotMode = beats.some(b => /^(shot|cam|reveal)$/.test(b.type)) || meta.editing === 'auto', shots = [];
     // what a shot or move looks at: { all } on-stage characters, { actors }, { star } or a stage spot { x }
@@ -667,12 +684,21 @@
       }
       switch (b.type) {
         case 'say': {
+          if (b.silent) {
+            // a silent thought: the thought bubble alone, up long enough to read (no voice)
+            const a = A[b.who], o = others(a)[0], read = Math.max(1.8, 0.9 + b.text.split(/\s+/).length * 0.3);
+            focus = a.id;
+            P.bubbles.push({ who: a.id, text: b.text, t0: s, t1: s + read + 0.6, side: o ? (a.x >= o.x ? 1 : -1) : (a.x >= 960 ? -1 : 1), style: 'think', silent: true });
+            if (b.mood) { a.out.exprs.push({ a: s, b: s + read + 0.3, mood: b.mood }); moodNote(a, b.mood, b.line); }
+            dur = read + 0.4 * PACE;
+            break;
+          }
           const len = lens[P.voice.length] || estimate(b.text);
           const a = b.who === 'narrator' ? null : A[b.who];
           const vt = a ? s + 0.15 : s;
           if (voiceWins.some(([x, e]) => vt < e && vt + len > x)) errors.push(`Line ${b.line}: two voices would talk at the same time. Remove the "+" so this line waits its turn.`);
           voiceWins.push([vt, vt + len]);
-          P.voice.push({ id: P.voice.length, who: b.who, text: b.text, t: vt, len, line: b.line });
+          P.voice.push({ id: P.voice.length, who: b.who, text: b.text, t: vt, len, line: b.line, ...(b.style ? { style: b.style } : {}) });
           // big word-by-word captions (Shorts): a few words at a time, each on screen for its share of the line
           if (CAPS === 'all' || CAPS === 'narrator' && b.who === 'narrator') {
             const words = b.text.split(/\s+/), groups = [];
@@ -690,7 +716,7 @@
             const o = others(a)[0];
             const side = o ? (a.x >= o.x ? 1 : -1) : (a.x >= 960 ? -1 : 1);
             if (o) talks.push({ t0: s, t1: vt + len, pairs: [[a, toward(a, o)], [o, toward(o, a)]].filter(([q]) => !q.toYou) });
-            P.bubbles.push({ who: a.id, text: b.text, t0: s, t1: Math.max(vt + len + 0.9, s + 2.8), side, emph: /!/.test(b.text) && /^(whoa|wow|oh|look|yay|hooray)/i.test(b.text) });
+            P.bubbles.push({ who: a.id, text: b.text, t0: s, t1: Math.max(vt + len + 0.9, s + 2.8), side, emph: !b.style && /!/.test(b.text) && /^(whoa|wow|oh|look|yay|hooray)/i.test(b.text), ...(b.style ? { style: b.style } : {}) });
             if (b.mood) { a.out.exprs.push({ a: s, b: vt + len + 0.3, mood: b.mood }); moodNote(a, b.mood, b.line); }
             // laughing: a soft giggle right after the line (not over the voice)
             if (b.mood === 'laughing') sfx('giggle', vt + len + 0.05, { who: a.id });
@@ -906,7 +932,7 @@
           scenes.push(scene);
           break;
         }
-        case 'music': music.push({ t: b.head ? scene.t0 : s, mood: b.mood, line: b.line }); break;
+        case 'music': music.push({ t: b.head ? scene.t0 : s, mood: b.mood, line: b.line, ...(b.deep ? { deep: true } : {}) }); break;
         case 'slow':
           if (slow) errors.push(`Line ${b.line}: there are two "slow motion" lines in a row.`);
           slow = { secs: b.secs, line: b.line };
@@ -1197,6 +1223,6 @@
   }
   function estimate(text) { return 0.45 + text.split(/\s+/).length * 0.36; }
 
-  const api = { parseStory, compileStory, evalKeys, feetY, HELP, POS, CHARACTERS, MOODS, FALLBACK, MUSIC, PICTURES };
+  const api = { parseStory, compileStory, evalKeys, feetY, HELP, POS, CHARACTERS, MOODS, FALLBACK, MUSIC, STYLES, PICTURES };
   if (typeof module !== 'undefined') module.exports = api; else root.StudioStory = api;
 })(this);

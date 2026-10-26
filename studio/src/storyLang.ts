@@ -6,7 +6,7 @@ import type { CompletionContext, CompletionResult, Completion } from '@codemirro
 import type { Vocab } from './api';
 
 const T = { scene: Tag.define(), setting: Tag.define(), value: Tag.define(), narrator: Tag.define(), ren: Tag.define(), yuki: Tag.define(), speaker: Tag.define(), speech: Tag.define(), action: Tag.define() };
-const SETTINGS = /^\s*(thumbnail text|thumbnail shot|thumbnail|ending text|ending|intro|format|type|captions|loop|hook|framing|from|scenes|lines|title card|title|place|time|music|camera|shot|editing|reveal)\s*:/i;
+const SETTINGS = /^\s*(thumbnail text|thumbnail shot|thumbnail|ending text|ending|intro|format|type|captions|loop|hook|framing|from|scenes|lines|mood voices|title card|title|place|time|music|camera|shot|editing|reveal)\s*:/i;
 
 interface LineState { head: boolean; speech: boolean; setting: boolean }
 export const storyLanguage = StreamLanguage.define<LineState>({
@@ -68,15 +68,16 @@ export function storyCompletions(getVocab: () => Vocab | null) {
     const word = /[\w' ]*$/;
     let m: RegExpMatchArray | null;
     // settings: place:, time:, music:, and a Short's type:, captions:, loop:, framing:
-    if ((m = before.match(/^\s*(place|time|music|thumbnail|thumbnail shot|intro|ending|format|type|captions|loop|framing)\s*:\s*([\w ]*)$/i))) {
-      const lists: Record<string, string[]> = { place: v.places, time: v.times, music: v.music, thumbnail: ['auto', 'scene 1'], 'thumbnail shot': ['medium', 'close', 'wide'], intro: ['series', 'after scene 1', 'none'], ending: ['end screen', 'none'], format: ['wide', 'vertical'], type: ['short', 'episode short'], captions: ['narrator', 'all', 'off'], loop: ['on'], framing: ['close', 'medium', 'wide'] };
+    if ((m = before.match(/^\s*(place|time|music|thumbnail|thumbnail shot|intro|ending|format|type|captions|loop|framing|mood voices)\s*:\s*([\w ]*)$/i))) {
+      const lists: Record<string, string[]> = { place: v.places, time: v.times, music: [...v.music, 'deep tense', 'deep sad'], thumbnail: ['auto', 'scene 1'], 'thumbnail shot': ['medium', 'close', 'wide'], intro: ['series', 'after scene 1', 'none'], ending: ['end screen', 'none'], format: ['wide', 'vertical'], type: ['short', 'episode short'], captions: ['narrator', 'all', 'off'], loop: ['on'], framing: ['close', 'medium', 'wide'], 'mood voices': ['on', 'off'] };
       const list = lists[m[1].toLowerCase().replace(/\s+/g, ' ')];
       return { from: cx.pos - m[2].length, options: list.map(x => opt(x, m![1].toLowerCase(), 'enum')), validFor: word };
     }
     const actors = [...v.characters, ...v.extras], who = actors.join('|').replace(/ /g, '\\s+');
-    // a mood after "ren (" -> "ren (happy): "
-    if ((m = before.match(new RegExp(`^\\s*\\+?\\s*(${who})\\s*\\(\\s*([a-z]*)$`, 'i')))) {
-      return { from: cx.pos - m[2].length, options: v.moods.map(x => ({ label: x, apply: x + '): ', detail: 'mood', type: 'enum' })), validFor: /^[a-z]*$/ };
+    // a mood or a way of talking after "ren (" -> "ren (happy): ", "ren (whispers): "
+    if ((m = before.match(new RegExp(`^\\s*\\+?\\s*(${who})\\s*\\(\\s*([a-z ]*)$`, 'i')))) {
+      const ways = ['thinks', 'thinks silently', 'whispers', 'shouts'].map(x => ({ label: x, apply: x + '): ', detail: 'way of talking', type: 'enum' }));
+      return { from: cx.pos - m[2].length, options: [...v.moods.map(x => ({ label: x, apply: x + '): ', detail: 'mood', type: 'enum' })), ...ways], validFor: /^[a-z ]*$/ };
     }
     // the things a character or extra can do, after its name
     if ((m = before.match(new RegExp(`^\\s*\\+?\\s*(${who})((?:\\s+and\\s+(?:${who}))*)\\s+([a-z' ]*)$`, 'i')))) {
@@ -106,7 +107,7 @@ export function storyCompletions(getVocab: () => Vocab | null) {
       const options: Completion[] = [
         ...v.characters.map(c => opt(c, 'character', 'variable')), opt('narrator: ', 'the narrator says', 'variable'),
         ...v.extras.map(e => opt(e, 'extra', 'variable')),
-        ...['title: ', 'place: ', 'time: ', 'music: ', 'scene: ', 'shot: ', 'camera: ', 'wait ', 'beat', 'title card: ', 'thumbnail: ', 'thumbnail shot: ', 'thumbnail text: ', 'intro: ', 'ending: ', 'ending text: ', 'format: ', 'type: ', 'captions: ', 'loop: ', 'hook: ', 'framing: ', 'from: ', 'scenes: ', 'lines: ', 'sting'].map(s => opt(s, 'setting')),
+        ...['title: ', 'place: ', 'time: ', 'music: ', 'scene: ', 'shot: ', 'camera: ', 'wait ', 'beat', 'title card: ', 'thumbnail: ', 'thumbnail shot: ', 'thumbnail text: ', 'intro: ', 'ending: ', 'ending text: ', 'format: ', 'type: ', 'captions: ', 'loop: ', 'hook: ', 'framing: ', 'from: ', 'scenes: ', 'lines: ', 'sting', 'mood voices: '].map(s => opt(s, 'setting')),
         ...v.props.flatMap(p => [`${p} appears at center`, `${p} appears next to ren`, `${p} disappears`].map(x => opt(x, 'prop', 'function'))),
         ...['star appears', 'star falls', 'star glows', 'star twinkles', 'star rises', 'star disappears', 'hearts float up', 'sparkles'].map(x => opt(x, 'star and effects', 'function')),
       ];

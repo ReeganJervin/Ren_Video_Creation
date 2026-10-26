@@ -7,12 +7,12 @@
   },
   "ren": {
     "voice": "am_puck",
-    "speed": 1.0,
+    "speed": 1,
     "pitch": 1.12
   },
   "yuki": {
     "voice": "af_bella:0.6+af_nicole:0.4",
-    "speed": 1.0,
+    "speed": 1,
     "pitch": 1.18
   },
   "owl": {
@@ -20,5 +20,87 @@
     "speed": 0.92,
     "pitch": 1.08,
     "gain": -2
+  },
+  "_styles": {
+    "_about": "Ways of talking: speed and pitch multiply the voice, gain is in dB, echo and breath are effects (0..1).",
+    "think": {
+      "gain": -3,
+      "speed": 0.97,
+      "echo": true
+    },
+    "whisper": {
+      "gain": -5,
+      "speed": 0.95,
+      "breath": 0.6
+    },
+    "shout": {
+      "gain": 2.5,
+      "speed": 1.08,
+      "pitch": 1.03
+    }
+  },
+  "_moods": {
+    "_about": "Mood voices (stories with \"mood voices: on\"): the same kinds of numbers. A voice can change them for itself with its own \"moods\".",
+    "happy": {
+      "speed": 1.04,
+      "pitch": 1.02
+    },
+    "surprised": {
+      "speed": 1.06,
+      "pitch": 1.05
+    },
+    "shy": {
+      "speed": 0.94,
+      "pitch": 1.01,
+      "gain": -1.5
+    },
+    "sad": {
+      "speed": 0.9,
+      "pitch": 0.97
+    },
+    "sleepy": {
+      "speed": 0.84,
+      "pitch": 0.97
+    },
+    "playful": {
+      "speed": 1.05,
+      "pitch": 1.03
+    },
+    "pouty": {
+      "speed": 0.95
+    },
+    "excited": {
+      "speed": 1.1,
+      "pitch": 1.04
+    },
+    "proud": {
+      "speed": 0.95,
+      "pitch": 0.98
+    },
+    "thinking": {
+      "speed": 0.92
+    },
+    "worried": {
+      "speed": 0.96,
+      "pitch": 1.01
+    },
+    "scared": {
+      "speed": 1.08,
+      "pitch": 1.02,
+      "breath": 0.3
+    },
+    "determined": {
+      "speed": 0.96,
+      "pitch": 0.96
+    },
+    "laughing": {
+      "speed": 1.06,
+      "pitch": 1.04
+    },
+    "crying": {
+      "speed": 0.86,
+      "pitch": 0.98,
+      "breath": 0.2
+    }
   }
 }

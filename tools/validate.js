@@ -45,7 +45,10 @@ function validate(plan, files) {
 
   // text boxes hold their voice lines (bubbles belong to the characters' lines, in order)
   const talk = plan.voice.filter(x => x.who !== 'narrator'), narr = plan.voice.filter(x => x.who === 'narrator');
-  const badB = plan.bubbles.filter((b, i) => !(b.t0 <= talk[i].t && talk[i].t + talk[i].len <= b.t1 + 0.01));
+  // (a silent thought has no voice: it must stay up long enough to read, 0.3 s a word)
+  const voiced = plan.bubbles.filter(b => !b.silent), silent = plan.bubbles.filter(b => b.silent);
+  const badB = [...voiced.filter((b, i) => !(b.t0 <= talk[i].t && talk[i].t + talk[i].len <= b.t1 + 0.01)),
+    ...silent.filter(b => b.t1 - b.t0 < 0.6 + b.text.split(/\s+/).length * 0.3)];
   const badC = plan.captions.filter((c, i) => !(c.t0 <= narr[i].t && narr[i].t + narr[i].len <= c.t1 + 0.01));
   check('Speech bubbles and captions stay up for their lines', !badB.length && !badC.length, `${plan.bubbles.length} bubbles, ${plan.captions.length} captions${badB.length + badC.length ? `; too short: ${[...badB, ...badC].map(x => x.text).join(' | ')}` : ''}`);
 

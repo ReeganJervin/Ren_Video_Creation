@@ -555,15 +555,44 @@
       bx = clamp(bx, 40 + w / 2, W - 40 - w / 2); by = clamp(by, 40 + h / 2, H - 40 - h / 2);
       if (Math.abs(bx - head.x) < w / 2 + 110 * cam.z) by = Math.max(40 + h / 2, head.y - 150 * cam.z - h / 2 - 60);
     }
-    drawn.push({ kind: 'bubble', x0: bx - w / 2, x1: bx + w / 2, y0: by - h / 2, y1: by + h / 2 });
+    // ways of talking: a whisper's bubble is smaller, a shout's a little bigger (and its spikes reach further)
+    const st = b.style, k = st === 'whisper' ? 0.86 : st === 'shout' ? 1.06 : 1, pad = (st === 'shout' ? 26 : st === 'think' ? 20 : 0) * k;
+    drawn.push({ kind: 'bubble', x0: bx - w * k / 2 - pad, x1: bx + w * k / 2 + pad, y0: by - h * k / 2 - pad, y1: by + h * k / 2 + pad });
     const ang = Math.atan2(head.y - by, head.x - bx), dx = Math.cos(ang), dy = Math.sin(ang), px = -dy, py = dx;
-    const ex = dx * (w / 2 - 34), ey = dy * (h / 2 - 16), tx = ex + dx * L, ty = ey + dy * L, bw = 24;
-    c.globalAlpha = a; c.translate(bx, by); c.scale(sc, sc);
+    const ex = dx * (w / 2 - 34), ey = dy * (h / 2 - 16), tx = ex + dx * L, ty = ey + dy * L, bw = st === 'whisper' ? 16 : 24;
+    c.globalAlpha = a; c.translate(bx, by); c.scale(sc * k, sc * k);
+    if (st === 'shout') c.rotate(-0.025);
     const body = () => { c.beginPath(); c.roundRect(-w / 2, -h / 2, w, h, Math.min(h / 2, 60)); };
     const tail = () => { c.beginPath(); c.moveTo(ex + px * bw, ey + py * bw); c.quadraticCurveTo((ex + tx) / 2 + px * 9, (ey + ty) / 2 + py * 9, tx, ty); c.quadraticCurveTo((ex + tx) / 2 - px * 3, (ey + ty) / 2 - py * 3, ex - px * bw, ey - py * bw); c.closePath(); };
     c.lineJoin = 'round'; c.strokeStyle = '#111'; c.lineWidth = 14; c.fillStyle = '#fffcf2';
-    tail(); c.stroke(); body(); c.stroke(); tail(); c.fill(); body(); c.fill();
-    c.fillStyle = '#1a1a1a'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.font = `700 ${size}px ${FONT}`;
+    if (st === 'think') {
+      // a cloud: round puffs all along the edge, and little circles leading to the thinker's head instead of a tail
+      const cloud = () => {
+        body();
+        const n = Math.max(8, Math.round((w + h) / 40)), r = Math.min(30, h * 0.3);
+        for (let i = 0; i < n; i++) {
+          const q = i / n * Math.PI * 2, cq = Math.cos(q), sq = Math.sin(q);
+          const x = (w / 2 - r * 0.35) * Math.sign(cq) * Math.pow(Math.abs(cq), 0.45), y = (h / 2 - r * 0.35) * Math.sign(sq) * Math.pow(Math.abs(sq), 0.45);
+          c.moveTo(x + r, y); c.arc(x, y, r, 0, Math.PI * 2);
+        }
+      };
+      const dots = () => { [[0.3, 15], [0.62, 10.5], [0.92, 7]].forEach(([u, r]) => { const x = ex + dx * (20 + L * u), y = ey + dy * (14 + L * u); c.moveTo(x + r, y); c.arc(x, y, r, 0, Math.PI * 2); }); };
+      c.lineWidth = 12; c.beginPath(); dots(); c.stroke(); c.fill();
+      cloud(); c.stroke(); cloud(); c.fill();
+    } else if (st === 'whisper') {
+      // soft and quiet: a paler bubble with a dashed outline
+      // (the tail first, so the bubble covers where the tail meets it)
+      c.setLineDash([16, 12]); c.lineWidth = 5; c.strokeStyle = '#6a6a6a'; c.fillStyle = '#fffdf7';
+      tail(); c.fill(); c.stroke(); body(); c.fill(); body(); c.stroke(); c.setLineDash([]);
+    } else if (st === 'shout') {
+      const n = 16 + Math.round(w / 55), rx = w / 2 + 22, ry = h / 2 + 22;
+      const burst = () => { c.beginPath(); for (let i = 0; i < n * 2; i++) { const q = i / (n * 2) * Math.PI * 2, o = i % 2 ? 0.86 : 1.06; c.lineTo(Math.cos(q) * rx * o, Math.sin(q) * ry * o); } c.closePath(); };
+      const wedge = () => { c.beginPath(); c.moveTo(ex + px * bw, ey + py * bw); c.lineTo(tx, ty); c.lineTo(ex - px * bw, ey - py * bw); c.closePath(); };
+      c.lineJoin = 'miter'; c.miterLimit = 3;
+      wedge(); c.stroke(); burst(); c.stroke(); wedge(); c.fill(); burst(); c.fill();
+    } else { tail(); c.stroke(); body(); c.stroke(); tail(); c.fill(); body(); c.fill(); }
+    c.fillStyle = st === 'whisper' ? '#3e3e3e' : '#1a1a1a'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.font = `${st === 'whisper' ? 600 : 700} ${size}px ${FONT}`;
+    if (st === 'think') c.font = `italic 600 ${size}px ${FONT}`;
     lines.forEach((l, i) => c.fillText(l, 0, -((lines.length - 1) * lh) / 2 + i * lh + 2));
     const ea = b.emph ? win(t, b.t0 + 0.2, b.t0 + 1.6, 0.15, 0.4) : 0;
     if (ea > 0) {
@@ -847,7 +876,11 @@
       loopCv.getContext('2d').drawImage(ctx.canvas, 0, 0);
     }
     t = clamp(storyTime(t), 0, P.duration); drawn = [];
-    const c = ctx, cam = camFor(t), tau = K_('tau', t);
+    const c = ctx, tau = K_('tau', t);
+    let cam = camFor(t);
+    // a shout gives the picture a tiny shake as the voice starts
+    const shout = P.bubbles.find(q => q.style === 'shout' && t >= q.t0 + 0.12 && t < q.t0 + 0.6);
+    if (shout) { const u = 1 - (t - shout.t0 - 0.12) / 0.48; cam = { ...cam, cx: cam.cx + Math.sin(t * 61) * 7 * u / cam.z, cy: cam.cy + Math.cos(t * 53) * 5 * u / cam.z }; }
     c.setTransform(1, 0, 0, 1, 0, 0); c.globalAlpha = 1; c.globalCompositeOperation = 'source-over';
     const PN = placeAt(t);
     HP.cam = p => applyCam(c, cam, p);

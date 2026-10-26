@@ -133,6 +133,27 @@
       }
     }
 
+    // a warm, low bowed note (like a cello): two soft sawtooths through a low filter, slow to swell, a gentle vibrato
+    function cello(t, m, dur, dest, level = 0.05) {
+      const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 520; lp.Q.value = 0.7; lp.connect(dest);
+      const g = ctx.createGain(); g.connect(lp);
+      g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(level, t + 0.5);
+      g.gain.setValueAtTime(level, t + Math.max(0.5, dur - 0.5)); g.gain.linearRampToValueAtTime(0, t + dur + 0.25);
+      const vib = ctx.createOscillator(), vg = ctx.createGain(); vib.frequency.value = 5; vg.gain.value = 4; vib.connect(vg);
+      for (const det of [-6, 6]) {
+        const o = ctx.createOscillator(); o.type = 'sawtooth'; o.frequency.value = mtof(m); o.detune.value = det;
+        vg.connect(o.detune); o.connect(g); o.start(t); o.stop(t + dur + 0.3);
+      }
+      vib.start(t); vib.stop(t + dur + 0.3);
+    }
+    // a soft low drum (like a timpani): a deep thump that falls in pitch, never a bang
+    function drum(t, m, v, dest) {
+      const o = ctx.createOscillator(), g = ctx.createGain(), o2 = ctx.createOscillator(), g2 = ctx.createGain();
+      o.type = 'sine'; o.frequency.setValueAtTime(mtof(m) * 1.5, t); o.frequency.exponentialRampToValueAtTime(mtof(m), t + 0.08);
+      o.connect(g); g.connect(dest); env(g, t, 0.2 * v, 0.006, 0.9); o.start(t); o.stop(t + 1);
+      o2.type = 'sine'; o2.frequency.value = mtof(m) * 2.3; o2.connect(g2); g2.connect(dest); env(g2, t, 0.05 * v, 0.004, 0.18); o2.start(t); o2.stop(t + 0.3);
+    }
+
     if (stems.music && T.music) moodMusic();
     else if (stems.music) {
       // 2.5 s bars (96 bpm). A 16-bar hand-written phrase repeats (an octave-lighter variation on
@@ -207,6 +228,17 @@
           chords: ['C', 'G', 'Am', 'F', 'C', 'F', 'G', 'C'],
           mel: [[79, 76, 0], [74, 0, 71], [72, 76, 0], [77, 0, 72], [76, 79, 0], [77, 74, 0], [74, 0, 71], [72, 0, 0]],
           end: [['G', [74, 0, 71]], ['C', [72, 0, 0]]], home: [60, 64, 67] },
+        // big and brave, for courage and great discoveries: a heroic tune over a cello and soft drums
+        epic: { bar: 2.4, slots: 8, box: 0.6, padLvl: 0.045, cutoff: 1300, bass: [[0, 0, 0.5], [4, 0, 0.35]], cello: 0.04, drums: [[0, 1], [4, 0.6], [6, 0.45]],
+          chords: ['C', 'G', 'Am', 'F', 'C', 'G', 'F', 'G'],
+          mel: [[72, 0, 0, 76, 79, 0, 0, 0], [79, 0, 77, 76, 74, 0, 0, 0], [76, 0, 0, 72, 81, 0, 79, 0], [77, 0, 0, 0, 72, 0, 0, 0],
+            [72, 0, 76, 0, 79, 0, 84, 0], [83, 0, 81, 0, 79, 0, 0, 0], [81, 0, 0, 77, 84, 0, 81, 0], [79, 0, 0, 0, 74, 0, 77, 0]],
+          end: [['G', [79, 0, 77, 0, 74, 0, 0, 0]], ['C', [72, 0, 0, 0, 0, 0, 0, 0]]], home: [72, 76, 79, 84] },
+        // warm and emotional, for big feelings: a slow singing tune with a cello underneath
+        heartfelt: { bar: 3.4, slots: 4, box: 0.55, padLvl: 0.05, cutoff: 900, bass: [[0, 0, 0.5], [2, 2, 0.3]], cello: 0.035,
+          chords: ['F', 'C', 'Dm', 'Bb', 'F', 'C', 'Bb', 'C'],
+          mel: [[69, 0, 72, 0], [72, 0, 0, 67], [69, 0, 65, 0], [70, 0, 0, 0], [72, 0, 77, 0], [76, 0, 72, 0], [74, 0, 70, 69], [67, 0, 0, 0]],
+          end: [['C', [70, 0, 67, 0]], ['F', [65, 0, 0, 0]]], home: [65, 69, 72] },
       };
       const XF = 2, list = T.music[0].t > 0 ? [{ t: 0, mood: 'happy' }, ...T.music] : T.music;
       // equal-power fades, so the music keeps its loudness through a cross-fade
@@ -224,7 +256,11 @@
           const fin = last && b >= nBars - 2, idx = b % M.chords.length, pass = Math.floor(b / M.chords.length);
           const name = fin ? M.end[b - (nBars - 2)][0] : M.chords[idx], notes = fin ? M.end[b - (nBars - 2)][1] : M.mel[idx];
           const t = at(t0 + b * M.bar), ch = CH[name];
-          pad(t, ch, M.bar, out, M.padLvl, M.cutoff || 900);
+          // deep (tense or sad): a fuller, darker sound, with a cello underneath and, for tense, a soft heartbeat drum
+          const deep = sec.deep, cl = M.cello || (deep ? 0.03 : 0), dr = M.drums || (deep && sec.mood === 'tense' ? [[0, 0.75], [1, 0.45]] : null);
+          pad(t, ch, M.bar, out, M.padLvl * (deep ? 1.1 : 1), (M.cutoff || 900) + (deep ? 250 : 0));
+          if (cl) { cello(t, ch[0] - 12, M.bar, out, cl); if (deep) cello(t, ch[2] - 24, M.bar, out, cl * 0.6); }
+          if (dr && !fin) dr.forEach(([k, v]) => drum(t + k * slot, ch[0] - 24, v, out));
           M.bass.forEach(([k, tone, v]) => musicBox(t + k * slot, ch[tone] - 12, v, out));
           // on repeats the melody goes up an octave and plays lighter, as the classic music does
           notes.forEach((m, k) => { if (m && !(pass % 2 && k % 2)) musicBox(t + k * slot, m + (pass % 2 ? 12 : 0), M.box * (pass % 2 ? 0.75 : 1), out); });

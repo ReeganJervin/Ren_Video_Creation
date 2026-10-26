@@ -77,7 +77,24 @@ The serious moods (`sad`, `worried`, `scared`, `determined`, `crying`) are drawn
 
 Animals (extras like the owl) have the first eight moods. For a new mood they show the nearest one (`laughing` looks happy, `scared` looks surprised, `crying` looks sad…), and the check says so.
 
-To see every mood in every view: `node toolsmood-sheet.js` (it writes `build_sheeten-moods.png` and `yuki-moods.png`).
+To see every mood in every view: `node tools\mood-sheet.js` (it writes `build\_sheet\ren-moods.png` and `yuki-moods.png`).
+
+### Ways of talking
+
+Besides a mood, a line can say **how** it is said. Write it in the brackets, alone or with a mood: `ren (shouts, excited): I heard that!`
+
+| Line | What happens |
+|---|---|
+| `ren (thinks): Maybe she won't notice.` | A cloud-shaped **thought bubble**, with little circles leading to Ren's head. The voice is softer, with a gentle echo |
+| `yuki (thinks silently): Why is a slice missing?` | The thought bubble with **no voice**, up long enough to read |
+| `yuki (whispers): Next time, I'm hiding it.` | A smaller, softer bubble with a dashed outline. The voice is quieter and breathier |
+| `ren (shouts): Over here!` | A big spiky bubble. The voice is a little louder and faster, and the picture gives a tiny shake (it stays within the loudness checks) |
+
+### Mood voices
+
+With `mood voices: on` at the top of a story, each mood also changes the voice a little: sad is slower and a little lower, excited faster and a little higher, scared a little faster and breathier, determined steady and a little lower, sleepy slow, and so on. New stories made from the template have it on. Stories without the line sound exactly as before.
+
+The amounts are in `config\voices.json` (`_moods` for moods, `_styles` for ways of talking); a voice can change them for itself with its own `moods`. To hear them: `node tools\voice-sample.js ren --moods` makes `build\_voice-sample\ren-moods.wav`, one line in every mood and way of talking, each named by the narrator first. A line that changes is made again; the others come from the cache.
 
 ## What a character can do
 
@@ -326,9 +343,13 @@ Music plays through every story. With `music:` you choose its mood:
 | `music: magical` | Twinkling high notes over dreamy chords, for wonder and magic |
 | `music: mystery` | Quiet, low and curious, for exploring and secrets |
 | `music: adventure` | Faster and bouncy, for setting off and searching |
-| `music: tense` | A soft ticking pulse, for suspense (still gentle, never scary) |
+| `music: tense` | A soft ticking pulse, for suspense (never horror) |
 | `music: sad` | Slow and tender, in a minor key |
 | `music: bedtime` | A quiet lullaby |
+| `music: epic` | Big and brave, with a cello and soft drums, for courage and great discoveries |
+| `music: heartfelt` | Warm and emotional, with a cello underneath, for big feelings |
+| `music: deep tense` | Tense, but deeper and fuller: a low cello and a soft heartbeat drum, for real danger (still never horror) |
+| `music: deep sad` | Sad, but deeper and fuller, with a low cello, for a truly sad moment |
 | `music: none` | The music fades away |
 
 Write `music:` at the top of the story, at the start of a scene, or anywhere in the middle. When the mood changes, the old music fades out as the new one fades in, over about 2 seconds. A story without `music:` lines plays the usual music, exactly as before.
