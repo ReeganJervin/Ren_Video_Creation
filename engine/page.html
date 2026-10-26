@@ -59,6 +59,9 @@
     for (const id of who) if (StudioCharacters.CHARACTERS[id]) await load(StudioCharacters.CHARACTERS[id].script);
     for (const f of plan.assetFiles) await load(f);
     $('title').textContent = plan.meta.title;
+    // a vertical story draws 1080×1920; exported frames are shown at full size, embedded ones fit the window
+    if (qs.has('export')) Object.assign($('film').style, { width: plan.width + 'px', height: plan.height + 'px' });
+    else if (plan.height > plan.width) Object.assign($('film').style, { width: 'auto', height: qs.has('embed') ? '100vh' : '80vh', margin: '0 auto' });
     $('scrub').max = plan.duration;
     await StudioFilm.init($('film'), plan);
     return plan;

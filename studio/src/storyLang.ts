@@ -6,7 +6,7 @@ import type { CompletionContext, CompletionResult, Completion } from '@codemirro
 import type { Vocab } from './api';
 
 const T = { scene: Tag.define(), setting: Tag.define(), value: Tag.define(), narrator: Tag.define(), ren: Tag.define(), yuki: Tag.define(), speaker: Tag.define(), speech: Tag.define(), action: Tag.define() };
-const SETTINGS = /^\s*(thumbnail text|thumbnail shot|thumbnail|ending text|ending|intro|title card|title|place|time|music|camera|shot|editing|reveal)\s*:/i;
+const SETTINGS = /^\s*(thumbnail text|thumbnail shot|thumbnail|ending text|ending|intro|format|title card|title|place|time|music|camera|shot|editing|reveal)\s*:/i;
 
 interface LineState { head: boolean; speech: boolean; setting: boolean }
 export const storyLanguage = StreamLanguage.define<LineState>({
@@ -68,8 +68,8 @@ export function storyCompletions(getVocab: () => Vocab | null) {
     const word = /[\w' ]*$/;
     let m: RegExpMatchArray | null;
     // settings: place:, time:, music:
-    if ((m = before.match(/^\s*(place|time|music|thumbnail|thumbnail shot|intro|ending)\s*:\s*([\w ]*)$/i))) {
-      const lists: Record<string, string[]> = { place: v.places, time: v.times, music: v.music, thumbnail: ['auto', 'scene 1'], 'thumbnail shot': ['medium', 'close', 'wide'], intro: ['series', 'after scene 1', 'none'], ending: ['end screen', 'none'] };
+    if ((m = before.match(/^\s*(place|time|music|thumbnail|thumbnail shot|intro|ending|format)\s*:\s*([\w ]*)$/i))) {
+      const lists: Record<string, string[]> = { place: v.places, time: v.times, music: v.music, thumbnail: ['auto', 'scene 1'], 'thumbnail shot': ['medium', 'close', 'wide'], intro: ['series', 'after scene 1', 'none'], ending: ['end screen', 'none'], format: ['wide', 'vertical'] };
       const list = lists[m[1].toLowerCase().replace(/\s+/g, ' ')];
       return { from: cx.pos - m[2].length, options: list.map(x => opt(x, m![1].toLowerCase(), 'enum')), validFor: word };
     }
@@ -106,7 +106,7 @@ export function storyCompletions(getVocab: () => Vocab | null) {
       const options: Completion[] = [
         ...v.characters.map(c => opt(c, 'character', 'variable')), opt('narrator: ', 'the narrator says', 'variable'),
         ...v.extras.map(e => opt(e, 'extra', 'variable')),
-        ...['title: ', 'place: ', 'time: ', 'music: ', 'scene: ', 'shot: ', 'camera: ', 'wait ', 'beat', 'title card: ', 'thumbnail: ', 'thumbnail shot: ', 'thumbnail text: ', 'intro: ', 'ending: ', 'ending text: '].map(s => opt(s, 'setting')),
+        ...['title: ', 'place: ', 'time: ', 'music: ', 'scene: ', 'shot: ', 'camera: ', 'wait ', 'beat', 'title card: ', 'thumbnail: ', 'thumbnail shot: ', 'thumbnail text: ', 'intro: ', 'ending: ', 'ending text: ', 'format: '].map(s => opt(s, 'setting')),
         ...v.props.flatMap(p => [`${p} appears at center`, `${p} appears next to ren`, `${p} disappears`].map(x => opt(x, 'prop', 'function'))),
         ...['star appears', 'star falls', 'star glows', 'star twinkles', 'star rises', 'star disappears', 'hearts float up', 'sparkles'].map(x => opt(x, 'star and effects', 'function')),
       ];

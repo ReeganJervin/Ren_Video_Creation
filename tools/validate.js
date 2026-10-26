@@ -17,7 +17,7 @@ function validate(plan, files) {
   const v = info.streams.find(s => s.codec_type === 'video'), a = info.streams.find(s => s.codec_type === 'audio');
   const frames = Math.round(D * plan.fps);
   check('Length', Math.abs(+v.duration - D) < 0.04 && a && Math.abs(+a.duration - D) < 0.06, `video ${(+v.duration).toFixed(2)} s, audio ${a ? (+a.duration).toFixed(2) : 'missing'} s (planned ${D.toFixed(2)} s)`);
-  check('Picture', v.width === 1920 && v.height === 1080 && v.r_frame_rate === '30/1' && +v.nb_read_frames === frames, `${v.width}x${v.height}, ${v.r_frame_rate} fps, ${v.nb_read_frames} frames`);
+  check('Picture', v.width === (plan.width || 1920) && v.height === (plan.height || 1080) && v.r_frame_rate === '30/1' && +v.nb_read_frames === frames, `${v.width}x${v.height}, ${v.r_frame_rate} fps, ${v.nb_read_frames} frames`);
   check('Sound and picture start together', a && Math.abs(+v.start_time - +a.start_time) < 0.03, `video ${v.start_time} s, audio ${a && a.start_time} s`);
 
   // voices: measured onsets in the voice-only track

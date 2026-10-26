@@ -60,8 +60,8 @@ async function main() {
   const only = process.argv.indexOf('--only'), stories = fs.readdirSync(path.join(ROOT, 'stories')).filter(f => f.endsWith('.txt') && (only < 0 || f === process.argv[only + 1] + '.txt'));
   const server = await serve(), base = `http://127.0.0.1:${server.address().port}`;
   const browser = await require('./browser').launch({ exact: true });
-  const open = async (engine, plan) => {
-    const p = await browser.newPage({ viewport: { width: 1920, height: 1080 } });
+  const open = async (engine, plan, size = { width: 1920, height: 1080 }) => {
+    const p = await browser.newPage({ viewport: size });
     p.on('pageerror', e => console.error('[page error]', e.message));
     await p.goto(`${base}/${engine}/page.html?plan=${plan}&export=1`);
     await p.evaluate(() => FILM.ready);
@@ -70,7 +70,7 @@ async function main() {
   // a fingerprint of the frame's pixels
   const frame = (p, t) => p.evaluate(t => {
     FILM.render(t);
-    const d = new Uint32Array(document.getElementById('film').getContext('2d').getImageData(0, 0, 1920, 1080).data.buffer);
+    const d = new Uint32Array(document.getElementById('film').getContext('2d').getImageData(0, 0, document.getElementById('film').width, document.getElementById('film').height).data.buffer);
     let h1 = 2166136261, h2 = 0;
     for (let i = 0; i < d.length; i++) { h1 = Math.imul(h1 ^ d[i], 16777619); h2 = (h2 + d[i] * (i % 65521 + 1)) | 0; }
     return `${(h1 >>> 0).toString(16)}-${(h2 >>> 0).toString(16)}`;

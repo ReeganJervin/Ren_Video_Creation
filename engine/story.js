@@ -42,7 +42,7 @@
     'hearts float up', 'heart floats down', 'sparkles [around <name>]', 'title card: <WORD>',
     `place: ${PLACES.names().join('|')}`, 'time: day|sunset|dusk|night', 'camera: wide|close|closer', 'wait <seconds>',
     'scene: <name>', `music: ${MUSIC.join('|')}`, 'thumbnail: auto|<seconds>|scene <number>', 'thumbnail shot: wide|medium|close', 'thumbnail text: <text>',
-    'intro: series|none|after scene <number>', 'ending: end screen|none', 'ending text: <text>',
+    'format: wide|vertical', 'intro: series|none|after scene <number>', 'ending: end screen|none', 'ending text: <text>',
     'shot: wide|medium|close|extreme close [on <name>|both|the star]', 'shot: over the shoulder of <name>',
     'camera: push in|pull out|pan to <name|the star|left|center|right>|follow <name>|shake|hold',
     'editing: auto', 'beat', 'slow motion <seconds>', 'reveal: the star|<name>|<place>',
@@ -174,6 +174,13 @@
       let m;
 
       // YouTube: the series intro and the end screen (anywhere in the story; they take no time where they are written)
+      // the picture: wide (16:9, the usual) or vertical (9:16, for Shorts)
+      if ((m = line.match(/^format\s*:\s*(.+)$/i))) {
+        const v = m[1].trim().toLowerCase();
+        if (v !== 'vertical' && v !== 'wide') return err(`Unknown format "${m[1].trim()}". Use: wide, or vertical`);
+        meta.format = v;
+        return;
+      }
       if ((m = line.match(/^intro\s*:\s*(.+)$/i))) {
         const v = m[1].trim().toLowerCase().replace(/\s+/g, ' ');
         let k;
@@ -415,11 +422,18 @@
     // the extras in this story act like small characters
     Object.entries(parsed.extras || {}).forEach(([id, d]) => { EXTRAS[id] = ASSETS.extraCharacter(id, ASSETS.ASSETS[id] || d); });
     // stage spots and ground height come from the place
-    const place = PLACES.PLACES[meta.place] || PLACES.find(meta.place) || PLACES.PLACES.meadow, POS = place.pos;
+    // vertical (9:16): the stage is narrower, so the spots are closer together and characters come in from just
+    // outside the picture (wide stories keep the usual values)
+    const VERT = meta.format === 'vertical';
+    const squeeze = p => (VERT ? { ...p, left: 960 + (p.left - 960) * 0.31, right: 960 + (p.right - 960) * 0.31 } : p);
+    const OFF = VERT ? { left: 220, right: 1700 } : { left: -280, right: 2200 };
+    const MINX = VERT ? 620 : 300, MAXX = VERT ? 1300 : 1620;
+    const GAP = VERT ? 250 : 280;   // closest two characters may stand (a little closer in vertical, so they can be bigger)
+    const place = PLACES.PLACES[meta.place] || PLACES.find(meta.place) || PLACES.PLACES.meadow, POS = squeeze(place.pos);
     let here = place.id;                                   // the place right now, as the story goes along
     const PT = 1.2;                                        // a change of place: fade to white and back, switching halfway
     const changes = [];
-    const feetY = x => PLACES.PLACES[here].ground(x), spots = () => PLACES.PLACES[here].pos;
+    const feetY = x => PLACES.PLACES[here].ground(x), spots = () => squeeze(PLACES.PLACES[here].pos);
     const errors = [];
     const G = { tau: [], zoom: [], bright: [] };
     const setG = (k, t, v, dur = 0.4) => G[k].push({ t, v, dur });
@@ -469,7 +483,7 @@
     const set = (a, k, t, v, dur = 0.4) => a.ch[k].push({ t, v, dur });
     const closeLook = (a, s) => { if (a.open) { a.open.b = s; a.open = null; } };
     const skyFor = x => ({ x: Math.max(260, Math.min(1660, x + (x > 1300 ? -460 : 460))), y: 160 });
-    const onStage = a => a.x > 0 && a.x < 1920;
+    const onStage = a => (VERT ? a.x > 420 && a.x < 1500 : a.x > 0 && a.x < 1920);
     const others = a => cast.map(i => A[i]).filter(o => o !== a && onStage(o));
     const inside = x => x >= MINX && x <= MAXX;
     const toward = (a, o) => Math.sign(o.x - a.x) || 1;
@@ -576,7 +590,8 @@
 
     // YouTube kit: the series intro (5 s) and the end screen (the last 20 s) take their time in the story's timeline,
     // so everything after them simply starts later. While they play, the film draws them over the story.
-    const INTRO = 5, END = 20, wantIntro = meta.intro && meta.intro.at !== 'none' ? meta.intro : null, wantEnd = meta.ending === 'end screen';
+    const INTRO = 5, END = 20, wantIntro = !VERT && meta.intro && meta.intro.at !== 'none' ? meta.intro : null, wantEnd = !VERT && meta.ending === 'end screen';
+    if (VERT && (meta.intro && meta.intro.at !== 'none' || meta.ending === 'end screen')) P.warnings.push('The series intro and the end screen are left out of vertical videos for now (they come with Shorts, F7 Part B).');
     let introDone = false, endAt = null, scenesStarted = 0;
     const startIntro = at => { (P.youtube || (P.youtube = {})).intro = { t0: at, t1: at + INTRO }; t = at + INTRO + 0.4; prevStart = t; introDone = true; };
     const startEnd = () => {
@@ -719,8 +734,13 @@
             q.toYou = false;
           });
           [0.35, 0.75, 1.15].forEach((o2, i) => { P.hearts.push({ t: p + o2, i, between: [a.id, o.id] }); sfx('pop', p + o2); });
-          // then they step apart again, still centred where they hugged
+          // then they step apart again, still centred where they hugged, facing each other (never back to back);
+          // and a hug makes up: both feel happy afterwards (until the story says otherwise)
           dur = (p - s) + 2.55 + pairUp(a, o, p + 2.55, c, GAP, false);
+          [[a, dir], [o, -dir]].forEach(([q, d2]) => {
+            set(q, 'facing', p + 2.55, d2 * 0.35, 0.25); set(q, 'lookX', p + 2.55, d2 * 0.6, 0.3);
+            q.out.moods.push({ t: p + 2.6, mood: 'happy' });
+          });
           break;
         }
         case 'tilt': who.forEach(a => { set(a, 'tilt', s, 0.22, 0.3); set(a, 'tilt', s + 0.9, 0, 0.3); }); dur = 1.25; break;
@@ -1100,7 +1120,7 @@
     }
 
     return {
-      version: 2, duration, fps: 30, width: 1920, height: 1080, scale: KS, errors, cast, ...P, keys, scenes,
+      version: 2, duration, fps: 30, width: VERT ? 1080 : 1920, height: VERT ? 1920 : 1080, scale: KS, errors, cast, ...P, keys, scenes,
       musicFadeIn: 1.0, musicFadeOut: [Math.max(1, duration - 3), duration], pictureFadeOut: [duration - 0.65, duration],
       // when each story line starts: [line, seconds] (for the studio's preview; the renderer doesn't use it)
       lineTimes: log.map(x => [x.b.line, +x.s.toFixed(3)]),

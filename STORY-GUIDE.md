@@ -79,7 +79,7 @@ The bubble's tail points at whoever is talking, and when both characters are on 
 | `<name> looks at <other name>` | Looks at the other character (and keeps looking until the next look) |
 | `<name> turns to you` | Faces the viewer |
 | `<name> turns to <other name>` | Turns toward the other character |
-| `<name> hugs <other name>` | Goes over and hugs them: both turn to each other, look happy, and little hearts float up between them. Then they step apart again |
+| `<name> hugs <other name>` | Goes over and hugs them: both turn to each other, look happy, and little hearts float up between them. Then they step apart again, still facing each other, and both stay happy (until a later line gives them another mood) |
 | `<name> tilts its head` | A curious head tilt |
 | `<name> feels sad` | Changes the mood until you change it again: `happy`, `surprised`, `shy`, `sad`, `sleepy`, `playful`, `pouty`, `normal` |
 | `<name> blinks` | An extra blink. Characters also blink by themselves |
@@ -449,6 +449,17 @@ The check report has a line about these files. It warns you if the thumbnail sho
 To make only these three files, without making the video again (the voices are made if needed): `node tools\make-video.js stories\my-story.txt --youtube`. An example: `stories\youtube-demo.txt`. In the studio app, the finished video shows the thumbnail, with **Open subtitles** and **Copy description**. The subtitles are off in the app's player (the narrator's words are already on screen); the **CC** button turns them on.
 
 Before publishing, check YouTube's "altered or synthetic content" and "Made for Kids" settings. Whether a video is "Made for Kids" is your choice for each video.
+
+## Vertical videos (9:16, for Shorts)
+
+Put `format: vertical` at the top of a story to make it 1080×1920, standing up, for YouTube Shorts and phones. Or make a vertical version of any story without changing it: `node tools\make-video.js stories\my-story.txt --format vertical` (it becomes `videos\my-story-vertical.mp4`, next to the wide one).
+
+What changes in a vertical video:
+- **The places** are drawn taller (more sky above, more ground below), not cut out of the wide picture.
+- **The camera** always frames the characters, medium-close or closer, a little left of the middle, with their faces at about 43 % from the top (room above for bubbles, and later a Short's hook text). `shot: close on ren` and the other shot lines choose how close and on whom. Camera moves (`push in`, `pan to`…) come later.
+- **The stage is narrower:** the left, center and right spots are closer together, and characters come in from just outside the picture.
+- **Bubbles and captions** are narrower and stay inside the **safe area**: faces, bubbles and captions keep out of the bottom 20 %, the right 15 % and the top 8 %, where YouTube puts its buttons and titles. The check report has a **Safe area (vertical)** line (a face is only excused while its character enters or exits across the edge of the picture, and the report lists those moments; bubbles and captions always count).
+- The series intro, the end screen and the thumbnail are left out of vertical videos for now (they come with Shorts).
 
 ## Sounds you get automatically
 

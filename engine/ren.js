@@ -247,9 +247,14 @@
       c.fillStyle = C.mouth; c.fill(); c.stroke();
       if (a > 0.45) { c.save(); c.clip(); c.beginPath(); c.ellipse(0, 15 * a, 7, 5 * a, 0, 0, Math.PI * 2); c.fillStyle = C.tongue; c.fill(); c.restore(); }
     };
+    // talking in a sad, shy or pouty mood: the open mouth turns down at the corners (it never looks like a smile)
+    const downShape = (a, w) => {
+      path(c, () => { c.moveTo(-w, 8); c.quadraticCurveTo(0, -1, w, 8); c.quadraticCurveTo(w * 0.6, 8 + 13 * a, 0, 8 + 13 * a); c.quadraticCurveTo(-w * 0.6, 8 + 13 * a, -w, 8); });
+      c.fillStyle = C.mouth; c.fill(); c.stroke();
+    };
     switch (K.mouth) {
       case 'open': openShape(1); break;
-      case 'talk': openShape(K.talk); break;
+      case 'talk': if (/frown|pout/.test(K.moodMouth || '')) downShape(K.talk, K.moodMouth === 'frown' ? 9 : 6); else openShape(K.talk); break;
       case 'o': c.beginPath(); c.ellipse(0, 9, 6, 8, 0, 0, Math.PI * 2); c.fillStyle = C.mouth; c.fill(); c.stroke(); break;
       case 'soft': c.beginPath(); c.moveTo(-10, 2); c.quadraticCurveTo(0, 10, 10, 2); c.stroke(); break;
       case 'frown': c.beginPath(); c.moveTo(-9, 7); c.quadraticCurveTo(0, -1, 9, 7); c.stroke(); break;

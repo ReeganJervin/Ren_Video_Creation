@@ -1,6 +1,9 @@
 // Scene renderer: draws any compiled story plan. render(t) is deterministic.
 (() => {
-  const W = 1920, H = 1080;
+  // the picture (1920×1080, or 1080×1920 for vertical stories; set from the plan). Places are designed around the point
+  // (RX, RY) of the 1920×1080 stage, so a vertical picture shows the same place, taller (more sky, more ground).
+  let W = 1920, H = 1080, VERT = false;
+  const RX = 960, RY = 540;
   const { evalKeys } = StudioStory;
   let P, KS, REG, CAST = [], DRAW = {}, PL, HP;
 
@@ -127,6 +130,7 @@
     K.lookX = clamp(lx, -1, 1); K.lookY = clamp(ly, -1, 1);
     K.tilt = A_(id, 'tilt', t) + Math.sin(t * 0.9 + n * 1.3) * 0.025 + mix('brows') * 0.06;
     K.eyes = pick('eyes'); K.mouth = pick('mouth'); K.wide = mix('wide'); K.brows = mix('brows');
+    K.moodMouth = K.mouth;   // the mood's own mouth, so a talking mouth can follow the mood (sad talking isn't a smile)
     K.blushBoost = mix('blush'); K.puff = mix('puff'); K.flop = mix('flop');
     K.pawPose = m.cur.pawPose || m.prev.pawPose;
     K.pawW = lerp(m.prev.pawPose === K.pawPose ? m.prev.pawW : 0, m.cur.pawPose === K.pawPose ? m.cur.pawW : 0, m.w);
@@ -344,7 +348,7 @@
   function applyCam(c, cam, p) {
     const z = 1 + (cam.z - 1) * p;
     c.setTransform(1, 0, 0, 1, 0, 0); c.translate(W / 2, H / 2); c.scale(z, z);
-    c.translate(-(W / 2 + (cam.cx - W / 2) * p), -(H / 2 + (cam.cy - H / 2) * p));
+    c.translate(-(RX + (cam.cx - RX) * p), -(RY + (cam.cy - RY) * p));
   }
   const toScreen = (cam, p) => ({ x: (p.x - cam.cx) * cam.z + W / 2, y: (p.y - cam.cy) * cam.z + H / 2 });
 
@@ -431,8 +435,9 @@
   function drawCaption(c, cap, t) {
     const a = ease((t - cap.t0) / 0.35) * ease((cap.t1 - t) / 0.45); if (a <= 0) return;
     c.save(); c.setTransform(1, 0, 0, 1, 0, 0); c.globalAlpha = a; c.font = `500 italic 40px ${SERIF}`;
-    const lines = wrap(c, cap.text, 1300), lh = 54, w = Math.max(...lines.map(l => c.measureText(l).width)) + 90, h = lines.length * lh + 44;
-    const x = W / 2 - w / 2, y = 54 - (1 - a) * 10;
+    const lines = wrap(c, cap.text, VERT ? 600 : 1300), lh = 54, w = Math.max(...lines.map(l => c.measureText(l).width)) + 90, h = lines.length * lh + 44;
+    const x = W / 2 - w / 2, y = (VERT ? H * 0.08 + 14 : 54) - (1 - a) * 10;
+    drawn.push({ kind: 'caption', x0: x, x1: x + w, y0: y, y1: y + h });
     c.fillStyle = 'rgba(255,248,232,0.92)'; c.strokeStyle = 'rgba(122,74,40,0.85)'; c.lineWidth = 3; c.beginPath(); c.roundRect(x, y, w, h, 18); c.fill(); c.stroke();
     c.strokeStyle = 'rgba(122,74,40,0.35)'; c.lineWidth = 1.5; c.beginPath(); c.roundRect(x + 9, y + 9, w - 18, h - 18, 12); c.stroke();
     c.fillStyle = '#5a3418'; c.textAlign = 'center'; c.textBaseline = 'middle';
@@ -528,13 +533,20 @@
       try { framed = framedBubble(c, b, head, cam, F); } catch (e) { console.warn(`bubble "${b.text}": ${e.message}; placed the usual way`); }
     }
     if (framed) ({ size, lines, lh, w, h, bx, by, L } = framed);
-    else {
+    else if (VERT) {
+      for (; size >= 34; size -= 2) { c.font = `700 ${size}px ${FONT}`; lines = wrap(c, b.text, 560); if (lines.length <= 3) break; }
+      lh = size * 1.18; w = Math.max(...lines.map(l => c.measureText(l).width)) + 84; h = lines.length * lh + 56;
+      bx = clamp(head.x, W * 0.04 + w / 2, W * 0.85 - w / 2);
+      by = clamp(head.y - 250 * cam.z - h / 2 - 20, H * 0.08 + h / 2 + 10, H * 0.8 - h / 2);   // above the ears
+      L = clamp(Math.hypot(head.x - bx, head.y - by) - h / 2 - 120 * cam.z, 24, 200);
+    } else {
       for (; size >= 34; size -= 2) { c.font = `700 ${size}px ${FONT}`; lines = wrap(c, b.text, 560); if (lines.length <= 2) break; }
       lh = size * 1.18; w = Math.max(...lines.map(l => c.measureText(l).width)) + 84; h = lines.length * lh + 56;
       bx = head.x + b.side * (w / 2 + 170 * cam.z); by = head.y - 190;
       bx = clamp(bx, 40 + w / 2, W - 40 - w / 2); by = clamp(by, 40 + h / 2, H - 40 - h / 2);
       if (Math.abs(bx - head.x) < w / 2 + 110 * cam.z) by = Math.max(40 + h / 2, head.y - 150 * cam.z - h / 2 - 60);
     }
+    drawn.push({ kind: 'bubble', x0: bx - w / 2, x1: bx + w / 2, y0: by - h / 2, y1: by + h / 2 });
     const ang = Math.atan2(head.y - by, head.x - bx), dx = Math.cos(ang), dy = Math.sin(ang), px = -dy, py = dx;
     const ex = dx * (w / 2 - 34), ey = dy * (h / 2 - 16), tx = ex + dx * L, ty = ey + dy * L, bw = 24;
     c.globalAlpha = a; c.translate(bx, by); c.scale(sc, sc);
@@ -560,9 +572,10 @@
     let size = 170; c.font = `700 ${size}px ${FONT}`;
     const chars = [...T.text], gap = 14;
     let widths = chars.map(ch => c.measureText(ch).width), total = widths.reduce((s, v) => s + v, 0) + gap * (chars.length - 1);
-    if (total > 1600) { size = Math.floor(size * 1600 / total); c.font = `700 ${size}px ${FONT}`; widths = chars.map(ch => c.measureText(ch).width); total = widths.reduce((s, v) => s + v, 0) + gap * (chars.length - 1); }
+    const room = VERT ? W * 0.84 : 1600;
+    if (total > room) { size = Math.floor(size * room / total); c.font = `700 ${size}px ${FONT}`; widths = chars.map(ch => c.measureText(ch).width); total = widths.reduce((s, v) => s + v, 0) + gap * (chars.length - 1); }
     c.textAlign = 'center'; c.textBaseline = 'alphabetic';
-    let x = W / 2 - total / 2; const base = 335;
+    let x = W / 2 - total / 2; const base = VERT ? H * 0.24 : 335;
     chars.forEach((ch, i) => {
       const t0 = T.letters[i], u = (t - t0) / T.drop, cx = x + widths[i] / 2; x += widths[i] + gap;
       if (u < 0 || ch === ' ') return;
@@ -694,13 +707,39 @@
     // as big as asked, but everyone fits across with some room
     const z = Math.max(1, Math.min(F.fill * H / (bottom - top), W * 0.86 / (spread + 300)));
     let cx = (Math.max(...xs) + Math.min(...xs)) / 2, cy = top + (H / 2 - F.top * H) / z;
-    const hw = 960 / z, hh = 540 / z;
+    const hw = W / 2 / z, hh = H / 2 / z;
     cx = clamp(cx, -220 + hw, 2140 - hw); cy = clamp(cy, -40 + hh, 1140 - hh);
     return { z, cx, cy };
   }
-  const camFor = t => (framing ? camFramed(t) : P.shots ? camShot(t) : camAt(t));
+  // Vertical (9:16): always framed on the characters, medium-close or closer, a little left of the middle, with
+  // the faces at about 43 % from the top (room above for bubbles and a Short's hook text) and inside the safe area
+  // (out of the bottom 20 %, the right 15 % and the top 8 %). "shot:" lines choose how close and on whom; camera moves
+  // come later (F7 Part B). fill: a character's height as a share of the picture's height.
+  const VFILL = { wide: 0.28, medium: 0.36, close: 0.48, 'extreme close': 0.62, ots: 0.4 };
+  function camVertical(t) {
+    let sh = null;
+    for (const x of P.shots || []) { if (x.t > t) break; if (x.op === 'cut') sh = x; }
+    const fill = (VFILL[sh ? sh.size : 'medium'] || 0.36) * (P.shots ? 1 : K_('zoom', t));
+    const ids = sh && sh.on && sh.on.actors ? sh.on.actors.filter(id => CAST.includes(id)) : CAST;
+    // everyone near the middle of the stage counts, more and more as they come in (so an entrance glides)
+    const ws = ids.map(id => ({ id, B: actorBody(id, t), w: 0 })).map(q => ({ ...q, w: clamp((700 - Math.abs(q.B.x - RX)) / 200) })).filter(q => q.w > 0);
+    if (!ws.length) return { z: 1.2, cx: RX, cy: 900 - (0.74 * H - H / 2) / 1.2 };
+    const sw = ws.reduce((a, q) => a + q.w, 0), mx = ws.reduce((a, q) => a + q.B.x * q.w, 0) / sw;
+    // the faces' height (the characters', not a flying extra's)
+    const chars = ws.filter(q => !REG[q.id].extra), use = chars.length ? chars : ws;
+    const faceY = use.reduce((a, q) => a + toWorld(q.B, q.B.f * 6, REG[q.id].head).y * q.w, 0) / use.reduce((a, q) => a + q.w, 0);
+    const half = Math.max(...ws.map(q => Math.abs(q.B.x - mx) * q.w));
+    // as close as asked, but everyone fits between the left edge and the right 15 % (with room for tails and ears)
+    const z = Math.max(0.9, Math.min(fill * H / 345, 0.83 * W / (2 * half + 280)));
+    let cx = mx + (W / 2 - 0.435 * W) / z, cy = faceY - (0.43 * H - H / 2) / z;
+    const hw = W / 2 / z, hh = H / 2 / z;
+    cx = clamp(cx, -400 + hw, 2320 - hw); cy = clamp(cy, -300 + hh, 1460 - hh);
+    return { z, cx, cy };
+  }
+  const camFor = t => (framing ? camFramed(t) : VERT ? camVertical(t) : P.shots ? camShot(t) : camAt(t));
+  let drawn = [];   // bubbles and captions drawn in the last frame: { kind, x0, x1, y0, y1 } on screen
   function render(t) {
-    t = clamp(t, 0, P.duration);
+    t = clamp(t, 0, P.duration); drawn = [];
     const c = ctx, cam = camFor(t), tau = K_('tau', t);
     c.setTransform(1, 0, 0, 1, 0, 0); c.globalAlpha = 1; c.globalCompositeOperation = 'source-over';
     const PN = placeAt(t);
@@ -786,6 +825,8 @@
 
   async function init(canvas, plan) {
     P = plan; KS = plan.scale; CAST = plan.cast; REG = { ...StudioCharacters.CHARACTERS };
+    W = plan.width || 1920; H = plan.height || 1080; VERT = H > W;
+    canvas.width = W; canvas.height = H;
     // picture assets (PNG files in assets/): registered from the plan, every picture loaded before drawing
     if (plan.pictures && plan.pictures.length) { StudioPictures.register(plan.pictures); await StudioPictures.preload(plan.pictures); }
     // places the story names that don't exist yet are shown as placeholders
@@ -835,5 +876,7 @@
   // frame('medium' | 'close', ids, top) for a thumbnail (top: where the characters' heads may start, below a title);
   // frame(null) goes back to the story's camera
   const frame = (size, ids, top) => { framing = size && FRAMES[size] ? { size, ids: ids && ids.length ? ids : CAST, top: top || 0 } : null; };
-  window.StudioFilm = { init, render, faces, pose, mood, frame, END_LAYOUT };
+  // the safe-area check: faces, bubbles and captions of the frame just drawn
+  const layout = t => ({ faces: faces(t).map(q => ({ kind: 'face ' + q.id, ...q.box })), boxes: drawn });
+  window.StudioFilm = { init, render, faces, pose, mood, frame, END_LAYOUT, layout };
 })();

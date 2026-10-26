@@ -132,7 +132,7 @@ Work through the steps **in this order**. The F-numbers are names, not the order
 | 4 | F9 Studio App, Part A (`STUDIO-APP.md`) | Done | `4b1cf13` (F9A) |
 | 5 | **Milestone 1** (full test) | In progress | |
 | 6 | **F11 YouTube kit** (thumbnails, subtitles, description, series intro, end screen) | Done (approved) | `b86d4fb` (F11A), F11B (see git log) |
-| 7 | F7 Vertical 9:16 and Shorts (reuses F11's thumbnails, subtitles and description) | Not started | |
+| 7 | F7 Vertical 9:16 and Shorts (reuses F11's thumbnails, subtitles and description) | Part A done (approved); Part B next | F7A (see git log) |
 | 8 | **F12 Expression pack** (new moods, thought/whisper/shout bubbles, mood voices) | Not started | |
 | 9 | F3 Rig 2.0 (joints, movement library, lip-sync), in **4 review stops** | Not started | |
 | 10 | F4 Asset Kit, Part D: prop acting, Season 1 props, extras landing on set pieces (needs F3) | Not started | |
@@ -463,6 +463,17 @@ Each effect has its own sound and uses the lighting system from F5. All of them 
 5. **Bubbles and captions** are narrower (about 700 px wide), and title cards are scaled down.
 
 **Part A review:** every place in vertical format with both characters (day and night), including the cottage garden, plus a vertical version of `sorry-yuki` with the safe-area check passing.
+
+**As built (F7A):**
+- `format: vertical` in a story, or `--format vertical` (writes `<name>-vertical.mp4` next to the wide video). The plan says `width: 1080, height: 1920`; film.js, page.html, render, validate and compare-engines take the size from the plan.
+- **Places, not crops:** layers are anchored at the wide stage's centre (960, 540) whatever the picture size (`applyCam` uses RX/RY; for 1920×1080 this is the same maths as before), so a vertical picture shows the same place, taller.
+- **Stage:** spots at 31 % of their wide distance from the middle, two characters at least 250 apart (280 in wide), entrances from x 220 / 1700, stage limits 620–1300, "on stage" 420–1500.
+- **Camera (`camVertical`):** always framed on the characters near the middle (they count more as they come in, so entrances glide); a character's height is 0.36 of the picture for medium (wide 0.28, close 0.48, extreme close 0.62), never so close that a pair doesn't fit between the left edge and the right 15 %; the group at 43.5 % across, faces at 43 % from the top (owner's review). Camera moves are not used yet in vertical (Part B).
+- **Bubbles** about 650 px wide, above the ears, inside the safe area; **captions** 600 px text width below the top 8 %; **title cards** at most 84 % of the width.
+- **Safe-area check** (vertical only), every 0.25 s; a face is excused only while its character enters or exits across the edge (a walk that starts or ends off the picture), listed in the report; bubbles and captions always count.
+- **Found in the review, fixed for wide and vertical:** a talking mouth always used the happy open shape, so sad, shy and pouty lines looked like smiles; now it turns down at the corners in those moods (front and side view; `K.moodMouth`). After a hug the two stepped apart turned away from each other (back to back) and went back to their old mood; now they step back facing each other and both feel happy (R1: only the facing and mood keys of hug stories and some talking frames change; every story's length and voice times are identical).
+- The series intro, the end screen and the thumbnail are left out of vertical videos for now (Part B).
+- Review: `stories/sorry-yuki.txt --format vertical`: all checks pass, including the safe area.
 
 **Commit message:** `F7A: vertical format and safe area`
 

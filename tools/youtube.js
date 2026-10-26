@@ -180,10 +180,14 @@ async function thumbnail(page, plan) {
 async function youtubeFiles(page, plan, name, outDir, credits) {
   const made = [], warnings = [];
   try {
-    const th = await thumbnail(page, plan);
-    fs.writeFileSync(path.join(outDir, `${name}-thumbnail.jpg`), th.jpg);
-    made.push(`thumbnail at ${th.t.toFixed(1)} s (${th.how})`);
-    warnings.push(...th.warnings.map(w => `thumbnail: ${w}`));
+    // a vertical video gets its cover frame with Shorts (F7 Part B)
+    const th = plan.height > plan.width ? null : await thumbnail(page, plan);
+    if (!th) made.push('no thumbnail for a vertical video yet (Shorts, F7 Part B)');
+    else {
+      fs.writeFileSync(path.join(outDir, `${name}-thumbnail.jpg`), th.jpg);
+      made.push(`thumbnail at ${th.t.toFixed(1)} s (${th.how})`);
+      warnings.push(...th.warnings.map(w => `thumbnail: ${w}`));
+    }
   } catch (e) { warnings.push(`no thumbnail: ${e.message}`); }
   const srt = subtitles(plan);
   fs.writeFileSync(path.join(outDir, `${name}.srt`), srt.text);

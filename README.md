@@ -67,6 +67,7 @@ The pieces that were already finished are kept. If you changed the story since t
 | Option | What it does |
 |---|---|
 | `--resume` | Carries on with a stopped video (this is what `resume-video.bat` does) |
+| `--format vertical` | Makes a vertical (9:16) version for Shorts: `videos\my-story-vertical.mp4` (see "Vertical videos" in STORY-GUIDE.md) |
 | `--workers 3` | Draws with 3 browser pages at once. The default is the number of processor threads minus 1. More workers are faster, until the computer is busy; the video looks exactly the same with any number of workers |
 | `--allow-placeholders` | Makes a test video even though the story uses things that don't exist yet (they appear as grey placeholders, and the report says so) |
 

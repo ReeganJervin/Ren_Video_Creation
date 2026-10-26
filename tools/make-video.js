@@ -10,6 +10,7 @@
 //     --resume      carry on with a render that was stopped, keeping the parts already drawn
 //   node tools/make-video.js stories/my-story.txt --voices   only make the voices (used by the studio app)
 //   node tools/make-video.js stories/my-story.txt --youtube  only make the YouTube files (thumbnail, subtitles, description)
+//   node tools/make-video.js stories/my-story.txt --format vertical   a vertical (9:16) version: videos/my-story-vertical.mp4
 // With the environment variable KITSU_PROGRESS=1, progress is also printed as "@@{json}" lines (for the studio app).
 const fs = require('fs'), path = require('path'), http = require('http'), crypto = require('crypto'), os = require('os');
 const { spawn, spawnSync } = require('child_process');
@@ -34,11 +35,15 @@ async function main() {
   if (!storyArg) fail('Tell me which story to make, for example:\n  make-video.bat stories\\the-fallen-star.txt');
   const storyPath = path.resolve(storyArg);
   if (!fs.existsSync(storyPath)) fail(`I can't find the story file: ${storyArg}`);
-  const name = storyName(storyPath);
+  // "--format vertical" makes a separate vertical version next to the wide one
+  const fi = args.indexOf('--format'), format = fi >= 0 ? String(args[fi + 1] || '').toLowerCase() : null;
+  if (format && !['vertical', 'wide'].includes(format)) fail('--format needs wide or vertical, for example --format vertical');
+  const name = storyName(storyPath) + (format === 'vertical' ? '-vertical' : '');
   const opt = k => args.includes('--' + k);
 
   // 1. read + check the story
   const parsed = folderDefaults(parseStory(fs.readFileSync(storyPath, 'utf8')), storyPath);
+  if (format) parsed.meta.format = format;
   if (parsed.errors.length) fail(`Please fix these lines in ${path.basename(storyPath)}:\n\n${parsed.errors.join('\n\n')}\n\nSee STORY-GUIDE.md for every line you can use.`);
   const speech = parsed.beats.filter(b => b.type === 'say');
   // an extra that speaks needs a voice in config/voices.json: without one, the voice is missing too
@@ -134,7 +139,7 @@ async function main() {
 
   // 4. render (software drawing, so every frame comes out the same however it is rendered)
   const browser = await require('./browser').launch({ exact: true });
-  const page = await browser.newPage({ viewport: { width: 1920, height: 1080 } });
+  const page = await browser.newPage({ viewport: { width: plan.width, height: plan.height } });
   page.on('pageerror', e => { console.error('[page error]', e.message); });
   await page.goto(url + '&export=1');
   await page.evaluate(() => FILM.ready);
@@ -196,6 +201,8 @@ async function main() {
     await master(path.join(buildDir, 'mix.wav'), path.join(buildDir, 'master.wav'));
     fs.writeFileSync(soundState, JSON.stringify({ id: soundId }));
   }
+  // vertical: faces, bubbles and captions inside the safe area, checked every 0.25 s
+  const safeArea = plan.height > plan.width ? await safeAreaCheck(page, plan) : null;
   // the YouTube files: thumbnail, subtitles and description draft
   say('Making the thumbnail, subtitles and description...');
   const youtube = await youtubeFiles(page, plan, name, outDir, creditsText(plan));
@@ -216,6 +223,7 @@ async function main() {
   const results = validate(plan, { root: ROOT, mp4, voice: path.join(buildDir, 'voice.wav'), sfx: path.join(buildDir, 'sfx.wav'), master: path.join(buildDir, 'master.wav') });
   results.push(...sceneChecks(plan));
   results.push(youtube);
+  if (safeArea) results.push(safeArea);
   if (plan.missing.length) results.push({ ok: true, note: true, name: 'Placeholders', detail: `rendered with ${plan.missing.length} placeholder${plan.missing.length === 1 ? '' : 's'}: ${plan.missing.map(m => m.name).join(', ')}` });
   // YouTube chapters, when the scenes allow it (an old file from an earlier render is removed otherwise)
   const chFile = path.join(outDir, `${name}-chapters.txt`), ch = chapters(plan);
@@ -334,6 +342,33 @@ function loudStarts(wav, plan) {
     if (step > CALM_AT) out.push({ id: v.id, step });
   });
   return out;
+}
+
+// Vertical pictures (Shorts): faces, speech bubbles and captions stay out of the bottom 20 %, the right 15 % and the
+// top 8 %, where YouTube puts its buttons and titles. A character's face isn't counted only while it enters or exits
+// across the edge of the picture (it has to cross that strip); bubbles and captions always count. Returns a report row.
+async function safeAreaCheck(page, plan) {
+  // when each character is entering or leaving: walks that start or end off the picture
+  const crossing = {};
+  for (const [id, a] of Object.entries(plan.actors)) crossing[id] = a.walks.filter(w => [w.x0, w.x1].some(x => x <= 420 || x >= 1500)).map(w => [w.t0 - 0.2, w.t1 + 0.2]);
+  const { bad: out, excused } = await page.evaluate(({ duration, W, H, crossing }) => {
+    const bad = [], excused = [];
+    for (let t = 0.5; t < duration - 0.5; t += 0.25) {
+      FILM.render(t);
+      const L = StudioFilm.layout(t);
+      for (const q of [...L.faces, ...L.boxes]) {
+        const why = q.y1 > H * 0.8 + 1 ? 'bottom 20 %' : q.x1 > W * 0.85 + 1 ? 'right 15 %' : q.y0 < H * 0.08 - 1 ? 'top 8 %' : q.x0 < -1 ? 'left edge' : null;
+        if (!why) continue;
+        const id = q.kind.startsWith('face ') ? q.kind.slice(5) : null;
+        const list = id && (crossing[id] || []).some(([a, b]) => t >= a && t <= b) ? excused : bad;
+        if (!list.some(b => b.kind === q.kind && Math.abs(b.t - t) < 2)) list.push({ t: +t.toFixed(2), kind: q.kind, why });
+      }
+    }
+    return { bad, excused };
+  }, { duration: plan.duration, W: plan.width, H: plan.height, crossing });
+  const clock = s => `${Math.floor(s / 60)}:${(s % 60).toFixed(1).padStart(4, '0')}`;
+  const note = excused.length ? `; not counted, while entering or exiting across the edge: ${excused.map(b => `${clock(b.t)} ${b.kind.slice(5)}`).join(', ')}` : '';
+  return { ok: !out.length, name: 'Safe area (vertical)', detail: (out.length ? `${out.length} moment${out.length > 1 ? 's' : ''} outside it: ${out.slice(0, 6).map(b => `${clock(b.t)} ${b.kind} in the ${b.why}`).join(', ')}` : 'faces, speech bubbles and captions stay out of the bottom 20 %, the right 15 % and the top 8 %') + note };
 }
 
 // Mastering: one fixed gain to about -16 LUFS, capped so true peak stays at or below -1.5 dBTP.
