@@ -11,6 +11,16 @@
   function fillStroke(c, fill, lw = 4) { c.fillStyle = fill; c.fill(); c.lineWidth = lw; c.strokeStyle = C.line; c.stroke(); }
   // Outline a union of sub-paths: a double-width stroke under the fill leaves one clean outer outline.
   function fillUnion(c, fill, lw = 4) { c.lineWidth = lw * 2; c.strokeStyle = C.line; c.stroke(); c.fillStyle = fill; c.fill(); }
+
+  // ---------- the rig ----------
+  // Ren stands on a joint hierarchy: hips → spine → neck (→ head); shoulder → elbow → paw on each side; hip → knee →
+  // foot on each side; a tail chain (its root, then tail1..tail3) and an ear chain (base, then tip) per ear. A joint
+  // turns everything that hangs from it about its pivot. Angles are in K.rig (radians, missing = 0): hips, spine,
+  // neck, elbowL/R (+ folds the forearm in), hipL/R and kneeL/R (+ swings forward), tail1..3, earTipL/R. Every angle
+  // is 0 at rest, and a joint at 0 changes nothing, so the rest pose is drawn exactly as before. Pivots are in each
+  // view's own body coordinates (feet at 0, 0; turned views drawn facing right).
+  const J = (K, name) => (K.rig && K.rig[name]) || 0;
+  function pivot(c, x, y, a) { if (!a) return; c.translate(x, y); c.rotate(a); c.translate(-x, -y); }
   // Fur edge: from the current point through each point in pts as little swept tufts (tips point outward).
   // `side` is +1 when the outside of the shape is on the left of the drawing direction, -1 otherwise.
   function tufts(c, from, pts, depth, side = 1) {
@@ -26,18 +36,33 @@
   const cubic = (a, b, d, e, u) => { const v = 1 - u; return v * v * v * a + 3 * v * v * u * b + 3 * v * u * u * d + u * u * u * e; };
   const spine = u => ({ x: cubic(-6, 70, 128, 70, u), y: cubic(-2, 16, -56, -168, u) });
   const tailW = u => 46 * Math.pow(Math.sin(Math.PI * (0.1 + 0.9 * u)), 0.72) + 6 * (1 - u);
-  function tailEdges() {
+  // the tail chain's joints, along the spine; each turns the rest of the tail about its own rest position
+  const TAIL_JOINTS = [0.3, 0.55, 0.78];
+  function bentSpine(bend) {
+    if (!bend.some(Boolean)) return spine;
+    const piv = TAIL_JOINTS.map(spine);
+    return u => {
+      let p = spine(u);
+      for (let k = bend.length - 1; k >= 0; k--) {
+        if (!bend[k] || u <= TAIL_JOINTS[k]) continue;
+        const o = piv[k], cs = Math.cos(bend[k]), sn = Math.sin(bend[k]), dx = p.x - o.x, dy = p.y - o.y;
+        p = { x: o.x + dx * cs - dy * sn, y: o.y + dx * sn + dy * cs };
+      }
+      return p;
+    };
+  }
+  function tailEdges(sp = spine) {
     const outer = [], inner = [];
     for (let i = 0; i <= 14; i++) {
-      const u = i / 14, p = spine(u), q = spine(Math.min(1, u + 0.01)), r = spine(Math.max(0, u - 0.01));
+      const u = i / 14, p = sp(u), q = sp(Math.min(1, u + 0.01)), r = sp(Math.max(0, u - 0.01));
       const tx = q.x - r.x, ty = q.y - r.y, n = Math.hypot(tx, ty) || 1, nx = ty / n, ny = -tx / n, w = tailW(u);
       outer.push([p.x + nx * w, p.y + ny * w]); inner.push([p.x - nx * w, p.y - ny * w]);
     }
-    return { outer, inner };
+    return { outer, inner, sp };
   }
   const TAIL = tailEdges();
-  function tailPath(c) {
-    const { outer, inner } = TAIL;
+  function tailPath(c, T) {
+    const { outer, inner } = T;
     c.beginPath(); c.moveTo(...inner[0]); c.lineTo(...outer[0]);
     tufts(c, outer[0], outer.slice(1), 7, -1);
     tufts(c, outer[outer.length - 1], inner.slice(0, -1).reverse(), 6, -1);
@@ -49,14 +74,16 @@
     c.translate(x, -50);
     c.scale(sx * 0.86, 0.86);
     c.rotate(0.12 + K.tail);
-    tailPath(c); fillUnion(c, C.fur);
+    // the chain: the tail bends at its joints (computed only when it does)
+    const sp = bentSpine([J(K, 'tail1'), J(K, 'tail2'), J(K, 'tail3')]), T = sp === spine ? TAIL : tailEdges(sp);
+    tailPath(c, T); fillUnion(c, C.fur);
     c.save(); c.clip();
     // soft shade along the underside
     c.strokeStyle = C.furD; c.globalAlpha = 0.45; c.lineWidth = 26; c.beginPath();
-    for (let i = 0; i <= 10; i++) { const p = spine(i / 14); const [ix, iy] = TAIL.inner[i]; c.lineTo(ix * 0.7 + p.x * 0.3, iy * 0.7 + p.y * 0.3); }
+    for (let i = 0; i <= 10; i++) { const p = sp(i / 14); const [ix, iy] = T.inner[i]; c.lineTo(ix * 0.7 + p.x * 0.3, iy * 0.7 + p.y * 0.3); }
     c.stroke(); c.globalAlpha = 1;
     // white tip with a jagged fur edge
-    const k = 10, a = TAIL.inner[k], b = TAIL.outer[k], m = spine(k / 14), d = spine(1);
+    const k = 10, a = T.inner[k], b = T.outer[k], m = sp(k / 14), d = sp(1);
     const ux = d.x - m.x, uy = d.y - m.y;
     c.beginPath(); c.moveTo(a[0] - (b[0] - a[0]) * 0.3, a[1] - (b[1] - a[1]) * 0.3);
     const cut = [];
@@ -82,11 +109,24 @@
       // dark brown socks fading into the orange
       const g = c.createLinearGradient(0, -66 - lift, 0, -lift);
       g.addColorStop(0, C.fur); g.addColorStop(0.3, C.fur); g.addColorStop(0.62, C.paw); g.addColorStop(1, C.paw);
-      c.beginPath(); c.roundRect(lx - 16, -66 - lift, 32, 66, [14, 14, 13, 13]);
-      fillStroke(c, g);
+      const hip = J(K, i < 0 ? 'hipL' : 'hipR'), knee = J(K, i < 0 ? 'kneeL' : 'kneeR');
+      c.save();
+      if (!hip && !knee) { c.beginPath(); c.roundRect(lx - 16, -66 - lift, 32, 66, [14, 14, 13, 13]); fillStroke(c, g); }
+      else bentLeg(c, lx, -66 - lift, -lift, 16, hip * dir, -knee * dir, g, () => { c.beginPath(); c.roundRect(lx - 16, -66 - lift, 32, 40, 14); });
       c.strokeStyle = 'rgba(255,220,190,0.35)'; c.lineWidth = 2;
       [-5, 5].forEach(o => { c.beginPath(); c.moveTo(lx + o, -lift - 3); c.lineTo(lx + o, -lift - 10); c.stroke(); });
+      c.restore();
     });
+  }
+  // A leg bent at the hip (pivot at its top) and the knee (halfway down): thigh and shin outlined as one shape. It
+  // leaves the knee's frame on c (so the sock stripes after it follow the shin); the caller restores.
+  function bentLeg(c, lx, top, bottom, hw, hip, knee, g, thigh) {
+    const ky = (top + bottom) / 2, shin = () => { c.beginPath(); c.roundRect(lx - hw, ky - 8, hw * 2, bottom - ky + 8, [12, 12, hw - 3, hw - 3]); };
+    pivot(c, lx, top + 4, hip);
+    c.lineWidth = 8; c.strokeStyle = C.line; thigh(); c.stroke();
+    c.save(); pivot(c, lx, ky, knee); shin(); c.stroke(); c.restore();
+    c.fillStyle = C.fur; thigh(); c.fill();
+    pivot(c, lx, ky, knee); shin(); c.fillStyle = g; c.fill();
   }
 
   function bodyPath(c) {
@@ -178,15 +218,21 @@
 
   // ---------- head parts shared by every view ----------
   // One ear with its base at (x, y), turned by rot; sx/sy squeeze it when seen at an angle.
-  function earAt(c, x, y, rot, sx = 1, sy = 1) {
+  // tip: the ear chain's second joint, bending the upper ear (above y -50) about its middle
+  function earAt(c, x, y, rot, sx = 1, sy = 1, tip = 0) {
     c.save();
     c.translate(x, y); c.rotate(rot); c.scale(sx, sy);
-    const ear = () => path(c, () => { c.moveTo(-37, 14); c.bezierCurveTo(-39, -40, -20, -84, 2, -114); c.bezierCurveTo(24, -84, 40, -40, 37, 14); });
+    const W = !tip ? (px, py) => [px, py] : (px, py) => {
+      const a = tip * clamp((-50 - py) / 64), cs = Math.cos(a), sn = Math.sin(a), dy = py + 50;
+      return [px * cs - dy * sn, -50 + px * sn + dy * cs];
+    };
+    const mv = (x0, y0) => c.moveTo(...W(x0, y0)), bz = (...p) => c.bezierCurveTo(...W(p[0], p[1]), ...W(p[2], p[3]), ...W(p[4], p[5]));
+    const ear = () => path(c, () => { mv(-37, 14); bz(-39, -40, -20, -84, 2, -114); bz(24, -84, 40, -40, 37, 14); });
     // dark brown tip blending softly into the orange
     const g = c.createLinearGradient(0, -52, 0, -100);
     g.addColorStop(0, C.fur); g.addColorStop(0.45, '#b4602a'); g.addColorStop(1, C.tip);
     ear(); fillStroke(c, g);
-    path(c, () => { c.moveTo(-22, 10); c.bezierCurveTo(-22, -26, -12, -54, 1, -76); c.bezierCurveTo(14, -54, 23, -26, 22, 10); });
+    path(c, () => { mv(-22, 10); bz(-22, -26, -12, -54, 1, -76); bz(14, -54, 23, -26, 22, 10); });
     const pg = c.createLinearGradient(0, -76, 0, 10);
     pg.addColorStop(0, '#f1b1ad'); pg.addColorStop(1, C.pink);
     c.fillStyle = pg; c.fill();
@@ -477,8 +523,8 @@
     const f = K.f, mx = f * 26;
     c.save();
     headFrame(c, K, f * 6);
-    earAt(c, -48 + f * 10, -48, -0.3 - K.earL);
-    earAt(c, 48 + f * 10, -48, 0.3 + K.earR);
+    earAt(c, -48 + f * 10, -48, -0.3 - K.earL, 1, 1, -J(K, 'earTipL'));
+    earAt(c, 48 + f * 10, -48, 0.3 + K.earR, 1, 1, J(K, 'earTipR'));
     frontHeadPath(c, K); fillUnion(c, C.fur);
     c.save(); c.clip();
     sheen(c, f * 16, -56);
@@ -513,7 +559,7 @@
     c.save();
     c.translate(...S);
     c.rotate(rot);
-    armShape(c, len);
+    armShape(c, len, i < 0 ? -J(K, 'elbowL') : J(K, 'elbowR'));
     c.restore();
   }
   // thinking: the near paw goes up to the chin (point T, in body coordinates) from shoulder S
@@ -523,21 +569,28 @@
     const dx = T[0] - S[0], dy = T[1] - S[1];
     return { rot: rot + (Math.atan2(-dx, dy) - rot) * w, len: len + (Math.hypot(dx, dy) + 4 - len) * w };
   }
-  // dark brown paw fading into the orange
-  function armShape(c, len) {
+  // dark brown paw fading into the orange; elbow: the forearm turns about the arm's middle (outlined as one shape)
+  function armShape(c, len, elbow = 0) {
     const g = c.createLinearGradient(0, -4, 0, len);
     g.addColorStop(0, C.fur); g.addColorStop(0.55, C.fur); g.addColorStop(0.82, C.paw); g.addColorStop(1, C.paw);
-    c.beginPath(); c.roundRect(-12, -4, 24, len + 4, 12); fillStroke(c, g);
+    if (!elbow) { c.beginPath(); c.roundRect(-12, -4, 24, len + 4, 12); fillStroke(c, g); return; }
+    const u = len * 0.5, upper = () => { c.beginPath(); c.roundRect(-12, -4, 24, u + 14, 12); }, fore = () => { c.beginPath(); c.roundRect(-12, u - 12, 24, len - u + 16, 12); };
+    c.lineWidth = 8; c.strokeStyle = C.line; upper(); c.stroke();
+    c.save(); pivot(c, 0, u, elbow); fore(); c.stroke(); c.restore();
+    c.fillStyle = C.fur; upper(); c.fill();
+    pivot(c, 0, u, elbow); fore(); c.fillStyle = g; c.fill();
   }
 
   function drawFront(c, K) {
     const side = K.f >= 0 ? 1 - 2 * K.f : 1;
+    pivot(c, 0, -46, J(K, 'hips'));
     drawTail(c, K, side * 26, Math.sign(side || 1) * Math.max(0.45, Math.abs(side)));
     drawLegs(c, K);
     c.translate(0, -Math.abs(Math.sin(K.phase)) * 5 * K.walk);
+    pivot(c, 0, -60, J(K, 'spine'));
     drawBody(c, K);
     drawScarf(c, K);
-    drawFrontHead(c, K);
+    c.save(); pivot(c, K.f * 6, -142, J(K, 'neck')); drawFrontHead(c, K); c.restore();
     drawArm(c, -1, K.armL, K);
     drawArm(c, 1, K.armR, K, [8 + K.f * 20, -136 - 6 * (K.lift || 0)]);
   }
@@ -564,8 +617,8 @@
   function drawThreeHead(c, K) {
     c.save();
     headFrame(c, K, 6);
-    earAt(c, 44, -56, 0.2 + K.earR * 0.8, 0.9, 0.97);    // far ear
-    earAt(c, -46, -50, -0.4 - K.earL);                    // near ear
+    earAt(c, 44, -56, 0.2 + K.earR * 0.8, 0.9, 0.97, J(K, 'earTipR'));    // far ear
+    earAt(c, -46, -50, -0.4 - K.earL, 1, 1, -J(K, 'earTipL'));            // near ear
     threeHeadPath(c, K); fillUnion(c, C.fur);
     c.save(); c.clip();
     sheen(c, 18, -56);
@@ -592,12 +645,14 @@
   }
   function drawThree(c, K) {
     const B = { ...K, f: K.f * 1.6 };   // body turned a little further than the front pieces normally go
+    pivot(c, 0, -46, J(K, 'hips'));
     drawTail(c, K, -28, -0.7);
     drawLegs(c, B);
     c.translate(0, -Math.abs(Math.sin(K.phase)) * 5 * K.walk);
+    pivot(c, 0, -60, J(K, 'spine'));
     drawBody(c, B);
     drawScarf(c, B, K.flipped);   // the knot is on Ren's right side: near when he faces right
-    drawThreeHead(c, K);
+    c.save(); pivot(c, 6, -142, J(K, 'neck')); drawThreeHead(c, K); c.restore();
     drawArm(c, -1, K.armL, K);
     drawArm(c, 1, K.armR, K, [58, -146 - 6 * (K.lift || 0)]);
   }
@@ -640,8 +695,8 @@
     headFrame(c, K, -13);
     c.scale(1.1, 1.1);
     // two big pointed ears close together on the top-back of the head; the far ear shows just in front of the near ear
-    earAt(c, -4, -72, 0.06 - K.earR * 0.5, 0.76, 0.92);    // far ear
-    earAt(c, -24, -66, -0.08 - K.earL * 0.8, 0.9, 1);      // near ear
+    earAt(c, -4, -72, 0.06 - K.earR * 0.5, 0.76, 0.92, -J(K, 'earTipR'));    // far ear
+    earAt(c, -24, -66, -0.08 - K.earL * 0.8, 0.9, 1, -J(K, 'earTipL'));      // near ear
     sideHeadPath(c, K); fillUnion(c, C.fur);
     c.save(); c.clip();
     sheen(c, -6, -62);
@@ -698,9 +753,22 @@
       const ph = K.phase + off, lx = x0 + Math.sin(ph) * 14 * K.walk, lift = Math.max(0, Math.cos(ph)) * 9 * K.walk;
       const g = c.createLinearGradient(0, -62 - lift, 0, -lift);
       g.addColorStop(0, C.fur); g.addColorStop(0.3, C.fur); g.addColorStop(0.62, C.paw); g.addColorStop(1, C.paw);
-      c.beginPath(); c.roundRect(lx - 13, -62 - lift, 26, 58, [11, 11, 8, 8]); c.ellipse(lx + 5, -8 - lift, 15, 8, 0, 0, Math.PI * 2);
-      fillUnion(c, g, 3.5);
-      if (far) { c.fillStyle = 'rgba(60,30,15,0.3)'; c.fill(); }
+      const hip = J(K, far ? 'hipL' : 'hipR'), knee = J(K, far ? 'kneeL' : 'kneeR');
+      if (!hip && !knee) {
+        c.beginPath(); c.roundRect(lx - 13, -62 - lift, 26, 58, [11, 11, 8, 8]); c.ellipse(lx + 5, -8 - lift, 15, 8, 0, 0, Math.PI * 2);
+        fillUnion(c, g, 3.5);
+        if (far) { c.fillStyle = 'rgba(60,30,15,0.3)'; c.fill(); }
+        return;
+      }
+      // bent: the thigh, then the shin with the foot, outlined as one shape
+      const ky = -35 - lift, thigh = () => { c.beginPath(); c.roundRect(lx - 13, -62 - lift, 26, 36, 11); };
+      const shin = () => { c.beginPath(); c.roundRect(lx - 13, ky - 6, 26, 33, [11, 11, 8, 8]); c.ellipse(lx + 5, -8 - lift, 15, 8, 0, 0, Math.PI * 2); };
+      c.save(); pivot(c, lx, -58 - lift, -hip);
+      c.lineWidth = 7; c.strokeStyle = C.line; thigh(); c.stroke();
+      c.save(); pivot(c, lx, ky, knee); shin(); c.stroke(); c.restore();
+      c.fillStyle = C.fur; thigh(); c.fill(); if (far) { c.fillStyle = 'rgba(60,30,15,0.3)'; c.fill(); }
+      pivot(c, lx, ky, knee); shin(); c.fillStyle = g; c.fill(); if (far) { c.fillStyle = 'rgba(60,30,15,0.3)'; c.fill(); }
+      c.restore();
     });
   }
   // short bent arm hanging at the front with a dark paw at belly height
@@ -710,7 +778,7 @@
     c.save();
     c.translate(...S);
     c.rotate(rot);
-    armShape(c, len);
+    armShape(c, len, -J(K, far ? 'elbowL' : 'elbowR'));
     if (far) { c.fillStyle = 'rgba(60,30,15,0.25)'; c.fill(); }
     c.restore();
   }
@@ -751,12 +819,14 @@
   }
   function drawSide(c, K) {
     // big fluffy tail rising and curling up behind the body, with a white tip
+    pivot(c, -6, -46, J(K, 'hips'));
     drawTail(c, K, -42, -0.95);
     drawSideArm(c, K.armL, true, K);
     drawSideLegs(c, K);
     c.translate(0, -Math.abs(Math.sin(K.phase)) * 5 * K.walk);
+    pivot(c, -6, -60, J(K, 'spine'));
     drawSideBody(c);
-    drawSideHead(c, K);
+    c.save(); pivot(c, -8, -142, J(K, 'neck')); drawSideHead(c, K); c.restore();
     // (a paw at the chin goes over the scarf)
     const chin = K.pawPose === 'chin' && K.pawW > 0.5;
     if (!chin) drawSideArm(c, K.armR, false, K);
@@ -771,7 +841,8 @@
   const FADES = [[0.26, 0.34], [0.65, 0.75]];   // brief crossfades around the switch points
   // Three-quarter and side views are drawn facing right; facing left mirrors them.
   // `flipped` tells the turned views we see Ren's left side, so one-sided details (the scarf knot) go to the far side
-  const mirror = K => ({ ...K, f: -K.f, lookX: -K.lookX, tilt: -K.tilt, earL: K.earR, earR: K.earL, flipped: true });
+  const mirror = K => ({ ...K, f: -K.f, lookX: -K.lookX, tilt: -K.tilt, earL: K.earR, earR: K.earL, flipped: true,
+    rig: K.rig && { ...K.rig, earTipL: K.rig.earTipR, earTipR: K.rig.earTipL } });
 
   function drawView(c, K, view) {
     c.save();

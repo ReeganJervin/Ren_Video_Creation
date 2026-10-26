@@ -134,7 +134,7 @@ Work through the steps **in this order**. The F-numbers are names, not the order
 | 6 | **F11 YouTube kit** (thumbnails, subtitles, description, series intro, end screen) | Done (approved) | `b86d4fb` (F11A), F11B (see git log) |
 | 7 | F7 Vertical 9:16 and Shorts (reuses F11's thumbnails, subtitles and description) | Done (Parts A and B approved) | F7A (see git log) |
 | 8 | **F12 Expression pack** (new moods, thought/whisper/shout bubbles, mood voices) | Done (Parts A and B approved) | |
-| 9 | F3 Rig 2.0 (joints, movement library, lip-sync), in **4 review stops** | Not started | |
+| 9 | F3 Rig 2.0 (joints, movement library, lip-sync), in **4 review stops** | Stop 1 (skeleton) done, in review | |
 | 10 | F4 Asset Kit, Part D: prop acting, Season 1 props, extras landing on set pieces (needs F3) | Not started | |
 | 11 | **Milestone 2.** The owner then makes the real **Episode 1** | Not started | |
 | 12 | **F13 Storytelling tools** (weather, dreams and memories, sound library) | Not started | |
@@ -300,6 +300,12 @@ All work is committed on the git branch `Improvment` (never directly on `main`).
    - **R1 exception:** pixel-identical output is impossible here because the rig changes. Instead, show the same 12 frames per story from old and new side by side, and get the owner's approval.
 
 **Part A review:** close-ups of both characters in all views and moods (old | new | sheet), a strip showing springy ears and tail, and the back view.
+
+**As built (stop 1, the skeleton):**
+- The rig is built *around* the approved drawings instead of redrawing them: each joint is a pivot at the place that part already turns about, and a joint turns everything that hangs from it. Ren: hips → spine → neck (→ head); shoulder → elbow → paw on each side (an elbow splits the arm into upper arm and forearm with the paw, outlined as one shape); hip → knee → foot on each side (thigh and shin with the sock); a tail chain (the existing root, then three joints along the tail's spine at 30, 55 and 78 %); an ear chain (base, then a tip joint bending the upper ear). Yuki: the same hips → spine → neck, shoulder → elbow → paw (her curved arm passes through the elbow), hip → foot (her legs are hidden in her body), tail1 wiggles the cotton tail, and the ear tip adds to the bend her ears already have along their length.
+- Joint angles are in `K.rig` (radians; missing = 0): `hips`, `spine`, `neck`, `elbowL/R`, `hipL/R`, `kneeL/R`, `tail1`–`tail3`, `earTipL/R`. Every angle is 0 at rest, and a joint at 0 changes nothing, so the rest pose is drawn exactly as before. The bent tail is only computed when a tail joint bends.
+- **Result:** both mood sheets (every view, all 16 moods and talking) are pixel-identical to the old engine, and R1 is unchanged for every story (so the R1 exception isn't needed for this stop). Drawing speed: 13.3 fps against 13.4 fps for the old engine on the same frames (within noise); one page uses about 10 MB of JS memory.
+- `StudioFilm.character(g, id, mood, { rig })` poses a character for sheets.
 
 **Commit message:** `F3A: Rig 2.0 skeleton, back view, spring motion`
 

@@ -14,6 +14,14 @@
   function fillStroke(c, fill, lw = 4) { c.fillStyle = fill; c.fill(); c.lineWidth = lw; c.strokeStyle = C.line; c.stroke(); }
   // Outline a union of sub-paths: a double-width stroke under the fill leaves one clean outer outline.
   function fillUnion(c, fill, lw = 4) { c.lineWidth = lw * 2; c.strokeStyle = C.line; c.stroke(); c.fillStyle = fill; c.fill(); }
+
+  // ---------- the rig ----------
+  // Yuki stands on the same joint hierarchy as Ren (engine/ren.js): hips → spine → neck (→ head); shoulder → elbow →
+  // paw; hip → foot (her legs are hidden in her round body); the tail (tail1 wiggles the cotton tail); an ear chain
+  // (her ears already bend along their length: earTipL/R curls the upper ear further). Angles in K.rig (radians,
+  // missing = 0); every angle is 0 at rest and a joint at 0 changes nothing, so the rest pose is drawn exactly as before.
+  const J = (K, name) => (K.rig && K.rig[name]) || 0;
+  function pivot(c, x, y, a) { if (!a) return; c.translate(x, y); c.rotate(a); c.translate(-x, -y); }
   function shade(c, x, y, rx, ry, a, col = C.furD) {
     c.save(); c.translate(x, y); c.scale(1, ry / rx);
     const g = c.createRadialGradient(0, 0, 0, 0, 0, rx);
@@ -52,10 +60,11 @@
   }
   // Ear lean/bend for one side (s = -1 left, +1 right): droop leans the ear outward and curls it down,
   // `perk` (negative droop) straightens it, landing squash makes it bounce.
-  function earPose(K, s, extraFlop = 0) {
+  // tip: the ear chain's second joint (+ curls the upper ear outward, like a droop)
+  function earPose(K, s, extraFlop = 0, tip = 0) {
     const d = (s < 0 ? K.earL : K.earR), bounce = (1 - K.sy) * 3 + (K.h > 0 ? -0.06 : 0);
     const droop = Math.max(0, d), perk = Math.max(0, -d);
-    return { rot: s * (0.1 + droop * 0.75 + extraFlop * 0.3 - perk * 0.3), bend: s * (droop * 1.9 + extraFlop * 2.4 + bounce) };
+    return { rot: s * (0.1 + droop * 0.75 + extraFlop * 0.3 - perk * 0.3), bend: s * (droop * 1.9 + extraFlop * 2.4 + bounce) + s * tip };
   }
 
   // ---------- flower + bows ----------
@@ -352,9 +361,10 @@
   // ---------- arms ----------
   // An arm growing out of the body at the shoulder S and ending in a paw at P. The elbow bows out
   // toward side `out`; only the arm's own edges are outlined, so it joins the body outline at the shoulder.
-  function armCurve(c, S, P, out) {
+  // E: the elbow (when the arm bends there); the curve then passes through it
+  function armCurve(c, S, P, out, E) {
     const [sx, sy] = S, [px, py] = P, dx = px - sx, dy = py - sy, d = Math.hypot(dx, dy) || 1;
-    const mx = (sx + px) / 2 + (-dy / d) * out * 7, my = (sy + py) / 2 + (dx / d) * out * 7;
+    const mx = E ? 2 * E[0] - (sx + px) / 2 : (sx + px) / 2 + (-dy / d) * out * 7, my = E ? 2 * E[1] - (sy + py) / 2 : (sy + py) / 2 + (dx / d) * out * 7;
     const N = 10, A = [], B = [];
     for (let k = 0; k <= N; k++) {
       const u = k / N, v = 1 - u;
@@ -377,18 +387,22 @@
   }
   // Paw position from Ren's arm-angle convention (0.16 rest, up to ~2.7 raised, negative = folded in to hold):
   // at rest the paw curls in onto the upper chest.
-  function pawFrom(S, ang, i, len = 34, curl = 1.1) {
+  // elbow: + folds the forearm in (the paw then hangs from an elbow halfway along; P.elbow keeps where it is)
+  function pawFrom(S, ang, i, len = 34, curl = 1.1, elbow = 0) {
     const e = Math.max(-1.6, ang - curl * (1 - clamp(ang / 1.6)));
-    return [S[0] + i * len * Math.sin(e), S[1] + len * Math.cos(e)];
+    if (!elbow) return [S[0] + i * len * Math.sin(e), S[1] + len * Math.cos(e)];
+    const u = len / 2, E = [S[0] + i * u * Math.sin(e), S[1] + u * Math.cos(e)], P = [E[0] + i * u * Math.sin(e - elbow), E[1] + u * Math.cos(e - elbow)];
+    P.elbow = E;
+    return P;
   }
   // The shoulder sits on the body edge while the paw is low and slides inside the body as the paw rises,
   // so a raised arm never shows an open root.
   function armFrom(c, Sedge, Sin, P, out) {
     const k = clamp((Sedge[1] - P[1] + 10) / 40);
-    armCurve(c, [lerp(Sedge[0], Sin[0], k), lerp(Sedge[1], Sin[1], k)], P, out);
+    armCurve(c, [lerp(Sedge[0], Sin[0], k), lerp(Sedge[1], Sin[1], k)], P, out, P.elbow);
   }
   // move a paw toward a face target by the pawPose weight
-  const toward = (P, T, K) => (T ? [lerp(P[0], T[0], clamp(K.pawW || 0)), lerp(P[1], T[1], clamp(K.pawW || 0))] : P);
+  const toward = (P, T, K) => (T ? [lerp(P[0], T[0], clamp(K.pawW || 0)), lerp(P[1], T[1], clamp(K.pawW || 0))] : P);   // (a paw sent to the face drops the elbow)
 
   // ---------- FRONT view (|f| < 0.3) ----------
   function frontHeadPath(c, K) {
@@ -406,7 +420,7 @@
     const f = K.f;
     c.save();
     headFrame(c, K, f * 6);
-    const eL = earPose(K, -1), eR = earPose(K, 1, K.flop || 0);
+    const eL = earPose(K, -1, 0, J(K, 'earTipL')), eR = earPose(K, 1, K.flop || 0, J(K, 'earTipR'));
     earAt(c, -36 + f * 8, -60, eL.rot, eL.bend);
     earAt(c, 36 + f * 8, -60, eR.rot, eR.bend);
     frontHeadPath(c, K); fillUnion(c, C.fur);
@@ -438,25 +452,29 @@
   function drawFeet(c, K, xs) {
     xs.forEach((x0, k) => {
       const ph = K.phase + (k ? Math.PI : 0), lx = x0 + Math.sin(ph) * 8 * K.walk, lift = Math.max(0, Math.cos(ph)) * 6 * K.walk;
+      c.save(); pivot(c, x0, -46, J(K, k ? 'hipR' : 'hipL'));   // the hidden leg swings the foot from inside the body
       path(c, () => c.ellipse(lx, -11 - lift, 22, 13, 0, 0, Math.PI * 2)); fillStroke(c, C.fur);
       c.strokeStyle = C.furD; c.lineWidth = 2.5;
       [-6, 6].forEach(o => { c.beginPath(); c.moveTo(lx + o, -lift - 2); c.lineTo(lx + o, -lift - 8); c.stroke(); });
+      c.restore();
     });
   }
   function drawFront(c, K) {
+    pivot(c, 0, -40, J(K, 'hips'));
     drawFeet(c, K, [-24 + K.f * 6, 24 + K.f * 6]);
     c.translate(0, -Math.abs(Math.sin(K.phase)) * 4 * K.walk);
+    pivot(c, 0, -50, J(K, 'spine'));
     frontBodyPath(c); c.fillStyle = C.fur; c.fill();
     c.save(); c.clip();
     shade(c, -62, -46, 40, 56, 0.7); shade(c, 62, -46, 40, 56, 0.7); shade(c, 0, -12, 60, 18, 0.6);
     c.restore();
     frontBodyPath(c); c.lineWidth = 4; c.strokeStyle = C.line; c.stroke();
     collar(c, K.f * 14, 0);
-    drawFrontHead(c, K);
+    c.save(); pivot(c, K.f * 6, -112, J(K, 'neck')); drawFrontHead(c, K); c.restore();
     bow(c, K.f * 14, -98, 1.25);
     const dx = K.f * 6;
     const tgt = K.pawPose === 'cheeks' ? [headPt(dx, -22, 48), headPt(dx, 22, 48)] : K.pawPose === 'yawn' ? [null, headPt(dx, 8 + K.f * 22, 36)] : K.pawPose === 'chin' ? [null, headPt(dx, 14 + K.f * 22, 58)] : [null, null];
-    [-1, 1].forEach((i, k) => { const S = [i * 48 + K.f * 4, -88]; armFrom(c, S, [i * 36 + K.f * 4, -86], toward(pawFrom(S, i < 0 ? K.armL : K.armR, i), tgt[k], K), i); });
+    [-1, 1].forEach((i, k) => { const S = [i * 48 + K.f * 4, -88]; armFrom(c, S, [i * 36 + K.f * 4, -86], toward(pawFrom(S, i < 0 ? K.armL : K.armR, i, 34, 1.1, J(K, i < 0 ? 'elbowL' : 'elbowR')), tgt[k], K), i); });
   }
 
   // ---------- THREE-QUARTER view (0.3 <= |f| < 0.7), drawn facing right ----------
@@ -478,7 +496,7 @@
     headFrame(c, K, 6);
     // the flower is on Yuki's left ear: the near ear when we see her left side (facing left), else the far ear
     const nearFlower = !!K.flipped;
-    const eN = earPose(K, -1, nearFlower ? K.flop || 0 : 0), eF = earPose(K, 1, nearFlower ? 0 : K.flop || 0);
+    const eN = earPose(K, -1, nearFlower ? K.flop || 0 : 0, J(K, 'earTipL')), eF = earPose(K, 1, nearFlower ? 0 : K.flop || 0, J(K, 'earTipR'));
     earAt(c, 40, -62, eF.rot + 0.2, eF.bend, 0.92);    // far ear
     if (!nearFlower) { bow(c, 70, -62, 0.6, false, 0.7); sakura(c, 54, -72, 16, 0.3); }   // peeking out behind the head
     earAt(c, -34, -60, eN.rot - 0.22, eN.bend);         // near ear
@@ -503,20 +521,22 @@
     shade(c, x - r * 0.2, y + r * 0.35, r * 0.8, r * 0.6, 0.7);
   }
   function drawThree(c, K) {
-    cottonTail(c, -66, -40, 20);
+    pivot(c, 0, -40, J(K, 'hips'));
+    c.save(); pivot(c, -50, -42, J(K, 'tail1')); cottonTail(c, -66, -40, 20); c.restore();
     drawFeet(c, K, [-18, 30]);
     c.translate(0, -Math.abs(Math.sin(K.phase)) * 4 * K.walk);
+    pivot(c, 0, -50, J(K, 'spine'));
     frontBodyPath(c); c.fillStyle = C.fur; c.fill();
     c.save(); c.clip();
     shade(c, -64, -46, 46, 56, 0.8); shade(c, 64, -50, 30, 50, 0.4); shade(c, 10, -12, 60, 18, 0.6);
     c.restore();
     frontBodyPath(c); c.lineWidth = 4; c.strokeStyle = C.line; c.stroke();
     collar(c, 20, 0.4);
-    drawThreeHead(c, K);
+    c.save(); pivot(c, 6, -112, J(K, 'neck')); drawThreeHead(c, K); c.restore();
     bow(c, 20, -98, 1.15);
     const tgt = K.pawPose === 'cheeks' ? [headPt(6, -14, 48), headPt(6, 66, 44)] : K.pawPose === 'yawn' ? [null, headPt(6, 46, 36)] : K.pawPose === 'chin' ? [null, headPt(6, 50, 54)] : [null, null];
     const sh = [[-46, -88], [54, -88]], inner = [[-36, -86], [44, -86]];
-    [-1, 1].forEach((i, k) => armFrom(c, sh[k], inner[k], toward(pawFrom(sh[k], i < 0 ? K.armL : K.armR, i, k ? 30 : 34), tgt[k], K), i));
+    [-1, 1].forEach((i, k) => armFrom(c, sh[k], inner[k], toward(pawFrom(sh[k], i < 0 ? K.armL : K.armR, i, k ? 30 : 34, 1.1, J(K, i < 0 ? 'elbowL' : 'elbowR')), tgt[k], K), i));
   }
 
   // ---------- SIDE profile (|f| >= 0.7), drawn facing right ----------
@@ -546,10 +566,11 @@
     }
   }
   // the near arm in profile: a short curve drawn INSIDE the body outline (not a separate stick arm)
-  function sideArm(c, S, P) {
+  function sideArm(c, S, P, E) {
     // a small rounded arm with a paw, growing from inside the body at S; only its own edges are outlined
+    // (E: the elbow, when the arm bends there; the curve then passes through it)
     const [sx, sy] = S, [px, py] = P, dx = px - sx, dy = py - sy, d = Math.hypot(dx, dy) || 1;
-    const mx = (sx + px) / 2 + (-dy / d) * -6, my = (sy + py) / 2 + (dx / d) * -6;
+    const mx = E ? 2 * E[0] - (sx + px) / 2 : (sx + px) / 2 + (-dy / d) * -6, my = E ? 2 * E[1] - (sy + py) / 2 : (sy + py) / 2 + (dx / d) * -6;
     const N = 10, A = [], B = [];
     for (let k = 0; k <= N; k++) {
       const u = k / N, v = 1 - u;
@@ -575,7 +596,7 @@
     headFrame(c, K, 12);
     // the flower is on Yuki's left ear: near when we see her left side (facing left), else on the far ear
     const nearFlower = !!K.flipped;
-    const eN = earPose(K, -1, nearFlower ? K.flop || 0 : 0), eF = earPose(K, -1, nearFlower ? 0 : K.flop || 0);
+    const eN = earPose(K, -1, nearFlower ? K.flop || 0 : 0, J(K, 'earTipL')), eF = earPose(K, -1, nearFlower ? 0 : K.flop || 0, J(K, 'earTipR'));
     // two long ears close together on top of the head, leaning slightly back; the far ear just in front of the near ear
     earAt(c, 4, -88, eF.rot - 0.02, eF.bend * 0.8, 0.98, 126);   // far ear
     if (!nearFlower) { bow(c, 22, -98, 0.6, false, 0.4); sakura(c, 6, -104, 16, 0.15); }
@@ -607,27 +628,32 @@
     });
   }
   function drawSide(c, K) {
+    pivot(c, -4, -40, J(K, 'hips'));
     // round cotton tail at the lower back
-    cottonTail(c, -70, -38, 21);
+    c.save(); pivot(c, -54, -40, J(K, 'tail1')); cottonTail(c, -70, -38, 21); c.restore();
     // small feet with one slightly forward
     [[-14, Math.PI, true], [14, 0, false]].forEach(([x0, off, far]) => {
       const ph = K.phase + off, lx = x0 + Math.sin(ph) * 8 * K.walk, lift = Math.max(0, Math.cos(ph)) * 5 * K.walk;
+      c.save(); pivot(c, x0, -46, -J(K, far ? 'hipL' : 'hipR'));
       path(c, () => c.ellipse(lx + 4, -8 - lift, 20, 10, 0, 0, Math.PI * 2)); fillStroke(c, C.fur);
       if (far) { c.fillStyle = 'rgba(200,150,160,0.25)'; c.fill(); }
+      c.restore();
     });
     c.translate(0, -Math.abs(Math.sin(K.phase)) * 4 * K.walk);
+    pivot(c, -4, -50, J(K, 'spine'));
     sideBodyPath(c); c.fillStyle = C.fur; c.fill();
     c.save(); c.clip(); shade(c, -44, -46, 34, 48, 0.7); shade(c, 8, -8, 50, 14, 0.5); c.restore();
     sideBodyPath(c); c.lineWidth = 4; c.strokeStyle = C.line; c.stroke();
     // No neck: the head sits directly on the body; a small bow at the throat
     collar(c, 26, 1);
-    drawSideHead(c, K);
+    c.save(); pivot(c, 12, -112, J(K, 'neck')); drawSideHead(c, K); c.restore();
     // the arm is a short curve drawn INSIDE the body outline hanging at the front
-    const S = [22, -92], ang = K.armR, a = ang < 0 ? 0.7 - ang * 0.35 : ang + 0.15, len = 44;
-    const P = [S[0] + len * Math.sin(a), S[1] + len * Math.cos(a)];
+    const S = [22, -92], ang = K.armR, a = ang < 0 ? 0.7 - ang * 0.35 : ang + 0.15, len = 44, el = J(K, 'elbowR');
+    const E = el ? [S[0] + len / 2 * Math.sin(a), S[1] + len / 2 * Math.cos(a)] : null;
+    const P = el ? [E[0] + len / 2 * Math.sin(a + el), E[1] + len / 2 * Math.cos(a + el)] : [S[0] + len * Math.sin(a), S[1] + len * Math.cos(a)];
     const tgt = K.pawPose === 'cheeks' ? headPt(4, 56, 38) : K.pawPose === 'yawn' ? headPt(4, 74, 38) : K.pawPose === 'chin' ? headPt(4, 50, 52) : null;
     bow(c, 44, -100, 0.95, true, 0.25);
-    sideArm(c, [S[0] - 6, S[1] + 2], toward(P, tgt, K));
+    sideArm(c, [S[0] - 6, S[1] + 2], toward(P, tgt, K), tgt ? null : E);
   }
 
   // ---------- views ----------
@@ -636,7 +662,8 @@
   const FADES = [[0.26, 0.34], [0.65, 0.75]];   // brief crossfades around the switch points
   // Three-quarter and side views are drawn facing right; facing left mirrors them.
   // `flipped` tells the turned views we see Yuki's left side, so the flower on her left ear is on the near side
-  const mirror = K => ({ ...K, f: -K.f, lookX: -K.lookX, tilt: -K.tilt, earL: K.earR, earR: K.earL, flipped: true });
+  const mirror = K => ({ ...K, f: -K.f, lookX: -K.lookX, tilt: -K.tilt, earL: K.earR, earR: K.earL, flipped: true,
+    rig: K.rig && { ...K.rig, earTipL: K.rig.earTipR, earTipR: K.rig.earTipL } });
 
   function drawView(c, K, view) {
     c.save();

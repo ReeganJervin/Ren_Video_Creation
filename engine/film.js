@@ -689,11 +689,12 @@
     });
     g.restore();
   }
-  // a character in a mood, posed directly, on g's current transform (the mood sheet): o = { x, y, scale, f, talk, t }
+  // a character in a mood, posed directly, on g's current transform (the mood sheet): o = { x, y, scale, f, talk, t, rig }
   function character(g, id, mood, o = {}) {
     const K = posedK(id, o.t || 0, { ...o, mood, t0: -10 });
     K.moodMouth = K.mouth;
     if (o.talk) { K.mouth = 'talk'; K.talk = o.talk; }
+    if (o.rig) K.rig = o.rig;
     DRAW[id](g, K);
   }
   const drawPosed = (g, id, K) => { applyCam(g, CAM0, 1); DRAW[id](g, K); g.setTransform(1, 0, 0, 1, 0, 0); };
