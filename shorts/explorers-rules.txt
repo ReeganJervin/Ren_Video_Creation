@@ -1,0 +1,25 @@
+# ============================================================
+#  Short: Ren's three explorer rules
+#  (an independent Short made from Ren's lines in
+#   stories\beginning-of-a-friendship.txt, scene 2)
+#  Make it:  make-video.bat shorts\explorers-rules.txt
+# ============================================================
+
+title: Ren's Three Explorer Rules
+type: short
+hook: Ren's 3 rules for every explorer
+thumbnail text: 3 Explorer Rules
+place: meadow
+time: day
+music: happy
+
+ren enters from left to center
+ren (happy): Explorer's rule number one: always look confident.
+ren (playful): Even when you have absolutely no idea what you're doing.
+ren (happy): Rule number two: if something goes wrong, call it an experiment.
+ren (surprised): And rule number three...
+beat
+ren (sad): Always bring a snack. Which I did not.
+sting
+narrator: And that is how Ren's very first expedition began.
+ending: The full story is on the channel!

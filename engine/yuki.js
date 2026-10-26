@@ -156,9 +156,24 @@
       path(c, () => { c.moveTo(-w, 7); c.quadraticCurveTo(0, -1, w, 7); c.quadraticCurveTo(w * 0.6, 7 + 11 * a, 0, 7 + 11 * a); c.quadraticCurveTo(-w * 0.6, 7 + 11 * a, -w, 7); });
       c.fillStyle = C.mouth; c.fill(); c.stroke();
     };
+    // talking while shy, sad or worried: small and flat, a little wobbly, corners down; it opens only a little
+    // (a round "o" is for surprised)
+    const worried = (a, w) => {
+      const lo = 6 + 4 * a;
+      path(c, () => {
+        c.moveTo(-w, 6 + 3); c.quadraticCurveTo(-w * 0.55, 6 - 1, -w * 0.15, 6 + 0.5); c.quadraticCurveTo(w * 0.25, 6 - 1.5, w, 6 + 3);
+        c.quadraticCurveTo(w * 0.4, lo + 1, 0, lo); c.quadraticCurveTo(-w * 0.4, lo + 1, -w, 6 + 3);
+      });
+      c.fillStyle = C.mouth; c.fill(); c.stroke();
+    };
     switch (K.mouth) {
       case 'open': openShape(1); break;
-      case 'talk': if (/frown|pout/.test(K.moodMouth || '')) downShape(K.talk, K.moodMouth === 'frown' ? 7.5 : 5); else openShape(K.talk); break;
+      case 'talk':
+        if (/frown/.test(K.moodMouth || '')) worried(K.talk, K.moodMouth === 'frown' ? 6.5 : 5);
+        else if (K.moodMouth === 'o') { c.beginPath(); c.ellipse(0, 8, 5.5 * (0.8 + 0.2 * K.talk), 7 * (0.55 + 0.45 * K.talk), 0, 0, Math.PI * 2); c.fillStyle = C.mouth; c.fill(); c.stroke(); }   // surprised: a round o
+        else if (K.moodMouth === 'pout') downShape(K.talk * 0.7, 5);
+        else openShape(K.talk);
+        break;
       case 'o': c.beginPath(); c.ellipse(0, 8, 5.5, 7, 0, 0, Math.PI * 2); c.fillStyle = C.mouth; c.fill(); c.stroke(); break;
       case 'soft': c.beginPath(); c.moveTo(-8, 2); c.quadraticCurveTo(0, 8, 8, 2); c.stroke(); break;
       case 'frown': c.beginPath(); c.moveTo(-7, 6); c.quadraticCurveTo(0, 0, 7, 6); c.stroke(); break;

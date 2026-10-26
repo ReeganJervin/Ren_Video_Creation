@@ -436,9 +436,9 @@ Two lines choose the thumbnail. Put them anywhere in the story; they take no tim
 
 | Line | What it does |
 |---|---|
-| `intro: series` | The **series intro** at the start (about 5 s): the "Ren & Yuki" logo bounces in letter by letter over the meadow, Ren and Yuki peek in and wave, and the theme jingle plays (the same in every video, never louder than the story). Stories in the `episodes` and `shorts` folders get it automatically |
+| `intro: series` | The **series intro** at the start (about 5 s): the "Ren & Yuki" logo bounces in letter by letter over the meadow, Ren and Yuki peek in and wave, and the theme jingle plays (the same in every video, never louder than the story). Stories in the `episodes` folder get it automatically (Shorts never have it) |
 | `intro: after scene 1` | The intro after the first scene instead, so viewers see your **hook** first (any scene number works) |
-| `intro: none` | No intro (also for stories in `episodes` and `shorts`) |
+| `intro: none` | No intro (also for stories in `episodes`) |
 | `ending: end screen` | The **end screen**: the last 20 s, with Ren and Yuki waving on one side, calm music, and room for YouTube's end-screen elements |
 | `ending text: See you next time!` | The narrator says this in the end screen (it adds the end screen by itself) |
 
@@ -456,10 +456,64 @@ Put `format: vertical` at the top of a story to make it 1080×1920, standing up,
 
 What changes in a vertical video:
 - **The places** are drawn taller (more sky above, more ground below), not cut out of the wide picture.
-- **The camera** always frames the characters, medium-close or closer, a little left of the middle, with their faces at about 43 % from the top (room above for bubbles, and later a Short's hook text). `shot: close on ren` and the other shot lines choose how close and on whom. Camera moves (`push in`, `pan to`…) come later.
+- **The camera** always frames the characters, medium-close or closer, a little left of the middle, with their faces at about 43 % from the top (room above for bubbles and a Short's hook text). `shot: close on ren` and the other shot lines choose how close and on whom; `push in`, `pull out`, `pan to`, `follow` and `shake` work too. In a conversation where the two together would look small, the camera shows whoever is speaking, close, with the other one's face kept out of the picture (with `editing: auto`, or no shot lines).
+- **Two characters never overlap** (unless they hug): they keep a small gap, with their tails inside the picture.
+- **Things in the sky** (the star, hearts…) come down into the picture, inside the safe area.
 - **The stage is narrower:** the left, center and right spots are closer together, and characters come in from just outside the picture.
 - **Bubbles and captions** are narrower and stay inside the **safe area**: faces, bubbles and captions keep out of the bottom 20 %, the right 15 % and the top 8 %, where YouTube puts its buttons and titles. The check report has a **Safe area (vertical)** line (a face is only excused while its character enters or exits across the edge of the picture, and the report lists those moments; bubbles and captions always count).
-- The series intro, the end screen and the thumbnail are left out of vertical videos for now (they come with Shorts).
+- There is no series intro or end screen in a vertical video. Instead of a thumbnail it gets a **cover frame** (`my-story-cover.jpg`, 1080×1920; the same `thumbnail` lines choose it).
+
+## Shorts
+
+A Short is a vertical video of 15 to 60 seconds. Put Shorts in the `shorts` folder. There are two kinds.
+
+**An independent Short** is a little story of its own. Write it like any story, with `type: short` at the top (an example: `shorts\explorers-rules.txt`):
+
+```
+title: Ren's Three Explorer Rules
+type: short
+hook: Ren's 3 rules for every explorer
+thumbnail text: 3 Explorer Rules
+place: meadow
+
+ren enters from left to center
+ren (happy): Explorer's rule number one: always look confident.
+...
+ren (sad): Always bring a snack. Which I did not.
+sting
+narrator: And that is how Ren's very first expedition began.
+ending: The full story is on the channel!
+```
+
+**An episode Short** is a part of a longer story, drawn again standing up (never cut out of the wide video), with the voices you already made. It needs only a few lines (an example: `shorts\the-summit.txt`):
+
+```
+title: The Summit Is 40 Steps Away
+type: episode short
+from: beginning-of-a-friendship
+scenes: 1
+hook: Ren's greatest expedition... is 40 steps long
+thumbnail text: The Summit
+ending: Watch the full episode!
+```
+
+| Line | What it does |
+|---|---|
+| `type: short` | An independent Short: vertical (unless you write `format: wide`), a little faster (shorter pauses, quicker walks), no series intro and no end screen |
+| `type: episode short` | A Short made from part of another story (with `from:` and `scenes:` or `lines:`) |
+| `from: beginning-of-a-friendship` | The story it comes from (looked for next to the Short, then in `stories` and `episodes`) |
+| `scenes: 2` or `scenes: 2-3` | Which scenes to show. A line that starts inside them is always heard to its end |
+| `lines: 40-55` | Or which lines of the story file to show (the line numbers in the editor) |
+| `hook: <text>` | Big text at the top for the first 3 seconds, to make people stay |
+| `ending: <text>` | The end card's words, under the "Ren & Yuki" logo (2 s). Without it, the end card is the logo alone (1 s) |
+| `captions: narrator` | Big word-by-word captions in the middle of the picture for the narrator's lines. This is what you get without the line, because the characters' words are already in their bubbles. `captions: all` captions every line; `captions: off` none |
+| `sting` | A bright little chime: the "ta-da" on the payoff. A Short gets one at the end of its last line by itself |
+| `loop: on` | The last moment flows back into the first, so the Short loops smoothly (then there is no end card; independent Shorts only) |
+| `framing: close` | How close the camera is through the whole Short: `wide`, `medium` (normal) or `close` |
+
+In an episode Short, the music and sounds are cut from the story and fade in and out. You get a cover frame, subtitles and a description draft, as for any video.
+
+The check report has a **Short length** line: a warning if the Short is shorter than 15 s or longer than 60 s.
 
 ## Sounds you get automatically
 

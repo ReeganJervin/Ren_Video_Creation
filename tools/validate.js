@@ -51,7 +51,7 @@ function validate(plan, files) {
 
   // sound effects: energy rises at each discrete cue
   const sw = readWav(files.sfx), ss = sw.samples(), ssr = sw.rate;
-  const cues = plan.sfx.filter(c => ['boingUp', 'boingLand', 'hopUp', 'hopLand', 'chime', 'twinkle', 'pop', 'softLand', 'chirp', 'sparkleChime'].includes(c.type));
+  const cues = plan.sfx.filter(c => ['boingUp', 'boingLand', 'hopUp', 'hopLand', 'chime', 'twinkle', 'pop', 'softLand', 'chirp', 'sparkleChime', 'sting'].includes(c.type));
   const miss = cues.filter(c => {
     const i = Math.round(c.t * ssr), w = Math.round(0.12 * ssr);
     const before = db(ss, Math.max(0, i - w), Math.max(1, i - Math.round(0.01 * ssr))), after = db(ss, i, Math.min(ss.length, i + w));

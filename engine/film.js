@@ -418,6 +418,8 @@
 
   // ---------- text overlays ----------
   const FONT = '"Fredoka", "Arial Rounded MT Bold", Arial, sans-serif', SERIF = '"Lora", Georgia, serif';
+  // big outlined text: the outline eats into the spaces between words, so they get wider (a share of the font size)
+  const WORD_GAP = 0.22, wordGap = (c, size) => { c.wordSpacing = `${Math.round(size * WORD_GAP)}px`; };
   function wrap(c, text, maxW) {
     const words = text.split(' '), lines = []; let line = '';
     for (const w of words) { const test = line ? line + ' ' + w : w; if (c.measureText(test).width > maxW && line) { lines.push(line); line = w; } else line = test; }
@@ -571,9 +573,10 @@
     c.save(); c.setTransform(1, 0, 0, 1, 0, 0);
     let size = 170; c.font = `700 ${size}px ${FONT}`;
     const chars = [...T.text], gap = 14;
-    let widths = chars.map(ch => c.measureText(ch).width), total = widths.reduce((s, v) => s + v, 0) + gap * (chars.length - 1);
+    const measure = () => chars.map(ch => c.measureText(ch).width + (ch === ' ' ? size * WORD_GAP : 0));
+    let widths = measure(), total = widths.reduce((s, v) => s + v, 0) + gap * (chars.length - 1);
     const room = VERT ? W * 0.84 : 1600;
-    if (total > room) { size = Math.floor(size * room / total); c.font = `700 ${size}px ${FONT}`; widths = chars.map(ch => c.measureText(ch).width); total = widths.reduce((s, v) => s + v, 0) + gap * (chars.length - 1); }
+    if (total > room) { size = Math.floor(size * room / total); c.font = `700 ${size}px ${FONT}`; widths = measure(); total = widths.reduce((s, v) => s + v, 0) + gap * (chars.length - 1); }
     c.textAlign = 'center'; c.textBaseline = 'alphabetic';
     let x = W / 2 - total / 2; const base = VERT ? H * 0.24 : 335;
     chars.forEach((ch, i) => {
@@ -624,7 +627,7 @@
   const LOGO = [...'Ren & Yuki'], LOGO_COL = i => (i < 3 ? ['#ffb35c', '#f07a2a'] : i === 4 ? ['#ffe08a', '#f4b350'] : ['#ffc4d4', '#ee7f9c']);
   function drawLogo(g, t, t0, base, size) {
     g.save(); g.setTransform(1, 0, 0, 1, 0, 0); g.font = `700 ${size}px ${FONT}`; g.textAlign = 'center'; g.textBaseline = 'alphabetic'; g.lineJoin = 'round';
-    const gap = size * 0.06, widths = LOGO.map(ch => g.measureText(ch).width), total = widths.reduce((a, b) => a + b, 0) + gap * (LOGO.length - 1);
+    const gap = size * 0.06, widths = LOGO.map(ch => g.measureText(ch).width + (ch === ' ' ? size * WORD_GAP : 0)), total = widths.reduce((a, b) => a + b, 0) + gap * (LOGO.length - 1);
     let x = W / 2 - total / 2, k = 0;
     LOGO.forEach((ch, i) => {
       const cx = x + widths[i] / 2; x += widths[i] + gap;
@@ -665,7 +668,7 @@
     L.videos.forEach(v => { g.beginPath(); g.roundRect(v.x - 10, v.y - 10, v.w + 20, v.h + 20, 30); g.fill(); });
     g.beginPath(); g.arc(L.subscribe.x, L.subscribe.y, L.subscribe.r + 10, 0, Math.PI * 2); g.fill();
     g.shadowBlur = 0; g.shadowColor = 'transparent';
-    g.font = `700 64px ${FONT}`; g.textAlign = 'center'; g.lineJoin = 'round'; g.lineWidth = 11; g.strokeStyle = '#5a2a14'; g.fillStyle = '#fff4e4';
+    g.font = `700 64px ${FONT}`; wordGap(g, 64); g.textAlign = 'center'; g.lineJoin = 'round'; g.lineWidth = 11; g.strokeStyle = '#5a2a14'; g.fillStyle = '#fff4e4';
     const hx = (L.videos[0].x + L.videos[1].x + L.videos[1].w) / 2;
     g.strokeText('Watch next!', hx, 270); g.fillText('Watch next!', hx, 270);
     g.restore();
@@ -696,11 +699,54 @@
       }
     }
   }
+  // ---------- Shorts (F7 Part B): big word captions, the hook, the 1-second end card ----------
+  // big bold words with a warm outline, kept inside the safe area; fitted to the width; returns the box drawn
+  function bigText(c, text, cx, y, maxW, size0, a = 1, sc = 1) {
+    c.save(); c.setTransform(1, 0, 0, 1, 0, 0); c.globalAlpha = a;
+    let size = size0, lines;
+    for (; size >= 34; size -= 4) { c.font = `700 ${size}px ${FONT}`; wordGap(c, size); lines = wrap(c, text, maxW); if (lines.length <= 2 && lines.every(l => c.measureText(l).width <= maxW)) break; }
+    const lh = size * 1.12, w = Math.max(...lines.map(l => c.measureText(l).width)), h = lines.length * lh;
+    c.translate(cx, y + h / 2); c.scale(sc, sc); c.translate(0, -h / 2);
+    c.textAlign = 'center'; c.textBaseline = 'top'; c.lineJoin = 'round';
+    lines.forEach((l, i) => {
+      c.lineWidth = size * 0.2; c.strokeStyle = '#3a1d0e'; c.strokeText(l, 0, i * lh);
+      c.fillStyle = '#fff6e6'; c.fillText(l, 0, i * lh);
+    });
+    c.restore();
+    return { x0: cx - w / 2, x1: cx + w / 2, y0: y, y1: y + h };
+  }
+  function drawShort(c, local, t) {
+    const cx = VERT ? W * 0.43 : W / 2, maxW = VERT ? W * 0.76 : W * 0.6;
+    for (const q of P.wordCaps || []) {
+      if (local < q.t0 || local > q.t1) continue;
+      const pop = easeOutBack(clamp((local - q.t0) / 0.18));
+      drawn.push({ kind: 'caption', ...bigText(c, q.text, cx, VERT ? H * 0.64 : H * 0.78, maxW, VERT ? 76 : 64, 1, 0.85 + 0.15 * pop) });
+    }
+    if (P.hook && local >= P.hook.t0 && local <= P.hook.t1) {
+      const a = ease((local - P.hook.t0) / 0.3) * ease((P.hook.t1 - local) / 0.35);
+      drawn.push({ kind: 'hook', ...bigText(c, P.hook.text, cx, VERT ? H * 0.085 : H * 0.08, maxW, VERT ? 76 : 72, a, 0.9 + 0.1 * easeOutBack(clamp((local - P.hook.t0) / 0.3))) });
+    }
+    if (P.card && local >= P.card.t0) {
+      const g = aux.getContext('2d'); g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 1; g.globalCompositeOperation = 'source-over'; g.clearRect(0, 0, W, H);
+      backdrop(g, t, 0);
+      // the logo, already landed (a Short's card is short), with its gentle wobble
+      drawLogo(g, local, P.card.t0 - 1.6, VERT ? H * 0.42 : H * 0.45, VERT ? 150 : 200);
+      if (P.card.text) bigText(g, P.card.text, W / 2, VERT ? H * 0.5 : H * 0.6, maxW, VERT ? 60 : 56);
+      c.save(); c.setTransform(1, 0, 0, 1, 0, 0); c.globalAlpha = ease((local - P.card.t0) / 0.25); c.drawImage(aux, 0, 0); c.restore();
+    }
+  }
   // The thumbnail's framing (YouTube kit): the characters on stage fill a share of the picture height, standing
   // low with room above for the title. null = the story's own camera (always, except while making a thumbnail).
   let framing = null;
   const FRAMES = { medium: { fill: 0.55, top: 0.36 }, close: { fill: 0.78, top: 0.26 } };
   function camFramed(t) {
+    if (VERT) {
+      // a vertical cover frame: the characters together, as in the video's framing, when they fit big enough;
+      // otherwise the first of them alone (the faces stay at about 43 % from the top, below the title)
+      const fill = framing.size === 'close' ? 0.5 : 0.42, on = framing.ids.filter(id => near(id, t)), ids = on.length ? on : CAST.slice(0, 1);
+      const both = vFrame(ids, fill, t, 0.5);
+      return ids.length > 1 && both.pairFill < fill * 0.8 ? vFrame(ids.slice(0, 1), fill, t, 0.5) : both;
+    }
     const F0 = FRAMES[framing.size], tp = Math.max(F0.top, framing.top || 0), F = { top: tp, fill: Math.min(F0.fill, 0.95 - tp) }, on = framing.ids.filter(id => onStage(id, t)), Bs = (on.length ? on : CAST.slice(0, 1)).map(id => actorBody(id, t));
     const xs = Bs.map(b => b.x), spread = Math.max(...xs) - Math.min(...xs), top = Math.min(...Bs.map(b => b.y)) - 345;   // Ren is about 345 px tall, ears included
     const bottom = Math.max(...Bs.map(b => b.y));
@@ -716,30 +762,76 @@
   // (out of the bottom 20 %, the right 15 % and the top 8 %). "shot:" lines choose how close and on whom; camera moves
   // come later (F7 Part B). fill: a character's height as a share of the picture's height.
   const VFILL = { wide: 0.28, medium: 0.36, close: 0.48, 'extreme close': 0.62, ots: 0.4 };
-  function camVertical(t) {
-    let sh = null;
-    for (const x of P.shots || []) { if (x.t > t) break; if (x.op === 'cut') sh = x; }
-    const fill = (VFILL[sh ? sh.size : 'medium'] || 0.36) * (P.shots ? 1 : K_('zoom', t));
-    const ids = sh && sh.on && sh.on.actors ? sh.on.actors.filter(id => CAST.includes(id)) : CAST;
+  // a framing of some characters: fill = a character's height as a share of the picture's height
+  // place: where the group stands across the picture (0.435 of the width unless asked)
+  function vFrame(ids, fill, t, place = 0.435) {
     // everyone near the middle of the stage counts, more and more as they come in (so an entrance glides)
-    const ws = ids.map(id => ({ id, B: actorBody(id, t), w: 0 })).map(q => ({ ...q, w: clamp((700 - Math.abs(q.B.x - RX)) / 200) })).filter(q => q.w > 0);
+    const ws = ids.map(id => ({ id, B: actorBody(id, t) })).map(q => ({ ...q, w: clamp((700 - Math.abs(q.B.x - RX)) / 200) })).filter(q => q.w > 0);
     if (!ws.length) return { z: 1.2, cx: RX, cy: 900 - (0.74 * H - H / 2) / 1.2 };
     const sw = ws.reduce((a, q) => a + q.w, 0), mx = ws.reduce((a, q) => a + q.B.x * q.w, 0) / sw;
     // the faces' height (the characters', not a flying extra's)
     const chars = ws.filter(q => !REG[q.id].extra), use = chars.length ? chars : ws;
     const faceY = use.reduce((a, q) => a + toWorld(q.B, q.B.f * 6, REG[q.id].head).y * q.w, 0) / use.reduce((a, q) => a + q.w, 0);
     const half = Math.max(...ws.map(q => Math.abs(q.B.x - mx) * q.w));
-    // as close as asked, but everyone fits between the left edge and the right 15 % (with room for tails and ears)
-    const z = Math.max(0.9, Math.min(fill * H / 345, 0.83 * W / (2 * half + 280)));
-    let cx = mx + (W / 2 - 0.435 * W) / z, cy = faceY - (0.43 * H - H / 2) / z;
+    // as close as asked, but everyone fits between the left edge and the right 15 %, tails included
+    const z = Math.max(0.9, Math.min(fill * H / 345, 0.83 * W / (2 * half + 340)));
+    let cx = mx + (W / 2 - place * W) / z, cy = faceY - (0.43 * H - H / 2) / z;
     const hw = W / 2 / z, hh = H / 2 / z;
     cx = clamp(cx, -400 + hw, 2320 - hw); cy = clamp(cy, -300 + hh, 1460 - hh);
-    return { z, cx, cy };
+    return { z, cx, cy, pairFill: z * 345 / H };
+  }
+  const near = (id, t) => Math.abs(actorBody(id, t).x - RX) < 560;   // on the (narrow) stage
+  const idsOf = on => (on && on.actors ? on.actors.filter(id => CAST.includes(id)) : CAST);
+  const vMix = (a, b, k) => ({ z: lerp(a.z, b.z, k), cx: lerp(a.cx, b.cx, k), cy: lerp(a.cy, b.cy, k) });
+  function camVertical(t) {
+    let fill = VFILL[P.framing] || 0.36, ids = CAST, push = 1, from = null, k = 1, shake = 0;
+    // the story's shots and camera moves: cuts choose how close and on whom; push in and pull out go closer or wider;
+    // pan and follow glide to someone else; shake shakes
+    for (const x of P.shots || []) {
+      if (x.t > t) break;
+      const u = x.dur ? ease((t - x.t) / x.dur) : 1;
+      if (x.op === 'cut') { fill = VFILL[x.size] || 0.36; ids = idsOf(x.on); push = 1; from = null; }
+      else if (x.op === 'ots') { fill = VFILL.close; ids = idsOf(x.on); push = 1; from = null; }
+      else if (x.op === 'zoom') fill = 0.36 * x.z;
+      else if (x.op === 'push') push *= 1 + 0.35 * u;
+      else if (x.op === 'pull') push /= 1 + 0.35 * u;
+      else if ((x.op === 'pan' || x.op === 'follow') && x.on && x.on.actors) { from = ids; ids = idsOf(x.on); k = u; }
+      else if (x.op === 'shake') shake = t < x.t + x.dur ? 1 - (t - x.t) / x.dur : 0;
+    }
+    if (!P.shots) fill *= K_('zoom', t);
+    let cam = vFrame(ids, fill * push, t);
+    if (from && k < 1) cam = vMix(vFrame(from, fill * push, t), cam, k);
+    // a conversation without shot lines: when the two together would be small, frame whoever is speaking
+    // (medium-close), and stay on them for a moment after the line
+    if (!P.shots && ids.length > 1 && cam.pairFill < 0.3) {
+      const v = [...P.voice].reverse().find(q => q.who !== 'narrator' && CAST.includes(q.who) && q.t - 0.15 <= t && t <= q.t + q.len + 2.5 && near(q.who, t));
+      const others = CAST.filter(id => id !== (v && v.who) && near(id, t));
+      if (v && others.length) {
+        // the speaker toward the neighbour's side, close enough that the neighbour's face is out of the picture
+        const me = actorBody(v.who, t).x, o = others.map(id => actorBody(id, t).x).sort((p, q) => Math.abs(p - me) - Math.abs(q - me))[0];
+        const left = o < me, place = left ? 0.32 : 0.58, room = left ? place * W : (1 - place) * W;
+        const fill = Math.max(0.4, (room + 110) / Math.max(60, Math.abs(o - me) - 105) * 345 / H);
+        cam = vFrame([v.who], Math.min(fill, 0.5), t, place);
+      }
+    }
+    if (shake) { cam.cx += Math.sin(t * 47) * 10 * shake / cam.z; cam.cy += Math.cos(t * 39) * 8 * shake / cam.z; }
+    return cam;
   }
   const camFor = t => (framing ? camFramed(t) : VERT ? camVertical(t) : P.shots ? camShot(t) : camAt(t));
   let drawn = [];   // bubbles and captions drawn in the last frame: { kind, x0, x1, y0, y1 } on screen
-  function render(t) {
-    t = clamp(t, 0, P.duration); drawn = [];
+  // An episode Short plays a window of a longer story: its time 0 is the window's start (P.window, in the story's time).
+  const storyTime = t => (P.window ? P.window.t0 + Math.min(t, P.window.t1 - P.window.t0) : t);
+  let loopCv = null, inLoop = false;
+  // clean: without speech bubbles, captions, title cards and a Short's texts (for thumbnails and cover frames)
+  function render(t, clean = false) {
+    const local = t;
+    // a looping Short: its last moment blends into its first, so the end flows back to the start
+    if (P.loop && !inLoop && local > P.duration - 0.6) {
+      inLoop = true; render(0.6); inLoop = false;
+      if (!loopCv) { loopCv = document.createElement('canvas'); loopCv.width = W; loopCv.height = H; }
+      loopCv.getContext('2d').drawImage(ctx.canvas, 0, 0);
+    }
+    t = clamp(storyTime(t), 0, P.duration); drawn = [];
     const c = ctx, cam = camFor(t), tau = K_('tau', t);
     c.setTransform(1, 0, 0, 1, 0, 0); c.globalAlpha = 1; c.globalCompositeOperation = 'source-over';
     const PN = placeAt(t);
@@ -810,17 +902,19 @@
       }
       c.restore();
     });
-    P.titles.forEach(T => drawTitle(c, T, t));
-    P.captions.forEach(cap => drawCaption(c, cap, t));
+    if (!clean) P.titles.forEach(T => drawTitle(c, T, t));
+    if (!P.wordCaps && !clean) P.captions.forEach(cap => drawCaption(c, cap, t));   // (a Short shows the narrator as big word captions instead)
     const F = cam.framed ? faceBoxes(cam, Ks, heads) : null;
-    P.bubbles.forEach(b => drawBubble(c, b, t, toScreen(cam, heads[b.who]), cam, F));
+    if (!clean) P.bubbles.forEach(b => drawBubble(c, b, t, toScreen(cam, heads[b.who]), cam, F));
     if (P.youtube) drawYouTube(c, t);
+    if ((P.wordCaps || P.hook || P.card) && !clean) drawShort(c, local, t);
     c.setTransform(1, 0, 0, 1, 0, 0);
     const vg = c.createRadialGradient(W / 2, H / 2, H * 0.45, W / 2, H / 2, H * 1.05);
     vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, `rgba(20,10,30,${0.12 + 0.07 * tau})`);
     c.fillStyle = vg; c.fillRect(0, 0, W, H);
-    const [f0, f1] = P.pictureFadeOut, fade = clamp((t - f0) / (f1 - f0)) + (1 - clamp(t / 0.5));
+    const [f0, f1] = P.pictureFadeOut, fade = P.window ? 1 - clamp(local / 0.35) : clamp((t - f0) / (f1 - f0)) + (P.loop ? 0 : 1 - clamp(t / 0.5));
     if (fade > 0) { c.fillStyle = `rgba(0,0,0,${clamp(fade)})`; c.fillRect(0, 0, W, H); }
+    if (loopCv && P.loop && local > P.duration - 0.6) { c.globalAlpha = ease((local - (P.duration - 0.6)) / 0.6); c.drawImage(loopCv, 0, 0); c.globalAlpha = 1; }
   }
 
   async function init(canvas, plan) {
@@ -877,6 +971,7 @@
   // frame(null) goes back to the story's camera
   const frame = (size, ids, top) => { framing = size && FRAMES[size] ? { size, ids: ids && ids.length ? ids : CAST, top: top || 0 } : null; };
   // the safe-area check: faces, bubbles and captions of the frame just drawn
-  const layout = t => ({ faces: faces(t).map(q => ({ kind: 'face ' + q.id, ...q.box })), boxes: drawn });
-  window.StudioFilm = { init, render, faces, pose, mood, frame, END_LAYOUT, layout };
+  // (the helpers take a Short's own time, like render)
+  const layout = t => ({ faces: faces(storyTime(t)).map(q => ({ kind: 'face ' + q.id, ...q.box })), boxes: drawn });
+  window.StudioFilm = { init, render, faces: t => faces(storyTime(t)), pose: (id, t) => pose(id, storyTime(t)), mood: (id, t) => mood(id, storyTime(t)), frame, END_LAYOUT, layout };
 })();

@@ -132,7 +132,7 @@ Work through the steps **in this order**. The F-numbers are names, not the order
 | 4 | F9 Studio App, Part A (`STUDIO-APP.md`) | Done | `4b1cf13` (F9A) |
 | 5 | **Milestone 1** (full test) | In progress | |
 | 6 | **F11 YouTube kit** (thumbnails, subtitles, description, series intro, end screen) | Done (approved) | `b86d4fb` (F11A), F11B (see git log) |
-| 7 | F7 Vertical 9:16 and Shorts (reuses F11's thumbnails, subtitles and description) | Part A done (approved); Part B next | F7A (see git log) |
+| 7 | F7 Vertical 9:16 and Shorts (reuses F11's thumbnails, subtitles and description) | Done (Parts A and B approved) | F7A (see git log) |
 | 8 | **F12 Expression pack** (new moods, thought/whisper/shout bubbles, mood voices) | Not started | |
 | 9 | F3 Rig 2.0 (joints, movement library, lip-sync), in **4 review stops** | Not started | |
 | 10 | F4 Asset Kit, Part D: prop acting, Season 1 props, extras landing on set pieces (needs F3) | Not started | |
@@ -496,6 +496,16 @@ Each effect has its own sound and uses the lighting system from F5. All of them 
    - `episodes/demo/shorts/s01.txt` (taken from the 12-minute test; F7 comes before the cave kit in F5)
 
 **Acceptance:** both example Shorts pass all checks, including safe area and length, and R1 holds for landscape stories.
+
+**As built (F7B):**
+- **Owner's changes for Part B:** no series intro in Shorts; a 1 s logo end card (2 s with `ending:` text); `captions: narrator` by default (the characters' words are already in bubbles; `all`, `off` also); the owner's own story as the examples' source.
+- **Independent Short** (`type: short`): vertical unless `format: wide`; narrator and character pauses × 0.6, `wait` × 0.6, walks 1.25× faster; word captions in groups of 3 timed across each line (0.64 of the height in vertical); `hook:` (0.15–3.2 s, top, below the 8 % line); `sting` beat (a 5-note chime, `sting` cue type in validate) plus an automatic one at the end of the last line; `loop: on` blends the last 0.6 s into the start (no card, no picture fade); `framing:` sets the base closeness.
+- **Episode Short** (`type: episode short`, `tools/shorts.js`): the source (`from:`, next to the Short, then `stories/`, `episodes/`) is compiled in vertical without intro or end screen; `scenes: N[-M]` or `lines: A-B` set the window (extended so a voice that starts inside is heard to its end); the page draws the window (`P.window`, `storyTime`), re-rendered not cropped; the mix and stems are cut with ffmpeg (0.3 s fade in, 0.5 s fade out, silence under the card); the checks, subtitles, description and cover read a "view" plan in the Short's own time. Replacement ending lines (from the roadmap) are not built; the `ending:` card covers it for now.
+- **Outputs:** `<name>-cover.jpg` 1080×1920 instead of the thumbnail (same `thumbnail` lines; the Short's own `thumbnail text`, or its hook); covers and thumbnails are drawn clean (no bubbles, captions, hook); a vertical cover frames the characters together when they fit big, else the first alone; a face cut by the edge lowers a moment's score. **Short length** report line (warning outside 15–60 s).
+- **Vertical, from the owner's F7A review:** sky props come down to y 400 inside the safe area; pairs keep a gap (300 in vertical) with tails inside; in conversations where the pair would be small, the camera frames the speaker close with the neighbour's face out; camera moves (push, pull, pan, follow, shake) work in vertical; shy, sad and worried talking mouths are small, flat, wobbly and turn down (Ren and Yuki), surprised keeps the round "o", pouty turns down.
+- **From the owner's Part B review:** the outline of big text ate the spaces between words; all big outlined text (hooks, word captions, end cards, covers, thumbnails, "Watch next!", title cards, the logo) gets extra word spacing, 0.22 of the font size (`WORD_GAP`; canvas `wordSpacing`, or wider spaces where letters are drawn one by one). R1: only frames with that text change.
+- **Studio:** completions and colours for `type`, `captions`, `loop`, `hook`, `framing`, `from`, `scenes`, `lines`, `sting`.
+- Examples: `shorts/explorers-rules.txt` (independent, 25.4 s) and `shorts/the-summit.txt` (episode, scene 1 of `beginning-of-a-friendship`, 28.4 s); both pass every check, including safe area. R1: all 20 stories' timing identical; frame differences are only talking mouths (surprised lines now "o", sad/shy/pouty lines turn down).
 
 **Commit message:** `F7B: independent and episode Shorts, thumbnails, subtitles`
 

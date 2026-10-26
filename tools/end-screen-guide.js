@@ -24,7 +24,7 @@ server.listen(0, '127.0.0.1', async () => {
     const L = StudioFilm.END_LAYOUT, cv = document.getElementById('film'), g = cv.getContext('2d');
     g.setTransform(1, 0, 0, 1, 0, 0);
     const label = (text, x, y, size = 34) => {
-      g.font = `700 ${size}px Fredoka, sans-serif`; g.textAlign = 'center'; g.lineJoin = 'round';
+      g.font = `700 ${size}px Fredoka, sans-serif`; g.wordSpacing = `${Math.round(size * 0.22)}px`; g.textAlign = 'center'; g.lineJoin = 'round';
       g.lineWidth = size * 0.22; g.strokeStyle = '#ffffff'; g.strokeText(text, x, y); g.fillStyle = '#c0302a'; g.fillText(text, x, y);
     };
     g.setLineDash([]); g.lineWidth = 6; g.strokeStyle = '#c0302a';

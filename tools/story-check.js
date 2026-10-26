@@ -26,10 +26,10 @@ const cachedVoice = (text, v) => path.join(ROOT, 'cache', 'voices', voiceKey(tex
 const levelledVoice = (cached, gain = 0) => cached.replace(/\.wav$/, `.lv${-(VOICE_LUFS + gain)}s.wav`);
 const overrideFile = (name, line) => path.join(ROOT, 'voice-overrides', name, `line-${line}.wav`);
 
-// Settings that depend on the story's folder: stories in episodes/ and shorts/ start with the series intro
-// (unless they say "intro: none").
+// Settings that depend on the story's folder: stories in episodes/ start with the series intro (unless they say
+// "intro: none"). Shorts (shorts/) have no series intro.
 function folderDefaults(parsed, file) {
-  if (file && /(^|[\\/])(episodes|shorts)[\\/]/.test(path.relative(ROOT, path.resolve(ROOT, file))) && !parsed.meta.intro) parsed.meta.intro = { at: 'start', line: 0 };
+  if (file && /(^|[\\/])episodes[\\/]/.test(path.relative(ROOT, path.resolve(ROOT, file))) && !/(^|[\\/])shorts[\\/]/.test(path.relative(ROOT, path.resolve(ROOT, file))) && !/short/.test(parsed.meta.type || '') && !parsed.meta.intro) parsed.meta.intro = { at: 'start', line: 0 };
   return parsed;
 }
 

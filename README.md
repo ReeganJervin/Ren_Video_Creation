@@ -83,6 +83,7 @@ There are example stories to try first:
 - `stories\test-scenes.txt` is a story in three scenes, with three music moods and YouTube chapters.
 - `stories\test-camera.txt` shows every kind of shot and camera move.
 - `stories\camera-demo.txt` lets the camera edit by itself (`editing: auto`), with comic beats, slow motion and reveals.
+- `shorts\explorers-rules.txt` is an independent Short (vertical, about 25 s), and `shorts\the-summit.txt` is a Short made from scene 1 of `beginning-of-a-friendship` (see "Shorts" in STORY-GUIDE.md).
 
 ## Every video is checked automatically
 

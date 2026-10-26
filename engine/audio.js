@@ -353,6 +353,8 @@
         [84, 88, 91, 96, 100].forEach((m, i) => chime(t0 + (mid - t0) * (0.2 + i * 0.18), m, 0.06, 1.0));
       },
       chime(c) { chime(at(c.t), c.midi, c.gain || 0.2); },
+      // the payoff of a Short: a quick, bright chord going up
+      sting(c) { [72, 76, 79, 84, 88].forEach((m, i) => chime(at(c.t + i * 0.055), m, 0.2 - i * 0.02, 1.1)); },
       twinkle(c) { const g = c.gain || 0.2; chime(at(c.t), c.midi, g, 0.7); chime(at(c.t + 0.07), c.midi + 7, g * 0.6, 0.6); },
       sparkleChime(c) { [96, 100, 103, 108].forEach((m, i) => chime(at(c.t + i * 0.06), m, 0.13, 0.7)); },
       pop(c) {

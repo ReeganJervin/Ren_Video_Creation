@@ -78,12 +78,12 @@ function description(plan, credits) {
 // The thumbnail, drawn in the engine's page (opened with &export=1). Picks the moment, draws it, adds the text,
 // and returns { jpg (Buffer), t, how, warnings }.
 async function thumbnail(page, plan) {
+  // (the picture is drawn clean, without bubbles, captions and title cards, so those don't matter)
   const busy = [
-    ...plan.bubbles.map(b => [b.t0 - 0.2, b.t1 + 0.2]), ...plan.captions.map(c => [c.t0 - 0.2, c.t1 + 0.2]),
-    ...plan.titles.map(x => [Math.min(...(x.letters || []).map(l => l.t).filter(isFinite), x.out0 - 5.2), x.out1 + 0.2]),
     ...(plan.places || []).map(p => [p.t0 - 0.2, p.t1 + 0.3]),
-    // the series intro and the end screen
+    // the series intro and the end screen; a Short's hook, big captions and end card
     ...Object.values(plan.youtube || {}).map(y => [y.t0 - 0.5, y.t1 + 0.5]),
+    ...[plan.card].filter(Boolean).map(y => [y.t0 - 0.2, y.t1 + 0.2]),
     // props growing in or fading out
     ...(plan.props || []).flatMap(p => [[p.t0 - 0.1, p.t0 + 1.2], ...(p.t1 !== undefined && p.t1 !== null ? [[p.t1 - 1.2, p.t1 + 0.1]] : [])]),
   ];
@@ -94,15 +94,18 @@ async function thumbnail(page, plan) {
   if (want.t !== undefined && want.t > plan.duration) throw new Error(`"thumbnail: ${want.t}": the story is only ${plan.duration.toFixed(1)} s long.`);
   // the framing: a medium shot unless the story says otherwise ("thumbnail shot: wide | medium | close")
   const shot = plan.meta.thumbnailShot || 'medium';
-  const r = await page.evaluate(async ({ busy, mains, extras, want, duration, scenes, text, shot }) => {
-    const W = 1280, H = 720, S = W / 1920, TOP = 30;
+  const vertical = plan.height > plan.width;
+  const r = await page.evaluate(async ({ busy, mains, extras, want, duration, scenes, text, shot, vertical, PW }) => {
+    // a thumbnail is 1280×720; a vertical video's cover frame is 1080×1920
+    const W = vertical ? 1080 : 1280, H = vertical ? 1920 : 720, S = W / PW, TOP = vertical ? 170 : 30;
     const cv = Object.assign(document.createElement('canvas'), { width: W, height: H }), g = cv.getContext('2d');
     // the title first: big, bold, rounded letters, on one line or two even ones, as big as fits
     let size = 118, lines = [];
     if (text) {
       const words = text.split(/\s+/), fits = ls => ls.every(l => g.measureText(l).width <= W - 100);
       for (;;) {
-        g.font = `700 ${size}px Fredoka`;
+        // (the outline eats into the spaces between words, so they are wider, as in the engine's big text)
+        g.font = `700 ${size}px Fredoka`; g.wordSpacing = `${Math.round(size * 0.22)}px`;
         if (fits([text])) { lines = [text]; break; }
         let two = null;
         for (let i = 1; i < words.length; i++) { const x = words.slice(0, i).join(' '), y = words.slice(i).join(' '); const w = Math.max(g.measureText(x).width, g.measureText(y).width); if (!two || w < two.w) two = { w, ls: [x, y] }; }
@@ -129,6 +132,8 @@ async function thumbnail(page, plan) {
         // faces in front of each other (an extra flying past a character's head)
         const hit = (p, q) => p.box.x0 < q.box.x1 && q.box.x0 < p.box.x1 && p.box.y0 < q.box.y1 && q.box.y0 < p.box.y1;
         faces.forEach((p, i) => faces.slice(i + 1).forEach(q => { if (hit(p, q)) s -= 30; }));
+        // a face cut by the edge of the picture
+        s -= faces.filter(f => f.cut).length * 30;
         return { s, all: seen.length === mains.length };
       };
       let t, how;
@@ -145,11 +150,11 @@ async function thumbnail(page, plan) {
       }
       // problems a viewer would notice
       const warnings = [];
-      if (inBusy(t)) warnings.push('a speech bubble, caption or title card is on screen');
+      if (inBusy(t)) warnings.push('the moment is during a change of place, an appearing prop, the intro, the end screen or the end card');
       const cut = StudioFilm.faces(t).filter(f => f.cut).map(f => f.id);
       if (cut.length) warnings.push(`a face is cut off at the edge (${cut.join(', ')})`);
       // draw the moment fresh and make it 1280×720
-      StudioFilm.render(t);
+      StudioFilm.render(t, true);
       g.imageSmoothingQuality = 'high'; g.drawImage(document.getElementById('film'), 0, 0, W, H);
       if (lines.length) {
         // at the top in a medium or close shot (the framing left room); in a wide shot wherever it covers no face
@@ -159,7 +164,7 @@ async function thumbnail(page, plan) {
           const overlap = y => boxes.reduce((s, b) => s + Math.max(0, Math.min(b.y1, y + blockH) - Math.max(b.y0, y)) * Math.max(0, Math.min(b.x1, W - 50) - Math.max(b.x0, 50)), 0);
           y0 = [TOP, H - TOP - blockH, (H - blockH) / 2].reduce((x, y) => (overlap(y) < overlap(x) ? y : x));
         }
-        g.textAlign = 'center'; g.textBaseline = 'top'; g.lineJoin = 'round'; g.font = `700 ${size}px Fredoka`;
+        g.textAlign = 'center'; g.textBaseline = 'top'; g.lineJoin = 'round'; g.font = `700 ${size}px Fredoka`; g.wordSpacing = `${Math.round(size * 0.22)}px`;
         lines.forEach((l, i) => {
           const y = y0 + i * lh;
           g.fillStyle = 'rgba(40,20,10,0.35)'; g.fillText(l, W / 2 + size * 0.04, y + size * 0.07);
@@ -172,7 +177,7 @@ async function thumbnail(page, plan) {
       do { url = cv.toDataURL('image/jpeg', q); q -= 0.08; } while (url.length * 0.75 > 1.9e6 && q > 0.4);
       return { url, t, how, warnings };
     } finally { StudioFilm.frame(null); }
-  }, { busy, mains, extras, want, duration: plan.duration, scenes: plan.scenes.map(c => ({ t0: c.t0, t1: c.t1 })), text: plan.meta.thumbnailText || '', shot });
+  }, { busy, mains, extras, want, duration: plan.duration, scenes: plan.scenes.map(c => ({ t0: c.t0, t1: c.t1 })), text: plan.meta.thumbnailText || plan.hook && plan.hook.text || '', shot, vertical, PW: plan.width });
   return { jpg: Buffer.from(r.url.split(',')[1], 'base64'), t: r.t, how: `${r.how}, ${shot} shot`, warnings: r.warnings };
 }
 
@@ -180,14 +185,11 @@ async function thumbnail(page, plan) {
 async function youtubeFiles(page, plan, name, outDir, credits) {
   const made = [], warnings = [];
   try {
-    // a vertical video gets its cover frame with Shorts (F7 Part B)
-    const th = plan.height > plan.width ? null : await thumbnail(page, plan);
-    if (!th) made.push('no thumbnail for a vertical video yet (Shorts, F7 Part B)');
-    else {
-      fs.writeFileSync(path.join(outDir, `${name}-thumbnail.jpg`), th.jpg);
-      made.push(`thumbnail at ${th.t.toFixed(1)} s (${th.how})`);
-      warnings.push(...th.warnings.map(w => `thumbnail: ${w}`));
-    }
+    // (a vertical video gets a 1080×1920 cover frame instead of a thumbnail)
+    const th = await thumbnail(page, plan), cover = plan.height > plan.width;
+    fs.writeFileSync(path.join(outDir, `${name}-${cover ? 'cover' : 'thumbnail'}.jpg`), th.jpg);
+    made.push(`${cover ? 'cover frame' : 'thumbnail'} at ${th.t.toFixed(1)} s (${th.how})`);
+    warnings.push(...th.warnings.map(w => `${cover ? 'cover' : 'thumbnail'}: ${w}`));
   } catch (e) { warnings.push(`no thumbnail: ${e.message}`); }
   const srt = subtitles(plan);
   fs.writeFileSync(path.join(outDir, `${name}.srt`), srt.text);

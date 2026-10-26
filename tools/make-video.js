@@ -22,6 +22,7 @@ const { validate } = require('./validate');
 const { clock, hasScenes, chapters, sceneChecks } = require('./scenes');
 const { readVoices, storyName, addMissingVoices, cachedVoice, levelledVoice, overrideFile, VOICE_LUFS, folderDefaults } = require('./story-check');
 const { youtubeFiles } = require('./youtube');
+const { episodeSource, applyWindow, sliceWav, shortLength } = require('./shorts');
 
 const ROOT = path.resolve(__dirname, '..');
 const say = (...a) => console.log(...a);
@@ -42,9 +43,16 @@ async function main() {
   const opt = k => args.includes('--' + k);
 
   // 1. read + check the story
-  const parsed = folderDefaults(parseStory(fs.readFileSync(storyPath, 'utf8')), storyPath);
+  let parsed = folderDefaults(parseStory(fs.readFileSync(storyPath, 'utf8')), storyPath);
   if (format) parsed.meta.format = format;
   if (parsed.errors.length) fail(`Please fix these lines in ${path.basename(storyPath)}:\n\n${parsed.errors.join('\n\n')}\n\nSee STORY-GUIDE.md for every line you can use.`);
+  // an episode Short is made from part of another story: that story's lines, voices and timing (tools/shorts.js)
+  let short = null;
+  if (parsed.meta.type === 'episode short') {
+    try { ({ parsed, short } = episodeSource(parsed, storyPath)); } catch (e) { fail(e.message); }
+    say(`An episode Short from ${short.source}`);
+  }
+  const shortView = plan => { try { return short ? applyWindow(plan, short) : plan; } catch (e) { return fail(e.message); } };
   const speech = parsed.beats.filter(b => b.type === 'say');
   // an extra that speaks needs a voice in config/voices.json: without one, the voice is missing too
   const voices = readVoices();
@@ -53,8 +61,9 @@ async function main() {
   fs.mkdirSync(buildDir, { recursive: true });
 
   if (opt('check')) {
-    const plan = compileStory(parsed, {});
-    if (plan.errors.length) fail(`Please fix these lines:\n\n${plan.errors.join('\n')}`);
+    const full = compileStory(parsed, {});
+    if (full.errors.length) fail(`Please fix these lines:\n\n${full.errors.join('\n')}`);
+    const plan = shortView(full);
     say(`\n"${plan.meta.title}" looks good! Estimated length: ${plan.duration.toFixed(1)} s (exact length is known after voices are made).\n`);
     plan.voice.forEach(v => say(`  ${v.t.toFixed(1).padStart(6)} s  ${v.who.padEnd(8)} ${v.text}`));
     plan.warnings.forEach(w => say('  note: ' + w));
@@ -110,7 +119,7 @@ async function main() {
   }
   speech.forEach((b, i) => { const w = path.join(voiceDir, `${i}.wav`); if (fs.existsSync(w)) lens[i] = readWav(w).duration; });
 
-  // 3. compile the timeline
+  // 3. compile the timeline (an episode Short: the whole story, then the window it shows)
   const plan = compileStory(parsed, lens);
   // a finished video needs every asset; stills, the preview and the YouTube files show placeholders instead
   // every picture in the video needs a credit (who made it), because the videos may be sold later
@@ -123,9 +132,11 @@ async function main() {
   if (plan.errors.length) fail(`Please fix these lines:\n\n${plan.errors.join('\n')}`);
   // (a line whose voice doesn't exist yet, like a new extra's, has no file and stays silent)
   plan.voice.forEach(v => { if (fs.existsSync(path.join(voiceDir, `${v.id}.wav`))) v.file = `/build/${name}/voice/${v.id}.wav`; else v.missing = true; });
+  // the video as it is seen: for an episode Short its window, in its own time; otherwise the plan itself
+  const view = shortView(plan);
   fs.writeFileSync(path.join(buildDir, 'plan.json'), JSON.stringify(plan));
   plan.warnings.forEach(w => say('  note: ' + w));
-  say(`"${plan.meta.title}": ${plan.duration.toFixed(1)} s, ${plan.voice.length} spoken lines.`);
+  say(`"${view.meta.title}": ${view.duration.toFixed(1)} s, ${view.voice.length} spoken lines.`);
   if (opt('voices')) { say('The voices are ready.'); return; }
 
   const server = await serve();
@@ -148,7 +159,7 @@ async function main() {
   fs.mkdirSync(outDir, { recursive: true });
 
   if (opt('stills')) {
-    const shots = stillTimes(args[args.indexOf('--stills') + 1] || '', plan);
+    const shots = stillTimes(args[args.indexOf('--stills') + 1] || '', view);
     for (const { t, tag } of shots) {
       await page.evaluate(t => FILM.render(t), t);
       await canvas.screenshot({ path: path.join(outDir, `${name}-still-${tag}${t.toFixed(1)}s.png`) });
@@ -158,9 +169,9 @@ async function main() {
   }
   // only the YouTube files, without drawing the video
   if (opt('youtube')) {
-    const row = await youtubeFiles(page, plan, name, outDir, creditsText(plan));
+    const row = await youtubeFiles(page, view, name, outDir, creditsText(plan));
     say(`${label(row)}  ${row.name}: ${row.detail}`);
-    say(`In videos/: ${name}-thumbnail.jpg, ${name}.srt and ${name}-description.txt`);
+    say(`In videos/: ${name}-${view.height > view.width ? 'cover' : 'thumbnail'}.jpg, ${name}.srt and ${name}-description.txt`);
     await browser.close(); server.close(); return;
   }
 
@@ -184,7 +195,8 @@ async function main() {
       const { wav, missing } = await page.evaluate(([s, c]) => FILM.renderAudio(s, c), ['mix', calm]);
       if (missing.length && !pass) say('  warning: missing voice clips: ' + missing.join(', '));
       fs.writeFileSync(mixFile, Buffer.from(wav, 'base64'));
-      const loud = loudStarts(mixFile, plan);
+      if (short) sliceWav(mixFile, plan, view.duration);
+      const loud = loudStarts(mixFile, view);
       if (!loud.length) break;
       loud.forEach(({ id, step }) => { calm[id] = +((calm[id] || 0) + step - CALM_TO).toFixed(2); });
     }
@@ -197,22 +209,23 @@ async function main() {
     for (const stem of ['voice', 'sfx']) {
       const { wav } = await page.evaluate(([s, c]) => FILM.renderAudio(s, c), [stem, calm]);
       fs.writeFileSync(path.join(buildDir, `${stem}.wav`), Buffer.from(wav, 'base64'));
+      if (short) sliceWav(path.join(buildDir, `${stem}.wav`), plan, view.duration);
     }
     await master(path.join(buildDir, 'mix.wav'), path.join(buildDir, 'master.wav'));
     fs.writeFileSync(soundState, JSON.stringify({ id: soundId }));
   }
   // vertical: faces, bubbles and captions inside the safe area, checked every 0.25 s
-  const safeArea = plan.height > plan.width ? await safeAreaCheck(page, plan) : null;
+  const safeArea = view.height > view.width ? await safeAreaCheck(page, view) : null;
   // the YouTube files: thumbnail, subtitles and description draft
   say('Making the thumbnail, subtitles and description...');
-  const youtube = await youtubeFiles(page, plan, name, outDir, creditsText(plan));
+  const youtube = await youtubeFiles(page, view, name, outDir, creditsText(plan));
   await page.close();
 
   const mp4 = path.join(outDir, `${name}.mp4`);
   const wn = args.indexOf('--workers'), workers = wn >= 0 ? parseInt(args[wn + 1], 10) : Math.max(1, os.cpus().length - 1);
   if (!(workers >= 1 && workers <= 64)) fail('--workers needs a number of workers from 1 to 64, for example --workers 3');
   try {
-    await renderVideo(plan, { browser, url, workers, resume: opt('resume'), buildDir, mp4, root: ROOT, wav: path.join(buildDir, 'master.wav'), say, progress, storyLines: fs.readFileSync(storyPath, 'utf8').split(/\r?\n/) });
+    await renderVideo(view, { browser, url, workers, resume: opt('resume'), buildDir, mp4, root: ROOT, wav: path.join(buildDir, 'master.wav'), say, progress, storyLines: fs.readFileSync(storyPath, 'utf8').split(/\r?\n/) });
   } catch (e) {
     await browser.close(); server.close();
     fail(`${e.message}\nYou can carry on where it stopped with:  resume-video.bat ${path.relative(ROOT, storyPath)}`);
@@ -220,13 +233,14 @@ async function main() {
   await browser.close(); server.close();
   say('\nChecking the video...');
   progress({ step: 'checking' });
-  const results = validate(plan, { root: ROOT, mp4, voice: path.join(buildDir, 'voice.wav'), sfx: path.join(buildDir, 'sfx.wav'), master: path.join(buildDir, 'master.wav') });
-  results.push(...sceneChecks(plan));
+  const results = validate(view, { root: ROOT, mp4, voice: path.join(buildDir, 'voice.wav'), sfx: path.join(buildDir, 'sfx.wav'), master: path.join(buildDir, 'master.wav') });
+  results.push(...sceneChecks(view));
   results.push(youtube);
+  if (/short/.test(view.meta.type || '')) results.push(shortLength(view.duration));
   if (safeArea) results.push(safeArea);
   if (plan.missing.length) results.push({ ok: true, note: true, name: 'Placeholders', detail: `rendered with ${plan.missing.length} placeholder${plan.missing.length === 1 ? '' : 's'}: ${plan.missing.map(m => m.name).join(', ')}` });
   // YouTube chapters, when the scenes allow it (an old file from an earlier render is removed otherwise)
-  const chFile = path.join(outDir, `${name}-chapters.txt`), ch = chapters(plan);
+  const chFile = path.join(outDir, `${name}-chapters.txt`), ch = chapters(view);
   if (ch.text) fs.writeFileSync(chFile, ch.text); else if (fs.existsSync(chFile)) fs.unlinkSync(chFile);
   fs.writeFileSync(path.join(outDir, `${name}-credits.txt`), creditsText(plan));
   const report = results.map(r => `${label(r)}  ${r.name}: ${r.detail}`).join('\n');
@@ -356,7 +370,9 @@ async function safeAreaCheck(page, plan) {
     for (let t = 0.5; t < duration - 0.5; t += 0.25) {
       FILM.render(t);
       const L = StudioFilm.layout(t);
-      for (const q of [...L.faces, ...L.boxes]) {
+      // a face mostly outside the picture (a neighbour at the edge of a close-up) isn't counted
+      const inside = q => (Math.min(q.x1, W) - Math.max(q.x0, 0)) / (q.x1 - q.x0) > 0.5;
+      for (const q of [...L.faces.filter(inside), ...L.boxes]) {
         const why = q.y1 > H * 0.8 + 1 ? 'bottom 20 %' : q.x1 > W * 0.85 + 1 ? 'right 15 %' : q.y0 < H * 0.08 - 1 ? 'top 8 %' : q.x0 < -1 ? 'left edge' : null;
         if (!why) continue;
         const id = q.kind.startsWith('face ') ? q.kind.slice(5) : null;

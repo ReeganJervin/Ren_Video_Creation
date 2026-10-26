@@ -334,7 +334,7 @@ const api = {
     return {
       results: readReport(name), video: has(name + '.mp4') ? `/videos/${name}.mp4` : null,
       // the YouTube files (F11)
-      thumbnail: has(`${name}-thumbnail.jpg`) ? `/videos/${name}-thumbnail.jpg` : null,
+      thumbnail: has(`${name}-thumbnail.jpg`) ? `/videos/${name}-thumbnail.jpg` : has(`${name}-cover.jpg`) ? `/videos/${name}-cover.jpg` : null,
       subtitles: has(`${name}.srt`) ? `/videos/${name}.srt` : null,
       description: has(`${name}-description.txt`) ? `/videos/${name}-description.txt` : null,
     };
