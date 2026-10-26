@@ -580,10 +580,18 @@
       c.lineWidth = 12; c.beginPath(); dots(); c.stroke(); c.fill();
       cloud(); c.stroke(); cloud(); c.fill();
     } else if (st === 'whisper') {
-      // soft and quiet: a paler bubble with a dashed outline
-      // (the tail first, so the bubble covers where the tail meets it)
-      c.setLineDash([16, 12]); c.lineWidth = 5; c.strokeStyle = '#6a6a6a'; c.fillStyle = '#fffdf7';
-      tail(); c.fill(); c.stroke(); body(); c.fill(); body(); c.stroke(); c.setLineDash([]);
+      // soft and quiet: a paler bubble with a dashed outline, and a small dashed triangle for a tail that starts at
+      // the bubble's edge (only its two outer sides are drawn, so no line ever enters the bubble)
+      const r = Math.min(h / 2, 60), e = Math.min((w / 2 - r * 0.3) / Math.max(1e-6, Math.abs(dx)), (h / 2 - r * 0.3) / Math.max(1e-6, Math.abs(dy)));
+      const qx = dx * e, qy = dy * e, tip = [qx + dx * (L * 0.85 + 14), qy + dy * (L * 0.85 + 14)];
+      const side = s => [qx + px * 14 * s + dx * 4, qy + py * 14 * s + dy * 4];
+      c.fillStyle = '#fffdf7';
+      c.beginPath(); c.moveTo(qx + px * 14 - dx * 10, qy + py * 14 - dy * 10); c.lineTo(...tip); c.lineTo(qx - px * 14 - dx * 10, qy - py * 14 - dy * 10); c.closePath(); c.fill();
+      body(); c.fill();
+      c.setLineDash([16, 12]); c.lineWidth = 5; c.strokeStyle = '#6a6a6a'; body(); c.stroke();
+      c.setLineDash([9, 7]); c.lineWidth = 4;
+      [1, -1].forEach(s => { c.beginPath(); c.moveTo(...side(s)); c.lineTo(...tip); c.stroke(); });
+      c.setLineDash([]);
     } else if (st === 'shout') {
       const n = 16 + Math.round(w / 55), rx = w / 2 + 22, ry = h / 2 + 22;
       const burst = () => { c.beginPath(); for (let i = 0; i < n * 2; i++) { const q = i / (n * 2) * Math.PI * 2, o = i % 2 ? 0.86 : 1.06; c.lineTo(Math.cos(q) * rx * o, Math.sin(q) * ry * o); } c.closePath(); };
