@@ -18,7 +18,8 @@
   // turns everything that hangs from it about its pivot. Angles are in K.rig (radians, missing = 0): hips, spine,
   // neck, elbowL/R (+ folds the forearm in), hipL/R and kneeL/R (+ swings forward), tail1..3, earTipL/R. Every angle
   // is 0 at rest, and a joint at 0 changes nothing, so the rest pose is drawn exactly as before. Pivots are in each
-  // view's own body coordinates (feet at 0, 0; turned views drawn facing right).
+  // view's own body coordinates (feet at 0, 0; turned views drawn facing right). scarf turns the scarf's hanging ends
+  // about the knot (they follow the body with a spring; see film.js).
   const J = (K, name) => (K.rig && K.rig[name]) || 0;
   function pivot(c, x, y, a) { if (!a) return; c.translate(x, y); c.rotate(a); c.translate(-x, -y); }
   // Fur edge: from the current point through each point in pts as little swept tufts (tips point outward).
@@ -171,12 +172,14 @@
   // farKnot: the knot is on the far side of the neck (three-quarter view seen from Ren's left) and only peeks out
   function drawScarf(c, K, farKnot = false) {
     const cx = K.f * 8, bx = K.f * 18, kx = cx - 46;
-    if (farKnot) return drawScarfFarKnot(c, cx, bx);
-    // two hanging ends below the knot at the side
+    if (farKnot) return drawScarfFarKnot(c, cx, bx, J(K, 'scarf'));
+    // two hanging ends below the knot at the side (they swing about the knot)
+    c.save(); pivot(c, kx + 2, -140, J(K, 'scarf'));
     path(c, () => { c.moveTo(kx - 2, -140); c.quadraticCurveTo(kx - 22, -124, kx - 28, -106); c.lineTo(kx - 16, -110); c.lineTo(kx - 10, -100); c.quadraticCurveTo(kx - 4, -122, kx + 6, -134); });
     fillStroke(c, C.scarfD, 3.5);
     path(c, () => { c.moveTo(kx + 2, -138); c.quadraticCurveTo(kx - 4, -118, kx + 2, -102); c.lineTo(kx + 10, -110); c.lineTo(kx + 18, -104); c.quadraticCurveTo(kx + 14, -124, kx + 14, -136); });
     fillStroke(c, C.scarf, 3.5);
+    c.restore();
     // wrapped band
     path(c, () => c.ellipse(cx, -140, 54, 16, 0, 0, Math.PI * 2));
     const g = c.createLinearGradient(0, -156, 0, -124);
@@ -199,10 +202,12 @@
   }
 
   // the scarf with its knot on the far side: the knot and the tips of its ends peek out behind the band
-  function drawScarfFarKnot(c, cx, bx) {
+  function drawScarfFarKnot(c, cx, bx, swing = 0) {
     const kx = cx + 40;
+    c.save(); pivot(c, kx, -142, swing);
     path(c, () => { c.moveTo(kx - 6, -140); c.quadraticCurveTo(kx + 8, -124, kx + 12, -112); c.lineTo(kx + 18, -118); c.quadraticCurveTo(kx + 12, -130, kx + 6, -140); });
     fillStroke(c, C.scarfD, 3);
+    c.restore();
     path(c, () => c.ellipse(kx + 2, -148, 9, 7, 0.3, 0, Math.PI * 2)); fillStroke(c, C.scarfD, 3);
     path(c, () => c.ellipse(cx, -140, 54, 16, 0, 0, Math.PI * 2));
     const g = c.createLinearGradient(0, -156, 0, -124);
@@ -218,8 +223,8 @@
 
   // ---------- head parts shared by every view ----------
   // One ear with its base at (x, y), turned by rot; sx/sy squeeze it when seen at an angle.
-  // tip: the ear chain's second joint, bending the upper ear (above y -50) about its middle
-  function earAt(c, x, y, rot, sx = 1, sy = 1, tip = 0) {
+  // tip: the ear chain's second joint, bending the upper ear (above y -50) about its middle; back: seen from behind
+  function earAt(c, x, y, rot, sx = 1, sy = 1, tip = 0, back = false) {
     c.save();
     c.translate(x, y); c.rotate(rot); c.scale(sx, sy);
     const W = !tip ? (px, py) => [px, py] : (px, py) => {
@@ -232,6 +237,7 @@
     const g = c.createLinearGradient(0, -52, 0, -100);
     g.addColorStop(0, C.fur); g.addColorStop(0.45, '#b4602a'); g.addColorStop(1, C.tip);
     ear(); fillStroke(c, g);
+    if (back) { c.restore(); return; }
     path(c, () => { mv(-22, 10); bz(-22, -26, -12, -54, 1, -76); bz(14, -54, 23, -26, 22, 10); });
     const pg = c.createLinearGradient(0, -76, 0, 10);
     pg.addColorStop(0, '#f1b1ad'); pg.addColorStop(1, C.pink);
@@ -782,19 +788,21 @@
     if (far) { c.fillStyle = 'rgba(60,30,15,0.25)'; c.fill(); }
     c.restore();
   }
-  function drawSideScarf(c, farKnot) {
+  function drawSideScarf(c, farKnot, swing = 0) {
     if (farKnot) {
       // the knot is on the far side: only the tops of its loops peek over the band
       [[-1, C.scarfD], [1, C.scarfD]].forEach(([d, col]) => { path(c, () => c.ellipse(-42 + d * 7, -160 - d * 2, 8, 5.5, d * 0.5, 0, Math.PI * 2)); fillStroke(c, col, 3); });
-    } else drawSideBow(c);
+    } else drawSideBow(c, swing);
     drawSideBand(c, !farKnot);
   }
-  function drawSideBow(c) {
-    // small bow at the back of the neck with short ends
+  function drawSideBow(c, swing = 0) {
+    // small bow at the back of the neck with short ends (they swing about the bow)
+    c.save(); pivot(c, -44, -140, swing);
     path(c, () => { c.moveTo(-46, -138); c.quadraticCurveTo(-56, -124, -58, -112); c.lineTo(-50, -116); c.quadraticCurveTo(-46, -126, -40, -136); });
     fillStroke(c, C.scarfD, 3);
     path(c, () => { c.moveTo(-42, -136); c.quadraticCurveTo(-42, -122, -38, -112); c.lineTo(-32, -118); c.quadraticCurveTo(-36, -126, -36, -136); });
     fillStroke(c, C.scarf, 3);
+    c.restore();
     [[-1, C.scarfD], [1, C.scarf]].forEach(([d, col]) => { path(c, () => c.ellipse(-46 + d * 8, -146 - d * 2, 10, 6.5, d * 0.5, 0, Math.PI * 2)); fillStroke(c, col, 3); });
   }
   function drawSideBand(c, near = true) {
@@ -831,12 +839,62 @@
     const chin = K.pawPose === 'chin' && K.pawW > 0.5;
     if (!chin) drawSideArm(c, K.armR, false, K);
     // scarf: a band around the neck seen from the side, the flower at the front of the throat
-    drawSideScarf(c, K.flipped);
+    drawSideScarf(c, K.flipped, J(K, 'scarf'));
     if (chin) drawSideArm(c, K.armR, false, K);
   }
 
+  // ---------- BACK view (turned away) ----------
+  // Like the sheet's back view: the round back of the head with the ears seen from behind (orange, dark tips, no pink),
+  // an orange back, the scarf's band with the knot at the back of the neck, paws at the sides, and the big tail rising
+  // over one side of the lower back.
+  // Seen from behind, Ren's right side is on the left: his left and right parts (arms, legs, ears) swap places.
+  const backOf = K => {
+    const r = K.rig;
+    return { ...K, armL: K.armR, armR: K.armL, earL: K.earR, earR: K.earL, lookX: 0,
+      rig: r && { ...r, elbowL: r.elbowR, elbowR: r.elbowL, hipL: r.hipR, hipR: r.hipL, kneeL: r.kneeR, kneeR: r.kneeL, earTipL: r.earTipR, earTipR: r.earTipL } };
+  };
+  function backScarf(c, K) {
+    const kx = 30, M = x => 2 * kx - x;   // the side knot's ends, mirrored to hang toward the back
+    path(c, () => c.ellipse(0, -140, 54, 16, 0, 0, Math.PI * 2));
+    const g = c.createLinearGradient(0, -156, 0, -124);
+    g.addColorStop(0, C.scarfL); g.addColorStop(0.55, C.scarf); g.addColorStop(1, C.scarfD);
+    fillStroke(c, g);
+    c.save(); pivot(c, kx, -140, -J(K, 'scarf'));
+    path(c, () => { c.moveTo(M(kx - 2), -140); c.quadraticCurveTo(M(kx - 22), -124, M(kx - 28), -106); c.lineTo(M(kx - 16), -110); c.lineTo(M(kx - 10), -100); c.quadraticCurveTo(M(kx - 4), -122, M(kx + 6), -134); });
+    fillStroke(c, C.scarfD, 3.5);
+    path(c, () => { c.moveTo(M(kx + 2), -138); c.quadraticCurveTo(M(kx - 4), -118, M(kx + 2), -102); c.lineTo(M(kx + 10), -110); c.lineTo(M(kx + 18), -104); c.quadraticCurveTo(M(kx + 14), -124, M(kx + 14), -136); });
+    fillStroke(c, C.scarf, 3.5);
+    c.restore();
+    path(c, () => c.ellipse(kx, -141, 12, 9, -0.3, 0, Math.PI * 2)); fillStroke(c, C.scarf, 3);
+  }
+  function drawBack(c, K) {
+    const B = backOf(K), side = K.f < 0 ? -1 : 1;
+    pivot(c, 0, -46, J(B, 'hips'));
+    drawLegs(c, { ...B, f: 0 });
+    c.translate(0, -Math.abs(Math.sin(K.phase)) * 5 * K.walk);
+    pivot(c, 0, -60, J(B, 'spine'));
+    // the arms hang at the sides, behind the body's edges
+    drawArm(c, -1, B.armL, { ...B, f: 0 }); drawArm(c, 1, B.armR, { ...B, f: 0, pawPose: null });
+    bodyPath(c); c.fillStyle = C.fur; c.fill();
+    c.save(); c.clip();
+    shade(c, 0, -14, 52, 22, 0.28); shade(c, -50, -84, 18, 60, 0.2); shade(c, 50, -84, 18, 60, 0.2);
+    c.restore();
+    bodyPath(c); c.lineWidth = 4; c.strokeStyle = C.line; c.stroke();
+    c.save(); pivot(c, 0, -142, J(B, 'neck'));
+    headFrame(c, { ...B, tilt: -K.tilt }, 0);
+    earAt(c, -48, -48, -0.3 - B.earL, 1, 1, -J(B, 'earTipL'), true);
+    earAt(c, 48, -48, 0.3 + B.earR, 1, 1, J(B, 'earTipR'), true);
+    frontHeadPath(c, { ...B, puff: 0 }); fillUnion(c, C.fur);
+    c.save(); c.clip(); sheen(c, 0, -46); shade(c, 0, 66, 84, 28, 0.25); c.restore();
+    c.restore();
+    // the scarf wraps the neck below the back of the head, with its knot at the back
+    backScarf(c, B);
+    // the tail rises over the lower back, on the side it swings to
+    drawTail(c, K, side * 30, side * 0.95);
+  }
+
   // ---------- views ----------
-  const VIEWS = { front: drawFront, three: drawThree, side: drawSide };
+  const VIEWS = { front: drawFront, three: drawThree, side: drawSide, back: drawBack };
   const viewAt = a => (a < 0.3 ? 'front' : a < 0.7 ? 'three' : 'side');
   const FADES = [[0.26, 0.34], [0.65, 0.75]];   // brief crossfades around the switch points
   // Three-quarter and side views are drawn facing right; facing left mirrors them.
@@ -856,19 +914,22 @@
     // scared leans away from where Ren is facing; proud stands a little taller (chest out)
     if (K.lean) c.rotate(-(K.f < 0 ? -1 : 1) * 0.07 * K.lean);
     if (K.lift) c.scale(1 + 0.015 * K.lift, 1 + 0.025 * K.lift);
-    if (view !== 'front' && K.f < 0) { c.scale(-1, 1); K = mirror(K); }
+    if (view !== 'front' && view !== 'back' && K.f < 0) { c.scale(-1, 1); K = mirror(K); }
     VIEWS[view](c, K);
     c.restore();
   }
 
   let bufs = null;
+  // K.away: 0 facing as usual .. 1 turned away (the back view); the two cross-fade while turning
   function drawRen(c, K) {
-    const a = Math.abs(K.f), fade = FADES.find(([lo, hi]) => a > lo && a < hi);
-    if (!fade || typeof document === 'undefined') return drawView(c, K, viewAt(a));
+    const a = Math.abs(K.f), aw = K.away || 0, fade = FADES.find(([lo, hi]) => a > lo && a < hi);
+    if (aw >= 0.65) return drawView(c, K, 'back');
+    const turning = aw > 0.35;
+    if ((!fade && !turning) || typeof document === 'undefined') return drawView(c, K, aw > 0.5 ? 'back' : viewAt(a));
     // crossfade: draw both views off-screen, lay the nearer one down fully and the other on top
-    const W = c.canvas.width, H = c.canvas.height, w = (a - fade[0]) / (fade[1] - fade[0]);
+    const W = c.canvas.width, H = c.canvas.height, w = turning ? (aw - 0.35) / 0.3 : (a - fade[0]) / (fade[1] - fade[0]);
     if (!bufs || bufs[0].width !== W || bufs[0].height !== H) bufs = [0, 1].map(() => Object.assign(document.createElement('canvas'), { width: W, height: H }));
-    const m = c.getTransform(), views = [viewAt(fade[0]), viewAt(fade[1])];
+    const m = c.getTransform(), views = turning ? [viewAt(a), 'back'] : [viewAt(fade[0]), viewAt(fade[1])];
     views.forEach((v, i) => {
       const b = bufs[i].getContext('2d');
       b.setTransform(1, 0, 0, 1, 0, 0); b.clearRect(0, 0, W, H); b.setTransform(m);

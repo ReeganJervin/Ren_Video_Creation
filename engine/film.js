@@ -84,6 +84,7 @@
     return {
       id, t, x, y: placeAt(t).ground(x) - (REG[id].fly || 0) * air, air, h, sx, sy, s: KS, f: A_(id, 'facing', t), walk, phase, hopping,
       armL: A_(id, 'armL', t) + swing + idle, armR: A_(id, 'armR', t) - swing + idle + wave,
+      ...(a.keys.away ? { away: A_(id, 'away', t) } : {}),
     };
   }
   // the place on screen at t: a change of place switches halfway through its fade
@@ -157,7 +158,53 @@
     if (bounce > 0 && !K.hopping) K.h += Math.abs(Math.sin(t * 6.5)) * 8 * bounce;
     if (shake > 0) { K.sy *= 1 + 0.025 * Math.sin(t * 16) * shake; K.tilt += Math.sin(t * 8) * 0.03 * shake; }
     if (tremble > 0) K.x += Math.sin(t * 43) * 2.2 * tremble;
+    springPose(id, t, K);
     return K;
+  }
+
+  // ---------- spring motion ----------
+  // Ears, tails and Ren's scarf ends follow the body with springs, pushed by how the body speeds up and slows down
+  // (hops and landings, steps, starts and stops). Stepped at 120 Hz from t = 0 when the story loads, so every frame,
+  // and every worker drawing part of the video, gets exactly the same motion; kept as 60 values a second (about 2 MB
+  // for a 12-minute story). A character that hasn't moved has springs at exactly 0, so it is drawn as before.
+  const SPRING_RATE = 60, SPRING_SUB = 2;
+  //            how fast (Hz), damping, and how hard the body's acceleration pushes (vertical, along the facing)
+  const SPRINGS = { ear: [2.4, 0.3, 0.045, 0], lean: [2.0, 0.35, 0, 0.04], tailA: [1.6, 0.35, 0.014, 0.03], tailB: [2.2, 0.4, 0, 0], scarf: [2.8, 0.25, 0.026, 0.09] };
+  let SPR = {};
+  function buildSprings() {
+    SPR = {};
+    const dt = 1 / (SPRING_RATE * SPRING_SUB), n = Math.ceil(P.duration * SPRING_RATE) + 2, lim = a => clamp(a, -3000, 3000);
+    CAST.forEach(id => {
+      if (REG[id].extra) return;
+      const out = {}, S = {};
+      for (const k in SPRINGS) { out[k] = new Float32Array(n); S[k] = [0, 0]; }
+      // where the body is (the walking bob included) and which way it faces
+      const at = t => { const B = actorBody(id, t); return [B.x, B.y - B.h - Math.abs(Math.sin(B.phase)) * 5 * B.walk, B.f < 0 ? -1 : 1]; };
+      const step = (k, target, push) => { const [hz, z] = SPRINGS[k], w = 2 * Math.PI * hz, q = S[k]; q[1] += (-w * w * (q[0] - target) - 2 * z * w * q[1] + push) * dt; q[0] += q[1] * dt; };
+      let p0 = at(-dt), p1 = at(0);
+      for (let i = 0; i < n * SPRING_SUB; i++) {
+        const p2 = at((i + 1) * dt), ax = lim((p2[0] - 2 * p1[0] + p0[0]) / (dt * dt)), ay = lim((p2[1] - 2 * p1[1] + p0[1]) / (dt * dt)), fwd = ax * p1[2];
+        const push = k => -ay * SPRINGS[k][2] - fwd * SPRINGS[k][3];
+        // (a moving body pushes; still, the springs just settle)
+        step('ear', 0, push('ear')); step('lean', 0, -ax * SPRINGS.lean[3]); step('tailA', 0, push('tailA'));
+        step('tailB', S.tailA[0] * 1.3, 0); step('scarf', 0, push('scarf'));
+        if (i % SPRING_SUB === 0) for (const k in SPRINGS) out[k][i / SPRING_SUB] = S[k][0];
+        p0 = p1; p1 = p2;
+      }
+      SPR[id] = out;
+    });
+  }
+  // the springs at t, as joint angles (K.rig) for the drawings: ear tips (never bending in so far that Yuki's long
+  // ears could cross), the tail chain, the scarf ends
+  function springPose(id, t, K) {
+    const o = SPR[id];
+    if (!o) return;
+    const u = clamp(t * SPRING_RATE, 0, o.ear.length - 1.001), i = Math.floor(u), w = u - i, v = k => o[k][i] + (o[k][i + 1] - o[k][i]) * w;
+    const ear = clamp(v('ear'), -0.3, 0.6), lean = clamp(v('lean'), -0.3, 0.3) * (Math.abs(K.f) >= 0.3 && K.f < 0 ? -1 : 1);
+    const tA = clamp(v('tailA'), -0.5, 0.5), tB = clamp(v('tailB'), -0.6, 0.6), sc = clamp(v('scarf'), -0.5, 0.5);
+    const r = { earTipL: Math.max(-0.25, ear - lean), earTipR: Math.max(-0.25, ear + lean), tail1: tA * 0.6, tail2: tA * 0.4 + tB * 0.4, tail3: tB * 0.7, scarf: sc };
+    for (const k in r) if (Math.abs(r[k]) < 0.004) delete r[k];
+    if (Object.keys(r).length) K.rig = { ...r, ...(K.rig || {}) };
   }
 
   // ---------- star / hearts ----------
@@ -695,12 +742,13 @@
     });
     g.restore();
   }
-  // a character in a mood, posed directly, on g's current transform (the mood sheet): o = { x, y, scale, f, talk, t, rig }
+  // a character in a mood, posed directly, on g's current transform (the mood sheet): o = { x, y, scale, f, talk, t, rig, away }
   function character(g, id, mood, o = {}) {
     const K = posedK(id, o.t || 0, { ...o, mood, t0: -10 });
     K.moodMouth = K.mouth;
     if (o.talk) { K.mouth = 'talk'; K.talk = o.talk; }
     if (o.rig) K.rig = o.rig;
+    if (o.away) K.away = o.away;
     DRAW[id](g, K);
   }
   const drawPosed = (g, id, K) => { applyCam(g, CAM0, 1); DRAW[id](g, K); g.setTransform(1, 0, 0, 1, 0, 0); };
@@ -1005,6 +1053,7 @@
     aux = document.createElement('canvas'); aux.width = W; aux.height = H;
     half = document.createElement('canvas'); half.width = W / 2; half.height = H / 2;
     if (P.shots) buildRigs();
+    buildSprings();
     await Promise.all(['700 52px Fredoka', 'italic 500 40px Lora'].map(f => document.fonts.load(f)));
     render(0);
   }

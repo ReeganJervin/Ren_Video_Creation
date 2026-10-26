@@ -32,7 +32,8 @@
   // ---------- ears ----------
   // A long ear grown along a spine from its base at (x, y): `rot` leans the whole ear (positive = to the right),
   // `bend` curls the upper part (positive = to the right) so ears can droop, flop and bounce.
-  function earAt(c, x, y, rot, bend, sx = 1, len = 140) {
+  // back: seen from behind (white all over, no pink inside)
+  function earAt(c, x, y, rot, bend, sx = 1, len = 140, back = false) {
     const N = 44, L = [], R = [], IL = [], IR = [], W = 29;
     let px = 0, py = 0;
     for (let i = 0; i <= N; i++) {
@@ -52,6 +53,7 @@
     // smooth outline through the midpoints of the sampled edge
     const smooth = pts => { c.moveTo(...pts[0]); for (let k = 1; k < pts.length - 1; k++) c.quadraticCurveTo(pts[k][0], pts[k][1], (pts[k][0] + pts[k + 1][0]) / 2, (pts[k][1] + pts[k + 1][1]) / 2); c.lineTo(...pts[pts.length - 1]); };
     c.beginPath(); smooth([...L, ...[...R].reverse()]); c.closePath(); fillStroke(c, C.fur);
+    if (back) { c.restore(); return; }
     c.beginPath(); smooth([...IL, ...[...IR].reverse()]); c.closePath();
     const g = c.createLinearGradient(0, 0, px, py);
     g.addColorStop(0, C.pink); g.addColorStop(1, '#f9cbd5');
@@ -656,8 +658,43 @@
     sideArm(c, [S[0] - 6, S[1] + 2], toward(P, tgt, K), tgt ? null : E);
   }
 
+  // ---------- BACK view (turned away) ----------
+  // Like the sheet's back view: the round back of the head with the long ears seen from behind (white, no pink), the
+  // flower's bow peeking out on her left (the viewer's left, now), a round back with the cotton tail in the middle,
+  // little paws at the sides and the feet. Seen from behind, her left and right parts swap places.
+  const backOf = K => {
+    const r = K.rig;
+    return { ...K, armL: K.armR, armR: K.armL, earL: K.earR, earR: K.earL, lookX: 0,
+      rig: r && { ...r, elbowL: r.elbowR, elbowR: r.elbowL, hipL: r.hipR, hipR: r.hipL, earTipL: r.earTipR, earTipR: r.earTipL } };
+  };
+  function drawBack(c, K) {
+    const B = backOf(K);
+    pivot(c, 0, -40, J(B, 'hips'));
+    drawFeet(c, B, [-24, 24]);
+    c.translate(0, -Math.abs(Math.sin(K.phase)) * 4 * K.walk);
+    pivot(c, 0, -50, J(B, 'spine'));
+    // the paws at the sides, behind the body's edges
+    [-1, 1].forEach(i => { const S = [i * 48, -88]; armFrom(c, S, [i * 36, -86], pawFrom(S, i < 0 ? B.armL : B.armR, i, 34, 1.1, J(B, i < 0 ? 'elbowL' : 'elbowR')), i); });
+    frontBodyPath(c); c.fillStyle = C.fur; c.fill();
+    c.save(); c.clip();
+    shade(c, -62, -46, 40, 56, 0.7); shade(c, 62, -46, 40, 56, 0.7); shade(c, 0, -104, 60, 18, 0.5);
+    c.restore();
+    frontBodyPath(c); c.lineWidth = 4; c.strokeStyle = C.line; c.stroke();
+    c.save(); pivot(c, 0, -34, J(B, 'tail1')); cottonTail(c, 0, -34, 20); c.restore();
+    c.save(); pivot(c, 0, -112, J(B, 'neck'));
+    headFrame(c, { ...B, tilt: -K.tilt }, 0);
+    // the flower is on her left ear, the viewer's left from behind: only its bow peeks out past the head
+    const eL = earPose(B, -1, B.flop || 0, J(B, 'earTipL')), eR = earPose(B, 1, 0, J(B, 'earTipR'));
+    earAt(c, -36, -60, eL.rot, eL.bend, 1, 140, true);
+    earAt(c, 36, -60, eR.rot, eR.bend, 1, 140, true);
+    bow(c, -80, -46, 0.8, false, -0.7); sakura(c, -62, -58, 21, -0.2);
+    frontHeadPath(c, { ...B, puff: 0 }); fillUnion(c, C.fur);
+    c.save(); c.clip(); shade(c, -90, 30, 50, 60, 0.6); shade(c, 90, 30, 50, 60, 0.6); shade(c, 0, 66, 80, 22, 0.5); c.restore();
+    c.restore();
+  }
+
   // ---------- views ----------
-  const VIEWS = { front: drawFront, three: drawThree, side: drawSide };
+  const VIEWS = { front: drawFront, three: drawThree, side: drawSide, back: drawBack };
   const viewAt = a => (a < 0.3 ? 'front' : a < 0.7 ? 'three' : 'side');
   const FADES = [[0.26, 0.34], [0.65, 0.75]];   // brief crossfades around the switch points
   // Three-quarter and side views are drawn facing right; facing left mirrors them.
@@ -677,19 +714,22 @@
     // scared leans away from where Yuki is facing; proud stands a little taller
     if (K.lean) c.rotate(-(K.f < 0 ? -1 : 1) * 0.07 * K.lean);
     if (K.lift) c.scale(1 + 0.015 * K.lift, 1 + 0.025 * K.lift);
-    if (view !== 'front' && K.f < 0) { c.scale(-1, 1); K = mirror(K); }
+    if (view !== 'front' && view !== 'back' && K.f < 0) { c.scale(-1, 1); K = mirror(K); }
     VIEWS[view](c, K);
     c.restore();
   }
 
   let bufs = null;
+  // K.away: 0 facing as usual .. 1 turned away (the back view); the two cross-fade while turning
   function drawYuki(c, K) {
-    const a = Math.abs(K.f), fade = FADES.find(([lo, hi]) => a > lo && a < hi);
-    if (!fade || typeof document === 'undefined') return drawView(c, K, viewAt(a));
+    const a = Math.abs(K.f), aw = K.away || 0, fade = FADES.find(([lo, hi]) => a > lo && a < hi);
+    if (aw >= 0.65) return drawView(c, K, 'back');
+    const turning = aw > 0.35;
+    if ((!fade && !turning) || typeof document === 'undefined') return drawView(c, K, aw > 0.5 ? 'back' : viewAt(a));
     // crossfade: draw both views off-screen, lay the nearer one down fully and the other on top
-    const W = c.canvas.width, H = c.canvas.height, w = (a - fade[0]) / (fade[1] - fade[0]);
+    const W = c.canvas.width, H = c.canvas.height, w = turning ? (aw - 0.35) / 0.3 : (a - fade[0]) / (fade[1] - fade[0]);
     if (!bufs || bufs[0].width !== W || bufs[0].height !== H) bufs = [0, 1].map(() => Object.assign(document.createElement('canvas'), { width: W, height: H }));
-    const m = c.getTransform(), views = [viewAt(fade[0]), viewAt(fade[1])];
+    const m = c.getTransform(), views = turning ? [viewAt(a), 'back'] : [viewAt(fade[0]), viewAt(fade[1])];
     views.forEach((v, i) => {
       const b = bufs[i].getContext('2d');
       b.setTransform(1, 0, 0, 1, 0, 0); b.clearRect(0, 0, W, H); b.setTransform(m);

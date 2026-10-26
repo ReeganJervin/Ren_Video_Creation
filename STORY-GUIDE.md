@@ -110,6 +110,7 @@ The amounts are in `config\voices.json` (`_moods` for moods, `_styles` for ways 
 | `<name> looks at <other name>` | Looks at the other character (and keeps looking until the next look) |
 | `<name> turns to you` | Faces the viewer |
 | `<name> turns to <other name>` | Turns toward the other character |
+| `<name> turns away` | Turns its back to you (the back view), until it next turns, walks or looks somewhere |
 | `<name> hugs <other name>` | Goes over and hugs them: both turn to each other, look happy, and little hearts float up between them. Then they step apart again, still facing each other, and both stay happy (until a later line gives them another mood) |
 | `<name> tilts its head` | A curious head tilt |
 | `<name> feels sad` | Changes the mood until you change it again: any mood above, or `normal` |

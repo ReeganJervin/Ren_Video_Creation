@@ -134,7 +134,7 @@ Work through the steps **in this order**. The F-numbers are names, not the order
 | 6 | **F11 YouTube kit** (thumbnails, subtitles, description, series intro, end screen) | Done (approved) | `b86d4fb` (F11A), F11B (see git log) |
 | 7 | F7 Vertical 9:16 and Shorts (reuses F11's thumbnails, subtitles and description) | Done (Parts A and B approved) | F7A (see git log) |
 | 8 | **F12 Expression pack** (new moods, thought/whisper/shout bubbles, mood voices) | Done (Parts A and B approved) | |
-| 9 | F3 Rig 2.0 (joints, movement library, lip-sync), in **4 review stops** | Stop 1 (skeleton) done, in review | |
+| 9 | F3 Rig 2.0 (joints, movement library, lip-sync), in **4 review stops** | Part A done (stops 1 and 2 approved); stop 3 next | |
 | 10 | F4 Asset Kit, Part D: prop acting, Season 1 props, extras landing on set pieces (needs F3) | Not started | |
 | 11 | **Milestone 2.** The owner then makes the real **Episode 1** | Not started | |
 | 12 | **F13 Storytelling tools** (weather, dreams and memories, sound library) | Not started | |
@@ -306,6 +306,12 @@ All work is committed on the git branch `Improvment` (never directly on `main`).
 - Joint angles are in `K.rig` (radians; missing = 0): `hips`, `spine`, `neck`, `elbowL/R`, `hipL/R`, `kneeL/R`, `tail1`–`tail3`, `earTipL/R`. Every angle is 0 at rest, and a joint at 0 changes nothing, so the rest pose is drawn exactly as before. The bent tail is only computed when a tail joint bends.
 - **Result:** both mood sheets (every view, all 16 moods and talking) are pixel-identical to the old engine, and R1 is unchanged for every story (so the R1 exception isn't needed for this stop). Drawing speed: 13.3 fps against 13.4 fps for the old engine on the same frames (within noise); one page uses about 10 MB of JS memory.
 - `StudioFilm.character(g, id, mood, { rig })` poses a character for sheets.
+
+**As built (stop 2, springs and the back view):**
+- **Springs** (film.js): ears, tails and Ren's scarf ends follow how the body speeds up and slows down (hops, landings, the walking bob, starts and stops). Stepped at 120 Hz from t = 0 when a story loads and kept as 60 values a second (the same in every worker; about 2 MB for 12 minutes; computing them adds no measurable time). Five springs per character: ear (vertical push: tips splay on landing), lean (sideways push: both tips lean together), tailA and tailB (the tail chain follows through), scarf (the ends swing about the knot). They become joint angles: earTipL/R, tail1–3, scarf. A character that hasn't moved has springs at exactly 0, so still frames are drawn as before.
+- **Owner's rules:** Yuki's ears bend as one smooth curve along their length (the spring adds to the bend her ears already have), and an ear never bends inward more than 0.25 rad, so the two can't cross. Ren's ear tip bends gradually above the middle of the ear (no kink). The scarf ends turn about the knot and the flower sits at the ear's base, so both stay attached.
+- **Back view** for both (like the sheets' "Back"): ears seen from behind (no pink), the back of the head, Ren's scarf band with the knot at the back, his tail over one side; Yuki's flower bow peeking out on her left and her cotton tail in the middle. Left and right parts swap when seen from behind. `<name> turns away` (also "turns around", "turns its back") turns to it in 0.45 s with a cross-fade; anything that turns the character again (turning, walking, looking) turns it back. The `away` channel exists only in stories that use it.
+- **R1 exception (as the roadmap allows):** timing is identical for every story; frames differ only while a character moves (tails and ear tips flex). Old | new pictures were approved by the owner. Speed: 13.4 against 13.3 fps (unchanged).
 
 **Commit message:** `F3A: Rig 2.0 skeleton, back view, spring motion`
 

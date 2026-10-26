@@ -38,7 +38,7 @@
     '<name> (thinks|thinks silently|whispers|shouts): <text>', '<name> (shouts, <mood>): <text>', 'mood voices: on|off',
     '<name> enters [from left|right] [to left|center|right]', '<name> walks to left|center|right', '<name> walks to <other name>',
     '<name> exits [to] left|right', '<name> hops [twice]', '<name> waves', '<name> looks up|down|left|right|around|at you|at the star|at the heart',
-    '<name> looks at <other name>', '<name> turns to you', '<name> turns to <other name>', '<name> tilts its head',
+    '<name> looks at <other name>', '<name> turns to you', '<name> turns to <other name>', '<name> turns away', '<name> tilts its head',
     `<name> feels ${MOODS.join('|')}`, '<name> hugs <other name>', '<name> picks up the star', '<name> lets go of the star',
     '<name> raises its paws', '<name> lowers its paws', '<name> blinks', '<name> and <name> hop | wave | look at each other | feel <mood>',
     'star appears', 'star falls', 'star glows', 'star twinkles', 'star rises', 'star disappears',
@@ -75,6 +75,7 @@
     if ((k = a.match(new RegExp(`^looks? at (${NAME})$`)))) return { type: 'lookAt', target: k[1] };
     if (group && /^(?:look|turn)s? (?:at|to) each other$/.test(a)) return { type: /^turn/.test(a) ? 'turnTo' : 'lookAt', target: 'each other' };
     if (/^turns? to (you|the viewer|the camera)$/.test(a)) return { type: 'look', at: 'you' };
+    if (/^turns? (away|around|its back|his back|her back)$/.test(a)) return { type: 'away' };
     if ((k = a.match(new RegExp(`^turns? to (${NAME})$`)))) return { type: 'turnTo', target: k[1] };
     if (/^tilts? (its |his |her |their )?heads?$/.test(a)) return { type: 'tilt' };
     if ((k = a.match(new RegExp(`^(?:feels?|looks?|is|are) (${MOODS.join('|')}|calm)$`)))) return { type: 'mood', mood: k[1] === 'calm' ? 'normal' : k[1] };
@@ -543,7 +544,11 @@
     let star = { state: 'none', x: 0, y: 0, r: 20 };
     let t = 0.6, prevStart = 0.6;
     const voiceWins = [];
-    const set = (a, k, t, v, dur = 0.4) => a.ch[k].push({ t, v, dur });
+    const set = (a, k, t, v, dur = 0.4) => {
+      // anything that turns a character (facing) also ends turning away
+      if (k === 'facing' && a.away && t >= a.away) { a.ch.away.push({ t, v: 0, dur }); a.away = 0; }
+      a.ch[k].push({ t, v, dur });
+    };
     const closeLook = (a, s) => { if (a.open) { a.open.b = s; a.open = null; } };
     // where something goes "in the sky": beside and above (vertical: above the group, inside the safe area)
     const skyFor = x => (VERT ? { x: Math.max(840, Math.min(1080, x)) + 40, y: 400 } : { x: Math.max(260, Math.min(1660, x + (x > 1300 ? -460 : 460))), y: 160 });
@@ -782,6 +787,11 @@
           });
           dur = 2.6; break;
         }
+        case 'away':
+          // the back view (a channel only stories that turn away have, so other plans stay as they are)
+          who.forEach(a => { a.ch.away = a.ch.away || []; a.ch.away.push({ t: s, v: 1, dur: 0.45 }); a.away = s + 0.01; });
+          dur = 0.6;
+          break;
         case 'look': {
           who.forEach(a => {
             closeLook(a, s);
@@ -1118,7 +1128,7 @@
       o.blinks = []; for (let b = 2.0 + n * 0.9, i = 0; b < duration - 0.5; b += 2.8 + hash(i++ + seed) * 1.8) o.blinks.push(b);
       o.blinks.push(...o.blinkExtra); o.blinks.sort((a, b) => a - b);
       o.twitches = []; for (let w = 3.0 + n * 1.3, i = 0; w < duration - 1; w += 5 + hash(i + 50 + seed) * 3, i++) o.twitches.push(w);
-      const init = { facing: o.firstFacing, lookX: 0, lookY: 0, tilt: 0, armL: ARM_R, armR: ARM_R, crouch: 1, air: 1 };
+      const init = { facing: o.firstFacing, lookX: 0, lookY: 0, tilt: 0, armL: ARM_R, armR: ARM_R, crouch: 1, air: 1, away: 0 };
       o.keys = {};
       for (const k in A[id].ch) o.keys[k] = keysFrom(init[k], A[id].ch[k]);
     });
