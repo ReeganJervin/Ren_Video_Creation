@@ -1,0 +1,23 @@
+# ============================================================
+#  Test: the new moods (F12 Part A)
+#  Excited, proud, thinking and laughing, with the giggle, and
+#  the owl (an extra) borrowing its nearest mood.
+# ============================================================
+
+title: The Biggest Acorn
+place: meadow
+time: day
+music: happy
+
+ren enters from left to left
++ yuki enters from right to right
+ren (excited): Yuki! Yuki! I found the biggest acorn in the whole meadow!
+yuki (thinking): Hmm. Is it bigger than the one from last week?
+ren (proud): Much bigger. I am the greatest acorn finder of all time.
+yuki (laughing): You said that last week too!
+ren feels laughing
+wait 1.2
+owl flies in from left
+owl (laughing): Hoo hoo! You two are very funny.
+owl flies away
+narrator: And the acorn went on the shelf, next to all the other biggest acorns.

@@ -47,7 +47,7 @@ A story can use Ren, Yuki or both. Only characters you mention appear, and a cha
 |---|---|
 | `narrator: text` | The narrator reads the text. It also appears in a storybook caption box at the top |
 | `ren: text` | Ren says the text in a speech bubble, and its mouth moves. `yuki: text` works the same way |
-| `yuki (pouty): text` | Says it with a mood: `happy`, `surprised`, `shy`, `sad`, `sleepy`, `playful`, `pouty` |
+| `yuki (pouty): text` | Says it with a mood: `happy`, `surprised`, `shy`, `sad`, `sleepy`, `playful`, `pouty`, `excited`, `proud`, `thinking`, `worried`, `scared`, `determined`, `laughing`, `crying` |
 
 Keep each line under 160 characters. Write long speeches as several lines.
 
@@ -64,6 +64,20 @@ The bubble's tail points at whoever is talking, and when both characters are on 
 | `sleepy` | Eyes closed, small yawn, ears droop | Eyes closed, ears flop down, paw over a yawn |
 | `playful` | A happy ^ ^ grin | A wink with her tongue out |
 | `pouty` | Puffed cheeks, cross brows, small frown | Puffed cheeks, cross brows, narrowed eyes, pursed mouth |
+| `excited` | Sparkly star eyes, big open smile, ears up, a little bounce, tail wag | Sparkly star eyes, big open smile, ears up, a little bounce |
+| `proud` | Chin up, calm half-closed eyes, a confident little smile, standing tall | The same |
+| `thinking` | Eyes up to one side, a paw at the chin, a small mouth pulled to one side, head tilted | The same |
+| `worried` | Raised inner brows, eyes a little heavy, a small wobbly mouth, ears half down | The same, ears half down |
+| `scared` | Wide eyes with small pupils that quiver, ears flat back, leaning away, a small tremble | The same, ears flopped down |
+| `determined` | Low, level brows, steady eyes, a firm mouth, ears up, standing a little taller | The same |
+| `laughing` | Eyes closed in happy curves, wide open smile, a gentle shake, and a soft giggle | The same, with a higher giggle |
+| `crying` | Wet, shining eyes with tears running down, raised brows, a trembling mouth, ears down | The same |
+
+The serious moods (`sad`, `worried`, `scared`, `determined`, `crying`) are drawn to feel real for older viewers too, not only cute: no cartoon waterfalls of tears, no horror faces. `laughing` adds a soft giggle after the line (or when the mood starts), quieter than the voices.
+
+Animals (extras like the owl) have the first eight moods. For a new mood they show the nearest one (`laughing` looks happy, `scared` looks surprised, `crying` looks sad…), and the check says so.
+
+To see every mood in every view: `node toolsmood-sheet.js` (it writes `build_sheeten-moods.png` and `yuki-moods.png`).
 
 ## What a character can do
 
@@ -81,7 +95,7 @@ The bubble's tail points at whoever is talking, and when both characters are on 
 | `<name> turns to <other name>` | Turns toward the other character |
 | `<name> hugs <other name>` | Goes over and hugs them: both turn to each other, look happy, and little hearts float up between them. Then they step apart again, still facing each other, and both stay happy (until a later line gives them another mood) |
 | `<name> tilts its head` | A curious head tilt |
-| `<name> feels sad` | Changes the mood until you change it again: `happy`, `surprised`, `shy`, `sad`, `sleepy`, `playful`, `pouty`, `normal` |
+| `<name> feels sad` | Changes the mood until you change it again: any mood above, or `normal` |
 | `<name> blinks` | An extra blink. Characters also blink by themselves |
 | `<name> raises its paws` / `<name> lowers its paws` | Paws up or down |
 | `<name> picks up the star` | Goes to the fallen star and picks it up with both paws |

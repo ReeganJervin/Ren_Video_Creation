@@ -53,7 +53,9 @@
   // A simple extra (animal or creature) works on the stage like a small character: this makes its description.
   function extraCharacter(id, a) {
     const h = a.height || 110, fly = /^(fly|float)$/.test(a.moves || '') ? 230 : 0;
-    const moods = {}; ['normal', 'happy', 'surprised', 'shy', 'sad', 'sleepy', 'playful', 'pouty', 'joy'].forEach(m => { moods[m] = {}; });
+    // (the F12 moods are there too; an extra shows them as the nearest older mood, and --check says so)
+    const moods = {}; ['normal', 'happy', 'surprised', 'shy', 'sad', 'sleepy', 'playful', 'pouty', 'joy',
+      'excited', 'proud', 'thinking', 'worried', 'scared', 'determined', 'laughing', 'crying'].forEach(m => { moods[m] = {}; });
     return {
       name: a.label || id.replace(/-/g, ' ').replace(/^./, ch => ch.toUpperCase()), extra: true, missing: !!a.missing,
       moves: a.moves === 'hop' ? 'hop' : 'walk', fly, speed: 240, hop: { h: Math.round(h * 0.4), sound: 'light' },

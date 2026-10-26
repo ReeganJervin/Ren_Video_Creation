@@ -355,6 +355,21 @@
       chime(c) { chime(at(c.t), c.midi, c.gain || 0.2); },
       // the payoff of a Short: a quick, bright chord going up
       sting(c) { [72, 76, 79, 84, 88].forEach((m, i) => chime(at(c.t + i * 0.055), m, 0.2 - i * 0.02, 1.1)); },
+      // laughing: a soft little "hee-hee-hee" (Yuki's higher than Ren's), quiet, after the line
+      giggle(c) {
+        const t0 = at(c.t), base = c.who === 'yuki' ? 760 : c.who === 'ren' ? 560 : 650;
+        for (let k = 0; k < 4; k++) {
+          const t = t0 + k * 0.12, f = base * (1 - k * 0.06), o = ctx.createOscillator(), v = ctx.createOscillator(), vg = ctx.createGain(), bp = ctx.createBiquadFilter(), g = ctx.createGain();
+          o.type = 'triangle'; o.frequency.setValueAtTime(f * 1.08, t); o.frequency.exponentialRampToValueAtTime(f * 0.9, t + 0.09);
+          v.frequency.value = 26; vg.gain.value = f * 0.03; v.connect(vg); vg.connect(o.frequency);
+          bp.type = 'bandpass'; bp.frequency.value = f * 2; bp.Q.value = 0.7;
+          o.connect(bp); bp.connect(g); g.connect(sfx); env(g, t, 0.08 * (1 - k * 0.12), 0.012, 0.09);
+          o.start(t); o.stop(t + 0.13); v.start(t); v.stop(t + 0.13);
+          // a little breath with each "hee"
+          const n = noiseSrc(t, 0.1), nb = ctx.createBiquadFilter(), ng = ctx.createGain();
+          nb.type = 'bandpass'; nb.frequency.value = 2600; nb.Q.value = 1; n.connect(nb); nb.connect(ng); ng.connect(sfx); env(ng, t, 0.02, 0.01, 0.08);
+        }
+      },
       twinkle(c) { const g = c.gain || 0.2; chime(at(c.t), c.midi, g, 0.7); chime(at(c.t + 0.07), c.midi + 7, g * 0.6, 0.6); },
       sparkleChime(c) { [96, 100, 103, 108].forEach((m, i) => chime(at(c.t + i * 0.06), m, 0.13, 0.7)); },
       pop(c) {

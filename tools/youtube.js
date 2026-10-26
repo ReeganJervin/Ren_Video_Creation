@@ -121,7 +121,7 @@ async function thumbnail(page, plan) {
       const inBusy = t => busy.some(([x, y]) => t >= x && t <= y);
       // how good a moment is: the main characters fully in the frame, facing front, surprised or excited (or happy),
       // eyes open, standing still; extras in the picture are a bonus
-      const MOOD = { surprised: 25, joy: 22, happy: 14, playful: 12 };
+      const MOOD = { surprised: 25, excited: 25, joy: 22, laughing: 18, happy: 14, playful: 12, proud: 10, determined: 8 };
       const score = t => {
         const faces = StudioFilm.faces(t), seen = mains.filter(id => faces.some(f => f.id === id && !f.cut));
         let s = seen.length * 40 - (mains.length - seen.length) * 60 + extras.filter(id => faces.some(f => f.id === id && !f.cut)).length * 10;

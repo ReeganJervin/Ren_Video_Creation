@@ -45,5 +45,6 @@ Kitsu Studio turns a story written as a plain text file into a finished animated
 - Done: **F1, F2, F4 Parts A–C and F9 Part A** (build-order steps 1–4). The first four assets are the lantern, cottage, cottage garden and owl; the studio app starts with `Kitsu Studio.bat` (code in `studio/`, tests in `studio/tests/`).
 - **Milestone 1** (step 5) was cut short by the owner (2026-10-26: "I don't want to render any story"): 4 stories were rendered in full before it was stopped (a-sunny-hello, a-trip-around, asset-test, camera-demo), all checks passed. The rest of the full test, the 12-minute test and a real story are still to do when the owner wants them.
 - **F11 Part A** (thumbnails, subtitles, description draft) is done and approved. **F11 Part B** (series intro, theme jingle, end screen) is done and approved. **F7 Part A** (vertical 9:16, safe area) is done and approved. **F7 Part B** (Shorts: `type: short`, `type: episode short` in `tools/shorts.js`, cover frames, Short length check; examples in `shorts/`) is done and approved.
-- Next: F12 Expression pack, F3 Rig 2.0, F4 Part D and Milestone 2.
+- **F12 Part A** (eight new moods, mood sheet tool) is done and approved. Right now: F12 Part B (bubble styles, mood voices, music range).
+- After that: F3 Rig 2.0, F4 Part D and Milestone 2.
 - `PRODUCTION-SYSTEM.md` is mentioned in the plan but is not in the project yet (the owner has been told).

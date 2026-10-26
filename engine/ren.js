@@ -199,9 +199,49 @@
   }
 
   // eyes: 'normal' | 'happy' (^ arcs) | 'wide' | 'sleepy' (closed) | 'shy' (glossy) | 'playful' (wink, for Yuki)
+  //       | 'sparkle' (excited) | 'proud' (half closed) | 'worried' | 'scared' (small pupils) | 'determined' | 'teary'
   // `squeeze` narrows an eye seen at an angle.
   // `bold` draws closed eyes thicker and longer so they read at video size (profile)
-  function drawEye(c, ex, ey, i, K, squeeze = 1, bold = false) {
+  // `inward`: the side of the eye toward the nose (+1 right, -1 left)
+  function drawEye(c, ex, ey, i, K, squeeze = 1, bold = false, inward = -i) {
+    eyeShape(c, ex, ey, i, K, squeeze, bold, inward);
+    if (K.tears > 0.02) tear(c, ex, ey, inward, K, squeeze);
+  }
+  // upper lids [y at the nose side, y at the outer side] (the eye is 26 tall above its middle): proud is half closed
+  // and level, determined a little, lower toward the nose (steady); worried and teary a little, higher toward the nose
+  const LIDS = { proud: [-9, -8], determined: [-8, -15], worried: [-21, -13], teary: [-19, -10] };
+  // lower lids pushed up by the cheeks (proud: a confident, pleased look): the middle of the lid's top edge
+  const LOWER = { proud: 16 };
+  // a 4-point sparkle (excited eyes)
+  function star(c, x, y, r) {
+    const k = r * 0.2;
+    c.beginPath(); c.moveTo(x, y - r);
+    c.quadraticCurveTo(x + k, y - k, x + r, y); c.quadraticCurveTo(x + k, y + k, x, y + r);
+    c.quadraticCurveTo(x - k, y + k, x - r, y); c.quadraticCurveTo(x - k, y - k, x, y - r);
+    c.fill();
+  }
+  // a short tear track from the outer half of the lower lid, following the curve of the cheek (out, then down),
+  // ending in a glistening, slightly see-through drop that swells a little
+  function tear(c, ex, ey, inward, K, squeeze) {
+    const a = clamp(K.tears), o = -inward, x0 = o * 9, y0 = 21, L = 26 * a;
+    const cx = x0 + o * 11, cy = y0 + L * 0.45, x1 = x0 + o * 8, y1 = y0 + L;
+    c.save(); c.translate(ex, ey); c.scale(squeeze, 1); c.globalAlpha *= a; c.lineCap = 'round';
+    const track = () => { c.beginPath(); c.moveTo(x0, y0); c.quadraticCurveTo(cx, cy, x1, y1); };
+    track(); c.strokeStyle = 'rgba(80,140,195,0.45)'; c.lineWidth = 7; c.stroke();
+    track(); c.strokeStyle = 'rgba(190,228,252,0.7)'; c.lineWidth = 4.5; c.stroke();
+    c.beginPath(); c.moveTo(x0 - 1, y0 + 4); c.quadraticCurveTo(cx - 1.5, cy, x1 - 1.5, y1 - 3);
+    c.strokeStyle = 'rgba(255,255,255,0.75)'; c.lineWidth = 1.4; c.stroke();
+    // the drop: pointed at the top, round below
+    const r = 5 * (0.9 + 0.1 * Math.sin((K.t || 0) * 2.4 + (inward > 0 ? 1 : 0))), dx = x1, dy = y1 + r * 0.9;
+    c.beginPath(); c.moveTo(dx, dy - r * 1.9);
+    c.bezierCurveTo(dx + r * 0.4, dy - r * 1.1, dx + r, dy - r * 0.5, dx + r, dy);
+    c.arc(dx, dy, r, 0, Math.PI);
+    c.bezierCurveTo(dx - r, dy - r * 0.5, dx - r * 0.4, dy - r * 1.1, dx, dy - r * 1.9);
+    c.fillStyle = 'rgba(176,222,250,0.65)'; c.fill(); c.lineWidth = 1.6; c.strokeStyle = 'rgba(70,130,190,0.8)'; c.stroke();
+    c.fillStyle = 'rgba(255,255,255,0.95)'; c.beginPath(); c.ellipse(dx - r * 0.35, dy - r * 0.3, r * 0.28, r * 0.4, -0.4, 0, Math.PI * 2); c.fill();
+    c.restore();
+  }
+  function eyeShape(c, ex, ey, i, K, squeeze, bold, inward) {
     c.save(); c.translate(ex, ey);
     c.scale(squeeze * (1 + 0.1 * K.wide), 1 + 0.12 * K.wide);
     c.strokeStyle = C.line; c.lineCap = 'round';
@@ -218,6 +258,19 @@
     }
     c.scale(1, open);
     const lx = K.lookX * 4.5, ly = K.lookY * 5;
+    if (K.eyes === 'scared') {
+      // scared: the white of the eye shows all round a smaller iris, which quivers a little (suspense, never horror)
+      const jx = lx * 0.8 + Math.sin((K.t || 0) * 31) * 0.8;
+      c.beginPath(); c.ellipse(0, 0, 19, 26, 0, 0, Math.PI * 2); c.fillStyle = '#fff'; c.fill(); c.lineWidth = 3.5; c.stroke();
+      const g = c.createLinearGradient(0, -10 + ly, 0, 14 + ly);
+      g.addColorStop(0, C.irisT); g.addColorStop(1, C.irisB);
+      c.beginPath(); c.ellipse(jx, 3 + ly, 10, 12.5, 0, 0, Math.PI * 2); c.fillStyle = g; c.fill();
+      c.beginPath(); c.ellipse(jx, 2 + ly, 5, 6, 0, 0, Math.PI * 2); c.fillStyle = C.eye; c.fill();
+      // a clear shine and a small second glint, so the eyes stay alive
+      c.fillStyle = '#fff'; c.beginPath(); c.arc(-3.5 + jx, -4.5 + ly, 4.6, 0, Math.PI * 2); c.fill();
+      c.beginPath(); c.arc(3.5 + jx, 5 + ly, 1.9, 0, Math.PI * 2); c.fill();
+      c.restore(); return;
+    }
     c.beginPath(); c.ellipse(0, 0, 19, 26, 0, 0, Math.PI * 2); c.fillStyle = C.eye; c.fill();
     c.save(); c.clip();
     // warm brown iris, lighter at the bottom
@@ -227,14 +280,48 @@
     c.beginPath(); c.ellipse(lx * 0.9, 1 + ly, 8.5, 11, 0, 0, Math.PI * 2); c.fillStyle = C.eye; c.fill();
     c.restore();
     c.fillStyle = '#fff';
-    c.beginPath(); c.arc(-6 + lx * 0.6, -10 + ly * 0.6, 9.5 + K.wide * 1.2, 0, Math.PI * 2); c.fill();
-    c.beginPath(); c.arc(7 + lx, 10 + ly, 3.8, 0, Math.PI * 2); c.fill();
-    if (K.wide > 0.3) { c.beginPath(); c.arc(8 + lx, -10 + ly, 2.6, 0, Math.PI * 2); c.fill(); }
+    if (K.eyes === 'sparkle') {
+      // excited: star-shaped sparkles instead of round highlights
+      star(c, -5 + lx * 0.6, -9 + ly * 0.6, 13); star(c, 7 + lx, 10 + ly, 6);
+      c.beginPath(); c.arc(8 + lx, -11 + ly, 2.6, 0, Math.PI * 2); c.fill();
+    } else {
+      // (a low lid would cut the big highlight in half: then only the small glint below the lid shows)
+      if (!LIDS[K.eyes] || Math.max(...LIDS[K.eyes]) <= -12) { c.beginPath(); c.arc(-6 + lx * 0.6, -10 + ly * 0.6, 9.5 + K.wide * 1.2, 0, Math.PI * 2); c.fill(); }
+      c.beginPath(); c.arc(7 + lx, 10 + ly, 3.8, 0, Math.PI * 2); c.fill();
+      if (K.wide > 0.3) { c.beginPath(); c.arc(8 + lx, -10 + ly, 2.6, 0, Math.PI * 2); c.fill(); }
+    }
     if (K.eyes === 'shy') {
       // glossy, a little teary: a bright rim along the bottom and an extra sparkle
       c.strokeStyle = 'rgba(255,255,255,0.8)'; c.lineWidth = 2.6;
       c.beginPath(); c.ellipse(0, 0, 15, 21, 0, 0.25 * Math.PI, 0.75 * Math.PI); c.stroke();
       c.beginPath(); c.arc(-8 + lx, 4 + ly, 2.4, 0, Math.PI * 2); c.fill();
+    }
+    if (K.eyes === 'teary') {
+      // wet eyes: water pooling along the lower lid, a bright wet rim and extra glints
+      c.save(); c.beginPath(); c.ellipse(0, 0, 19, 26, 0, 0, Math.PI * 2); c.clip();
+      c.fillStyle = 'rgba(178,222,250,0.5)'; c.beginPath(); c.moveTo(-21, 12); c.quadraticCurveTo(-9, 7, 0, 11); c.quadraticCurveTo(9, 15, 21, 10); c.lineTo(21, 30); c.lineTo(-21, 30); c.fill();
+      c.restore();
+      c.strokeStyle = 'rgba(255,255,255,0.95)'; c.lineWidth = 3;
+      c.beginPath(); c.ellipse(0, 0, 15.5, 21.5, 0, 0.18 * Math.PI, 0.82 * Math.PI); c.stroke();
+      c.fillStyle = '#fff'; c.beginPath(); c.arc(-9 + lx, 5 + ly, 2.8, 0, Math.PI * 2); c.fill();
+      c.beginPath(); c.arc(4 + lx, -2 + ly, 2, 0, Math.PI * 2); c.fill();
+    }
+    const lid = LIDS[K.eyes];
+    if (lid) {
+      // the upper lid, in fur colour, with its edge line; a small glint stays below it so the eye keeps its life
+      const [yi, yo] = lid, xi = inward * 22, xo = -inward * 22, ym = (yi + yo) / 2 - (K.eyes === 'proud' ? 5 : 2);
+      // (clipped a little outside the eye, so the lid also covers the eye's soft edge)
+      c.save(); c.beginPath(); c.ellipse(0, 0, 20.5, 27.5, 0, 0, Math.PI * 2); c.clip();
+      c.beginPath(); c.moveTo(xo, -30); c.lineTo(xi, -30); c.lineTo(xi, yi); c.quadraticCurveTo(0, ym, xo, yo); c.closePath();
+      c.fillStyle = C.fur; c.fill();
+      const lo = LOWER[K.eyes];
+      if (lo !== undefined) { c.beginPath(); c.moveTo(-24, 32); c.lineTo(-24, lo + 8); c.quadraticCurveTo(0, lo - 8, 24, lo + 8); c.lineTo(24, 32); c.closePath(); c.fill(); }
+      c.restore();
+      c.save(); c.beginPath(); c.ellipse(0, 0, 19, 26, 0, 0, Math.PI * 2); c.clip();
+      c.beginPath(); c.moveTo(xi, yi); c.quadraticCurveTo(0, ym, xo, yo); c.lineWidth = 7; c.strokeStyle = C.line; c.stroke();
+      if (lo !== undefined) { c.beginPath(); c.moveTo(-22, lo + 9); c.quadraticCurveTo(0, lo - 8, 22, lo + 9); c.lineWidth = 3.5; c.stroke(); }
+      c.restore();
+      if (Math.max(yi, yo) > -12) { c.fillStyle = '#fff'; c.beginPath(); c.arc(-5 + lx * 0.6, Math.max(yi, yo) + 7 + ly * 0.4, 4, 0, Math.PI * 2); c.fill(); }
     }
     c.restore();
   }
@@ -262,14 +349,42 @@
       });
       c.fillStyle = C.mouth; c.fill(); c.stroke();
     };
+    // laughing: wide open, the tongue showing
+    const laughShape = a => {
+      path(c, () => { c.moveTo(-14, -1); c.quadraticCurveTo(0, 3, 14, -1); c.quadraticCurveTo(11, 24 * a, 0, 25 * a); c.quadraticCurveTo(-11, 24 * a, -14, -1); });
+      c.fillStyle = C.mouth; c.fill(); c.stroke();
+      c.save(); c.clip(); c.beginPath(); c.ellipse(0, 21 * a, 9, 6 * a, 0, 0, Math.PI * 2); c.fillStyle = C.tongue; c.fill(); c.restore();
+    };
+    // determined, talking: a firm, square-ish opening (not a smile)
+    const firmShape = a => {
+      path(c, () => { c.moveTo(-8, 4); c.lineTo(8, 4); c.quadraticCurveTo(8, 4 + 11 * a, 5, 4 + 11 * a); c.lineTo(-5, 4 + 11 * a); c.quadraticCurveTo(-8, 4 + 11 * a, -8, 4); });
+      c.fillStyle = C.mouth; c.fill(); c.stroke();
+    };
+    // a small wavy line with the corners down (worried, crying); it trembles a little
+    const wobble = (w, k = 1) => {
+      const q = Math.sin((K.t || 0) * 9) * 0.8 * k;
+      c.beginPath(); c.moveTo(-w, 8); c.quadraticCurveTo(-w * 0.6, 4 + q, -w * 0.25, 6); c.quadraticCurveTo(0, 8 - q, w * 0.25, 6); c.quadraticCurveTo(w * 0.6, 4 + q, w, 8); c.stroke();
+    };
     switch (K.mouth) {
       case 'open': openShape(1); break;
       case 'talk':
-        if (/frown/.test(K.moodMouth || '')) worried(K.talk, K.moodMouth === 'frown' ? 8 : 6);
+        if (/frown|wobble/.test(K.moodMouth || '')) worried(K.talk, K.moodMouth === 'tinyfrown' ? 6 : 8);
+        else if (K.moodMouth === 'gasp') worried(0.4 + 0.6 * K.talk, 8);
         else if (K.moodMouth === 'o') { c.beginPath(); c.ellipse(0, 9, 6 * (0.8 + 0.2 * K.talk), 8 * (0.55 + 0.45 * K.talk), 0, 0, Math.PI * 2); c.fillStyle = C.mouth; c.fill(); c.stroke(); }   // surprised: a round o
         else if (K.moodMouth === 'pout') downShape(K.talk * 0.7, 6);
+        else if (K.moodMouth === 'laugh') laughShape(0.7 + 0.3 * K.talk);
+        else if (K.moodMouth === 'set') firmShape(K.talk);
+        else if (K.moodMouth === 'hmm') openShape(K.talk * 0.65);
         else openShape(K.talk);
         break;
+      case 'laugh': laughShape(1); break;
+      case 'wobble': wobble(9); break;
+      case 'gasp': worried(0.45, 8); break;
+      case 'set': c.beginPath(); c.moveTo(-9, 5); c.quadraticCurveTo(0, 6.5, 9, 5); c.stroke(); break;
+      // proud: a confident closed smile, a little higher on one side
+      case 'smirk': c.beginPath(); c.moveTo(-11, 2); c.quadraticCurveTo(0, 11, 12, -1); c.stroke(); c.beginPath(); c.moveTo(10, -3); c.quadraticCurveTo(13, -1, 13, 2); c.stroke(); break;
+      // thinking: a small mouth pulled to one side
+      case 'hmm': c.beginPath(); c.moveTo(-3, 7); c.quadraticCurveTo(2, 8.5, 8, 4); c.stroke(); break;
       case 'o': c.beginPath(); c.ellipse(0, 9, 6, 8, 0, 0, Math.PI * 2); c.fillStyle = C.mouth; c.fill(); c.stroke(); break;
       case 'soft': c.beginPath(); c.moveTo(-10, 2); c.quadraticCurveTo(0, 10, 10, 2); c.stroke(); break;
       case 'frown': c.beginPath(); c.moveTo(-9, 7); c.quadraticCurveTo(0, -1, 9, 7); c.stroke(); break;
@@ -317,7 +432,8 @@
   // brows > 0: worried (inner end, toward the nose in direction `inward`, raised); brows < 0: cross (inner end lowered)
   function brow(c, x, K, inward, k = 1) {
     const v = K.brows || 0; if (Math.abs(v) < 0.02) return;
-    const inY = v > 0 ? -38 : -26, outY = v > 0 ? -30 : -38;
+    // firm (determined): lower and nearly level, steady rather than cross
+    const f = v < 0 ? K.firm || 0 : 0, inY = v > 0 ? -38 : -26 - 5 * f, outY = v > 0 ? -30 : -38 + 3 * f;
     c.save(); c.globalAlpha = clamp(Math.abs(v)); c.strokeStyle = C.line; c.lineWidth = 4; c.lineCap = 'round';
     c.beginPath(); c.moveTo(x + inward * 12 * k, inY); c.lineTo(x - inward * 10 * k, outY); c.stroke();
     c.restore();
@@ -331,7 +447,8 @@
   function shade(c, x, y, rx, ry, a) { c.save(); c.fillStyle = C.furD; c.globalAlpha = a; c.beginPath(); c.ellipse(x, y, rx, ry, 0, 0, Math.PI * 2); c.fill(); c.restore(); }
   const topTuft = (c, dx) => { c.moveTo(dx - 22, -70); tufts(c, [dx - 22, -70], [[dx - 12, -92], [dx - 4, -82], [dx + 6, -98], [dx + 10, -84], [dx + 22, -92], [dx + 24, -70]], 4, -1); c.closePath(); };
   // Head pivot: shared by every view so the head sits on the neck the same way.
-  function headFrame(c, K, dx) { c.translate(0, -142); c.rotate(K.tilt); c.translate(dx, -68); }
+  // (proud lifts the head a little: chin up)
+  function headFrame(c, K, dx) { c.translate(0, -142 - 6 * (K.lift || 0)); c.rotate(K.tilt); c.translate(dx, -68); }
 
   // ---------- FRONT view (|f| < 0.3) ----------
   // Round head with small orange cheek tufts and a little tuft on top. Below the eyes it is never
@@ -388,14 +505,23 @@
     c.restore();
   }
 
-  function drawArm(c, i, ang, K) {
+  function drawArm(c, i, ang, K, chin) {
     // resting arms hang along the sides with the paws by the hips; folded in (holding) they are shorter
-    const len = 64 - 16 * clamp(-ang / 1.2);
+    const S = [i * 44 + K.f * 4, -122];
+    let len = 64 - 16 * clamp(-ang / 1.2), rot = i < 0 ? ang : -ang;
+    ({ rot, len } = toChin(S, rot, len, K, i > 0 && chin));
     c.save();
-    c.translate(i * 44 + K.f * 4, -122);
-    c.rotate(i < 0 ? ang : -ang);
+    c.translate(...S);
+    c.rotate(rot);
     armShape(c, len);
     c.restore();
+  }
+  // thinking: the near paw goes up to the chin (point T, in body coordinates) from shoulder S
+  function toChin(S, rot, len, K, T) {
+    const w = K.pawPose === 'chin' && T ? clamp(K.pawW || 0) : 0;
+    if (w <= 0) return { rot, len };
+    const dx = T[0] - S[0], dy = T[1] - S[1];
+    return { rot: rot + (Math.atan2(-dx, dy) - rot) * w, len: len + (Math.hypot(dx, dy) + 4 - len) * w };
   }
   // dark brown paw fading into the orange
   function armShape(c, len) {
@@ -413,7 +539,7 @@
     drawScarf(c, K);
     drawFrontHead(c, K);
     drawArm(c, -1, K.armL, K);
-    drawArm(c, 1, K.armR, K);
+    drawArm(c, 1, K.armR, K, [8 + K.f * 20, -136 - 6 * (K.lift || 0)]);
   }
 
   // ---------- THREE-QUARTER view (0.3 <= |f| < 0.7), drawn facing right ----------
@@ -473,7 +599,7 @@
     drawScarf(c, B, K.flipped);   // the knot is on Ren's right side: near when he faces right
     drawThreeHead(c, K);
     drawArm(c, -1, K.armL, K);
-    drawArm(c, 1, K.armR, K);
+    drawArm(c, 1, K.armR, K, [58, -146 - 6 * (K.lift || 0)]);
   }
 
   // ---------- SIDE profile (|f| >= 0.7), drawn facing right ----------
@@ -502,7 +628,10 @@
     switch (K.mouth) {
       case 'smile': line(5); break;
       case 'soft': line(3); break;
-      case 'frown': case 'tinyfrown': case 'pout': line(-4); break;
+      case 'frown': case 'tinyfrown': case 'pout': case 'wobble': line(-4); break;
+      case 'smirk': line(7); break;
+      case 'set': line(0.5); break;
+      case 'hmm': line(1.5); break;
       default: c.save(); c.translate(93, 17); c.scale(0.5, 0.5); drawMouth(c, K); c.restore();
     }
   }
@@ -532,7 +661,7 @@
     blushAt(c, 38, 10, K, 1.05);
     // the eye: an upright oval close above the snout
     c.save(); c.translate(62, 1); c.scale(0.8, 0.76);
-    drawEye(c, 0, 0, 1, K, 0.82, true);
+    drawEye(c, 0, 0, 1, K, 0.82, true, 1);
     brow(c, 0, K, 1, 0.82);
     c.restore();
     drawNose(c, 106, 7, -0.2);
@@ -575,11 +704,12 @@
     });
   }
   // short bent arm hanging at the front with a dark paw at belly height
-  function drawSideArm(c, ang, far) {
-    const a = ang < 0 ? 0.7 - ang * 0.35 : ang, len = 58 - 14 * clamp(-ang / 1.2);
+  function drawSideArm(c, ang, far, K) {
+    const a = ang < 0 ? 0.7 - ang * 0.35 : ang, S = [far ? -12 : 6, -120];
+    const { rot, len } = toChin(S, -a - (far ? 0 : 0.12), 58 - 14 * clamp(-ang / 1.2), K, !far && [64, -160 - 6 * (K.lift || 0)]);
     c.save();
-    c.translate(far ? -12 : 6, -120);
-    c.rotate(-a - (far ? 0 : 0.12));
+    c.translate(...S);
+    c.rotate(rot);
     armShape(c, len);
     if (far) { c.fillStyle = 'rgba(60,30,15,0.25)'; c.fill(); }
     c.restore();
@@ -622,14 +752,17 @@
   function drawSide(c, K) {
     // big fluffy tail rising and curling up behind the body, with a white tip
     drawTail(c, K, -42, -0.95);
-    drawSideArm(c, K.armL, true);
+    drawSideArm(c, K.armL, true, K);
     drawSideLegs(c, K);
     c.translate(0, -Math.abs(Math.sin(K.phase)) * 5 * K.walk);
     drawSideBody(c);
     drawSideHead(c, K);
-    drawSideArm(c, K.armR, false);
+    // (a paw at the chin goes over the scarf)
+    const chin = K.pawPose === 'chin' && K.pawW > 0.5;
+    if (!chin) drawSideArm(c, K.armR, false, K);
     // scarf: a band around the neck seen from the side, the flower at the front of the throat
     drawSideScarf(c, K.flipped);
+    if (chin) drawSideArm(c, K.armR, false, K);
   }
 
   // ---------- views ----------
@@ -649,6 +782,9 @@
     c.save(); c.translate(0, K.h / (K.s * K.sy));
     c.fillStyle = 'rgba(30,40,20,0.22)'; c.beginPath(); c.ellipse(0, 0, 70 * (1 - K.h / 260), 12 * (1 - K.h / 260), 0, 0, Math.PI * 2); c.fill();
     c.restore();
+    // scared leans away from where Ren is facing; proud stands a little taller (chest out)
+    if (K.lean) c.rotate(-(K.f < 0 ? -1 : 1) * 0.07 * K.lean);
+    if (K.lift) c.scale(1 + 0.015 * K.lift, 1 + 0.025 * K.lift);
     if (view !== 'front' && K.f < 0) { c.scale(-1, 1); K = mirror(K); }
     VIEWS[view](c, K);
     c.restore();

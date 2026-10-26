@@ -4,7 +4,7 @@
 // `lens` maps speech index -> voice clip length in seconds (estimated when unknown).
 // Characters come from the registry in characters.js; every line works for any of them.
 (function (root) {
-  const { CHARACTERS, MOODS } = typeof module !== 'undefined' ? require('./characters.js') : root.StudioCharacters;
+  const { CHARACTERS, MOODS, FALLBACK } = typeof module !== 'undefined' ? require('./characters.js') : root.StudioCharacters;
   const PLACES = typeof module !== 'undefined' ? require('./places/index.js') : root.StudioPlaces;
   const ASSETS = typeof module !== 'undefined' ? require('./assets.js') : root.StudioAssets;
   // picture assets (PNG files in assets/): read once in Node; the plan carries them to the page
@@ -487,6 +487,8 @@
     };
     const ARM_R = 0.16;
     const sfx = (type, at, o = {}) => P.sfx.push({ type, t: at, ...o });
+    // an extra (a simple animal) has only the first eight moods: a newer one shows as the nearest of those
+    const moodNote = (a, mood, line) => { if (a.def.extra && FALLBACK[mood]) P.warnings.push(`Line ${line}: the ${a.def.name.toLowerCase()} has no "${mood}" face, so it looks ${FALLBACK[mood]}.`); };
     // props and set pieces on stage now (by name), and every one that ever appears
     P.props = [];
     let props = {};
@@ -689,7 +691,9 @@
             const side = o ? (a.x >= o.x ? 1 : -1) : (a.x >= 960 ? -1 : 1);
             if (o) talks.push({ t0: s, t1: vt + len, pairs: [[a, toward(a, o)], [o, toward(o, a)]].filter(([q]) => !q.toYou) });
             P.bubbles.push({ who: a.id, text: b.text, t0: s, t1: Math.max(vt + len + 0.9, s + 2.8), side, emph: /!/.test(b.text) && /^(whoa|wow|oh|look|yay|hooray)/i.test(b.text) });
-            if (b.mood) a.out.exprs.push({ a: s, b: vt + len + 0.3, mood: b.mood });
+            if (b.mood) { a.out.exprs.push({ a: s, b: vt + len + 0.3, mood: b.mood }); moodNote(a, b.mood, b.line); }
+            // laughing: a soft giggle right after the line (not over the voice)
+            if (b.mood === 'laughing') sfx('giggle', vt + len + 0.05, { who: a.id });
             dur = 0.15 + len + 0.55 * PACE;
           }
           break;
@@ -798,7 +802,7 @@
           break;
         }
         case 'tilt': who.forEach(a => { set(a, 'tilt', s, 0.22, 0.3); set(a, 'tilt', s + 0.9, 0, 0.3); }); dur = 1.25; break;
-        case 'mood': who.forEach(a => a.out.moods.push({ t: s, mood: b.mood })); dur = 0.6; break;
+        case 'mood': who.forEach(a => { a.out.moods.push({ t: s, mood: b.mood }); moodNote(a, b.mood, b.line); if (b.mood === 'laughing') sfx('giggle', s + 0.1, { who: a.id }); }); dur = 0.6; break;
         case 'blink': who.forEach(a => a.out.blinkExtra.push(s)); dur = 0.4; break;
         case 'paws': {
           who.forEach(a => {
@@ -1168,7 +1172,7 @@
           else if (b.who !== speaker || reaction) cut(s, 'close', { actors: [b.who] }, { force: reaction });
           reaction = false;
           convo = others.length > 0; speaker = b.who; lineEnd = v.t + v.len;
-          if (others.length && /^(surprised|shy|sad)$/.test(b.mood || '')) {
+          if (others.length && /^(surprised|shy|sad|scared|crying)$/.test(b.mood || '')) {
             cut(lineEnd + 0.1, 'close', { actors: [others[0]] }, { force: true });
             reaction = true;
           }
@@ -1193,6 +1197,6 @@
   }
   function estimate(text) { return 0.45 + text.split(/\s+/).length * 0.36; }
 
-  const api = { parseStory, compileStory, evalKeys, feetY, HELP, POS, CHARACTERS, MOODS, MUSIC, PICTURES };
+  const api = { parseStory, compileStory, evalKeys, feetY, HELP, POS, CHARACTERS, MOODS, FALLBACK, MUSIC, PICTURES };
   if (typeof module !== 'undefined') module.exports = api; else root.StudioStory = api;
 })(this);

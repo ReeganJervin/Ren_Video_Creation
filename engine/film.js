@@ -92,7 +92,8 @@
   const headOf = (id, t) => { const B = actorBody(id, t); return { vis: true, ...toWorld(B, B.f * 6, REG[id].head) }; };
 
   // what each mood looks like comes from the character registry; anything a mood leaves out is neutral
-  const NEUTRAL = { eyes: 'normal', mouth: 'smile', wide: 0, brows: 0, droop: 0, blush: 0, lookY: 0, wag: 0, puff: 0, flop: 0, pawPose: null, pawW: 0 };
+  const NEUTRAL = { eyes: 'normal', mouth: 'smile', wide: 0, brows: 0, droop: 0, blush: 0, lookY: 0, wag: 0, puff: 0, flop: 0, pawPose: null, pawW: 0,
+    lookX: 0, tilt: 0, lift: 0, lean: 0, bounce: 0, shake: 0, tremble: 0, tears: 0, firm: 0 };
   const moodLook = (id, name) => ({ ...NEUTRAL, ...REG[id].moods[name] });
   function moodAt(id, t) {
     const a = P.actors[id];
@@ -105,7 +106,7 @@
   function actorState(id, t) {
     const K = actorBody(id, t), a = P.actors[id], def = REG[id], n = CAST.indexOf(id);
     const m = moodAt(id, t), mix = k => lerp(m.prev[k] || 0, m.cur[k] || 0, m.w), pick = k => (m.w > 0.5 ? m.cur : m.prev)[k];
-    let lx = A_(id, 'lookX', t), ly = A_(id, 'lookY', t) + mix('lookY');
+    let lx = A_(id, 'lookX', t) + mix('lookX'), ly = A_(id, 'lookY', t) + mix('lookY');
     const head = toWorld(K, K.f * 6, def.head);
     for (const L of a.lookAt) {
       const w = win(t, L.a, L.b, 0.3, 0.4); if (w <= 0) continue;
@@ -128,10 +129,11 @@
       }
     }
     K.lookX = clamp(lx, -1, 1); K.lookY = clamp(ly, -1, 1);
-    K.tilt = A_(id, 'tilt', t) + Math.sin(t * 0.9 + n * 1.3) * 0.025 + mix('brows') * 0.06;
+    K.tilt = A_(id, 'tilt', t) + Math.sin(t * 0.9 + n * 1.3) * 0.025 + mix('brows') * 0.06 + mix('tilt');
     K.eyes = pick('eyes'); K.mouth = pick('mouth'); K.wide = mix('wide'); K.brows = mix('brows');
     K.moodMouth = K.mouth;   // the mood's own mouth, so a talking mouth can follow the mood (sad talking isn't a smile)
     K.blushBoost = mix('blush'); K.puff = mix('puff'); K.flop = mix('flop');
+    K.lift = mix('lift'); K.lean = mix('lean'); K.tears = mix('tears'); K.firm = mix('firm');
     K.pawPose = m.cur.pawPose || m.prev.pawPose;
     K.pawW = lerp(m.prev.pawPose === K.pawPose ? m.prev.pawW : 0, m.cur.pawPose === K.pawPose ? m.cur.pawW : 0, m.w);
     if (K.hopping) K.eyes = 'happy';
@@ -150,6 +152,11 @@
     K.earL = base + (side < 0 ? tw : 0); K.earR = base + (side > 0 ? tw : 0);
     const wag = Math.max(mix('wag'), K.hopping ? 1 : 0);
     K.tail = Math.sin(t * 2.3) * 0.15 + K.walk * Math.sin(K.phase) * 0.18 + wag * Math.sin(t * 9) * 0.2;
+    // excited bounces a little, laughing shakes gently, scared trembles
+    const bounce = mix('bounce'), shake = mix('shake'), tremble = mix('tremble');
+    if (bounce > 0 && !K.hopping) K.h += Math.abs(Math.sin(t * 6.5)) * 8 * bounce;
+    if (shake > 0) { K.sy *= 1 + 0.025 * Math.sin(t * 16) * shake; K.tilt += Math.sin(t * 8) * 0.03 * shake; }
+    if (tremble > 0) K.x += Math.sin(t * 43) * 2.2 * tremble;
     return K;
   }
 
@@ -609,10 +616,11 @@
     return {
       id, t, x: o.x, y: o.y, h: 0, sx: 1, sy: 1 + 0.012 * Math.sin(t * 2.6 + n * 1.7), s: KS * (o.scale || 1), f: o.f || 0, walk: 0, phase: 0, hopping: false,
       armL: 0.16 + idle, armR: (o.wave ? 2.35 + Math.sin(t * 9) * 0.35 * o.wave : 0.16) + idle,
-      lookX: o.lookX || 0, lookY: clamp((o.lookY || 0) + (look.lookY || 0), -1, 1), tilt: Math.sin(t * 0.9 + n * 1.3) * 0.025 + (o.tilt || 0),
+      lookX: clamp((o.lookX || 0) + (look.lookX || 0), -1, 1), lookY: clamp((o.lookY || 0) + (look.lookY || 0), -1, 1), tilt: Math.sin(t * 0.9 + n * 1.3) * 0.025 + (o.tilt || 0) + (look.tilt || 0),
+      lift: look.lift || 0, lean: look.lean || 0, tears: look.tears || 0, firm: look.firm || 0,
       eyes: look.eyes, mouth: look.mouth, wide: look.wide || 0, brows: look.brows || 0, blushBoost: look.blush || 0, puff: look.puff || 0, flop: look.flop || 0,
       pawPose: look.pawPose, pawW: look.pawPose ? 1 : 0, talk: 0, blink,
-      earL: look.droop || 0, earR: look.droop || 0, tail: Math.sin(t * 2.3) * 0.15 + (look.wag || 0) * Math.sin(t * 9) * 0.2,
+      earL: (look.droop || 0) - 0.12 * (look.wide || 0), earR: (look.droop || 0) - 0.12 * (look.wide || 0), tail: Math.sin(t * 2.3) * 0.15 + (look.wag || 0) * Math.sin(t * 9) * 0.2,
     };
   }
   // a soft meadow, the same in every video
@@ -643,6 +651,13 @@
       burst(g, t, lt + 0.31, cx, base - size * 0.35, 5, i * 17 + 3, 80, 0.7, 13);
     });
     g.restore();
+  }
+  // a character in a mood, posed directly, on g's current transform (the mood sheet): o = { x, y, scale, f, talk, t }
+  function character(g, id, mood, o = {}) {
+    const K = posedK(id, o.t || 0, { ...o, mood, t0: -10 });
+    K.moodMouth = K.mouth;
+    if (o.talk) { K.mouth = 'talk'; K.talk = o.talk; }
+    DRAW[id](g, K);
   }
   const drawPosed = (g, id, K) => { applyCam(g, CAM0, 1); DRAW[id](g, K); g.setTransform(1, 0, 0, 1, 0, 0); };
   // the intro (5 s): the logo bounces in over the meadow, then Ren and Yuki peek in from below and wave
@@ -973,5 +988,5 @@
   // the safe-area check: faces, bubbles and captions of the frame just drawn
   // (the helpers take a Short's own time, like render)
   const layout = t => ({ faces: faces(storyTime(t)).map(q => ({ kind: 'face ' + q.id, ...q.box })), boxes: drawn });
-  window.StudioFilm = { init, render, faces: t => faces(storyTime(t)), pose: (id, t) => pose(id, storyTime(t)), mood: (id, t) => mood(id, storyTime(t)), frame, END_LAYOUT, layout };
+  window.StudioFilm = { init, render, faces: t => faces(storyTime(t)), pose: (id, t) => pose(id, storyTime(t)), mood: (id, t) => mood(id, storyTime(t)), frame, END_LAYOUT, layout, character };
 })();

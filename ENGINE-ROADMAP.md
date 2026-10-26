@@ -133,7 +133,7 @@ Work through the steps **in this order**. The F-numbers are names, not the order
 | 5 | **Milestone 1** (full test) | In progress | |
 | 6 | **F11 YouTube kit** (thumbnails, subtitles, description, series intro, end screen) | Done (approved) | `b86d4fb` (F11A), F11B (see git log) |
 | 7 | F7 Vertical 9:16 and Shorts (reuses F11's thumbnails, subtitles and description) | Done (Parts A and B approved) | F7A (see git log) |
-| 8 | **F12 Expression pack** (new moods, thought/whisper/shout bubbles, mood voices) | Not started | |
+| 8 | **F12 Expression pack** (new moods, thought/whisper/shout bubbles, mood voices) | Part A done (approved); Part B next | |
 | 9 | F3 Rig 2.0 (joints, movement library, lip-sync), in **4 review stops** | Not started | |
 | 10 | F4 Asset Kit, Part D: prop acting, Season 1 props, extras landing on set pieces (needs F3) | Not started | |
 | 11 | **Milestone 2.** The owner then makes the real **Episode 1** | Not started | |
@@ -657,6 +657,18 @@ Each effect has its own sound and uses the lighting system from F5. All of them 
 4. **Sounds:** `laughing` adds a soft giggle sound. Optional, and it must pass the loudness checks.
 
 **Part A review:** a mood sheet for both characters showing every mood (old and new) in all views, next to the reference sheets. Include a serious test: the same sad, scared and determined lines shown in a dark, dramatic scene, to show they work for older viewers too.
+
+**As built (F12A):**
+- **Moods** in `engine/characters.js` (Ren and Yuki), as values the drawings already understand plus new ones: `lookX`, `tilt`, `lift` (chin up, standing taller), `lean` (away from the facing direction), `bounce`, `shake`, `tremble` (film.js moves the body), `tears`, `firm` (level brows). New eye kinds: `sparkle` (star highlights), `proud` (half lid, cheeks pushing the lower lid up), `worried` and `teary` (lids higher toward the nose), `determined` (lids lower toward the nose), `scared` (white all round a smaller brown iris that quivers). New mouths: `smirk`, `hmm`, `wobble` (trembles), `gasp`, `set`, `laugh`, each with its own talking shape (laughing talks wide open, determined talks with a firm square opening, worried/scared/crying talk with the small wobbly mouth).
+- **Tears:** a short tear track from the outer half of the lower lid that follows the curve of the cheek, ending in a glistening, slightly see-through drop that swells a little; wet eyes with water pooling at the lower lid. Restrained on purpose (section 0.6): no waterfalls, no horror faces. **Scared** eyes keep a clear shine and a small second glint, so they never look blank (both from the owner's review).
+- **Thinking:** the near paw goes to the chin in every view (Ren: the arm turns from the shoulder to the chin; Yuki: the existing paw-pose system). In Ren's side view the paw is drawn over the scarf.
+- **Extras** get the new mood names; they show the nearest older mood (`FALLBACK` in characters.js), and `--check` notes it ("the owl has no \"laughing\" face, so it looks happy").
+- **Giggle:** `laughing` adds a soft `giggle` sound effect after the line (or when `feels laughing` starts); Yuki's is higher than Ren's. Peaks -14 to -20 dB in the effects stem; every check passes.
+- Auto editing also cuts to a reaction for `scared` and `crying` lines (as for surprised, shy and sad).
+- Thumbnails also prefer `excited` (as surprised) and `laughing`, `proud`, `determined` faces.
+- **`tools/mood-sheet.js`:** every mood in every view plus talking, under the reference sheet (for F12 and the F3 reviews). It draws through the engine (`StudioFilm.character`, the same mood-to-face code as the intro and end screen).
+- Studio: the editor shows up to 100 suggestions (the new moods pushed some past 60).
+- Tests: `stories/test-serious-moods.txt` (night forest, tense then sad music, close shots: scared, worried, crying, sad, determined) and `stories/test-new-moods.txt` (excited, thinking, proud, laughing, the owl's fallback); both pass every check. R1: all 20 existing stories unchanged.
 
 **Commit message:** `F12A: eight new moods`
 
