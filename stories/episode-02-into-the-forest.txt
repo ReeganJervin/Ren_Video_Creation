@@ -1,0 +1,181 @@
+# ============================================================
+#  Ren & Yuki - Episode 2: Into the Forest   (~7-8 min)
+#
+#  Save as:  stories\episode-02-into-the-forest.txt
+#  New in this episode: the FOREST and the OWL.
+#  Still saved for later: the fallen star, the cottage, the lantern,
+#  the river, the beach and the snowy hill.
+#  Callbacks to Episode 1: "what's beyond those trees", Yuki's
+#  condition ("sometimes I choose where we go"), the Forest of
+#  Things That Look Like Other Things, and the explorer's rules.
+# ============================================================
+
+title: Into the Forest
+editing: auto
+
+
+# ================= Scene 1 - The hook (about 30 s) =================
+scene: Something Is Watching
+place: forest
+time: dusk
+music: mystery
+
+ren enters from left to left
++ yuki enters from left to center
+yuki (shy): Ren... are we lost?
+ren (playful): Lost? Explorers don't get lost.
+ren (shy): We get... unexpectedly educated.
+beat
+narrator: Somewhere in the dark trees, something was watching them.
+ren and yuki look up
+camera: shake
+ren (surprised): Did that tree just blink?
+narrator: But to understand how they got here, we have to go back to that morning.
+title card: REN AND YUKI
+
+
+# ================= Scene 2 - Yuki chooses =================
+scene: Yuki Chooses
+place: meadow
+time: day
+music: happy
+
+# Ren and Yuki are already on stage from scene 1, so they walk instead of entering.
+ren walks to center
++ yuki walks to right
+ren turns to you
+ren (happy): Good morning, world! Day two of the legendary explorers!
+yuki (happy): Good morning, Ren.
+ren (happy): Where shall we explore today? The hill? The other side of the hill? The hill again, but faster?
+yuki (playful): Remember my condition? Sometimes, I choose where we go.
+ren (surprised): Oh. Yes. The democratic appointment.
+yuki looks left
+yuki (happy): I choose... beyond those trees.
+beat
+shot: close on ren
+ren (surprised): The forest?
+ren (shy): The big, dark, mysterious forest that nobody has ever been brave enough to explore?
+yuki (playful): That's the one.
+ren (shy): Excellent choice. Very brave. I was just about to suggest it.
+yuki (playful): Your ears are shaking.
+ren (pouty): That's the wind.
+yuki (happy): There isn't any wind.
+ren (pouty): It's very local wind.
+
+
+# ================= Scene 3 - The forest =================
+scene: The Forest of Things That Look Like Other Things
+music: magical
+
+ren (happy): Explorer's rule number one: always look confident.
+reveal: forest
+narrator: And there it was. Tall trees, soft green light, and a quiet path that nobody had walked in a very long time.
+yuki (surprised): Oh... Ren, it's beautiful.
+ren (surprised): It's enormous.
+yuki (happy): It's the Forest of Things That Look Like Other Things! I knew it was real!
+ren looks around
+ren (happy): That tree looks like a giant broccoli.
+yuki (playful): That rock looks like a sleeping bear.
+ren (surprised): And that bear looks like...
+beat
+ren (shy): ...a rock. It's a rock. I knew that.
+music: adventure
+yuki (happy): Which way should we go?
+ren (happy): Leave it to me. I don't need a map. I have instincts.
+yuki (surprised): What do your instincts say?
+ren (playful): They say: that way. Probably. Mostly.
+ren walks to right
++ camera: follow ren
+yuki hops to right
+narrator: Ren's instincts were very confident. Unfortunately, they were not very good at directions.
+
+
+# ================= Scene 4 - Lost =================
+scene: The Same Broccoli Tree
+time: sunset
+music: mystery
+
+ren walks to center
+yuki walks to left
+yuki looks up
+yuki (surprised): Ren... isn't that the giant broccoli tree?
+ren (surprised): No. That's a completely different giant broccoli tree.
+yuki (playful): It has the same funny branch.
+ren (shy): Broccoli trees are very similar. It's a well-known fact.
+beat
+yuki (shy): We've passed it four times.
+ren feels sad
+ren (sad): Five. I didn't want to say five.
+narrator: The sun was sinking. The shadows were growing long. And the path home had quietly disappeared.
+time: dusk
+ren and yuki look at each other
+yuki (sad): I'm a little bit scared.
+shot: close on ren
+ren (shy): Can I tell you a secret?
+yuki (shy): Is it about the wind?
+ren (sad): There wasn't any wind. My ears were shaking because I was scared too. The whole time.
+yuki (surprised): Really?
+ren (shy): Legendary explorers can be scared. They just don't usually announce it.
+yuki walks to ren
+yuki (happy): It's less scary now that we both said it.
+ren (happy): Then that's explorer's rule number five. Being scared is less scary together.
+yuki (playful): You're making these up.
+ren (playful): All great rules were made up at some point.
+
+
+# ================= Scene 5 - The owl =================
+scene: Something Is Watching
+music: tense
+
+narrator: And that was when the something that had been watching them decided to say hello.
+ren and yuki look up
+owl flies in from right
+camera: shake
+ren (surprised): Aaah! The tree has wings!
+yuki (surprised): That's not a tree. That's an owl!
+owl lands
+owl: Hoo. You two are very loud, for explorers.
+music: calm
+ren (shy): Sorry, Mister Owl. We're a little bit lost.
+owl: A little bit? You have walked past my tree five times.
+ren (pouty): Four and a half. The last time didn't count.
+yuki (shy): Could you please help us find our way back to the meadow?
+owl: Hmm. Not many come this deep into the old forest. Why did you come?
+yuki (happy): To see what's beyond the trees.
+ren (happy): And to become legendary. Mostly the first one.
+owl: Then you came to the right forest. It is older than the meadow, older than the hills.
+owl: Some say that at its very heart, there is a light that has never gone out.
+ren (surprised): A treasure?
+owl: A secret. And secrets choose when they want to be found.
+yuki looks at ren
+yuki (surprised): Ren... do you think it could find us one day?
+owl takes off
+owl: Follow me, little ones. And try to walk quietly. The forest is listening.
+
+
+# ================= Scene 6 - Home =================
+scene: The Way Home
+place: meadow
+time: night
+music: calm
+
+ren walks to center
++ yuki walks to right
+narrator: The owl led them home along a secret path, under a sky full of stars.
+owl flies in from right
+yuki (happy): Thank you, Mister Owl!
+ren (happy): We'll be back! Probably tomorrow. Possibly in the morning. Definitely with a map.
+owl: Hoo. I'll be watching. I always am.
+owl flies away
+ren looks left
++ yuki looks left
+yuki (shy): Ren... did you see it? Deep in the trees, just before we left?
+ren (surprised): The little light? I thought I imagined it.
+yuki (shy): So did I.
+ren and yuki look at each other
+ren (happy): Explorer's rule number six: if two explorers imagine the same thing...
+yuki (happy): ...it's probably real.
+narrator: That night, two little explorers went home tired, a little bit scared, and very, very curious.
+narrator: And deep in the old forest, something began to glow.
+ren and yuki wave
+title card: SEE YOU SOON

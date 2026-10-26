@@ -1,0 +1,39 @@
+# ============================================================
+#  Ren & Yuki Short - The Staring Contest   (~30 s, vertical)
+#  Save as: shorts\short-staring-contest.txt
+#  Uses: meadow, Ren, Yuki, new moods, shout and thought bubbles.
+# ============================================================
+
+title: The Staring Contest
+type: short
+hook: Loser shares their snacks!
+thumbnail text: Staring Contest!
+mood voices: on
+place: meadow
+time: day
+music: happy
+
+ren enters from left to left
++ yuki enters from right to right
+yuki (playful): Staring contest. Right now. Loser shares their snacks.
+ren (determined): You're on!
+ren and yuki look at each other
+music: tense
+shot: close on ren
+beat
+yuki (playful): There's a butterfly behind you.
+ren (proud): Nice try. I am a professional starer.
+yuki hops
+ren (shouts, surprised): Hey! No hopping! Hopping is cheating!
+shot: extreme close on ren
+slow motion 2
+ren blinks
+camera: shake
+music: happy
+yuki (excited): You blinked!
+ren (pouty): That wasn't a blink. That was a very slow wink.
+yuki (playful): Snacks, please.
+beat
+ren (thinks silently): Oh no. I don't have any snacks.
+ren (shy): I... owe you snacks.
+yuki (laughing): Rematch tomorrow. Bring snacks!
