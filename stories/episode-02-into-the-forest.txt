@@ -12,6 +12,7 @@
 
 title: Into the Forest
 editing: auto
+mood voices: on
 
 
 # ================= Scene 1 - The hook (about 30 s) =================
