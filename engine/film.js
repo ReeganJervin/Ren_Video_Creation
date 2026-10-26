@@ -557,6 +557,12 @@
     }
     // ways of talking: a whisper's bubble is smaller, a shout's a little bigger (and its spikes reach further)
     const st = b.style, k = st === 'whisper' ? 0.86 : st === 'shout' ? 1.06 : 1, pad = (st === 'shout' ? 26 : st === 'think' ? 20 : 0) * k;
+    const ox = w * (k - 1) / 2 + pad, oy = h * (k - 1) / 2 + pad;
+    if (ox > 0 || oy > 0) {
+      // the spikes and puffs also stay inside the picture (and in vertical, inside the safe area)
+      const top = VERT ? H * 0.08 + 4 : 40, bottom = VERT ? H * 0.8 - 4 : H - 40, left = VERT ? W * 0.04 : 40, right = VERT ? W * 0.85 - 4 : W - 40;
+      bx = clamp(bx, left + w / 2 + ox, right - w / 2 - ox); by = clamp(by, top + h / 2 + oy, bottom - h / 2 - oy);
+    }
     drawn.push({ kind: 'bubble', x0: bx - w * k / 2 - pad, x1: bx + w * k / 2 + pad, y0: by - h * k / 2 - pad, y1: by + h * k / 2 + pad });
     const ang = Math.atan2(head.y - by, head.x - bx), dx = Math.cos(ang), dy = Math.sin(ang), px = -dy, py = dx;
     const ex = dx * (w / 2 - 34), ey = dy * (h / 2 - 16), tx = ex + dx * L, ty = ey + dy * L, bw = st === 'whisper' ? 16 : 24;
