@@ -27,8 +27,11 @@ yuki (pouty): Second-best?
 camera: shake
 shot: close on ren
 ren (shouts, scared): First! First-best! Tied first! Very tied!
+shot: medium on both
 yuki (laughing): Hehe. Your tail is very fluffy.
 ren feels shy
 hearts float up
+shot: close on ren
 ren (shy): ...It's the best tail in the meadow.
+shot: close on yuki
 yuki (playful): Second-best.

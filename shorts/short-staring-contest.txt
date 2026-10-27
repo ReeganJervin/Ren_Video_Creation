@@ -21,8 +21,11 @@ ren and yuki look at each other
 music: tense
 shot: close on ren
 beat
+shot: close on yuki
 yuki (playful): There's a butterfly behind you.
+shot: close on ren
 ren (proud): Nice try. I am a professional starer.
+shot: medium on both
 yuki hops
 ren (shouts, surprised): Hey! No hopping! Hopping is cheating!
 shot: extreme close on ren
@@ -30,10 +33,13 @@ slow motion 2
 ren blinks
 camera: shake
 music: happy
+shot: medium on both
 yuki (excited): You blinked!
 ren (pouty): That wasn't a blink. That was a very slow wink.
 yuki (playful): Snacks, please.
 beat
+shot: close on ren
 ren (thinks silently): Oh no. I don't have any snacks.
 ren (shy): I... owe you snacks.
+shot: medium on both
 yuki (laughing): Rematch tomorrow. Bring snacks!
