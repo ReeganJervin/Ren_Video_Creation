@@ -372,8 +372,9 @@ function loudStarts(wav, plan) {
 }
 
 // Vertical pictures (Shorts): faces, speech bubbles and captions stay out of the bottom 20 %, the right 15 % and the
-// top 8 %, where YouTube puts its buttons and titles. A character's face isn't counted only while it enters or exits
-// across the edge of the picture (it has to cross that strip); bubbles and captions always count. Returns a report row.
+// top 8 %, where YouTube puts its buttons and titles, and no face is ever cut by the edge of the picture (whole, or
+// fully out). A character's face isn't counted only while it enters or exits across the edge of the picture (it has
+// to cross that strip); bubbles and captions always count. Returns a report row.
 async function safeAreaCheck(page, plan) {
   // when each character is entering or leaving: walks that start or end off the picture
   const crossing = {};
@@ -383,10 +384,10 @@ async function safeAreaCheck(page, plan) {
     for (let t = 0.5; t < duration - 0.5; t += 0.25) {
       FILM.render(t);
       const L = StudioFilm.layout(t);
-      // a face mostly outside the picture (a neighbour at the edge of a close-up) isn't counted
-      const inside = q => (Math.min(q.x1, W) - Math.max(q.x0, 0)) / (q.x1 - q.x0) > 0.5;
-      for (const q of [...L.faces.filter(inside), ...L.boxes]) {
-        const why = q.y1 > H * 0.8 + 1 ? 'bottom 20 %' : q.x1 > W * 0.85 + 1 ? 'right 15 %' : q.y0 < H * 0.08 - 1 ? 'top 8 %' : q.x0 < -1 ? 'left edge' : null;
+      // (every face that is at least partly in the picture counts: half a face at the edge is a mistake too)
+      for (const q of [...L.faces, ...L.boxes]) {
+        const face = q.kind.startsWith('face '), edge = face && (q.x0 < -1 || q.x1 > W + 1);
+        const why = edge ? 'edge of the picture (half a face)' : q.y1 > H * 0.8 + 1 ? 'bottom 20 %' : q.x1 > W * 0.85 + 1 ? 'right 15 %' : q.y0 < H * 0.08 - 1 ? 'top 8 %' : q.x0 < -1 ? 'left edge' : null;
         if (!why) continue;
         const id = q.kind.startsWith('face ') ? q.kind.slice(5) : null;
         const list = id && (crossing[id] || []).some(([a, b]) => t >= a && t <= b) ? excused : bad;
@@ -397,7 +398,7 @@ async function safeAreaCheck(page, plan) {
   }, { duration: plan.duration, W: plan.width, H: plan.height, crossing });
   const clock = s => `${Math.floor(s / 60)}:${(s % 60).toFixed(1).padStart(4, '0')}`;
   const note = excused.length ? `; not counted, while entering or exiting across the edge: ${excused.map(b => `${clock(b.t)} ${b.kind.slice(5)}`).join(', ')}` : '';
-  return { ok: !out.length, name: 'Safe area (vertical)', detail: (out.length ? `${out.length} moment${out.length > 1 ? 's' : ''} outside it: ${out.slice(0, 6).map(b => `${clock(b.t)} ${b.kind} in the ${b.why}`).join(', ')}` : 'faces, speech bubbles and captions stay out of the bottom 20 %, the right 15 % and the top 8 %') + note };
+  return { ok: !out.length, name: 'Safe area (vertical)', detail: (out.length ? `${out.length} moment${out.length > 1 ? 's' : ''} outside it: ${out.slice(0, 6).map(b => `${clock(b.t)} ${b.kind} in the ${b.why}`).join(', ')}` : 'faces, speech bubbles and captions stay out of the bottom 20 %, the right 15 % and the top 8 %, and no face is cut by the edge') + note };
 }
 
 // Mastering: one fixed gain to about -16 LUFS, capped so true peak stays at or below -1.5 dBTP.

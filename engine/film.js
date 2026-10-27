@@ -940,8 +940,44 @@
   const near = (id, t) => Math.abs(actorBody(id, t).x - RX) < 560;   // on the (narrow) stage
   const idsOf = on => (on && on.actors ? on.actors.filter(id => CAST.includes(id)) : CAST);
   const vMix = (a, b, k) => ({ z: lerp(a.z, b.z, k), cx: lerp(a.cx, b.cx, k), cy: lerp(a.cy, b.cy, k) });
+  // No half faces in vertical: every face (characters and extras) is either whole in the picture or fully out of it
+  // (a neighbour's face cut by the edge, 15 % visible, looks like a mistake on a phone). For someone the shot isn't
+  // about, the camera slides just far enough to leave the face out, as long as that keeps the shot's own characters
+  // whole. Otherwise (or when the cut face belongs to the shot itself) the shot widens until everyone it needs is
+  // whole, inside the safe area, faces kept at the same height. Walking or flying in or out across the edge is left
+  // alone (they have to cross it).
+  function wholeFaces(cam, t, framed) {
+    const half = 90 * KS, ears = 0.7 * half, L = W * 0.04, R = W * 0.85;
+    const fx = id => { const K = actorBody(id, t); return toWorld(K, K.f * 6, REG[id].head).x; };
+    const sx = (x, c) => (x - c.cx) * c.z + W / 2;
+    const clampX = c => ({ ...c, cx: clamp(c.cx, -400 + W / 2 / c.z, 2320 - W / 2 / c.z) });
+    // the face (shown characters must have it whole), or the whole head, ears and cheek fluff (about 1.7 × the face's
+    // width; someone left out must be out with all of it, not leave an ear tip at the edge)
+    const box = (c, id, e = 0) => { const x = sx(fx(id), c); return [x - (half + e) * c.z, x + (half + e) * c.z]; };
+    const whole = (c, id) => { const [x0, x1] = box(c, id); return x0 >= L && x1 <= R; };
+    const cutBy = (c, id, e) => { const [x0, x1] = box(c, id, e); return x1 > 0 && x0 < W && (x0 < 0 || x1 > W); };
+    const crossing = id => (P.actors[id].walks || []).some(w => t >= w.t0 - 0.2 && t <= w.t1 + 0.2 && [w.x0, w.x1].some(x => x <= 420 || x >= 1500));
+    const here = CAST.filter(id => onStage(id, t) && !crossing(id)), show = framed.filter(id => here.includes(id));
+    const cut = (c, id) => cutBy(c, id, show.includes(id) ? 0 : ears);
+    // (a change can cut someone checked before, so it looks again until nothing is cut)
+    for (let pass = 0; pass <= here.length; pass++) {
+      const id = here.find(q => cut(cam, q));
+      if (!id) break;
+      if (!show.includes(id)) {
+        // slide just far enough that the whole head is out, if everyone shown stays whole and nobody else gets cut
+        const [x0, x1] = box(cam, id, ears), out = clampX({ ...cam, cx: cam.cx + (x0 < 0 ? x1 + 14 : x0 - W - 14) / cam.z });
+        if (!cut(out, id) && show.filter(m => whole(cam, m)).every(m => whole(out, m)) && !here.some(q => q !== id && !cut(cam, q) && cut(out, q))) { cam = out; continue; }
+        show.push(id);
+      }
+      // otherwise wider, until everyone shown is whole inside the safe area, faces kept at the same height
+      const xs = show.map(fx), lo = Math.min(...xs) - half, hi = Math.max(...xs) + half;
+      const z = Math.min(cam.z, (R - L) / (hi - lo)), Y = cam.cy + (0.43 * H - H / 2) / cam.z;
+      cam = clampX({ ...cam, z, cx: (lo + hi) / 2 - ((L + R) / 2 - W / 2) / z, cy: Y - (0.43 * H - H / 2) / z });
+    }
+    return cam;
+  }
   function camVertical(t) {
-    let fill = VFILL[P.framing] || 0.36, ids = CAST, push = 1, from = null, k = 1, shake = 0;
+    let fill = VFILL[P.framing] || 0.36, ids = CAST, push = 1, from = null, k = 1, shake = 0, framed = null;
     // the story's shots and camera moves: cuts choose how close and on whom; push in and pull out go closer or wider;
     // pan and follow glide to someone else; shake shakes
     for (const x of P.shots || []) {
@@ -968,9 +1004,10 @@
         const me = actorBody(v.who, t).x, o = others.map(id => actorBody(id, t).x).sort((p, q) => Math.abs(p - me) - Math.abs(q - me))[0];
         const left = o < me, place = left ? 0.32 : 0.58, room = left ? place * W : (1 - place) * W;
         const fill = Math.max(0.4, (room + 110) / Math.max(60, Math.abs(o - me) - 105) * 345 / H);
-        cam = vFrame([v.who], Math.min(fill, 0.5), t, place);
+        cam = vFrame([v.who], Math.min(fill, 0.5), t, place); framed = [v.who];
       }
     }
+    cam = wholeFaces(cam, t, framed || ids);
     if (shake) { cam.cx += Math.sin(t * 47) * 10 * shake / cam.z; cam.cy += Math.cos(t * 39) * 8 * shake / cam.z; }
     return cam;
   }
