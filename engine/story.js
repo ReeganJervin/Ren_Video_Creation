@@ -612,12 +612,37 @@
     // and the one already standing steps over (after finishing any move of its own). Returns how long it takes.
     function pairUp(a, o, s, c, gap, slow) {
       const side = Math.sign(a.x - o.x) || (a.x < c ? -1 : 1);
-      c = Math.max(MINX + gap / 2, Math.min(MAXX - gap / 2, c));
+      c = roomFor([a, o], c, gap);
       const at = o.free > s ? o.free - 0.15 : s;
       const want = c - side * gap / 2, dO = moveTo(o, at, want, false) + (at - s);
       // if the other couldn't get there (say a prop was in the way), keep the full gap from where they really are
       const dA = moveTo(a, s, Math.abs(o.x - want) > 4 ? o.x + side * gap : c + side * gap / 2, slow);
-      return Math.max(dA, dO);
+      return Math.max(dA, dO, makeWay([a, o], s));
+    }
+    // the characters on stage that aren't in a group (one hiding behind someone is meant to be close)
+    const thirds = group => cast.map(i => A[i]).filter(o => !group.includes(o) && onStage(o) && !o.hiding);
+    // Where a group of two `gap` apart can stand, centred as near `c` as it can: at least GAP from everyone else
+    // on stage, so nobody ends up on top of a third character. Only inside the stage; if there's no such room,
+    // the nearest place on the stage (makeWay then moves the third one along).
+    function roomFor(group, c, gap) {
+      let lo = MINX + gap / 2, hi = MAXX - gap / 2;
+      c = Math.max(lo, Math.min(hi, c));
+      thirds(group).forEach(o => { if (o.x < c) lo = Math.max(lo, o.x + GAP + gap / 2); else hi = Math.min(hi, o.x - GAP - gap / 2); });
+      return lo <= hi ? Math.max(lo, Math.min(hi, c)) : c;
+    }
+    // anyone else still too close to where the group ends up steps aside, away from it (after finishing any move
+    // of their own). Returns how long it takes.
+    function makeWay(group, s) {
+      let dur = 0;
+      thirds(group).forEach(o => {
+        const near = group.reduce((p, q) => (Math.abs(q.x - o.x) < Math.abs(p.x - o.x) ? q : p));
+        if (Math.abs(near.x - o.x) >= GAP) return;
+        const xs = group.map(q => q.x), dir = Math.sign(o.x - (Math.min(...xs) + Math.max(...xs)) / 2) || 1;
+        const x = Math.max(MINX, Math.min(MAXX, dir > 0 ? Math.max(...xs) + GAP : Math.min(...xs) - GAP));
+        const at = o.free > s ? o.free - 0.15 : s;
+        dur = Math.max(dur, moveTo(o, at, x, false) + (at - s));
+      });
+      return dur;
     }
     // going to a stage spot: alone it is the spot itself; next to someone they share it as a centred pair
     function goToSpot(a, s, x, slow) {
@@ -805,12 +830,13 @@
         case 'sting': sfx('sting', s); break;
         case 'enter': case 'walk': {
           if (b.type === 'enter') who.forEach(a => { a.x = OFF[b.from]; });
-          const c = spots()[b.to];
+          let c = spots()[b.to];
           if (who.length === 2) {
-            // two together share the spot as a centred pair; the one in front goes further in
+            // two together share the spot as a centred pair (clear of anyone else); the one in front goes further in
             const [p, q] = b.type === 'enter' ? who : [...who].sort((x, y) => x.x - y.x);
             const side = b.type === 'enter' ? (b.from === 'left' ? 1 : -1) : 1, k = b.type === 'enter' ? 0.25 : 0;
-            dur = Math.max(moveTo(p, s, c + side * GAP / 2, b.slow), moveTo(q, s + k, c - side * GAP / 2, b.slow) + k);
+            if (thirds(who).some(o => Math.abs(o.x - c) < GAP + GAP / 2)) c = roomFor(who, c, GAP);
+            dur = Math.max(moveTo(p, s, c + side * GAP / 2, b.slow), moveTo(q, s + k, c - side * GAP / 2, b.slow) + k, makeWay(who, s));
           } else dur = goToSpot(who[0], s, c, b.slow);
           break;
         }
