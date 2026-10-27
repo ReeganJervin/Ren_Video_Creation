@@ -54,22 +54,28 @@
     for (const w of P.actors[id].walks) {
       if (!w.hops || t <= w.t0 || t >= w.t1) continue;
       const u = (t - w.t0) / (w.t1 - w.t0), k = Math.floor(u * w.hops), v = u * w.hops - k;
-      return { h: v < 0.8 ? Math.sin(v / 0.8 * Math.PI) * 30 : 0, land: v >= 0.8 ? Math.sin((v - 0.8) / 0.2 * Math.PI) : 0 };
+      const hh = w.gait === 'run' ? 46 : w.gait === 'sneak' ? 12 : w.gait === 'crawl' ? 7 : 30;   // running: bigger hops; sneaking, crawling: tiny ones
+      return { h: v < 0.8 ? Math.sin(v / 0.8 * Math.PI) * hh : 0, land: v >= 0.8 ? Math.sin((v - 0.8) / 0.2 * Math.PI) : 0 };
     }
     return null;
   }
   const onStage = (id, t) => { const x = actorX(id, t); return x > -60 && x < 1980; };
+  // how much a character is running at t (0 to 1, easing in and out at the ends of the run)
+  function runAt(id, t) {
+    for (const w of P.actors[id].walks) if (w.gait === 'run' && t > w.t0 - 0.15 && t < w.t1 + 0.25) return win(t, w.t0 - 0.15, w.t1 + 0.25, 0.2, 0.3);
+    return 0;
+  }
   // Body: position, squash, facing, arms. Never depends on props (so props can follow it).
   function actorBody(id, t) {
     const a = P.actors[id], n = CAST.indexOf(id);
     const x = actorX(id, t), v = (actorX(id, t + 0.02) - actorX(id, t - 0.02)) / 0.04;
-    const walk = REG[id].moves === 'hop' ? 0 : clamp(Math.abs(v) / 140);
+    const walk = REG[id].moves === 'hop' ? 0 : clamp(Math.abs(v) / 140), run = runAt(id, t);
     let h = 0, sx = 1, sy = 1, hopping = false;
     for (const hp of a.hops) {
       const pre = hp.t0 - 0.14;
       if (t > pre && t < hp.t0) { const q = Math.sin((t - pre) / 0.14 * Math.PI); sy *= 1 - 0.09 * q; sx *= 1 + 0.07 * q; }
       if (t >= hp.t0 && t <= hp.t1) {
-        const u = (t - hp.t0) / (hp.t1 - hp.t0); h = Math.sin(u * Math.PI) * hp.h; hopping = true;
+        const u = (t - hp.t0) / (hp.t1 - hp.t0); h = Math.sin(u * Math.PI) * hp.h; hopping = hp.face === false ? 'keep' : true;
         const st = 0.07 * Math.abs(Math.cos(u * Math.PI)) * Math.sin(u * Math.PI) * 2; sy *= 1 + st; sx *= 1 - st * 0.7;
       }
       if (t > hp.t1 && t < hp.t1 + 0.2) { const q = Math.sin((t - hp.t1) / 0.2 * Math.PI); sy *= 1 - 0.12 * q; sx *= 1 + 0.09 * q; }
@@ -79,10 +85,12 @@
     const crouch = A_(id, 'crouch', t), air = a.keys.air ? A_(id, 'air', t) : 1;   // air: 1 flying, 0 landed
     // breathing and idle sway, each character on its own phase
     sy *= crouch * (1 + 0.012 * Math.sin(t * 2.6 + n * 1.7)); sx *= 1 + (1 - crouch) * 0.45;
-    const phase = x / 160 * Math.PI * 2, swing = Math.sin(phase) * 0.35 * walk, idle = Math.sin(t * 2 + n * 2.1) * 0.04;
+    const phase = x / 160 * Math.PI * 2, swing = Math.sin(phase) * 0.35 * walk * (1 + 0.9 * run), idle = Math.sin(t * 2 + n * 2.1) * 0.04;
+    // running: a bouncy stride (walkers; hoppers run in bigger hops instead)
+    if (run && walk) h += Math.abs(Math.sin(phase)) * 14 * run * walk;
     let wave = 0; for (const w of a.waves) wave += Math.sin((t - w.a) * 9) * 0.35 * win(t, w.a, w.b, 0.2, 0.3);
     return {
-      id, t, x, y: placeAt(t).ground(x) - (REG[id].fly || 0) * air, air, h, sx, sy, s: KS, f: A_(id, 'facing', t), walk, phase, hopping,
+      id, t, x, y: placeAt(t).ground(x) - (REG[id].fly || 0) * air, air, h, sx, sy, s: KS, f: A_(id, 'facing', t), walk, phase, hopping, run,
       armL: A_(id, 'armL', t) + swing + idle, armR: A_(id, 'armR', t) - swing + idle + wave,
       ...(a.keys.away ? { away: A_(id, 'away', t) } : {}),
     };
@@ -137,7 +145,12 @@
     K.lift = mix('lift'); K.lean = mix('lean'); K.tears = mix('tears'); K.firm = mix('firm');
     K.pawPose = m.cur.pawPose || m.prev.pawPose;
     K.pawW = lerp(m.prev.pawPose === K.pawPose ? m.prev.pawW : 0, m.cur.pawPose === K.pawPose ? m.cur.pawW : 0, m.w);
-    if (K.hopping) K.eyes = 'happy';
+    // a paw pose from the story's actions ("covers its eyes", "yawns"): it wins over the mood's own while it lasts
+    if (a.paws) for (const pw of a.paws) {
+      const w = win(t, pw.a, pw.b, 0.25, 0.3); if (w <= 0) continue;
+      K.pawW = K.pawPose === pw.pose ? Math.max(K.pawW, w) : w; K.pawPose = pw.pose;
+    }
+    if (K.hopping === true) K.eyes = 'happy';   // (a startled jump keeps its scared face)
     K.talk = 0;
     for (const v of P.voice) {
       if (v.who !== id || t < v.t || t >= v.t + v.len) continue;
@@ -151,7 +164,7 @@
     a.twitches.forEach((tt, i) => { const u = (t - tt) / 0.32; if (u > 0 && u < 1) { tw = Math.sin(u * Math.PI) * 0.32; side = i % 2 ? 1 : -1; } });
     const base = mix('droop') - 0.12 * K.wide;
     K.earL = base + (side < 0 ? tw : 0); K.earR = base + (side > 0 ? tw : 0);
-    const wag = Math.max(mix('wag'), K.hopping ? 1 : 0);
+    const wag = Math.max(mix('wag'), K.hopping === true ? 1 : 0);
     K.tail = Math.sin(t * 2.3) * 0.15 + K.walk * Math.sin(K.phase) * 0.18 + wag * Math.sin(t * 9) * 0.2;
     // excited bounces a little, laughing shakes gently, scared trembles
     const bounce = mix('bounce'), shake = mix('shake'), tremble = mix('tremble');
@@ -161,7 +174,10 @@
     // posed joints from the story's actions (sit, lean, point, count...): the "rig.<joint>" channels, then "sit" and "nod"
     for (const k in a.keys) if (k.startsWith('rig.')) { const v = A_(id, k, t); if (v) (K.rig || (K.rig = {}))[k.slice(4)] = v; }
     if (a.keys.sit) K.sit = A_(id, 'sit', t);
+    // running leans forward, into the run
+    if (K.run) (K.rig || (K.rig = {})).spine = (K.rig.spine || 0) + (Math.sign(K.f) || 1) * 0.14 * K.run;
     if (a.keys.nod) K.nod = A_(id, 'nod', t);
+    if (a.keys.roll) K.roll = A_(id, 'roll', t);   // lying down: the whole body tipped over (radians)
     springPose(id, t, K);
     // a clean turn: as the drawing switches pose, a tiny squash; and one quick blink per turn (see turnBlink)
     const sw = turnSwitch(id, t);
@@ -169,6 +185,12 @@
     if (turnBlink(id, t)) K.blink = 1;
     return K;
   }
+
+  // who is drawn first (furthest back): the cast in order, except that anyone hiding behind someone goes first
+  const drawOrder = t => {
+    const hid = id => (P.actors[id].behind || []).some(w => t >= w.a && t < w.b);
+    return CAST.some(hid) ? [...CAST.filter(hid), ...CAST.filter(id => !hid(id))] : CAST;
+  };
 
   // ---------- clean turns ----------
   // The drawings turn through solid poses (front, three-quarter, side, and back when turning away), switching where
@@ -1041,7 +1063,7 @@
     const Ks = {}; CAST.forEach(id => { Ks[id] = actorState(id, t); });
     const k = layer.getContext('2d');
     k.setTransform(1, 0, 0, 1, 0, 0); k.globalCompositeOperation = 'source-over'; k.clearRect(0, 0, W, H);
-    if (cam.ots) drawOts(k, cam, Ks); else { applyCam(k, cam, 1); CAST.forEach(id => DRAW[id](k, Ks[id])); }
+    if (cam.ots) drawOts(k, cam, Ks); else { applyCam(k, cam, 1); drawOrder(t).forEach(id => DRAW[id](k, Ks[id])); }
     k.setTransform(1, 0, 0, 1, 0, 0); k.globalCompositeOperation = 'source-atop';
     k.globalAlpha = tau < 1 ? 0.06 * tau : 0.06 + 0.08 * (tau - 1); k.fillStyle = tod(tau, PN.tint); k.fillRect(0, 0, W, H);
     k.globalAlpha = 1; k.globalCompositeOperation = 'source-over';

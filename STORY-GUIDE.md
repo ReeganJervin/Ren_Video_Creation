@@ -123,6 +123,22 @@ The amounts are in `config\voices.json` (`_moods` for moods, `_styles` for ways 
 | `<name> stretches its paws wide` | Both arms out wide for a moment |
 | `<name> nods` | Two nods. `<name> shakes its head` shakes it no |
 | `<name> points at <other name>` | Points at someone, `you`, `the star` or a prop (`points at the lantern`); also `points up`, `points left`, `points right` |
+| `<name> runs to left` | Runs there, leaning forward and bouncing (Yuki: big quick hops). Works with every place `walks to` does; `ren runs off to the right` runs off screen |
+| `<name> sneaks to center` | Creeps there on tiptoe, crouched low with paws up in front (also `tiptoes to`, `creeps to`) |
+| `<name> crawls to right` | Down low and bent over, paws reaching forward, slowly |
+| `<name> jumps` | A big jump, paws in the air (also `jumps up`, `leaps`) |
+| `<name> jumps in fright` | A startled little jump: scared face, paws flung up, leaning back (also `is startled`, `gets a fright`) |
+| `<name> trips` | Stumbles forward, arms windmilling, and catches itself (also `stumbles`) |
+| `<name> falls down` | Tips back and plops down on its bottom with a soft bump (a comic fall, never hurt). It stays sitting until `<name> gets up` |
+| `<name> lies down` | Lies down on its side, head toward the middle of the stage, until `<name> gets up` (add `ren feels sleepy` for closed eyes) |
+| `<name> hides behind <other name>` | Sneaks to just behind the other and crouches there (drawn behind them) until it moves again. Works best for Yuki behind Ren, who is bigger |
+| `<name> peeks out` | Leans out sideways from where it hides and looks at you, then tucks back in |
+| `<name> shrugs` | "I don't know": paws out to the sides, shoulders up, head tipped |
+| `<name> covers its eyes` | Both paws over the eyes for about two seconds (also `covers his eyes`, `covers her eyes`) |
+| `<name> stretches` | A big happy stretch, paws high, eyes closed |
+| `<name> yawns` | A sleepy yawn with a paw over the mouth |
+| `<name> sighs` | A breath in, then a long breath out: shoulders and head drop, a slow blink |
+| `<name> dances` | A happy little dance: swaying, paws up in turn, a bounce on each beat (also `does a little dance`) |
 
 All of these blend smoothly into whatever comes next. Turning (to walk, to talk, to look, to turn away) goes through solid poses (front, three-quarter, side, back) with a tiny squash at each switch and one quick blink per turn (small turns toward someone who is talking don't blink), never a see-through mix of two.
 | `<name> hugs <other name>` | Goes over and hugs them: both turn to each other, look happy, and little hearts float up between them. Then they step apart again, still facing each other, and both stay happy (until a later line gives them another mood) |

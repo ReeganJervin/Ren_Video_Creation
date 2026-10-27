@@ -478,7 +478,8 @@
     c.save(); pivot(c, K.f * 6, -112, J(K, 'neck')); drawFrontHead(c, K); c.restore();
     bow(c, K.f * 14, -98, 1.25);
     const dx = K.f * 6;
-    const tgt = K.pawPose === 'cheeks' ? [headPt(dx, -22, 48), headPt(dx, 22, 48)] : K.pawPose === 'yawn' ? [null, headPt(dx, 8 + K.f * 22, 36)] : K.pawPose === 'chin' ? [null, headPt(dx, 14 + K.f * 22, 58)] : [null, null];
+    const tgt = K.pawPose === 'cheeks' ? [headPt(dx, -22, 48), headPt(dx, 22, 48)] : K.pawPose === 'yawn' ? [null, headPt(dx, 8 + K.f * 22, 36)] : K.pawPose === 'chin' ? [null, headPt(dx, 14 + K.f * 22, 58)]
+      : K.pawPose === 'eyes' ? [headPt(dx, -36 + K.f * 20, 8), headPt(dx, 36 + K.f * 20, 8)] : [null, null];
     [-1, 1].forEach((i, k) => { const S = [i * 48 + K.f * 4, -88]; armFrom(c, S, [i * 36 + K.f * 4, -86], toward(pawFrom(S, i < 0 ? K.armL : K.armR, i, 34 + 0.6 * J(K, i < 0 ? 'reachL' : 'reachR'), 1.1, J(K, i < 0 ? 'elbowL' : 'elbowR')), tgt[k], K), i); });
   }
 
@@ -540,7 +541,8 @@
     collar(c, 20, 0.4);
     c.save(); pivot(c, 6, -112, J(K, 'neck')); drawThreeHead(c, K); c.restore();
     bow(c, 20, -98, 1.15);
-    const tgt = K.pawPose === 'cheeks' ? [headPt(6, -14, 48), headPt(6, 66, 44)] : K.pawPose === 'yawn' ? [null, headPt(6, 46, 36)] : K.pawPose === 'chin' ? [null, headPt(6, 50, 54)] : [null, null];
+    const tgt = K.pawPose === 'cheeks' ? [headPt(6, -14, 48), headPt(6, 66, 44)] : K.pawPose === 'yawn' ? [null, headPt(6, 46, 36)] : K.pawPose === 'chin' ? [null, headPt(6, 50, 54)]
+      : K.pawPose === 'eyes' ? [headPt(6, 2, 8), headPt(6, 66, 8)] : [null, null];
     const sh = [[-46, -88], [54, -88]], inner = [[-36, -86], [44, -86]];
     [-1, 1].forEach((i, k) => armFrom(c, sh[k], inner[k], toward(pawFrom(sh[k], i < 0 ? K.armL : K.armR, i, (k ? 30 : 34) + 0.6 * J(K, i < 0 ? 'reachL' : 'reachR'), 1.1, J(K, i < 0 ? 'elbowL' : 'elbowR')), tgt[k], K), i));
   }
@@ -658,7 +660,7 @@
     const S = [22, -92], ang = K.armR, a = ang < 0 ? 0.7 - ang * 0.35 : ang + 0.15, len = 44 + 0.6 * J(K, 'reachR'), el = J(K, 'elbowR');
     const E = el ? [S[0] + len / 2 * Math.sin(a), S[1] + len / 2 * Math.cos(a)] : null;
     const P = el ? [E[0] + len / 2 * Math.sin(a + el), E[1] + len / 2 * Math.cos(a + el)] : [S[0] + len * Math.sin(a), S[1] + len * Math.cos(a)];
-    const tgt = K.pawPose === 'cheeks' ? headPt(4, 56, 38) : K.pawPose === 'yawn' ? headPt(4, 74, 38) : K.pawPose === 'chin' ? headPt(4, 50, 52) : null;
+    const tgt = K.pawPose === 'cheeks' ? headPt(4, 56, 38) : K.pawPose === 'yawn' ? headPt(4, 74, 38) : K.pawPose === 'chin' ? headPt(4, 50, 52) : K.pawPose === 'eyes' ? headPt(4, 44, 2) : null;
     bow(c, 44, -100, 0.95, true, 0.25);
     sideArm(c, [S[0] - 6, S[1] + 2], toward(P, tgt, K), tgt ? null : E);
   }
@@ -714,8 +716,10 @@
     c.lineJoin = 'round'; c.lineCap = 'round';
     // contact shadow
     c.save(); c.translate(0, K.h / (K.s * K.sy));
-    c.fillStyle = 'rgba(30,40,20,0.22)'; c.beginPath(); c.ellipse(0, 0, 66 * (1 - K.h / 260), 11 * (1 - K.h / 260), 0, 0, Math.PI * 2); c.fill();
+    c.fillStyle = 'rgba(30,40,20,0.22)'; c.beginPath(); c.ellipse(0, 0, 66 * (1 - K.h / 260) * (1 + 1.3 * Math.abs(Math.sin(K.roll || 0))), 11 * (1 - K.h / 260), 0, 0, Math.PI * 2); c.fill();
     c.restore();
+    // lying down (K.roll, radians): the whole body tips over about a point just above the feet, onto the ground
+    if (K.roll) pivot(c, 0, -86, K.roll);   // (high enough that the big head rests on the ground, not in it)
     // scared leans away from where Yuki is facing; proud stands a little taller
     if (K.lean) c.rotate(-(K.f < 0 ? -1 : 1) * 0.07 * K.lean);
     if (K.lift) c.scale(1 + 0.015 * K.lift, 1 + 0.025 * K.lift);

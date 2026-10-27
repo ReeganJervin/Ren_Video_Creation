@@ -560,20 +560,26 @@
     c.restore();
   }
 
-  function drawArm(c, i, ang, K, chin) {
+  // where the paws go for a paw pose, in body coordinates: the eyes (both paws, "covers its eyes") and the mouth (the
+  // near paw, "yawns"); the head's own point (hx, hy) is moved like the head is (lift, nod)
+  const headAt = (K, hx, hy) => [hx, -210 - 6 * (K.lift || 0) + (K.nod || 0) + hy];
+  function drawArm(c, i, ang, K, chin, face) {
     // resting arms hang along the sides with the paws by the hips; folded in (holding) they are shorter
     const S = [i * 44 + K.f * 4, -122];
     let len = 64 - 16 * clamp(-ang / 1.2) + J(K, i < 0 ? 'reachL' : 'reachR'), rot = i < 0 ? ang : -ang;   // (reach: a pointing arm stretches a little)
-    ({ rot, len } = toChin(S, rot, len, K, i > 0 && chin));
+    ({ rot, len } = toChin(S, rot, len, K, i > 0 && chin, face));
     c.save();
     c.translate(...S);
     c.rotate(rot);
     armShape(c, len, i < 0 ? -J(K, 'elbowL') : J(K, 'elbowR'));
     c.restore();
   }
-  // thinking: the near paw goes up to the chin (point T, in body coordinates) from shoulder S
-  function toChin(S, rot, len, K, T) {
-    const w = K.pawPose === 'chin' && T ? clamp(K.pawW || 0) : 0;
+  // thinking: the near paw goes up to the chin (point T, in body coordinates) from shoulder S; a paw pose for the face
+  // ({ eyes, yawn }: points per arm, or none) sends it there instead
+  function toChin(S, rot, len, K, T, face) {
+    if (face && face[K.pawPose]) T = face[K.pawPose];
+    else if (K.pawPose !== 'chin') T = null;
+    const w = T ? clamp(K.pawW || 0) : 0;
     if (w <= 0) return { rot, len };
     const dx = T[0] - S[0], dy = T[1] - S[1];
     return { rot: rot + (Math.atan2(-dx, dy) - rot) * w, len: len + (Math.hypot(dx, dy) + 4 - len) * w };
@@ -601,8 +607,9 @@
     drawBody(c, K);
     drawScarf(c, K);
     c.save(); pivot(c, K.f * 6, -142, J(K, 'neck')); drawFrontHead(c, K); c.restore();
-    drawArm(c, -1, K.armL, K);
-    drawArm(c, 1, K.armR, K, [8 + K.f * 20, -136 - 6 * (K.lift || 0)]);
+    const ex = 37 + K.f * 22 + K.f * 6, mx = K.f * 32;
+    drawArm(c, -1, K.armL, K, null, { eyes: headAt(K, -ex + 6, 4) });
+    drawArm(c, 1, K.armR, K, [8 + K.f * 20, -136 - 6 * (K.lift || 0)], { eyes: headAt(K, ex - 6, 4), yawn: headAt(K, mx + 4, 44) });
   }
 
   // ---------- THREE-QUARTER view (0.3 <= |f| < 0.7), drawn facing right ----------
@@ -664,8 +671,8 @@
     drawBody(c, B);
     drawScarf(c, B, K.flipped);   // the knot is on Ren's right side: near when he faces right
     c.save(); pivot(c, 6, -142, J(K, 'neck')); drawThreeHead(c, K); c.restore();
-    drawArm(c, -1, K.armL, K);
-    drawArm(c, 1, K.armR, K, [58, -146 - 6 * (K.lift || 0)]);
+    drawArm(c, -1, K.armL, K, null, { eyes: headAt(K, 16, 4) });
+    drawArm(c, 1, K.armR, K, [58, -146 - 6 * (K.lift || 0)], { eyes: headAt(K, 74, 4), yawn: headAt(K, 60, 36) });
   }
 
   // ---------- SIDE profile (|f| >= 0.7), drawn facing right ----------
@@ -785,7 +792,7 @@
   // short bent arm hanging at the front with a dark paw at belly height
   function drawSideArm(c, ang, far, K) {
     const a = ang < 0 ? 0.7 - ang * 0.35 : ang, S = [far ? -12 : 6, -120];
-    const { rot, len } = toChin(S, -a - (far ? 0 : 0.12), 58 - 14 * clamp(-ang / 1.2) + J(K, far ? 'reachL' : 'reachR'), K, !far && [64, -160 - 6 * (K.lift || 0)]);
+    const { rot, len } = toChin(S, -a - (far ? 0 : 0.12), 58 - 14 * clamp(-ang / 1.2) + J(K, far ? 'reachL' : 'reachR'), K, !far && [64, -160 - 6 * (K.lift || 0)], !far && { eyes: headAt(K, 52, 0), yawn: headAt(K, 92, 22) });
     c.save();
     c.translate(...S);
     c.rotate(rot);
@@ -915,8 +922,10 @@
     c.lineJoin = 'round'; c.lineCap = 'round';
     // contact shadow
     c.save(); c.translate(0, K.h / (K.s * K.sy));
-    c.fillStyle = 'rgba(30,40,20,0.22)'; c.beginPath(); c.ellipse(0, 0, 70 * (1 - K.h / 260), 12 * (1 - K.h / 260), 0, 0, Math.PI * 2); c.fill();
+    c.fillStyle = 'rgba(30,40,20,0.22)'; c.beginPath(); c.ellipse(0, 0, 70 * (1 - K.h / 260) * (1 + 1.3 * Math.abs(Math.sin(K.roll || 0))), 12 * (1 - K.h / 260), 0, 0, Math.PI * 2); c.fill();
     c.restore();
+    // lying down (K.roll, radians): the whole body tips over about a point just above the feet, onto the ground
+    if (K.roll) pivot(c, 0, -92, K.roll);   // (high enough that the big head rests on the ground, not in it)
     // scared leans away from where Ren is facing; proud stands a little taller (chest out)
     if (K.lean) c.rotate(-(K.f < 0 ? -1 : 1) * 0.07 * K.lean);
     if (K.lift) c.scale(1 + 0.015 * K.lift, 1 + 0.025 * K.lift);

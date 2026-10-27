@@ -65,6 +65,15 @@
   // Verbs take an optional "s" so "ren and yuki hop" and "yuki hops" both work.
   function action(a, group) {
     let k;
+    // running and sneaking are going somewhere at another pace: "runs to ...", "sneaks to ..." (also "tiptoes",
+    // "creeps"); the pace rides on the move's "slow" field ('run' or 'sneak'), so every kind of move can have it
+    const gait = /^runs?\b/.test(a) ? 'run' : /^(?:sneaks?|tiptoes?|creeps?)\b/.test(a) ? 'sneak' : /^crawls?\b/.test(a) ? 'crawl' : null;
+    if (gait && / to /.test(a)) {
+      const b = action(a.replace(/^\w+/, 'walks').replace(/ slowly$/, ''), group);
+      if (b && 'slow' in b) b.slow = gait;
+      return b;
+    }
+    if (gait === 'run' && (k = a.match(/^runs? (?:off|away)(?: to)?(?: the)? (left|right)$/))) return { type: 'exit', to: k[1], slow: 'run' };
     if ((k = a.match(/^enters?(?: from (left|right))?(?: to (?:the )?(left|center|centre|right))?$/))) return { type: 'enter', from: k[1] || 'left', to: spot(k[2] || 'center') };
     if ((k = a.match(/^(?:walks?|moves?|goes|go|hops?|runs?) to (?:the )?(left|center|centre|right)( slowly)?$/))) return { type: 'walk', to: spot(k[1]), slow: !!k[2] };
     if ((k = a.match(new RegExp(`^(?:walks?|moves?|goes|go|hops?|runs?) (?:over )?to (${NAME})( slowly)?$`)))) return { type: 'walkTo', target: k[1], slow: !!k[2] };
@@ -80,6 +89,20 @@
     if (/^turns? to (you|the viewer|the camera)$/.test(a)) return { type: 'look', at: 'you' };
     if (/^turns? (away|around|its back|his back|her back)$/.test(a)) return { type: 'away' };
     // the movement library (F3)
+    if (/^(?:jumps?(?: up| high)?|leaps?)$/.test(a)) return { type: 'jump' };
+    if (/^(?:jumps? (?:in|with|from) (?:fright|surprise|shock)|(?:is )?startled|gets? a fright)$/.test(a)) return { type: 'fright' };
+    if (/^(?:trips?(?: over)?|stumbles?)$/.test(a)) return { type: 'trip' };
+    if (/^(?:falls?(?: down| over)?|tumbles?(?: down| over)?)$/.test(a)) return { type: 'fall' };
+    if (/^gets? (?:back )?up$/.test(a)) return { type: 'stand' };
+    if (/^(?:lies|lie|lays?|lying) down$/.test(a)) return { type: 'lie' };
+    if ((k = a.match(new RegExp(`^hides? behind (${NAME})$`)))) return { type: 'hide', target: k[1] };
+    if (/^peeks? out$/.test(a)) return { type: 'peek' };
+    if (/^shrugs?$/.test(a)) return { type: 'shrug' };
+    if (/^covers? (?:its |his |her |their )?eyes$/.test(a)) return { type: 'coverEyes' };
+    if (/^stretch(?:es)?(?: out)?$/.test(a)) return { type: 'stretch' };
+    if (/^yawns?$/.test(a)) return { type: 'yawn' };
+    if (/^sighs?$/.test(a)) return { type: 'sigh' };
+    if (/^(?:dances?|does a (?:little |happy )?dance)$/.test(a)) return { type: 'dance' };
     if (/^sits?( down)?$/.test(a)) return { type: 'sit' };
     if (/^stands?( up)?$/.test(a)) return { type: 'stand' };
     if (/^crouch(es)?( down)?$/.test(a)) return { type: 'crouch' };
@@ -573,6 +596,8 @@
       if (k === 'facing' && a.away && t >= a.away) { a.ch.away.push({ t, v: 0, dur }); a.away = 0; }
       a.ch[k].push({ t, v, dur });
     };
+    // which way a character faces now (+1 right, -1 left); facing the front, toward the middle of the stage
+    const facingDir = a => { const f = a.ch.facing, v = f.length ? f[f.length - 1].v : 0; return Math.sign(v) || (a.x >= 960 ? -1 : 1); };
     const closeLook = (a, s) => { if (a.open) { a.open.b = s; a.open = null; } };
     // where something goes "in the sky": beside and above (vertical: above the group, inside the safe area)
     const skyFor = x => (VERT ? { x: Math.max(840, Math.min(1080, x)) + 40, y: 400 } : { x: Math.max(260, Math.min(1660, x + (x > 1300 ? -460 : 460))), y: 160 });
@@ -609,23 +634,46 @@
       for (const p of Object.values(props)) if (p.size !== 'big' && !p.sky && Math.abs(x - p.x) < BESIDE - 1) x = p.x + (Math.sign(from - p.x) || -1) * BESIDE;
       return x;
     }
+    // slow: true for a careful walk, or the pace 'run' / 'sneak' (running: about twice as fast, leaning forward and
+    // bouncing; sneaking: crouched low on tiptoe, slow, paws up in front, little hops for hoppers)
     function moveTo(a, s, x1, slow) {
       x1 = clearOfProps(x1, a.x);
       const dist = Math.abs(x1 - a.x);
       if (dist < 4) return 0;
-      const dir = x1 > a.x ? 1 : -1;
+      const dir = x1 > a.x ? 1 : -1, gait = slow === 'run' || slow === 'sneak' || slow === 'crawl' ? slow : null;
+      if (a.hiding) { a.hiding.rec.b = s + 0.3; a.hiding = null; }   // moving away ends hiding behind someone
+      if (gait) slow = false;
       let dur;
       set(a, 'facing', s, dir * 0.85, 0.25);
       if (a.def.moves === 'hop') {
-        // small repeated hops, each with a light boing
-        const n = Math.max(2, Math.round(dist / 90)), hd = (slow ? 0.42 : 0.33) / (SHORT ? 1.15 : 1);
+        // small repeated hops, each with a light boing (running: bigger, quicker hops; sneaking: tiny careful ones)
+        const n = Math.max(2, Math.round(dist / (gait === 'run' ? 130 : gait === 'sneak' || gait === 'crawl' ? 70 : 90)));
+        const hd = (gait === 'run' ? 0.25 : gait === 'crawl' ? 0.6 : gait === 'sneak' ? 0.5 : slow ? 0.42 : 0.33) / (SHORT ? 1.15 : 1);
         dur = n * hd;
-        a.out.walks.push({ t0: s + 0.15, t1: s + 0.15 + dur, x0: a.x, x1, hops: n });
-        for (let k = 0; k < n; k++) sfx('hopUp', s + 0.15 + k * hd, { gain: 0.55 });
+        a.out.walks.push({ t0: s + 0.15, t1: s + 0.15 + dur, x0: a.x, x1, hops: n, ...(gait ? { gait } : {}) });
+        for (let k = 0; k < n; k++) sfx('hopUp', s + 0.15 + k * hd, { gain: gait === 'sneak' || gait === 'crawl' ? 0.25 : 0.55 });
       } else {
-        dur = Math.max(SHORT ? 0.9 : 1.2, dist / ((slow ? a.def.speed * 0.6 : a.def.speed) * STRIDE));
-        a.out.walks.push({ t0: s + 0.15, t1: s + 0.15 + dur, x0: a.x, x1 });
-        sfx('rustle', s + 0.15, { dur, gain: 0.45 });
+        const speed = a.def.speed * (gait === 'run' ? 2.1 : gait === 'sneak' ? 0.45 : gait === 'crawl' ? 0.32 : slow ? 0.6 : 1);
+        dur = Math.max(gait === 'run' ? 0.6 : SHORT ? 0.9 : 1.2, dist / (speed * STRIDE));
+        a.out.walks.push({ t0: s + 0.15, t1: s + 0.15 + dur, x0: a.x, x1, ...(gait ? { gait } : {}) });
+        sfx('rustle', s + 0.15, { dur, gain: gait === 'run' ? 0.6 : gait === 'sneak' || gait === 'crawl' ? 0.2 : 0.45 });
+      }
+      if (gait === 'sneak') {
+        // low and careful: crouched, leaning forward, paws up in front, eyes ahead; upright again at the end
+        a.ch.crouch.push({ t: s, v: 0.88, dur: 0.3 }, { t: s + 0.15 + dur, v: 1, dur: 0.35 });
+        pose(a, 'rig.spine', s, dir * 0.12, 0.3); pose(a, 'rig.spine', s + 0.15 + dur, 0, 0.35);
+        set(a, 'armL', s, 0.75, 0.3); set(a, 'armR', s, 0.75, 0.3);
+        set(a, 'armL', s + 0.15 + dur, ARM_R, 0.35); set(a, 'armR', s + 0.15 + dur, holder === a.id ? -1.2 : ARM_R, 0.35);
+      }
+      if (gait === 'crawl') {
+        // down low, bent right over with the paws reaching forward and the head up, slowly; upright at the end
+        a.ch.crouch.push({ t: s, v: 0.8, dur: 0.35 }, { t: s + 0.15 + dur, v: 1, dur: 0.4 });
+        pose(a, 'rig.spine', s, dir * 0.36, 0.35); pose(a, 'rig.neck', s, -dir * 0.3, 0.35);
+        pose(a, 'rig.spine', s + 0.15 + dur, 0, 0.4); pose(a, 'rig.neck', s + 0.15 + dur, 0, 0.4);
+        set(a, 'armL', s, 0.55, 0.3); set(a, 'armR', s, 0.55, 0.3);
+        const steps = Math.max(2, Math.round(dur / 0.45));
+        for (let k = 1; k < steps; k++) { set(a, 'armL', s + 0.15 + k * dur / steps, k % 2 ? 0.8 : 0.45, 0.2); set(a, 'armR', s + 0.15 + k * dur / steps, k % 2 ? 0.45 : 0.8, 0.2); }
+        set(a, 'armL', s + 0.15 + dur, ARM_R, 0.4); set(a, 'armR', s + 0.15 + dur, holder === a.id ? -1.2 : ARM_R, 0.4);
       }
       set(a, 'facing', s + 0.15 + dur, 0, 0.45);
       set(a, 'lookX', s, dir * 0.6, 0.3); set(a, 'lookY', s, 0, 0.3);
@@ -773,7 +821,7 @@
           lookAtActor(a, o, s + Math.max(0.2, dur - 0.4), false);
           break;
         }
-        case 'exit': who.forEach(a => { if (a.ch.air) a.ch.air.push({ t: s, v: 1, dur: 0.6 }); dur = Math.max(dur, moveTo(a, s, OFF[b.to], false)); }); break;
+        case 'exit': who.forEach(a => { if (a.ch.air) a.ch.air.push({ t: s, v: 1, dur: 0.6 }); dur = Math.max(dur, moveTo(a, s, OFF[b.to], b.slow || false)); }); break;
         // a flying extra lands where it is (wings folded) or takes off again; only made when a story uses it
         case 'land': who.forEach(a => {
           if (!a.def.fly) { errors.push(`Line ${b.line}: only things that fly can ${b.down ? 'land' : 'take off'}.`); return; }
@@ -814,7 +862,10 @@
         // ---- the movement library (F3): poses on joint channels ("rig.<joint>"), "sit" and "nod", which only stories
         // that use them have; every pose eases in and out (about 0.3 s), so actions blend into each other ----
         case 'sit': who.forEach(a => { pose(a, 'sit', s, 1, 0.55); a.ch.crouch.push({ t: s, v: 1, dur: 0.3 }); }); dur = 0.8; break;
-        case 'stand': who.forEach(a => { pose(a, 'sit', s, 0, 0.5); pose(a, 'rig.spine', s, 0, 0.4); a.ch.crouch.push({ t: s, v: 1, dur: 0.4 }); }); dur = 0.7; break;
+        case 'stand': who.forEach(a => {
+          pose(a, 'sit', s, 0, 0.5); pose(a, 'rig.spine', s, 0, 0.4); a.ch.crouch.push({ t: s, v: 1, dur: 0.4 });
+          if (a.ch.roll) pose(a, 'roll', s, 0, 0.55);   // up from lying down too
+        }); dur = who.some(a => a.ch.roll) ? 0.9 : 0.7; break;
         case 'crouch': who.forEach(a => { pose(a, 'sit', s, 0.55, 0.4); a.ch.crouch.push({ t: s, v: 0.94, dur: 0.4 }); }); dur = 0.6; break;
         case 'lean': who.forEach(a => {
           // toward the other character (or forward), held for a moment, then upright again
@@ -884,6 +935,129 @@
           set(a, 'armR', s, Math.min(2.6, Math.max(0.6, ang)), 0.35); pose(a, 'rig.elbowR', s, 0, 0.3); pose(a, 'rig.reachR', s, b.at === 'up' ? 24 : 14, 0.35); pose(a, 'rig.reachR', s + 1.9, 0, 0.4);
           set(a, 'armR', s + 1.9, holder === a.id ? -1.2 : ARM_R, 0.4); set(a, 'lookX', s + 1.9, 0, 0.4); set(a, 'lookY', s + 1.9, 0, 0.4);
         }); dur = 0.8; break;
+        // ---- the movement library, part 2: jumps, frights, trips and falls (a comic fall: never hurt) ----
+        case 'jump': who.forEach(a => {
+          // a big jump: crouch, up high with the paws in the air, a squashy landing
+          const t0 = s + 0.18, t1 = t0 + 0.75;
+          a.out.hops.push({ t0, t1, h: a.def.hop.h * 2.1 });
+          if (a.def.hop.sound === 'light') { sfx('hopUp', t0); sfx('hopLand', t1); } else { sfx('boingUp', t0); sfx('boingLand', t1); }
+          set(a, 'armL', t0, 2.2, 0.2); set(a, 'armR', t0, 2.2, 0.2);
+          set(a, 'armL', t1, ARM_R, 0.3); set(a, 'armR', t1, holder === a.id ? -1.2 : ARM_R, 0.3);
+        }); dur = 1.25; break;
+        case 'fright': who.forEach(a => {
+          // a startled little jump: scared face (ears back, wide eyes), paws flung up, leaning back; then it settles
+          const dir = facingDir(a), t0 = s + 0.05, t1 = t0 + 0.4;
+          a.out.hops.push({ t0, t1, h: a.def.hop.h * 0.9, face: false });
+          a.out.exprs.push({ a: s, b: s + 1.7, mood: 'scared' });
+          sfx(a.def.hop.sound === 'light' ? 'hopUp' : 'boingUp', t0); sfx('softLand', t1);
+          set(a, 'armL', s, 1.9, 0.12); set(a, 'armR', s, 1.9, 0.12);
+          pose(a, 'rig.spine', s, -dir * 0.1, 0.15); pose(a, 'rig.spine', s + 1.1, 0, 0.4);
+          set(a, 'armL', s + 1.0, ARM_R, 0.4); set(a, 'armR', s + 1.0, holder === a.id ? -1.2 : ARM_R, 0.4);
+        }); dur = 1.4; break;
+        case 'trip': who.forEach(a => {
+          // a stumble forward, arms windmilling, a surprised face; caught just in time, then upright again
+          const dir = facingDir(a);
+          a.out.exprs.push({ a: s, b: s + 1.1, mood: 'surprised' });
+          sfx('rustle', s, { dur: 0.35, gain: 0.6 });
+          pose(a, 'rig.spine', s, dir * 0.36, 0.18); pose(a, 'rig.neck', s, dir * 0.12, 0.18);
+          set(a, 'armL', s, 1.5, 0.15); set(a, 'armR', s, 1.5, 0.15);
+          set(a, 'armL', s + 0.3, 0.6, 0.15); set(a, 'armR', s + 0.3, 1.9, 0.15);
+          set(a, 'armL', s + 0.5, 1.7, 0.15); set(a, 'armR', s + 0.5, 0.7, 0.15);
+          pose(a, 'rig.spine', s + 0.4, -dir * 0.07, 0.25); pose(a, 'rig.neck', s + 0.45, 0, 0.25);
+          pose(a, 'rig.spine', s + 0.7, 0, 0.3);
+          set(a, 'armL', s + 0.75, ARM_R, 0.3); set(a, 'armR', s + 0.75, holder === a.id ? -1.2 : ARM_R, 0.3);
+        }); dur = 1.15; break;
+        case 'fall': who.forEach(a => {
+          // tips back, paws up, and plops down on the bottom with a soft bump (it stays sitting until "gets up")
+          const dir = facingDir(a);
+          a.out.exprs.push({ a: s, b: s + 1.5, mood: 'surprised' });
+          set(a, 'facing', s, 0, 0.3);
+          pose(a, 'rig.spine', s, -dir * 0.2, 0.2);
+          set(a, 'armL', s, 2.1, 0.18); set(a, 'armR', s, 2.1, 0.18);
+          pose(a, 'sit', s + 0.15, 1, 0.22);
+          a.ch.crouch.push({ t: s + 0.37, v: 0.8, dur: 0.08 }, { t: s + 0.45, v: 1, dur: 0.3 });
+          a.out.hops.push({ t0: s + 0.45, t1: s + 0.7, h: 14, face: false });   // a little bounce on landing
+          sfx('softLand', s + 0.37);
+          pose(a, 'rig.spine', s + 0.5, -dir * 0.06, 0.4);   // still leaning back a little, sitting on the bottom
+          set(a, 'armL', s + 0.7, ARM_R, 0.4); set(a, 'armR', s + 0.7, holder === a.id ? -1.2 : ARM_R, 0.4);
+        }); dur = 1.5; break;
+        // ---- the movement library, part 3: gestures, lying down, hiding and peeking ----
+        case 'shrug': who.forEach(a => {
+          // "I don't know": shoulders up, paws out to the sides with the forearms turned up, head tipped
+          const sa = a.def.moves === 'hop' ? 1.15 : 0.8;   // (short arms go out further, so the shrug reads)
+          set(a, 'armL', s, sa, 0.25); set(a, 'armR', s, sa, 0.25); pose(a, 'rig.elbowL', s, -0.9, 0.25); pose(a, 'rig.elbowR', s, -0.9, 0.25);
+          pose(a, 'nod', s, 6, 0.25); set(a, 'tilt', s, 0.14, 0.25); a.ch.crouch.push({ t: s, v: 0.97, dur: 0.25 });
+          set(a, 'armL', s + 1.1, ARM_R, 0.4); set(a, 'armR', s + 1.1, holder === a.id ? -1.2 : ARM_R, 0.4); pose(a, 'rig.elbowL', s + 1.1, 0, 0.4); pose(a, 'rig.elbowR', s + 1.1, 0, 0.4);
+          pose(a, 'nod', s + 1.1, 0, 0.4); set(a, 'tilt', s + 1.1, 0, 0.4); a.ch.crouch.push({ t: s + 1.1, v: 1, dur: 0.4 });
+        }); dur = 1.5; break;
+        case 'coverEyes': who.forEach(a => {
+          // both paws over the eyes (shy, or "I can't look!"), a little hunched, for a couple of seconds
+          (a.out.paws = a.out.paws || []).push({ a: s, b: s + 2.2, pose: 'eyes' });
+          a.ch.crouch.push({ t: s, v: 0.96, dur: 0.3 }, { t: s + 2.2, v: 1, dur: 0.35 });
+          set(a, 'facing', s, 0, 0.3);
+        }); dur = 2.5; break;
+        case 'stretch': who.forEach(a => {
+          // a big happy stretch: paws high, standing tall, eyes closed, face up
+          set(a, 'armL', s, 2.3, 0.45); set(a, 'armR', s, 2.3, 0.45); pose(a, 'rig.reachL', s, 26, 0.45); pose(a, 'rig.reachR', s, 26, 0.45);
+          a.ch.crouch.push({ t: s, v: 1.05, dur: 0.45 }, { t: s + 1.6, v: 1, dur: 0.45 });
+          set(a, 'lookY', s, -0.6, 0.45); a.out.exprs.push({ a: s + 0.2, b: s + 1.8, mood: 'joy' });
+          set(a, 'armL', s + 1.6, ARM_R, 0.45); set(a, 'armR', s + 1.6, holder === a.id ? -1.2 : ARM_R, 0.45);
+          pose(a, 'rig.reachL', s + 1.6, 0, 0.45); pose(a, 'rig.reachR', s + 1.6, 0, 0.45); set(a, 'lookY', s + 1.6, 0, 0.45);
+        }); dur = 2.1; break;
+        case 'yawn': who.forEach(a => {
+          // a big sleepy yawn with a paw over the mouth, head tipped back a little
+          a.out.exprs.push({ a: s, b: s + 1.9, mood: 'sleepy' });
+          (a.out.paws = a.out.paws || []).push({ a: s + 0.15, b: s + 1.7, pose: 'yawn' });
+          set(a, 'lookY', s, -0.3, 0.4); set(a, 'tilt', s, 0.1, 0.4); set(a, 'lookY', s + 1.7, 0, 0.4); set(a, 'tilt', s + 1.7, 0, 0.4);
+        }); dur = 2.2; break;
+        case 'sigh': who.forEach(a => {
+          // a breath in (shoulders up, eyes up), then a long breath out: shoulders and head drop, a slow blink
+          a.ch.crouch.push({ t: s, v: 1.03, dur: 0.45 }, { t: s + 0.55, v: 0.96, dur: 0.6 }, { t: s + 1.3, v: 1, dur: 0.4 });
+          set(a, 'lookY', s, -0.3, 0.45); set(a, 'lookY', s + 0.55, 0.35, 0.5); set(a, 'lookY', s + 1.3, 0, 0.4);
+          pose(a, 'nod', s + 0.55, 8, 0.6); pose(a, 'nod', s + 1.3, 0, 0.4);
+          set(a, 'armL', s + 0.55, 0.05, 0.5); set(a, 'armR', s + 0.55, holder === a.id ? -1.2 : 0.05, 0.5);
+          set(a, 'armL', s + 1.3, ARM_R, 0.4); set(a, 'armR', s + 1.3, holder === a.id ? -1.2 : ARM_R, 0.4);
+          a.out.blinkExtra.push(s + 0.65);
+        }); dur = 1.7; break;
+        case 'dance': who.forEach(a => {
+          // a happy little dance: four beats of swaying hips, paws up in turn, a small bounce on each beat
+          a.out.exprs.push({ a: s, b: s + 3.3, mood: 'joy' });
+          sfx('twinkle', s + 0.1, { midi: 84, gain: 0.1 });
+          for (let i = 0; i < 4; i++) {
+            const t = s + 0.15 + i * 0.75, v = i % 2 ? -1 : 1;
+            pose(a, 'rig.hips', t, v * 0.12, 0.3); pose(a, 'rig.spine', t, -v * 0.1, 0.3); set(a, 'facing', t, v * 0.25, 0.3);
+            set(a, 'armL', t, v > 0 ? 2.4 : 0.9, 0.3); set(a, 'armR', t, v > 0 ? 0.9 : 2.4, 0.3);
+            a.out.hops.push({ t0: t + 0.3, t1: t + 0.62, h: 20 });
+          }
+          const e = s + 3.15;
+          pose(a, 'rig.hips', e, 0, 0.35); pose(a, 'rig.spine', e, 0, 0.35); set(a, 'facing', e, 0, 0.35);
+          set(a, 'armL', e, ARM_R, 0.35); set(a, 'armR', e, holder === a.id ? -1.2 : ARM_R, 0.35);
+        }); dur = 3.5; break;
+        case 'lie': who.forEach(a => {
+          // lies down on the side, facing the front, head toward the middle of the stage (until "gets up")
+          const dir = a.x >= 960 ? -1 : 1;
+          set(a, 'facing', s, 0, 0.3); pose(a, 'sit', s, 0, 0.3);
+          pose(a, 'roll', s, dir * 1.4, 0.7); sfx('softLand', s + 0.6, { gain: 0.5 });
+          set(a, 'armL', s, 0.35, 0.5); set(a, 'armR', s, holder === a.id ? -1.2 : 0.35, 0.5);
+        }); dur = 1.2; break;
+        case 'hide': who.forEach(a => {
+          // tucks in just behind the other one (drawn behind them), crouched down, until it moves again
+          const o = A[b.target];
+          if (!o || o === a) { errors.push(`Line ${b.line}: there is no one to hide behind.`); return; }
+          const side = Math.sign(a.x - o.x) || -1, d = moveTo(a, s, o.x + side * 55, b.slow || 'sneak');
+          const t = s + Math.max(0.3, d - 0.6);
+          a.hiding = { o, side, rec: { a: t - 0.3, b: 1e9 } }; (a.out.behind = a.out.behind || []).push(a.hiding.rec);
+          a.ch.crouch.push({ t, v: 0.86, dur: 0.35 }); set(a, 'facing', t, -side * 0.3, 0.35);
+          dur = Math.max(dur, d);
+        }); dur = Math.max(dur || 0, 0.8); break;
+        case 'peek': who.forEach(a => {
+          // leans out sideways (from behind whoever it hides behind) and looks at you, then tucks back in
+          const side = a.hiding ? a.hiding.side : (a.x >= 960 ? 1 : -1);
+          pose(a, 'rig.spine', s, side * 0.34, 0.4); pose(a, 'rig.neck', s, side * 0.16, 0.4);
+          set(a, 'lookX', s, 0, 0.3); set(a, 'lookY', s, 0, 0.3); set(a, 'facing', s, 0, 0.35);
+          if (a.hiding) a.ch.crouch.push({ t: s, v: 0.95, dur: 0.4 }, { t: s + 1.7, v: 0.86, dur: 0.4 });
+          pose(a, 'rig.spine', s + 1.7, 0, 0.4); pose(a, 'rig.neck', s + 1.7, 0, 0.4);
+        }); dur = 2.1; break;
         case 'away':
           // the back view (a channel only stories that turn away have, so other plans stay as they are)
           who.forEach(a => { a.ch.away = a.ch.away || []; a.ch.away.push({ t: s, v: 1, dur: 0.45 }); a.away = s + 0.01; });
