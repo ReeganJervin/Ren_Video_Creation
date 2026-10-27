@@ -134,7 +134,7 @@ Work through the steps **in this order**. The F-numbers are names, not the order
 | 6 | **F11 YouTube kit** (thumbnails, subtitles, description, series intro, end screen) | Done (approved) | `b86d4fb` (F11A), F11B (see git log) |
 | 7 | F7 Vertical 9:16 and Shorts (reuses F11's thumbnails, subtitles and description) | Done (Parts A and B approved) | F7A (see git log) |
 | 8 | **F12 Expression pack** (new moods, thought/whisper/shout bubbles, mood voices) | Done (Parts A and B approved) | |
-| 9 | F3 Rig 2.0 (joints, movement library, lip-sync), in **4 review stops** | Part A done (stops 1 and 2 approved); stop 3 part 1 (clean turns with one blink per turn, Episode 1 and 2 actions) approved; the rest of the movement list next, then stop 4 (lip-sync) | |
+| 9 | F3 Rig 2.0 (joints, movement library, lip-sync), in **4 review stops** | Part A done (stops 1 and 2 approved); stop 3 part 1 approved; stop 3 part 2 (the rest of the movement list) and stop 4 (lip-sync) built, waiting for the owner's review; the movement demo story next. Climb, jump over, push and hiding behind props wait for F4 Part D / F5 | `1503770`, `3d047fe` (stop 3), `647b25a` (stop 4) |
 | 10 | F4 Asset Kit, Part D: prop acting, Season 1 props, extras landing on set pieces (needs F3) | Not started | |
 | 11 | **Milestone 2.** The owner then makes the real **Episode 1** | Not started | |
 | 12 | **F13 Storytelling tools** (weather, dreams and memories, sound library) | Not started | |
