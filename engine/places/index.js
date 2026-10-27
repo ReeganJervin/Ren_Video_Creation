@@ -85,17 +85,29 @@
     }
   }
   // fireflies in front of the characters as night falls
+  // Where the faces are right now ({ x, y, r } in the scene; set by the film while it draws a place's front layer).
+  // clear(x, y) moves a point that would be on a face out to the face's edge, so butterflies and fireflies fly around
+  // faces instead of across them. Points away from faces are returned unchanged.
+  let FACES = [];
+  const faces = list => { FACES = list || []; };
+  function clear(x, y) {
+    for (const f of FACES) {
+      const dx = x - f.x, dy = y - f.y, d = Math.hypot(dx, dy);
+      if (d < f.r) { const k = f.r / (d || 1); x = f.x + (d ? dx : 0) * k; y = f.y + (d ? dy : -f.r); }
+    }
+    return { x, y };
+  }
   function fireflies(c, t, tau, list, start = 2.1) {
     const fa = clamp((tau - start) / 0.6);
     if (fa <= 0) return;
     c.save(); c.globalCompositeOperation = 'lighter';
     list.forEach(fl => {
-      const x = fl.x + Math.sin(t * fl.sp + fl.ph) * 60, y = fl.y + Math.cos(t * fl.sp * 1.3 + fl.ph) * 30, a = fa * (0.4 + 0.6 * Math.abs(Math.sin(t * 2 + fl.ph)));
+      const { x, y } = clear(fl.x + Math.sin(t * fl.sp + fl.ph) * 60, fl.y + Math.cos(t * fl.sp * 1.3 + fl.ph) * 30), a = fa * (0.4 + 0.6 * Math.abs(Math.sin(t * 2 + fl.ph)));
       glow(c, x, y, 14, '220,255,150', 0.7 * a); c.fillStyle = `rgba(250,255,210,${a})`; c.beginPath(); c.arc(x, y, 2.5, 0, Math.PI * 2); c.fill();
     });
     c.restore();
   }
-  const util = { clamp, lerp, hash, hex, tod, toda, glow, sparkle, sky, sunYAt, fireflies, STARS, CLOUDS };
+  const util = { clamp, lerp, hash, hex, tod, toda, glow, sparkle, sky, sunYAt, fireflies, faces, clear, STARS, CLOUDS };
 
   // A place a story names that doesn't exist yet: a plain grey-blue backdrop with a ground line and its name,
   // so the story can still be previewed. It has the usual stage spots and a flat ground.

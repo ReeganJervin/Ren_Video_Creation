@@ -1,0 +1,31 @@
+# ============================================================
+#  Test: the serious moods (F12 Part A review)
+#  Sad, scared, worried, crying and determined in a dark,
+#  dramatic scene, to check they work for older viewers too.
+# ============================================================
+
+title: Lost in the Dark
+place: forest
+time: night
+music: tense
+
+ren enters from left to left
++ yuki enters from right to right
+narrator: The forest was dark now, and the path home was gone.
+shot: close on yuki
+yuki (scared): Ren... I can't see the way back.
+shot: close on ren
+ren (worried): Stay close to me. Please.
+music: sad
+shot: close on yuki
+yuki (crying): What if we never find it?
+shot: close on ren
+ren (sad): I'm sorry. Coming here was my idea.
+beat
+shot: extreme close on ren
+ren (determined): No. We are going to find it. Together.
+shot: close on yuki
+yuki (determined): Together.
+shot: wide
+ren walks to yuki
+narrator: And side by side, they took the first step into the dark.

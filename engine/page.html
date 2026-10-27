@@ -54,9 +54,14 @@
     // load the drawing file of every character in the story (listed in characters.js) and every asset file
     // (props, extras and places, as found when the story was compiled)
     const load = src => new Promise((ok, fail) => { const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = fail; document.head.appendChild(s); });
-    for (const id of plan.cast) if (StudioCharacters.CHARACTERS[id]) await load(StudioCharacters.CHARACTERS[id].script);
+    // (the series intro and end screen show Ren and Yuki, whoever the story is about)
+    const who = plan.youtube ? [...new Set([...plan.cast, ...Object.keys(StudioCharacters.CHARACTERS)])] : plan.cast;
+    for (const id of who) if (StudioCharacters.CHARACTERS[id]) await load(StudioCharacters.CHARACTERS[id].script);
     for (const f of plan.assetFiles) await load(f);
     $('title').textContent = plan.meta.title;
+    // a vertical story draws 1080×1920; exported frames are shown at full size, embedded ones fit the window
+    if (qs.has('export')) Object.assign($('film').style, { width: plan.width + 'px', height: plan.height + 'px' });
+    else if (plan.height > plan.width) Object.assign($('film').style, { width: 'auto', height: qs.has('embed') ? '100vh' : '80vh', margin: '0 auto' });
     $('scrub').max = plan.duration;
     await StudioFilm.init($('film'), plan);
     return plan;
@@ -64,7 +69,8 @@
   window.FILM = {
     ready: ready.then(() => true),
     render: t => StudioFilm.render(t),
-    renderAudio: async stem => StudioAudio.renderAudio(await ready, stem),
+    // calm: { voice id: dB } for lines whose start is softened (make-video.js measures which)
+    renderAudio: async (stem, calm) => { const p = await ready; if (calm) p.voice.forEach(v => { v.calm = calm[v.id] || 0; }); return StudioAudio.renderAudio(p, stem); },
   };
 
   // Live preview: the picture follows the audio clock so both stay in sync.

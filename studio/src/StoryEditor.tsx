@@ -58,7 +58,7 @@ export function StoryEditor(p: Props) {
     const ext: Extension[] = [
       lineNumbers(), highlightActiveLineGutter(), highlightActiveLine(), drawSelection(), history(), EditorView.lineWrapping,
       storyLanguage, storyHighlight, playingLine, check, lintGutter(),
-      autocompletion({ override: [storyCompletions(() => cur.current.vocab)], activateOnTyping: true, maxRenderedOptions: 60 }),
+      autocompletion({ override: [storyCompletions(() => cur.current.vocab)], activateOnTyping: true, maxRenderedOptions: 100 }),
       keymap.of([{ key: 'Mod-s', preventDefault: true, run: () => { cur.current.onSave(); return true; } }, ...completionKeymap, ...defaultKeymap, ...historyKeymap]),
       EditorView.updateListener.of(u => { if (u.docChanged) cur.current.onChange(u.state.doc.toString()); }),
       EditorView.domEventHandlers({

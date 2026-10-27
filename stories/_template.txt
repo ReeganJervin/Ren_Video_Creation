@@ -16,6 +16,8 @@ title: My Story
 place: meadow
 # time can be: day, sunset, dusk, night
 time: sunset
+# each mood changes the voice a little (sad is slower, excited is faster)
+mood voices: on
 
 # --- Beginning ---
 ren enters

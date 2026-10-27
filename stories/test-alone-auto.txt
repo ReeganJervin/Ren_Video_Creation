@@ -1,0 +1,22 @@
+# ============================================================
+#  Test: one character talking alone with automatic editing
+#  (a regression test for a crash in beginning-of-a-friendship).
+#  Ren speaks alone (surprised, shy and sad lines, and long lines
+#  in close shots); then Yuki comes, so reaction shots happen too.
+# ============================================================
+
+title: Alone With Auto Editing
+place: meadow
+time: day
+editing: auto
+
+ren enters from left to center
+ren (happy): Good morning, world! Ren is here, and today is going to be legendary!
+ren (surprised): Wait. Did that cloud just wink at me? Clouds are not supposed to wink at anybody.
+ren (shy): Okay, nobody saw that. Nobody saw me talking to a cloud in the middle of the meadow.
+ren (sad): It is a little lonely, being the greatest explorer in the whole meadow with nobody to tell.
+yuki enters from right to right
+yuki (surprised): Oh! I didn't know anybody else was here!
+ren (shy): Hello. I was just practising my explorer speech.
+yuki (happy): Can I hear the rest of it?
+narrator: And that was how the speech got its very first audience.

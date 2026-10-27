@@ -11,7 +11,8 @@ const fs = require('fs'), path = require('path'), http = require('http');
 const { spawnSync } = require('child_process');
 
 const ROOT = path.resolve(__dirname, '..');
-const ref = process.argv.slice(2).find(a => !a.startsWith('--')) || 'HEAD';
+// the git ref: the first word that isn't an option (or the story name after --only)
+const ref = process.argv.slice(2).find((a, i, all) => !a.startsWith('--') && all[i - 1] !== '--only') || 'HEAD';
 const FRAMES = 12, SELF = process.argv.includes('--self');   // --self: old engine against itself (how repeatable rendering is)
 const SOUND = process.argv.includes('--sound');               // rule R14: frames and timing by default
 const work = path.join(ROOT, 'build', '_compare'), oldDir = path.join(work, 'old'), planDir = path.join(work, 'plans'), diffDir = path.join(work, 'diff');
@@ -59,8 +60,8 @@ async function main() {
   const only = process.argv.indexOf('--only'), stories = fs.readdirSync(path.join(ROOT, 'stories')).filter(f => f.endsWith('.txt') && (only < 0 || f === process.argv[only + 1] + '.txt'));
   const server = await serve(), base = `http://127.0.0.1:${server.address().port}`;
   const browser = await require('./browser').launch({ exact: true });
-  const open = async (engine, plan) => {
-    const p = await browser.newPage({ viewport: { width: 1920, height: 1080 } });
+  const open = async (engine, plan, size = { width: 1920, height: 1080 }) => {
+    const p = await browser.newPage({ viewport: size });
     p.on('pageerror', e => console.error('[page error]', e.message));
     await p.goto(`${base}/${engine}/page.html?plan=${plan}&export=1`);
     await p.evaluate(() => FILM.ready);
@@ -69,7 +70,7 @@ async function main() {
   // a fingerprint of the frame's pixels
   const frame = (p, t) => p.evaluate(t => {
     FILM.render(t);
-    const d = new Uint32Array(document.getElementById('film').getContext('2d').getImageData(0, 0, 1920, 1080).data.buffer);
+    const d = new Uint32Array(document.getElementById('film').getContext('2d').getImageData(0, 0, document.getElementById('film').width, document.getElementById('film').height).data.buffer);
     let h1 = 2166136261, h2 = 0;
     for (let i = 0; i < d.length; i++) { h1 = Math.imul(h1 ^ d[i], 16777619); h2 = (h2 + d[i] * (i % 65521 + 1)) | 0; }
     return `${(h1 >>> 0).toString(16)}-${(h2 >>> 0).toString(16)}`;
@@ -94,13 +95,26 @@ async function main() {
     const po = await open('build/_compare/old/engine', `/build/_compare/plans/${name}-old.json`);
     const pn = SELF ? await open('build/_compare/old/engine', `/build/_compare/plans/${name}-old.json`) : await open('engine', `/build/_compare/plans/${name}-new.json`);
     const bad = [];
+    // a frame one engine can't draw: the old one crashing is a bug that's fixed now; the new one crashing is a failure
+    const tryFrame = (p, t) => frame(p, t).catch(e => 'crash: ' + String(e.message).split('\n')[0]);
+    let crash = null;
     for (let i = 0; i < FRAMES; i++) {
       const t = +(A.duration * (i + 0.5) / FRAMES).toFixed(3);
-      if ((await frame(po, t)) !== (await frame(pn, t))) {
+      const fo = await tryFrame(po, t), fn = await tryFrame(pn, t);
+      if (fn.startsWith('crash')) { crash = `the new engine crashes at ${t.toFixed(2)} s: ${fn.slice(7)}`; break; }
+      if (fo.startsWith('crash')) { crash = crash || `the old engine crashed at ${t.toFixed(2)} s (fixed in the new one)`; continue; }
+      if (fo !== fn) {
         bad.push(t.toFixed(2));
         await po.locator('#film').screenshot({ path: path.join(diffDir, `${name}-${t.toFixed(2)}-old.png`) });
         await pn.locator('#film').screenshot({ path: path.join(diffDir, `${name}-${t.toFixed(2)}-new.png`) });
       }
+    }
+    if (crash) {
+      await po.close(); await pn.close();
+      const fixed = crash.startsWith('the old');
+      if (!fixed) allOk = false;
+      rows.push(`${fixed ? 'FIXED' : 'FAIL '} ${name.padEnd(26)} ${crash}`);
+      continue;
     }
     const soundOk = SOUND ? sameSound(await sound(po), await sound(pn)) : null;
     await po.close(); await pn.close();

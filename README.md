@@ -34,7 +34,7 @@ The command files below keep working exactly as before.
 3. Watch it live with sound (optional): `preview.bat stories\my-story.txt`. This opens in your browser. Press Ctrl+C in the window to stop.
 4. Make the video: `make-video.bat stories\my-story.txt`. You can also drag the story file onto `make-video.bat`.
 
-The video appears in the `videos` folder as `my-story.mp4`, along with a check report, `my-story-report.txt`, and `my-story-credits.txt`, which lists everything in the video and who made it. A story with at least 3 scenes also gets `my-story-chapters.txt`, ready to paste into a YouTube description (see "Scenes" in STORY-GUIDE.md).
+The video appears in the `videos` folder as `my-story.mp4`, along with a check report, `my-story-report.txt`, and `my-story-credits.txt`, which lists everything in the video and who made it. A story with at least 3 scenes also gets `my-story-chapters.txt`, ready to paste into a YouTube description (see "Scenes" in STORY-GUIDE.md). For uploading, every video also gets `my-story-thumbnail.jpg`, `my-story.srt` (subtitles) and `my-story-description.txt` (a description draft); see "YouTube" in STORY-GUIDE.md.
 
 ### Still images (for checking)
 
@@ -67,6 +67,7 @@ The pieces that were already finished are kept. If you changed the story since t
 | Option | What it does |
 |---|---|
 | `--resume` | Carries on with a stopped video (this is what `resume-video.bat` does) |
+| `--format vertical` | Makes a vertical (9:16) version for Shorts: `videos\my-story-vertical.mp4` (see "Vertical videos" in STORY-GUIDE.md) |
 | `--workers 3` | Draws with 3 browser pages at once. The default is the number of processor threads minus 1. More workers are faster, until the computer is busy; the video looks exactly the same with any number of workers |
 | `--allow-placeholders` | Makes a test video even though the story uses things that don't exist yet (they appear as grey placeholders, and the report says so) |
 
@@ -82,6 +83,8 @@ There are example stories to try first:
 - `stories\test-scenes.txt` is a story in three scenes, with three music moods and YouTube chapters.
 - `stories\test-camera.txt` shows every kind of shot and camera move.
 - `stories\camera-demo.txt` lets the camera edit by itself (`editing: auto`), with comic beats, slow motion and reveals.
+- `stories\feelings-demo.txt` shows every mood and way of talking (thinking, whispering, shouting), with mood voices.
+- `shorts\explorers-rules.txt` is an independent Short (vertical, about 25 s), and `shorts\the-summit.txt` is a Short made from scene 1 of `beginning-of-a-friendship` (see "Shorts" in STORY-GUIDE.md).
 
 ## Every video is checked automatically
 
@@ -101,7 +104,7 @@ The results are in `videos\<name>-report.txt`. Each line starts with `PASS`, `FA
 | Folder or file | What it is |
 |---|---|
 | `stories\` | Your stories, plus the template and examples |
-| `config\voices.json` | The voices: the narrator, Ren, Yuki, and the owl (a Kokoro voice or a blend of two, with speed and pitch) |
+| `config\voices.json` | The voices: the narrator, Ren, Yuki, and the owl (a Kokoro voice or a blend of two, with speed and pitch, and optionally `gain` in dB to make one voice quieter or louder than the others) |
 | `engine\characters.js` | The list of characters: their names, how they move, their sounds and how each mood looks on them |
 | `engine\ren.js` | Ren's fixed design (shape, colours, face, scarf) |
 | `engine\yuki.js` | Yuki's fixed design (shape, colours, face, ears, flower and bow) |
@@ -115,6 +118,8 @@ The results are in `videos\<name>-report.txt`. Each line starts with `PASS`, `FA
 | `tools\make-video.js` | The main program behind the `.bat` files |
 | `tools\story-check.js` | The story check and voice bookkeeping that `make-video.js` and the studio app share |
 | `studio\` | The studio app: `server\server.js` (the local server), `src\` (the screens, React + TypeScript), `tests\` (`node studio\tests\api.test.js` and `node studio\tests\e2e.test.js`) |
+| `tools\youtube.js` | The YouTube files: thumbnail, subtitles and description draft |
+| `tools\end-screen-guide.js` | Draws `docs\youtube-end-screen.png`, which shows where YouTube's end-screen elements go |
 | `tools\scenes.js` | Chapters and the extra checks for stories with scenes |
 | `tools\render.js` | Draws the frames: several workers at once, scene by scene in pieces that `--resume` can keep |
 | `tools\browser.js` | Starts the drawing browser (or Chrome/Edge if setup couldn't download it) |

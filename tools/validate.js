@@ -17,7 +17,7 @@ function validate(plan, files) {
   const v = info.streams.find(s => s.codec_type === 'video'), a = info.streams.find(s => s.codec_type === 'audio');
   const frames = Math.round(D * plan.fps);
   check('Length', Math.abs(+v.duration - D) < 0.04 && a && Math.abs(+a.duration - D) < 0.06, `video ${(+v.duration).toFixed(2)} s, audio ${a ? (+a.duration).toFixed(2) : 'missing'} s (planned ${D.toFixed(2)} s)`);
-  check('Picture', v.width === 1920 && v.height === 1080 && v.r_frame_rate === '30/1' && +v.nb_read_frames === frames, `${v.width}x${v.height}, ${v.r_frame_rate} fps, ${v.nb_read_frames} frames`);
+  check('Picture', v.width === (plan.width || 1920) && v.height === (plan.height || 1080) && v.r_frame_rate === '30/1' && +v.nb_read_frames === frames, `${v.width}x${v.height}, ${v.r_frame_rate} fps, ${v.nb_read_frames} frames`);
   check('Sound and picture start together', a && Math.abs(+v.start_time - +a.start_time) < 0.03, `video ${v.start_time} s, audio ${a && a.start_time} s`);
 
   // voices: measured onsets in the voice-only track
@@ -45,13 +45,16 @@ function validate(plan, files) {
 
   // text boxes hold their voice lines (bubbles belong to the characters' lines, in order)
   const talk = plan.voice.filter(x => x.who !== 'narrator'), narr = plan.voice.filter(x => x.who === 'narrator');
-  const badB = plan.bubbles.filter((b, i) => !(b.t0 <= talk[i].t && talk[i].t + talk[i].len <= b.t1 + 0.01));
+  // (a silent thought has no voice: it must stay up long enough to read, 0.3 s a word)
+  const voiced = plan.bubbles.filter(b => !b.silent), silent = plan.bubbles.filter(b => b.silent);
+  const badB = [...voiced.filter((b, i) => !(b.t0 <= talk[i].t && talk[i].t + talk[i].len <= b.t1 + 0.01)),
+    ...silent.filter(b => b.t1 - b.t0 < 0.6 + b.text.split(/\s+/).length * 0.3)];
   const badC = plan.captions.filter((c, i) => !(c.t0 <= narr[i].t && narr[i].t + narr[i].len <= c.t1 + 0.01));
   check('Speech bubbles and captions stay up for their lines', !badB.length && !badC.length, `${plan.bubbles.length} bubbles, ${plan.captions.length} captions${badB.length + badC.length ? `; too short: ${[...badB, ...badC].map(x => x.text).join(' | ')}` : ''}`);
 
   // sound effects: energy rises at each discrete cue
   const sw = readWav(files.sfx), ss = sw.samples(), ssr = sw.rate;
-  const cues = plan.sfx.filter(c => ['boingUp', 'boingLand', 'hopUp', 'hopLand', 'chime', 'twinkle', 'pop', 'softLand', 'chirp', 'sparkleChime'].includes(c.type));
+  const cues = plan.sfx.filter(c => ['boingUp', 'boingLand', 'hopUp', 'hopLand', 'chime', 'twinkle', 'pop', 'softLand', 'chirp', 'sparkleChime', 'sting'].includes(c.type));
   const miss = cues.filter(c => {
     const i = Math.round(c.t * ssr), w = Math.round(0.12 * ssr);
     const before = db(ss, Math.max(0, i - w), Math.max(1, i - Math.round(0.01 * ssr))), after = db(ss, i, Math.min(ss.length, i + w));

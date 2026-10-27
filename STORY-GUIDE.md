@@ -47,7 +47,7 @@ A story can use Ren, Yuki or both. Only characters you mention appear, and a cha
 |---|---|
 | `narrator: text` | The narrator reads the text. It also appears in a storybook caption box at the top |
 | `ren: text` | Ren says the text in a speech bubble, and its mouth moves. `yuki: text` works the same way |
-| `yuki (pouty): text` | Says it with a mood: `happy`, `surprised`, `shy`, `sad`, `sleepy`, `playful`, `pouty` |
+| `yuki (pouty): text` | Says it with a mood: `happy`, `surprised`, `shy`, `sad`, `sleepy`, `playful`, `pouty`, `excited`, `proud`, `thinking`, `worried`, `scared`, `determined`, `laughing`, `crying` |
 
 Keep each line under 160 characters. Write long speeches as several lines.
 
@@ -64,6 +64,37 @@ The bubble's tail points at whoever is talking, and when both characters are on 
 | `sleepy` | Eyes closed, small yawn, ears droop | Eyes closed, ears flop down, paw over a yawn |
 | `playful` | A happy ^ ^ grin | A wink with her tongue out |
 | `pouty` | Puffed cheeks, cross brows, small frown | Puffed cheeks, cross brows, narrowed eyes, pursed mouth |
+| `excited` | Sparkly star eyes, big open smile, ears up, a little bounce, tail wag | Sparkly star eyes, big open smile, ears up, a little bounce |
+| `proud` | Chin up, calm half-closed eyes, a confident little smile, standing tall | The same |
+| `thinking` | Eyes up to one side, a paw at the chin, a small mouth pulled to one side, head tilted | The same |
+| `worried` | Raised inner brows, eyes a little heavy, a small wobbly mouth, ears half down | The same, ears half down |
+| `scared` | Wide eyes with small pupils that quiver, ears flat back, leaning away, a small tremble | The same, ears flopped down |
+| `determined` | Low, level brows, steady eyes, a firm mouth, ears up, standing a little taller | The same |
+| `laughing` | Eyes closed in happy curves, wide open smile, a gentle shake, and a soft giggle | The same, with a higher giggle |
+| `crying` | Wet, shining eyes with tears running down, raised brows, a trembling mouth, ears down | The same |
+
+The serious moods (`sad`, `worried`, `scared`, `determined`, `crying`) are drawn to feel real for older viewers too, not only cute: no cartoon waterfalls of tears, no horror faces. `laughing` adds a soft giggle after the line (or when the mood starts), quieter than the voices.
+
+Animals (extras like the owl) have the first eight moods. For a new mood they show the nearest one (`laughing` looks happy, `scared` looks surprised, `crying` looks sad…), and the check says so.
+
+To see every mood in every view: `node tools\mood-sheet.js` (it writes `build\_sheet\ren-moods.png` and `yuki-moods.png`).
+
+### Ways of talking
+
+Besides a mood, a line can say **how** it is said. Write it in the brackets, alone or with a mood: `ren (shouts, excited): I heard that!`
+
+| Line | What happens |
+|---|---|
+| `ren (thinks): Maybe she won't notice.` | A cloud-shaped **thought bubble**, with little circles leading to Ren's head. The voice is softer, with a gentle echo |
+| `yuki (thinks silently): Why is a slice missing?` | The thought bubble with **no voice**, up long enough to read |
+| `yuki (whispers): Next time, I'm hiding it.` | A smaller, softer bubble with a dashed outline. The voice is quieter and breathier |
+| `ren (shouts): Over here!` | A big spiky bubble. The voice is a little louder and faster, and the picture gives a tiny shake (it stays within the loudness checks) |
+
+### Mood voices
+
+With `mood voices: on` at the top of a story, each mood also changes the voice a little: sad is slower and a little lower, excited faster and a little higher, scared a little faster and breathier, determined steady and a little lower, sleepy slow, and so on. New stories made from the template have it on. Stories without the line sound exactly as before.
+
+The amounts are in `config\voices.json` (`_moods` for moods, `_styles` for ways of talking); a voice can change them for itself with its own `moods`. To hear them: `node tools\voice-sample.js ren --moods` makes `build\_voice-sample\ren-moods.wav`, one line in every mood and way of talking, each named by the narrator first. A line that changes is made again; the others come from the cache.
 
 ## What a character can do
 
@@ -79,9 +110,24 @@ The bubble's tail points at whoever is talking, and when both characters are on 
 | `<name> looks at <other name>` | Looks at the other character (and keeps looking until the next look) |
 | `<name> turns to you` | Faces the viewer |
 | `<name> turns to <other name>` | Turns toward the other character |
-| `<name> hugs <other name>` | Goes over and hugs them: both turn to each other, look happy, and little hearts float up between them. Then they step apart again |
+| `<name> turns away` | Turns its back to you (the back view), until it next turns, walks or looks somewhere |
+| `<name> sits down` | Sits down on the spot (until it stands up) |
+| `<name> crouches` | Crouches low (until it stands up) |
+| `<name> stands up` | Gets up again after sitting or crouching |
+| `<name> leans closer` | Leans toward the other character for a moment (or `leans closer to yuki`); `leans back` leans away |
+| `<name> wobbles` | A small loss of balance, arms out, then steady again |
+| `<name> counts on its paws` | Both paws up in front, one tapping the other three times, eyes on the paws |
+| `<name> writes in the air` | A paw raised, tracing little loops, eyes following it |
+| `<name> holds out its paw` | Turns to the other character and holds out a paw for a moment (or `holds out its paw to ren`) |
+| `<name> touches paws with <other name>` | The two step close, turn to each other and touch paws (a soft chime), then step apart again |
+| `<name> stretches its paws wide` | Both arms out wide for a moment |
+| `<name> nods` | Two nods. `<name> shakes its head` shakes it no |
+| `<name> points at <other name>` | Points at someone, `you`, `the star` or a prop (`points at the lantern`); also `points up`, `points left`, `points right` |
+
+All of these blend smoothly into whatever comes next. Turning (to walk, to talk, to look, to turn away) goes through solid poses (front, three-quarter, side, back) with a tiny squash and blink at each switch, never a see-through mix of two.
+| `<name> hugs <other name>` | Goes over and hugs them: both turn to each other, look happy, and little hearts float up between them. Then they step apart again, still facing each other, and both stay happy (until a later line gives them another mood) |
 | `<name> tilts its head` | A curious head tilt |
-| `<name> feels sad` | Changes the mood until you change it again: `happy`, `surprised`, `shy`, `sad`, `sleepy`, `playful`, `pouty`, `normal` |
+| `<name> feels sad` | Changes the mood until you change it again: any mood above, or `normal` |
 | `<name> blinks` | An extra blink. Characters also blink by themselves |
 | `<name> raises its paws` / `<name> lowers its paws` | Paws up or down |
 | `<name> picks up the star` | Goes to the fallen star and picks it up with both paws |
@@ -312,9 +358,13 @@ Music plays through every story. With `music:` you choose its mood:
 | `music: magical` | Twinkling high notes over dreamy chords, for wonder and magic |
 | `music: mystery` | Quiet, low and curious, for exploring and secrets |
 | `music: adventure` | Faster and bouncy, for setting off and searching |
-| `music: tense` | A soft ticking pulse, for suspense (still gentle, never scary) |
+| `music: tense` | A soft ticking pulse, for suspense (never horror) |
 | `music: sad` | Slow and tender, in a minor key |
 | `music: bedtime` | A quiet lullaby |
+| `music: epic` | Big and brave, with a cello and soft drums, for courage and great discoveries |
+| `music: heartfelt` | Warm and emotional, with a cello underneath, for big feelings |
+| `music: deep tense` | Tense, but deeper and fuller: a low cello and a soft heartbeat drum, for real danger (still never horror) |
+| `music: deep sad` | Sad, but deeper and fuller, with a low cello, for a truly sad moment |
 | `music: none` | The music fades away |
 
 Write `music:` at the top of the story, at the start of a scene, or anywhere in the middle. When the mood changes, the old music fades out as the new one fades in, over about 2 seconds. A story without `music:` lines plays the usual music, exactly as before.
@@ -411,6 +461,109 @@ reveal: the star
 slow motion 4
 star falls
 ```
+
+## YouTube
+
+Every video comes with three files for uploading it, next to it in the `videos` folder:
+
+| File | What it is |
+|---|---|
+| `my-story-thumbnail.jpg` | The thumbnail: 1280×720, drawn fresh from the story (sharper than a frame of the video) |
+| `my-story.srt` | English subtitles of every spoken line (the narrator too), timed to the voices. Upload it in YouTube Studio under "Subtitles" |
+| `my-story-description.txt` | A **draft** to edit: a title, a short summary, the chapters (if any), the credits and some hashtags. Nothing is ever published automatically |
+
+Two lines choose the thumbnail. Put them anywhere in the story; they take no time:
+
+| Line | What it does |
+|---|---|
+| `thumbnail: auto` | Picks a good moment by itself: everyone fully in the picture, facing you, surprised or excited (or happy), eyes open, no speech bubble, and nobody in front of someone's face. This is what you get without a `thumbnail` line |
+| `thumbnail: 12.5` | The moment 12.5 seconds in |
+| `thumbnail: scene 3` | The middle of scene 3 |
+| `thumbnail shot: medium` | How close the thumbnail is: `medium` (the characters fill about half the picture's height; this is what you get without the line), `close` (bigger faces) or `wide` (the whole scene, like the video) |
+| `thumbnail text: The Owl's Lantern` | Big, bold, rounded letters with a warm outline at the top, with the characters standing below them (60 characters at most; long titles go on two lines) |
+
+### The series intro and the end screen
+
+| Line | What it does |
+|---|---|
+| `intro: series` | The **series intro** at the start (about 5 s): the "Ren & Yuki" logo bounces in letter by letter over the meadow, Ren and Yuki peek in and wave, and the theme jingle plays (the same in every video, never louder than the story). Stories in the `episodes` folder get it automatically (Shorts never have it) |
+| `intro: after scene 1` | The intro after the first scene instead, so viewers see your **hook** first (any scene number works) |
+| `intro: none` | No intro (also for stories in `episodes`) |
+| `ending: end screen` | The **end screen**: the last 20 s, with Ren and Yuki waving on one side, calm music, and room for YouTube's end-screen elements |
+| `ending text: See you next time!` | The narrator says this in the end screen (it adds the end screen by itself) |
+
+To add YouTube's end-screen elements: in YouTube Studio, open the video's **Editor**, then **End screen**, and put two **Video** elements and one **Subscribe** element over the dashed shapes, as shown in `docs\youtube-end-screen.png`.
+
+The check report has a line about these files. It warns you if the thumbnail shows a speech bubble or a face cut off at the edge, so you can choose another moment.
+
+To make only these three files, without making the video again (the voices are made if needed): `node tools\make-video.js stories\my-story.txt --youtube`. An example: `stories\youtube-demo.txt`. In the studio app, the finished video shows the thumbnail, with **Open subtitles** and **Copy description**. The subtitles are off in the app's player (the narrator's words are already on screen); the **CC** button turns them on.
+
+Before publishing, check YouTube's "altered or synthetic content" and "Made for Kids" settings. Whether a video is "Made for Kids" is your choice for each video.
+
+## Vertical videos (9:16, for Shorts)
+
+Put `format: vertical` at the top of a story to make it 1080×1920, standing up, for YouTube Shorts and phones. Or make a vertical version of any story without changing it: `node tools\make-video.js stories\my-story.txt --format vertical` (it becomes `videos\my-story-vertical.mp4`, next to the wide one).
+
+What changes in a vertical video:
+- **The places** are drawn taller (more sky above, more ground below), not cut out of the wide picture.
+- **The camera** always frames the characters, medium-close or closer, a little left of the middle, with their faces at about 43 % from the top (room above for bubbles and a Short's hook text). `shot: close on ren` and the other shot lines choose how close and on whom; `push in`, `pull out`, `pan to`, `follow` and `shake` work too. In a conversation where the two together would look small, the camera shows whoever is speaking, close, with the other one's face kept out of the picture (with `editing: auto`, or no shot lines).
+- **Two characters never overlap** (unless they hug): they keep a small gap, with their tails inside the picture.
+- **Things in the sky** (the star, hearts…) come down into the picture, inside the safe area.
+- **The stage is narrower:** the left, center and right spots are closer together, and characters come in from just outside the picture.
+- **Bubbles and captions** are narrower and stay inside the **safe area**: faces, bubbles and captions keep out of the bottom 20 %, the right 15 % and the top 8 %, where YouTube puts its buttons and titles. The check report has a **Safe area (vertical)** line (a face is only excused while its character enters or exits across the edge of the picture, and the report lists those moments; bubbles and captions always count).
+- There is no series intro or end screen in a vertical video. Instead of a thumbnail it gets a **cover frame** (`my-story-cover.jpg`, 1080×1920; the same `thumbnail` lines choose it).
+
+## Shorts
+
+A Short is a vertical video of 15 to 60 seconds. Put Shorts in the `shorts` folder. There are two kinds.
+
+**An independent Short** is a little story of its own. Write it like any story, with `type: short` at the top (an example: `shorts\explorers-rules.txt`):
+
+```
+title: Ren's Three Explorer Rules
+type: short
+hook: Ren's 3 rules for every explorer
+thumbnail text: 3 Explorer Rules
+place: meadow
+
+ren enters from left to center
+ren (happy): Explorer's rule number one: always look confident.
+...
+ren (sad): Always bring a snack. Which I did not.
+sting
+narrator: And that is how Ren's very first expedition began.
+ending: The full story is on the channel!
+```
+
+**An episode Short** is a part of a longer story, drawn again standing up (never cut out of the wide video), with the voices you already made. It needs only a few lines (an example: `shorts\the-summit.txt`):
+
+```
+title: The Summit Is 40 Steps Away
+type: episode short
+from: beginning-of-a-friendship
+scenes: 1
+hook: Ren's greatest expedition... is 40 steps long
+thumbnail text: The Summit
+ending: Watch the full episode!
+```
+
+| Line | What it does |
+|---|---|
+| `type: short` | An independent Short: vertical (unless you write `format: wide`), a little faster (shorter pauses, quicker walks), no series intro and no end screen |
+| `type: episode short` | A Short made from part of another story (with `from:` and `scenes:` or `lines:`) |
+| `from: beginning-of-a-friendship` | The story it comes from (looked for next to the Short, then in `stories` and `episodes`) |
+| `scenes: 2` or `scenes: 2-3` | Which scenes to show. A line that starts inside them is always heard to its end |
+| `lines: 40-55` | Or which lines of the story file to show (the line numbers in the editor) |
+| `hook: <text>` | Big text at the top for the first 3 seconds, to make people stay |
+| `ending: <text>` | The end card's words, under the "Ren & Yuki" logo (2 s). Without it, the end card is the logo alone (1 s) |
+| `captions: narrator` | Big word-by-word captions in the middle of the picture for the narrator's lines. This is what you get without the line, because the characters' words are already in their bubbles. `captions: all` captions every line; `captions: off` none |
+| `sting` | A bright little chime: the "ta-da" on the payoff. A Short gets one at the end of its last line by itself |
+| `loop: on` | The last moment flows back into the first, so the Short loops smoothly (then there is no end card; independent Shorts only) |
+| `framing: close` | How close the camera is through the whole Short: `wide`, `medium` (normal) or `close` |
+
+In an episode Short, the music and sounds are cut from the story and fade in and out. You get a cover frame, subtitles and a description draft, as for any video.
+
+The check report has a **Short length** line: a warning if the Short is shorter than 15 s or longer than 60 s.
 
 ## Sounds you get automatically
 

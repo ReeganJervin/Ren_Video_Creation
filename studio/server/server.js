@@ -62,7 +62,7 @@ function storyInfo(abs) {
     const { check } = engine();
     let title = path.basename(abs, '.txt'), duration = null, status = 'Ready', errors = 0, missing = 0;
     try {
-      const r = check.checkStory(fs.readFileSync(abs, 'utf8'));
+      const r = check.checkStory(fs.readFileSync(abs, 'utf8'), {}, abs);
       title = r.parsed.meta.title || title;
       errors = r.parsed.errors.length + (r.plan ? r.plan.errors.length : 0);
       if (r.plan) { duration = r.plan.duration; missing = r.plan.missing.length; }
@@ -86,20 +86,20 @@ function lineError(text) {
 // in build/_studio/<name>/ that uses every voice line already made (the rest have estimated timing and no sound).
 function checkText(file, text) {
   const { check, wav } = engine(), name = check.storyName(file);
-  let r = check.checkStory(text);
+  let r = check.checkStory(text, {}, file);
   const out = { name, title: r.parsed.meta.title || name, errors: r.parsed.errors.map(lineError), missing: [], warnings: [], duration: null, scenes: [], voices: [], lineTimes: [], planUrl: null, voicesToMake: 0 };
   if (!r.plan) return out;
   // voice lines already made: recordings in voice-overrides/, or levelled clips in cache/voices/
   const lens = {}, files = {};
   r.speech.forEach((b, i) => {
-    const v = r.voices[b.who], over = check.overrideFile(name, b.line);
+    const v = check.lineVoice(b, r.voices, r.parsed.meta), over = check.overrideFile(name, b.line);
     let f = null;
     if (fs.existsSync(over)) f = over;
-    else if (v) { const lv = check.levelledVoice(check.cachedVoice(b.text, v)); if (fs.existsSync(lv)) f = lv; }
+    else if (v) { const lv = check.levelledVoice(check.cachedVoice(b.text, v), v.gain || 0); if (fs.existsSync(lv)) f = lv; }
     if (f) { try { lens[i] = wav.readWav(f).duration; files[i] = '/' + relOf(f); } catch (_) { /* unreadable: estimated */ } }
     else if (v) out.voicesToMake++;
   });
-  if (Object.keys(lens).length) r = check.checkStory(text, lens);
+  if (Object.keys(lens).length) r = check.checkStory(text, lens, file);
   const plan = r.plan;
   out.errors.push(...plan.errors.map(lineError));
   out.missing = plan.missing.map(m => ({ kind: m.kind === 'prop' && m.size === 'big' ? 'set piece' : m.kind, name: m.name, lines: m.lines.filter(Boolean) }));
@@ -231,7 +231,7 @@ function readReport(name) {
 }
 
 // ---------- HTTP ----------
-const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.mjs': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.wav': 'audio/wav', '.mp4': 'video/mp4', '.png': 'image/png', '.svg': 'image/svg+xml', '.woff2': 'font/woff2', '.txt': 'text/plain; charset=utf-8', '.ico': 'image/x-icon' };
+const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.mjs': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.wav': 'audio/wav', '.mp4': 'video/mp4', '.png': 'image/png', '.svg': 'image/svg+xml', '.woff2': 'font/woff2', '.txt': 'text/plain; charset=utf-8', '.srt': 'text/plain; charset=utf-8', '.vtt': 'text/vtt; charset=utf-8', '.jpg': 'image/jpeg', '.ico': 'image/x-icon' };
 function sendFile(req, res, abs) {
   if (!fs.existsSync(abs) || fs.statSync(abs).isDirectory()) { res.writeHead(404); return res.end(); }
   const size = fs.statSync(abs).size, type = MIME[path.extname(abs).toLowerCase()] || 'application/octet-stream';
@@ -329,7 +329,24 @@ const api = {
     if (!j) throw new HttpError(404, 'There is no such job.');
     cancelJob(j); return publicJob(j);
   },
-  'GET /api/report': q => { const name = engine().check.storyName(storyPath(q.get('file'))); return { results: readReport(name), video: fs.existsSync(path.join(ROOT, 'videos', name + '.mp4')) ? `/videos/${name}.mp4` : null }; },
+  'GET /api/report': q => {
+    const name = engine().check.storyName(storyPath(q.get('file'))), has = f => fs.existsSync(path.join(ROOT, 'videos', f));
+    return {
+      results: readReport(name), video: has(name + '.mp4') ? `/videos/${name}.mp4` : null,
+      // the YouTube files (F11)
+      thumbnail: has(`${name}-thumbnail.jpg`) ? `/videos/${name}-thumbnail.jpg` : has(`${name}-cover.jpg`) ? `/videos/${name}-cover.jpg` : null,
+      subtitles: has(`${name}.srt`) ? `/videos/${name}.srt` : null,
+      description: has(`${name}-description.txt`) ? `/videos/${name}-description.txt` : null,
+    };
+  },
+  // the subtitles as WebVTT, for the video player in the app
+  'GET /api/subtitles.vtt': (q, req, res) => {
+    const f = path.join(ROOT, 'videos', engine().check.storyName(storyPath(q.get('file'))) + '.srt');
+    if (!fs.existsSync(f)) throw new HttpError(404, 'No subtitles yet.');
+    const vtt = 'WEBVTT\n\n' + fs.readFileSync(f, 'utf8').replace(/\r\n/g, '\n').replace(/(\d\d:\d\d:\d\d),(\d\d\d)/g, '$1.$2');
+    res.writeHead(200, { 'Content-Type': 'text/vtt; charset=utf-8', 'Cache-Control': 'no-store' }); res.end(vtt);
+    return undefined;
+  },
   // the preview's current frame -> videos/<name>-still-<t>s.png (named like the CMD tool's stills)
   'POST /api/still': async (q, req) => {
     const b = await body(req), name = engine().check.storyName(storyPath(b.file)), t = +b.t;
@@ -370,7 +387,8 @@ const server = http.createServer(async (req, res) => {
     if (p.startsWith('/api/')) {
       const h = api[`${req.method} ${p}`];
       if (!h) throw new HttpError(404, 'Unknown request.');
-      return json(res, 200, await h(url.searchParams, req));
+      const out = await h(url.searchParams, req, res);
+      return out === undefined ? undefined : json(res, 200, out);
     }
     if (req.method !== 'GET' && req.method !== 'HEAD') throw new HttpError(405, 'Not allowed.');
     const rel = p.replace(/^\/+/, '');
