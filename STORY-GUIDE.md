@@ -111,6 +111,20 @@ The amounts are in `config\voices.json` (`_moods` for moods, `_styles` for ways 
 | `<name> turns to you` | Faces the viewer |
 | `<name> turns to <other name>` | Turns toward the other character |
 | `<name> turns away` | Turns its back to you (the back view), until it next turns, walks or looks somewhere |
+| `<name> sits down` | Sits down on the spot (until it stands up) |
+| `<name> crouches` | Crouches low (until it stands up) |
+| `<name> stands up` | Gets up again after sitting or crouching |
+| `<name> leans closer` | Leans toward the other character for a moment (or `leans closer to yuki`); `leans back` leans away |
+| `<name> wobbles` | A small loss of balance, arms out, then steady again |
+| `<name> counts on its paws` | Both paws up in front, one tapping the other three times, eyes on the paws |
+| `<name> writes in the air` | A paw raised, tracing little loops, eyes following it |
+| `<name> holds out its paw` | Turns to the other character and holds out a paw for a moment (or `holds out its paw to ren`) |
+| `<name> touches paws with <other name>` | The two step close, turn to each other and touch paws (a soft chime), then step apart again |
+| `<name> stretches its paws wide` | Both arms out wide for a moment |
+| `<name> nods` | Two nods. `<name> shakes its head` shakes it no |
+| `<name> points at <other name>` | Points at someone, `you`, `the star` or a prop (`points at the lantern`); also `points up`, `points left`, `points right` |
+
+All of these blend smoothly into whatever comes next. Turning (to walk, to talk, to look, to turn away) goes through solid poses (front, three-quarter, side, back) with a tiny squash and blink at each switch, never a see-through mix of two.
 | `<name> hugs <other name>` | Goes over and hugs them: both turn to each other, look happy, and little hearts float up between them. Then they step apart again, still facing each other, and both stay happy (until a later line gives them another mood) |
 | `<name> tilts its head` | A curious head tilt |
 | `<name> feels sad` | Changes the mood until you change it again: any mood above, or `normal` |

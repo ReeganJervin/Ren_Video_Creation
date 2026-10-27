@@ -158,8 +158,45 @@
     if (bounce > 0 && !K.hopping) K.h += Math.abs(Math.sin(t * 6.5)) * 8 * bounce;
     if (shake > 0) { K.sy *= 1 + 0.025 * Math.sin(t * 16) * shake; K.tilt += Math.sin(t * 8) * 0.03 * shake; }
     if (tremble > 0) K.x += Math.sin(t * 43) * 2.2 * tremble;
+    // posed joints from the story's actions (sit, lean, point, count...): the "rig.<joint>" channels, then "sit" and "nod"
+    for (const k in a.keys) if (k.startsWith('rig.')) { const v = A_(id, k, t); if (v) (K.rig || (K.rig = {}))[k.slice(4)] = v; }
+    if (a.keys.sit) K.sit = A_(id, 'sit', t);
+    if (a.keys.nod) K.nod = A_(id, 'nod', t);
     springPose(id, t, K);
+    // a clean turn: as the drawing switches pose, a tiny squash and a blink
+    const sw = turnSwitch(id, t);
+    if (sw > 0) { K.sy *= 1 - 0.04 * sw; K.sx *= 1 + 0.03 * sw; K.blink = Math.max(K.blink, sw); }
     return K;
+  }
+
+  // ---------- clean turns ----------
+  // The drawings turn through solid poses (front, three-quarter, side, and back when turning away), switching where
+  // the turn (facing, or 2 × away past the side) crosses 0.3, 0.7 and 1.35. Near each crossing (within 0.05 s, while
+  // the character is really turning) the switch gets a tiny squash and a blink: 1 at the crossing, 0 at 0.05 s away.
+  const TURN_SWITCHES = [0.3, 0.7, 1.35];
+  // facing at t, with the small turn toward whoever is talking (as in actorState)
+  function facingAt(id, t) {
+    let f = A_(id, 'facing', t);
+    if (CAST.length > 1 && onStage(id, t)) {
+      const x = actorX(id, t);
+      for (const v of P.voice) {
+        if (v.who === 'narrator') continue;
+        const w = win(t, v.t - 0.25, v.t + v.len + 0.4, 0.35, 0.45); if (w <= 0) continue;
+        const other = v.who === id ? CAST.find(o => o !== id && onStage(o, t)) : v.who;
+        if (!other || other === id || !onStage(other, t)) continue;
+        f += (Math.sign(actorX(other, t) - x) || 1) * 0.2 * w * (v.who === id ? 0.5 : 1) * (1 - clamp(Math.abs(f) / 0.3));
+      }
+    }
+    return f;
+  }
+  function turnSwitch(id, t) {
+    if (REG[id].extra) return 0;
+    const a = P.actors[id], turn = u => Math.max(Math.abs(facingAt(id, u)), 2 * (a.keys.away ? A_(id, 'away', u) : 0));
+    const e0 = turn(t - 0.05), e1 = turn(t + 0.05);
+    if (Math.abs(e1 - e0) < 1e-4) return 0;
+    let s = 0;
+    for (const B of TURN_SWITCHES) if ((e0 - B) * (e1 - B) < 0) s = Math.max(s, 1 - Math.abs(t - (t - 0.05 + 0.1 * (B - e0) / (e1 - e0))) / 0.05);
+    return clamp(s);
   }
 
   // ---------- spring motion ----------

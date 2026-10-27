@@ -39,6 +39,9 @@
     '<name> enters [from left|right] [to left|center|right]', '<name> walks to left|center|right', '<name> walks to <other name>',
     '<name> exits [to] left|right', '<name> hops [twice]', '<name> waves', '<name> looks up|down|left|right|around|at you|at the star|at the heart',
     '<name> looks at <other name>', '<name> turns to you', '<name> turns to <other name>', '<name> turns away', '<name> tilts its head',
+    '<name> sits down', '<name> stands up', '<name> crouches', '<name> leans closer [to <other name>]', '<name> leans back', '<name> wobbles',
+    '<name> counts on its paws', '<name> writes in the air', '<name> holds out its paw [to <other name>]', '<name> touches paws with <other name>',
+    '<name> stretches its paws wide', '<name> nods', '<name> shakes its head', '<name> points at <other name>|you|the star|<prop>', '<name> points up|left|right',
     `<name> feels ${MOODS.join('|')}`, '<name> hugs <other name>', '<name> picks up the star', '<name> lets go of the star',
     '<name> raises its paws', '<name> lowers its paws', '<name> blinks', '<name> and <name> hop | wave | look at each other | feel <mood>',
     'star appears', 'star falls', 'star glows', 'star twinkles', 'star rises', 'star disappears',
@@ -76,6 +79,25 @@
     if (group && /^(?:look|turn)s? (?:at|to) each other$/.test(a)) return { type: /^turn/.test(a) ? 'turnTo' : 'lookAt', target: 'each other' };
     if (/^turns? to (you|the viewer|the camera)$/.test(a)) return { type: 'look', at: 'you' };
     if (/^turns? (away|around|its back|his back|her back)$/.test(a)) return { type: 'away' };
+    // the movement library (F3)
+    if (/^sits?( down)?$/.test(a)) return { type: 'sit' };
+    if (/^stands?( up)?$/.test(a)) return { type: 'stand' };
+    if (/^crouch(es)?( down)?$/.test(a)) return { type: 'crouch' };
+    if ((k = a.match(new RegExp(`^leans? (closer|in|forward)(?: to (${NAME}))?$`)))) return { type: 'lean', back: false, target: k[2] };
+    if (/^leans? back$/.test(a)) return { type: 'lean', back: true };
+    if (/^wobbles?$/.test(a)) return { type: 'wobble' };
+    if (/^counts? on (its |his |her |their )?paws$/.test(a)) return { type: 'count' };
+    if (/^writes? (something )?in the air$/.test(a)) return { type: 'write' };
+    if ((k = a.match(new RegExp(`^holds? out (?:its |his |her |their )?paws?(?: to (${NAME}))?$`)))) return { type: 'holdOut', target: k[1] };
+    if ((k = a.match(new RegExp(`^touch(?:es)? paws with (${NAME})$`)))) return { type: 'touch', target: k[1] };
+    if (group && /^touch paws( with each other)?$/.test(a)) return { type: 'touch', target: 'each other' };
+    if (/^stretch(es)? (its |his |her |their )?paws (wide|out)$/.test(a)) return { type: 'wide' };
+    if (/^nods?( yes)?$/.test(a)) return { type: 'nod' };
+    if (/^shakes? (its |his |her |their )?head( no)?$/.test(a)) return { type: 'headShake' };
+    if ((k = a.match(/^points? (up|left|right)$/))) return { type: 'point', at: k[1] };
+    if (/^points? (?:at|to) (you|the viewer|the camera)$/.test(a)) return { type: 'point', at: 'you' };
+    if (/^points? (?:at|to) (?:the )?star$/.test(a)) return { type: 'point', at: 'star' };
+    if ((k = a.match(/^points? (?:at|to) (?:the |a |an )?(.+)$/))) return { type: 'point', thing: ASSETS.norm(k[1]) };
     if ((k = a.match(new RegExp(`^turns? to (${NAME})$`)))) return { type: 'turnTo', target: k[1] };
     if (/^tilts? (its |his |her |their )?heads?$/.test(a)) return { type: 'tilt' };
     if ((k = a.match(new RegExp(`^(?:feels?|looks?|is|are) (${MOODS.join('|')}|calm)$`)))) return { type: 'mood', mood: k[1] === 'calm' ? 'normal' : k[1] };
@@ -409,13 +431,13 @@
         if (!b) return err(`I don't know how ${names} can "${a}".`);
         // a "thing" is another character or extra (then it's the usual action), or a prop or set piece
         if (b.thing) {
-          if (NAMES.includes(b.thing)) { b.target = b.thing; b.type = { walkToThing: 'walkTo', lookAtThing: 'lookAt', wave: 'wave' }[b.type]; delete b.thing; }
+          if (NAMES.includes(b.thing)) { b.target = b.thing; b.type = { walkToThing: 'walkTo', lookAtThing: 'lookAt', wave: 'wave', point: 'point' }[b.type]; delete b.thing; }
           else {
             const asset = ASSETS.find(b.thing, 'prop');
             if (!asset) {
               const s = ASSETS.suggest(b.thing, [...ASSETS.all('prop').flatMap(x => x.names), ...NAMES]);
               if (s) return err(`I don't know "${b.thing}". Did you mean "${s}"?`);
-              needs('prop', b.thing, { walkToThing: 'walks to', lookAtThing: 'looks at', wave: 'waves at' }[b.type], { size: ASSETS.guessSize(b.thing) });
+              needs('prop', b.thing, { walkToThing: 'walks to', lookAtThing: 'looks at', wave: 'waves at', point: 'points at' }[b.type], { size: ASSETS.guessSize(b.thing) });
             }
           }
         }
@@ -544,6 +566,8 @@
     let star = { state: 'none', x: 0, y: 0, r: 20 };
     let t = 0.6, prevStart = 0.6;
     const voiceWins = [];
+    // a channel only stories that use it have (joint poses "rig.<joint>", "sit", "nod"): created when first used
+    const pose = (a, k, t, v, dur = 0.35) => { (a.ch[k] = a.ch[k] || []).push({ t, v, dur }); };
     const set = (a, k, t, v, dur = 0.4) => {
       // anything that turns a character (facing) also ends turning away
       if (k === 'facing' && a.away && t >= a.away) { a.ch.away.push({ t, v: 0, dur }); a.away = 0; }
@@ -787,6 +811,79 @@
           });
           dur = 2.6; break;
         }
+        // ---- the movement library (F3): poses on joint channels ("rig.<joint>"), "sit" and "nod", which only stories
+        // that use them have; every pose eases in and out (about 0.3 s), so actions blend into each other ----
+        case 'sit': who.forEach(a => { pose(a, 'sit', s, 1, 0.55); a.ch.crouch.push({ t: s, v: 1, dur: 0.3 }); }); dur = 0.8; break;
+        case 'stand': who.forEach(a => { pose(a, 'sit', s, 0, 0.5); pose(a, 'rig.spine', s, 0, 0.4); a.ch.crouch.push({ t: s, v: 1, dur: 0.4 }); }); dur = 0.7; break;
+        case 'crouch': who.forEach(a => { pose(a, 'sit', s, 0.55, 0.4); a.ch.crouch.push({ t: s, v: 0.94, dur: 0.4 }); }); dur = 0.6; break;
+        case 'lean': who.forEach(a => {
+          // toward the other character (or forward), held for a moment, then upright again
+          const o = b.target ? A[b.target] : others(a)[0], dir = o ? toward(a, o) : (a.x >= 960 ? -1 : 1), v = (b.back ? -0.13 : 0.2) * dir;
+          if (o && !b.back) set(a, 'facing', s, dir * 0.35, 0.35);
+          pose(a, 'rig.spine', s, v, 0.4); pose(a, 'rig.neck', s, v * 0.4, 0.4);
+          pose(a, 'rig.spine', s + 2.0, 0, 0.5); pose(a, 'rig.neck', s + 2.0, 0, 0.5);
+        }); dur = 0.7; break;
+        case 'wobble': who.forEach(a => {
+          // a small loss of balance (arms out), then steady again
+          [[0, 0.14, 0.18], [0.25, -0.1, 0.22], [0.52, 0.06, 0.2], [0.78, 0, 0.25]].forEach(([d, v, dd]) => pose(a, 'rig.hips', s + d, v, dd));
+          set(a, 'armL', s, 0.95, 0.2); set(a, 'armR', s, 0.95, 0.2); set(a, 'armL', s + 0.85, ARM_R, 0.3); set(a, 'armR', s + 0.85, ARM_R, 0.3);
+        }); dur = 1.1; break;
+        case 'count': who.forEach(a => {
+          // both paws up in front of the chest, one tapping the other three times, eyes on the paws
+          set(a, 'armL', s, 0.25, 0.35); set(a, 'armR', s, 0.25, 0.35); pose(a, 'rig.elbowL', s, 1.9, 0.35); pose(a, 'rig.elbowR', s, 1.9, 0.35);
+          set(a, 'lookY', s, 0.6, 0.3); set(a, 'lookX', s, 0, 0.3);
+          [0.55, 1.0, 1.45].forEach((d, i) => { set(a, 'armL', s + d, 0.5, 0.12); set(a, 'armL', s + d + 0.18, 0.25, 0.14); pose(a, 'nod', s + d, 4, 0.1); pose(a, 'nod', s + d + 0.15, 0, 0.12); });
+          set(a, 'armL', s + 2.0, ARM_R, 0.4); set(a, 'armR', s + 2.0, ARM_R, 0.4); pose(a, 'rig.elbowL', s + 2.0, 0, 0.4); pose(a, 'rig.elbowR', s + 2.0, 0, 0.4); set(a, 'lookY', s + 2.0, 0, 0.4);
+        }); dur = 2.3; break;
+        case 'write': who.forEach(a => {
+          // a paw up high, tracing little loops in the air, eyes following it
+          set(a, 'armR', s, 1.9, 0.35); pose(a, 'rig.elbowR', s, -0.5, 0.35); pose(a, 'rig.reachR', s, 16, 0.35); set(a, 'lookY', s, -0.5, 0.3); set(a, 'lookX', s, 0.7, 0.3);
+          for (let i = 0; i < 8; i++) { set(a, 'armR', s + 0.4 + i * 0.2, i % 2 ? 2.05 : 1.8, 0.18); pose(a, 'rig.elbowR', s + 0.4 + i * 0.2, i % 2 ? -0.25 : -0.85, 0.18); }
+          set(a, 'armR', s + 2.1, ARM_R, 0.4); pose(a, 'rig.elbowR', s + 2.1, 0, 0.4); pose(a, 'rig.reachR', s + 2.1, 0, 0.4); set(a, 'lookY', s + 2.1, 0, 0.4); set(a, 'lookX', s + 2.1, 0, 0.4);
+        }); dur = 2.4; break;
+        case 'holdOut': who.forEach(a => {
+          // the near paw held out toward the other (the near arm is the right one whenever a character is turned)
+          const o = b.target ? A[b.target] : others(a)[0], dir = o ? toward(a, o) : (a.x >= 960 ? -1 : 1);
+          set(a, 'facing', s, dir * 0.45, 0.35); set(a, 'armR', s, 1.35, 0.35); pose(a, 'rig.elbowR', s, -0.15, 0.35);
+          set(a, 'armR', s + 2.6, holder === a.id ? -1.2 : ARM_R, 0.4); pose(a, 'rig.elbowR', s + 2.6, 0, 0.4);
+        }); dur = 0.8; break;
+        case 'touch': {
+          // the two step close, turn to each other and touch paws (a soft chime), then step apart again
+          const [a, o] = b.target === 'each other' ? who : [who[0], A[b.target]];
+          const c = (a.x + o.x) / 2, d = pairUp(a, o, s, c, 230, false), p = s + Math.max(0, d - 0.3), dir = toward(a, o);
+          [[a, dir], [o, -dir]].forEach(([q, d2]) => {
+            closeLook(q, p); set(q, 'facing', p, d2 * 0.45, 0.3); set(q, 'lookX', p, d2 * 0.6, 0.3);
+            set(q, 'armR', p, 1.3, 0.35); pose(q, 'rig.elbowR', p, 0.12, 0.35);
+            set(q, 'armR', p + 1.4, holder === q.id ? -1.2 : ARM_R, 0.4); pose(q, 'rig.elbowR', p + 1.4, 0, 0.4); set(q, 'lookX', p + 1.4, 0, 0.4);
+            q.out.exprs.push({ a: p + 0.2, b: p + 1.6, mood: 'happy' }); q.toYou = false;
+          });
+          sfx('twinkle', p + 0.35, { midi: 88, gain: 0.12 });
+          dur = (p - s) + 1.6 + pairUp(a, o, p + 1.6, c, GAP, false);
+          break;
+        }
+        case 'wide': who.forEach(a => {
+          set(a, 'armL', s, 1.5, 0.4); set(a, 'armR', s, 1.5, 0.4); set(a, 'lookY', s, -0.2, 0.4);
+          set(a, 'armL', s + 1.7, ARM_R, 0.45); set(a, 'armR', s + 1.7, ARM_R, 0.45); set(a, 'lookY', s + 1.7, 0, 0.45);
+        }); dur = 2.0; break;
+        case 'nod': who.forEach(a => {   // (two nods, the eyes dipping with the head)
+          [[0, 15, 0.16], [0.22, 0, 0.16], [0.44, 15, 0.16], [0.66, 0, 0.2]].forEach(([d, v, dd]) => pose(a, 'nod', s + d, v, dd));
+          set(a, 'lookY', s, 0.7, 0.16); set(a, 'lookY', s + 0.66, 0, 0.2);
+        }); dur = 0.9; break;
+        case 'headShake': who.forEach(a => {
+          [[0, 1], [0.18, -1], [0.36, 1], [0.54, -1], [0.72, 0]].forEach(([d, v]) => { set(a, 'lookX', s + d, v * 0.8, 0.15); pose(a, 'rig.neck', s + d, v * 0.09, 0.15); set(a, 'facing', s + d, v * 0.14, 0.15); });
+        }); dur = 1.0; break;
+        case 'point': who.forEach(a => {
+          // the arm points the way: at someone, a prop, the star, you, or up / left / right
+          const p = b.target ? A[b.target] : b.thing ? props[b.thing] : b.at === 'star' ? (star.state !== 'none' ? { x: star.x, y: star.y } : null) : null;
+          if ((b.target || b.thing || b.at === 'star') && !p) { errors.push(`Line ${b.line}: there is no ${b.thing || b.target || 'star'} here.`); return; }
+          const sy = feetY(a.x) - 122 * KS;
+          const tx = p ? p.x : b.at === 'left' ? a.x - 600 : b.at === 'right' ? a.x + 600 : a.x, ty = p ? (p.y !== undefined ? p.y - (b.target ? 200 * KS : 30) : feetY(p.x) - 200 * KS) : b.at === 'up' ? sy - 600 : sy;
+          const dir = Math.sign(tx - a.x) || 0, ang = b.at === 'you' ? 1.0 : b.at === 'up' ? 2.55 : Math.atan2(Math.abs(tx - a.x), -(sy - ty));
+          if (dir) { set(a, 'facing', s, dir * 0.45, 0.35); set(a, 'lookX', s, dir * 0.8, 0.3); }
+          set(a, 'lookY', s, b.at === 'up' ? -1 : 0, 0.3);
+          set(a, 'armR', s, Math.min(2.6, Math.max(0.6, ang)), 0.35); pose(a, 'rig.elbowR', s, 0, 0.3); pose(a, 'rig.reachR', s, b.at === 'up' ? 24 : 14, 0.35); pose(a, 'rig.reachR', s + 1.9, 0, 0.4);
+          set(a, 'armR', s + 1.9, holder === a.id ? -1.2 : ARM_R, 0.4); set(a, 'lookX', s + 1.9, 0, 0.4); set(a, 'lookY', s + 1.9, 0, 0.4);
+        }); dur = 0.8; break;
         case 'away':
           // the back view (a channel only stories that turn away have, so other plans stay as they are)
           who.forEach(a => { a.ch.away = a.ch.away || []; a.ch.away.push({ t: s, v: 1, dur: 0.45 }); a.away = s + 0.01; });
@@ -1130,7 +1227,7 @@
       o.twitches = []; for (let w = 3.0 + n * 1.3, i = 0; w < duration - 1; w += 5 + hash(i + 50 + seed) * 3, i++) o.twitches.push(w);
       const init = { facing: o.firstFacing, lookX: 0, lookY: 0, tilt: 0, armL: ARM_R, armR: ARM_R, crouch: 1, air: 1, away: 0 };
       o.keys = {};
-      for (const k in A[id].ch) o.keys[k] = keysFrom(init[k], A[id].ch[k]);
+      for (const k in A[id].ch) o.keys[k] = keysFrom(k in init ? init[k] : 0, A[id].ch[k]);
     });
     const tau0 = TIMES[meta.time];
     const gInit = { tau: tau0, zoom: 1, bright: 0.9 }, keys = {};

@@ -18,7 +18,7 @@
   // ---------- the rig ----------
   // Yuki stands on the same joint hierarchy as Ren (engine/ren.js): hips → spine → neck (→ head); shoulder → elbow →
   // paw; hip → foot (her legs are hidden in her round body); the tail (tail1 wiggles the cotton tail); an ear chain
-  // (her ears already bend along their length: earTipL/R curls the upper ear further). Angles in K.rig (radians,
+  // (her ears already bend along their length: earTipL/R curls the upper ear further). reachL/R lengthens an arm (pointing). Angles in K.rig (radians,
   // missing = 0); every angle is 0 at rest and a joint at 0 changes nothing, so the rest pose is drawn exactly as before.
   const J = (K, name) => (K.rig && K.rig[name]) || 0;
   function pivot(c, x, y, a) { if (!a) return; c.translate(x, y); c.rotate(a); c.translate(-x, -y); }
@@ -355,8 +355,10 @@
   }
   // Head pivot on the neck; the head is drawn 10% larger than its path coordinates.
   const HS = 1.1, HY = -183;
-  // (proud lifts the head a little: chin up)
-  function headFrame(c, K, dx) { c.translate(0, -112 - 6 * (K.lift || 0)); c.rotate(K.tilt); c.translate(dx, HY + 112); c.scale(HS, HS); }
+  // (proud lifts the head a little: chin up; K.nod lowers it, in pixels, for nodding)
+  function headFrame(c, K, dx) { c.translate(0, -112 - 6 * (K.lift || 0) + (K.nod || 0)); c.rotate(K.tilt); c.translate(dx, HY + 112); c.scale(HS, HS); }
+  // K.sit (0..1): sitting down (1) or crouching (about 0.45) lowers her round body; the feet stay on the ground, a little apart
+  const sitDrop = K => 30 * (K.sit || 0);
   // a point given in head coordinates, in body coordinates (ignoring tilt) — used to send paws to the face
   const headPt = (dx, x, y) => [dx + HS * x, HY + HS * y];
 
@@ -453,7 +455,7 @@
   }
   function drawFeet(c, K, xs) {
     xs.forEach((x0, k) => {
-      const ph = K.phase + (k ? Math.PI : 0), lx = x0 + Math.sin(ph) * 8 * K.walk, lift = Math.max(0, Math.cos(ph)) * 6 * K.walk;
+      const ph = K.phase + (k ? Math.PI : 0), lx = x0 + Math.sin(ph) * 8 * K.walk + (k ? 1 : -1) * 7 * (K.sit || 0), lift = Math.max(0, Math.cos(ph)) * 6 * K.walk + sitDrop(K);
       c.save(); pivot(c, x0, -46, J(K, k ? 'hipR' : 'hipL'));   // the hidden leg swings the foot from inside the body
       path(c, () => c.ellipse(lx, -11 - lift, 22, 13, 0, 0, Math.PI * 2)); fillStroke(c, C.fur);
       c.strokeStyle = C.furD; c.lineWidth = 2.5;
@@ -463,6 +465,7 @@
   }
   function drawFront(c, K) {
     pivot(c, 0, -40, J(K, 'hips'));
+    if (K.sit) c.translate(0, sitDrop(K));
     drawFeet(c, K, [-24 + K.f * 6, 24 + K.f * 6]);
     c.translate(0, -Math.abs(Math.sin(K.phase)) * 4 * K.walk);
     pivot(c, 0, -50, J(K, 'spine'));
@@ -476,7 +479,7 @@
     bow(c, K.f * 14, -98, 1.25);
     const dx = K.f * 6;
     const tgt = K.pawPose === 'cheeks' ? [headPt(dx, -22, 48), headPt(dx, 22, 48)] : K.pawPose === 'yawn' ? [null, headPt(dx, 8 + K.f * 22, 36)] : K.pawPose === 'chin' ? [null, headPt(dx, 14 + K.f * 22, 58)] : [null, null];
-    [-1, 1].forEach((i, k) => { const S = [i * 48 + K.f * 4, -88]; armFrom(c, S, [i * 36 + K.f * 4, -86], toward(pawFrom(S, i < 0 ? K.armL : K.armR, i, 34, 1.1, J(K, i < 0 ? 'elbowL' : 'elbowR')), tgt[k], K), i); });
+    [-1, 1].forEach((i, k) => { const S = [i * 48 + K.f * 4, -88]; armFrom(c, S, [i * 36 + K.f * 4, -86], toward(pawFrom(S, i < 0 ? K.armL : K.armR, i, 34 + 0.6 * J(K, i < 0 ? 'reachL' : 'reachR'), 1.1, J(K, i < 0 ? 'elbowL' : 'elbowR')), tgt[k], K), i); });
   }
 
   // ---------- THREE-QUARTER view (0.3 <= |f| < 0.7), drawn facing right ----------
@@ -524,6 +527,7 @@
   }
   function drawThree(c, K) {
     pivot(c, 0, -40, J(K, 'hips'));
+    if (K.sit) c.translate(0, sitDrop(K));
     c.save(); pivot(c, -50, -42, J(K, 'tail1')); cottonTail(c, -66, -40, 20); c.restore();
     drawFeet(c, K, [-18, 30]);
     c.translate(0, -Math.abs(Math.sin(K.phase)) * 4 * K.walk);
@@ -538,7 +542,7 @@
     bow(c, 20, -98, 1.15);
     const tgt = K.pawPose === 'cheeks' ? [headPt(6, -14, 48), headPt(6, 66, 44)] : K.pawPose === 'yawn' ? [null, headPt(6, 46, 36)] : K.pawPose === 'chin' ? [null, headPt(6, 50, 54)] : [null, null];
     const sh = [[-46, -88], [54, -88]], inner = [[-36, -86], [44, -86]];
-    [-1, 1].forEach((i, k) => armFrom(c, sh[k], inner[k], toward(pawFrom(sh[k], i < 0 ? K.armL : K.armR, i, k ? 30 : 34, 1.1, J(K, i < 0 ? 'elbowL' : 'elbowR')), tgt[k], K), i));
+    [-1, 1].forEach((i, k) => armFrom(c, sh[k], inner[k], toward(pawFrom(sh[k], i < 0 ? K.armL : K.armR, i, (k ? 30 : 34) + 0.6 * J(K, i < 0 ? 'reachL' : 'reachR'), 1.1, J(K, i < 0 ? 'elbowL' : 'elbowR')), tgt[k], K), i));
   }
 
   // ---------- SIDE profile (|f| >= 0.7), drawn facing right ----------
@@ -631,11 +635,12 @@
   }
   function drawSide(c, K) {
     pivot(c, -4, -40, J(K, 'hips'));
+    if (K.sit) c.translate(0, sitDrop(K));
     // round cotton tail at the lower back
     c.save(); pivot(c, -54, -40, J(K, 'tail1')); cottonTail(c, -70, -38, 21); c.restore();
     // small feet with one slightly forward
     [[-14, Math.PI, true], [14, 0, false]].forEach(([x0, off, far]) => {
-      const ph = K.phase + off, lx = x0 + Math.sin(ph) * 8 * K.walk, lift = Math.max(0, Math.cos(ph)) * 5 * K.walk;
+      const ph = K.phase + off, lx = x0 + Math.sin(ph) * 8 * K.walk + 10 * (K.sit || 0), lift = Math.max(0, Math.cos(ph)) * 5 * K.walk + sitDrop(K);
       c.save(); pivot(c, x0, -46, -J(K, far ? 'hipL' : 'hipR'));
       path(c, () => c.ellipse(lx + 4, -8 - lift, 20, 10, 0, 0, Math.PI * 2)); fillStroke(c, C.fur);
       if (far) { c.fillStyle = 'rgba(200,150,160,0.25)'; c.fill(); }
@@ -650,7 +655,7 @@
     collar(c, 26, 1);
     c.save(); pivot(c, 12, -112, J(K, 'neck')); drawSideHead(c, K); c.restore();
     // the arm is a short curve drawn INSIDE the body outline hanging at the front
-    const S = [22, -92], ang = K.armR, a = ang < 0 ? 0.7 - ang * 0.35 : ang + 0.15, len = 44, el = J(K, 'elbowR');
+    const S = [22, -92], ang = K.armR, a = ang < 0 ? 0.7 - ang * 0.35 : ang + 0.15, len = 44 + 0.6 * J(K, 'reachR'), el = J(K, 'elbowR');
     const E = el ? [S[0] + len / 2 * Math.sin(a), S[1] + len / 2 * Math.cos(a)] : null;
     const P = el ? [E[0] + len / 2 * Math.sin(a + el), E[1] + len / 2 * Math.cos(a + el)] : [S[0] + len * Math.sin(a), S[1] + len * Math.cos(a)];
     const tgt = K.pawPose === 'cheeks' ? headPt(4, 56, 38) : K.pawPose === 'yawn' ? headPt(4, 74, 38) : K.pawPose === 'chin' ? headPt(4, 50, 52) : null;
@@ -670,6 +675,7 @@
   function drawBack(c, K) {
     const B = backOf(K);
     pivot(c, 0, -40, J(B, 'hips'));
+    if (K.sit) c.translate(0, sitDrop(K));
     drawFeet(c, B, [-24, 24]);
     c.translate(0, -Math.abs(Math.sin(K.phase)) * 4 * K.walk);
     pivot(c, 0, -50, J(B, 'spine'));
@@ -696,7 +702,6 @@
   // ---------- views ----------
   const VIEWS = { front: drawFront, three: drawThree, side: drawSide, back: drawBack };
   const viewAt = a => (a < 0.3 ? 'front' : a < 0.7 ? 'three' : 'side');
-  const FADES = [[0.26, 0.34], [0.65, 0.75]];   // brief crossfades around the switch points
   // Three-quarter and side views are drawn facing right; facing left mirrors them.
   // `flipped` tells the turned views we see Yuki's left side, so the flower on her left ear is on the near side
   const mirror = K => ({ ...K, f: -K.f, lookX: -K.lookX, tilt: -K.tilt, earL: K.earR, earR: K.earL, flipped: true,
@@ -719,27 +724,16 @@
     c.restore();
   }
 
-  let bufs = null;
-  // K.away: 0 facing as usual .. 1 turned away (the back view); the two cross-fade while turning
+  // Turning goes through solid poses, never a cross-fade: front → three-quarter → side, and on to the back view when
+  // turning away (K.away 0..1 continues the turn past the side: half-way is the side, 0.65 and more the back). The
+  // film adds a tiny squash and a blink at each switch.
+  const turnOf = K => Math.max(Math.abs(K.f), 2 * (K.away || 0));
   function drawYuki(c, K) {
-    const a = Math.abs(K.f), aw = K.away || 0, fade = FADES.find(([lo, hi]) => a > lo && a < hi);
-    if (aw >= 0.65) return drawView(c, K, 'back');
-    const turning = aw > 0.35;
-    if ((!fade && !turning) || typeof document === 'undefined') return drawView(c, K, aw > 0.5 ? 'back' : viewAt(a));
-    // crossfade: draw both views off-screen, lay the nearer one down fully and the other on top
-    const W = c.canvas.width, H = c.canvas.height, w = turning ? (aw - 0.35) / 0.3 : (a - fade[0]) / (fade[1] - fade[0]);
-    if (!bufs || bufs[0].width !== W || bufs[0].height !== H) bufs = [0, 1].map(() => Object.assign(document.createElement('canvas'), { width: W, height: H }));
-    const m = c.getTransform(), views = turning ? [viewAt(a), 'back'] : [viewAt(fade[0]), viewAt(fade[1])];
-    views.forEach((v, i) => {
-      const b = bufs[i].getContext('2d');
-      b.setTransform(1, 0, 0, 1, 0, 0); b.clearRect(0, 0, W, H); b.setTransform(m);
-      drawView(b, K, v);
-    });
-    const [base, top, alpha] = w < 0.5 ? [0, 1, w * 2] : [1, 0, (1 - w) * 2];
-    c.save(); c.setTransform(1, 0, 0, 1, 0, 0);
-    c.drawImage(bufs[base], 0, 0);
-    c.globalAlpha *= alpha; c.drawImage(bufs[top], 0, 0);
-    c.restore();
+    const e = turnOf(K);
+    if (e >= 1.35) return drawView(c, K, 'back');
+    // turning away from the front: on the way to the back, the view turns with it (the side it was facing)
+    const a = Math.abs(K.f), V = e > a ? { ...K, f: (K.f < 0 ? -1 : 1) * Math.min(e, 0.9) } : K;
+    drawView(c, V, viewAt(Math.min(e, 0.9)));
   }
 
   root.YukiCharacter = { drawYuki, C };

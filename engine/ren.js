@@ -16,7 +16,8 @@
   // Ren stands on a joint hierarchy: hips → spine → neck (→ head); shoulder → elbow → paw on each side; hip → knee →
   // foot on each side; a tail chain (its root, then tail1..tail3) and an ear chain (base, then tip) per ear. A joint
   // turns everything that hangs from it about its pivot. Angles are in K.rig (radians, missing = 0): hips, spine,
-  // neck, elbowL/R (+ folds the forearm in), hipL/R and kneeL/R (+ swings forward), tail1..3, earTipL/R. Every angle
+  // neck, elbowL/R (+ folds the forearm in), hipL/R and kneeL/R (+ swings forward), tail1..3, earTipL/R (and reachL/R,
+  // in pixels: a pointing arm stretches a little). Every angle
   // is 0 at rest, and a joint at 0 changes nothing, so the rest pose is drawn exactly as before. Pivots are in each
   // view's own body coordinates (feet at 0, 0; turned views drawn facing right). scarf turns the scarf's hanging ends
   // about the knot (they follow the body with a spring; see film.js).
@@ -104,16 +105,16 @@
   function drawLegs(c, K) {
     const dir = K.f >= 0 ? 1 : -1;
     [-1, 1].forEach(i => {
-      const ph = i < 0 ? K.phase : K.phase + Math.PI;
-      const lx = i * 23 + K.f * 6 + Math.sin(ph) * 13 * K.walk * dir;
-      const lift = Math.max(0, Math.cos(ph)) * 9 * K.walk;
+      const ph = i < 0 ? K.phase : K.phase + Math.PI, drop = sitDrop(K);
+      const lx = i * (23 + 8 * (K.sit || 0)) + K.f * 6 + Math.sin(ph) * 13 * K.walk * dir;
+      const lift = Math.max(0, Math.cos(ph)) * 9 * K.walk + drop;   // (sitting: the body is lowered, the feet stay on the ground)
       // dark brown socks fading into the orange
-      const g = c.createLinearGradient(0, -66 - lift, 0, -lift);
+      const g = c.createLinearGradient(0, -66 - lift + drop, 0, -lift);
       g.addColorStop(0, C.fur); g.addColorStop(0.3, C.fur); g.addColorStop(0.62, C.paw); g.addColorStop(1, C.paw);
       const hip = J(K, i < 0 ? 'hipL' : 'hipR'), knee = J(K, i < 0 ? 'kneeL' : 'kneeR');
       c.save();
-      if (!hip && !knee) { c.beginPath(); c.roundRect(lx - 16, -66 - lift, 32, 66, [14, 14, 13, 13]); fillStroke(c, g); }
-      else bentLeg(c, lx, -66 - lift, -lift, 16, hip * dir, -knee * dir, g, () => { c.beginPath(); c.roundRect(lx - 16, -66 - lift, 32, 40, 14); });
+      if (!hip && !knee) { c.beginPath(); c.roundRect(lx - 16, -66 - lift + drop, 32, 66 - drop, [14, 14, 13, 13]); fillStroke(c, g); }
+      else bentLeg(c, lx, -66 - lift + drop, -lift, 16, hip * dir, -knee * dir, g, () => { c.beginPath(); c.roundRect(lx - 16, -66 - lift + drop, 32, 40 - drop * 0.6, 14); });
       c.strokeStyle = 'rgba(255,220,190,0.35)'; c.lineWidth = 2;
       [-5, 5].forEach(o => { c.beginPath(); c.moveTo(lx + o, -lift - 3); c.lineTo(lx + o, -lift - 10); c.stroke(); });
       c.restore();
@@ -499,8 +500,10 @@
   function shade(c, x, y, rx, ry, a) { c.save(); c.fillStyle = C.furD; c.globalAlpha = a; c.beginPath(); c.ellipse(x, y, rx, ry, 0, 0, Math.PI * 2); c.fill(); c.restore(); }
   const topTuft = (c, dx) => { c.moveTo(dx - 22, -70); tufts(c, [dx - 22, -70], [[dx - 12, -92], [dx - 4, -82], [dx + 6, -98], [dx + 10, -84], [dx + 22, -92], [dx + 24, -70]], 4, -1); c.closePath(); };
   // Head pivot: shared by every view so the head sits on the neck the same way.
-  // (proud lifts the head a little: chin up)
-  function headFrame(c, K, dx) { c.translate(0, -142 - 6 * (K.lift || 0)); c.rotate(K.tilt); c.translate(dx, -68); }
+  // (proud lifts the head a little: chin up; K.nod lowers it, in pixels, for nodding)
+  function headFrame(c, K, dx) { c.translate(0, -142 - 6 * (K.lift || 0) + (K.nod || 0)); c.rotate(K.tilt); c.translate(dx, -68); }
+  // K.sit (0..1): sitting down (1) or crouching (about 0.45) lowers the body; the legs fold under it
+  const sitDrop = K => 46 * (K.sit || 0);
 
   // ---------- FRONT view (|f| < 0.3) ----------
   // Round head with small orange cheek tufts and a little tuft on top. Below the eyes it is never
@@ -560,7 +563,7 @@
   function drawArm(c, i, ang, K, chin) {
     // resting arms hang along the sides with the paws by the hips; folded in (holding) they are shorter
     const S = [i * 44 + K.f * 4, -122];
-    let len = 64 - 16 * clamp(-ang / 1.2), rot = i < 0 ? ang : -ang;
+    let len = 64 - 16 * clamp(-ang / 1.2) + J(K, i < 0 ? 'reachL' : 'reachR'), rot = i < 0 ? ang : -ang;   // (reach: a pointing arm stretches a little)
     ({ rot, len } = toChin(S, rot, len, K, i > 0 && chin));
     c.save();
     c.translate(...S);
@@ -590,6 +593,7 @@
   function drawFront(c, K) {
     const side = K.f >= 0 ? 1 - 2 * K.f : 1;
     pivot(c, 0, -46, J(K, 'hips'));
+    if (K.sit) c.translate(0, sitDrop(K));
     drawTail(c, K, side * 26, Math.sign(side || 1) * Math.max(0.45, Math.abs(side)));
     drawLegs(c, K);
     c.translate(0, -Math.abs(Math.sin(K.phase)) * 5 * K.walk);
@@ -652,6 +656,7 @@
   function drawThree(c, K) {
     const B = { ...K, f: K.f * 1.6 };   // body turned a little further than the front pieces normally go
     pivot(c, 0, -46, J(K, 'hips'));
+    if (K.sit) c.translate(0, sitDrop(K));
     drawTail(c, K, -28, -0.7);
     drawLegs(c, B);
     c.translate(0, -Math.abs(Math.sin(K.phase)) * 5 * K.walk);
@@ -759,7 +764,7 @@
       const ph = K.phase + off, lx = x0 + Math.sin(ph) * 14 * K.walk, lift = Math.max(0, Math.cos(ph)) * 9 * K.walk;
       const g = c.createLinearGradient(0, -62 - lift, 0, -lift);
       g.addColorStop(0, C.fur); g.addColorStop(0.3, C.fur); g.addColorStop(0.62, C.paw); g.addColorStop(1, C.paw);
-      const hip = J(K, far ? 'hipL' : 'hipR'), knee = J(K, far ? 'kneeL' : 'kneeR');
+      const hip = J(K, far ? 'hipL' : 'hipR') + 1.35 * (K.sit || 0), knee = J(K, far ? 'kneeL' : 'kneeR') + 1.4 * (K.sit || 0);
       if (!hip && !knee) {
         c.beginPath(); c.roundRect(lx - 13, -62 - lift, 26, 58, [11, 11, 8, 8]); c.ellipse(lx + 5, -8 - lift, 15, 8, 0, 0, Math.PI * 2);
         fillUnion(c, g, 3.5);
@@ -780,7 +785,7 @@
   // short bent arm hanging at the front with a dark paw at belly height
   function drawSideArm(c, ang, far, K) {
     const a = ang < 0 ? 0.7 - ang * 0.35 : ang, S = [far ? -12 : 6, -120];
-    const { rot, len } = toChin(S, -a - (far ? 0 : 0.12), 58 - 14 * clamp(-ang / 1.2), K, !far && [64, -160 - 6 * (K.lift || 0)]);
+    const { rot, len } = toChin(S, -a - (far ? 0 : 0.12), 58 - 14 * clamp(-ang / 1.2) + J(K, far ? 'reachL' : 'reachR'), K, !far && [64, -160 - 6 * (K.lift || 0)]);
     c.save();
     c.translate(...S);
     c.rotate(rot);
@@ -828,6 +833,7 @@
   function drawSide(c, K) {
     // big fluffy tail rising and curling up behind the body, with a white tip
     pivot(c, -6, -46, J(K, 'hips'));
+    if (K.sit) c.translate(0, sitDrop(K));
     drawTail(c, K, -42, -0.95);
     drawSideArm(c, K.armL, true, K);
     drawSideLegs(c, K);
@@ -870,6 +876,7 @@
   function drawBack(c, K) {
     const B = backOf(K), side = K.f < 0 ? -1 : 1;
     pivot(c, 0, -46, J(B, 'hips'));
+    if (K.sit) c.translate(0, sitDrop(K));
     drawLegs(c, { ...B, f: 0 });
     c.translate(0, -Math.abs(Math.sin(K.phase)) * 5 * K.walk);
     pivot(c, 0, -60, J(B, 'spine'));
@@ -896,7 +903,6 @@
   // ---------- views ----------
   const VIEWS = { front: drawFront, three: drawThree, side: drawSide, back: drawBack };
   const viewAt = a => (a < 0.3 ? 'front' : a < 0.7 ? 'three' : 'side');
-  const FADES = [[0.26, 0.34], [0.65, 0.75]];   // brief crossfades around the switch points
   // Three-quarter and side views are drawn facing right; facing left mirrors them.
   // `flipped` tells the turned views we see Ren's left side, so one-sided details (the scarf knot) go to the far side
   const mirror = K => ({ ...K, f: -K.f, lookX: -K.lookX, tilt: -K.tilt, earL: K.earR, earR: K.earL, flipped: true,
@@ -919,27 +925,16 @@
     c.restore();
   }
 
-  let bufs = null;
-  // K.away: 0 facing as usual .. 1 turned away (the back view); the two cross-fade while turning
+  // Turning goes through solid poses, never a cross-fade: front → three-quarter → side, and on to the back view when
+  // turning away (K.away 0..1 continues the turn past the side: half-way is the side, 0.65 and more the back). The
+  // film adds a tiny squash and a blink at each switch.
+  const turnOf = K => Math.max(Math.abs(K.f), 2 * (K.away || 0));
   function drawRen(c, K) {
-    const a = Math.abs(K.f), aw = K.away || 0, fade = FADES.find(([lo, hi]) => a > lo && a < hi);
-    if (aw >= 0.65) return drawView(c, K, 'back');
-    const turning = aw > 0.35;
-    if ((!fade && !turning) || typeof document === 'undefined') return drawView(c, K, aw > 0.5 ? 'back' : viewAt(a));
-    // crossfade: draw both views off-screen, lay the nearer one down fully and the other on top
-    const W = c.canvas.width, H = c.canvas.height, w = turning ? (aw - 0.35) / 0.3 : (a - fade[0]) / (fade[1] - fade[0]);
-    if (!bufs || bufs[0].width !== W || bufs[0].height !== H) bufs = [0, 1].map(() => Object.assign(document.createElement('canvas'), { width: W, height: H }));
-    const m = c.getTransform(), views = turning ? [viewAt(a), 'back'] : [viewAt(fade[0]), viewAt(fade[1])];
-    views.forEach((v, i) => {
-      const b = bufs[i].getContext('2d');
-      b.setTransform(1, 0, 0, 1, 0, 0); b.clearRect(0, 0, W, H); b.setTransform(m);
-      drawView(b, K, v);
-    });
-    const [base, top, alpha] = w < 0.5 ? [0, 1, w * 2] : [1, 0, (1 - w) * 2];
-    c.save(); c.setTransform(1, 0, 0, 1, 0, 0);
-    c.drawImage(bufs[base], 0, 0);
-    c.globalAlpha *= alpha; c.drawImage(bufs[top], 0, 0);
-    c.restore();
+    const e = turnOf(K);
+    if (e >= 1.35) return drawView(c, K, 'back');
+    // turning away from the front: on the way to the back, the view turns with it (the side it was facing)
+    const a = Math.abs(K.f), V = e > a ? { ...K, f: (K.f < 0 ? -1 : 1) * Math.min(e, 0.9) } : K;
+    drawView(c, V, viewAt(Math.min(e, 0.9)));
   }
 
   root.RenCharacter = { drawRen, C };
