@@ -1205,5 +1205,7 @@
   // the safe-area check: faces, bubbles and captions of the frame just drawn
   // (the helpers take a Short's own time, like render)
   const layout = t => ({ faces: faces(storyTime(t)).map(q => ({ kind: 'face ' + q.id, ...q.box })), boxes: drawn });
-  window.StudioFilm = { init, render, faces: t => faces(storyTime(t)), pose: (id, t) => pose(id, storyTime(t)), mood: (id, t) => mood(id, storyTime(t)), frame, END_LAYOUT, layout, character };
+  window.StudioFilm = { init, render, faces: t => faces(storyTime(t)), pose: (id, t) => pose(id, storyTime(t)), mood: (id, t) => mood(id, storyTime(t)), frame, END_LAYOUT, layout, character,
+    // the meadow backdrop and the logo, for the channel art (tools/channel-art.js)
+    art: { backdrop, logo: drawLogo, bigText } };
 })();

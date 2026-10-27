@@ -785,3 +785,11 @@ Each effect has its own sound and uses the lighting system from F5. All of them 
 1. The roadmap is a living document. When a story needs something new, add a small step here (see section 0.5) rather than faking it.
 2. Produce Episodes 2–3 as one block, then keep the cycle going: **write → missing list → create → check → render → publish.**
 3. Throughout, publish **independent Shorts** (F7) while the episodes are in production.
+
+### Future step: Design 2.0 (closer to the owner's original character sheets)
+The owner's original sheets for Ren and Yuki (front, three-quarter, side, back, and the mood faces) have a softer, more detailed look than the engine's drawings. A test on 2026-10-27 (front views only, not committed) showed that the engine's way of drawing (paths, gradients, outlines) can get to about 85–90 % of it while keeping turning, every mood, lip-sync and the movement library. Using the original pictures directly was ruled out: too small for close shots, and every view, mood and mouth shape would need its own layered drawing.
+- **Yuki:** a smaller head and a real pear-shaped body, round paws held at the chest, a bigger open smile with the tongue, blush with little lines, the larger sakura with its ribbon.
+- **Ren:** ears that fade smoothly to dark brown tips, the white lower face reaching into soft cheek ruffs (keep today's fur edges, which already look good), the light marks above the eyes, a real bandana with a side knot and two ends, dark "socks" on the paws and feet, a longer body with short legs.
+- **Both:** a warmer, slightly thinner outline; soft shading under the head and down the sides.
+- **How:** about 4 review stops like F3 Part A (front; three-quarter; side and back; moods, mouths and the movement library), with old | new pictures and the owner's sheets side by side. Every video rendered afterwards gets the new look.
+- **When:** the owner decides (before Episode 1, or after Milestone 2).

@@ -1,0 +1,63 @@
+REN & YUKI: YOUR YOUTUBE CHANNEL
+=================================
+
+The pictures in this folder are made by:  node tools\channel-art.js
+(run it again any time; it draws Ren and Yuki exactly as they look in the videos)
+
+
+1. WHAT TO UPLOAD, AND WHERE
+----------------------------
+Open YouTube Studio (studio.youtube.com) > Customisation.
+
+  Branding tab
+    Picture ............ profile-picture-800.png      (YouTube shows it as a circle)
+    Banner image ....... banner-2560x1440.png         (YouTube asks you to check the crop: keep it as it is)
+    Video watermark .... watermark-150.png            (Display time: "Entire video" or "Custom start time: 0:05")
+
+  Basic info tab
+    Name, handle, description, links: see sections 2 to 5 below.
+
+  Only for checking (don't upload):
+    banner-preview-safe-areas.png   what TVs, computers and phones show of the banner
+    profile-preview-circle.png      the picture as a circle, big and small
+
+
+2. CHANNEL NAME
+---------------
+Ren & Yuki
+
+Handle (pick the first one that is free):
+  @RenAndYuki   @RenAndYukiTales   @RenYukiAdventures
+
+
+3. DESCRIPTION (copy and paste)
+-------------------------------
+Welcome to the meadow! 🦊🐰
+
+Ren is a brave little fox with a big heart. Yuki is a gentle bunny who notices everything. Together they explore enchanted forests, starry skies and secret places, and find out that every adventure is better with a friend.
+
+Ren & Yuki is a cozy animated series for the whole family: cute and gentle for little ones, with real feelings, mystery and heart for grown-ups too. No fighting, no scary surprises, just friendship, courage and a lot of laughs.
+
+📺 Episodes: "Ren & Yuki: The Secrets Beyond the Enchanted Forest"
+✨ Shorts: little moments from the meadow
+
+Subscribe and come along on the next adventure!
+
+
+4. CHANNEL KEYWORDS (Settings > Channel > Basic info > Keywords)
+----------------------------------------------------------------
+Ren and Yuki, cute animation, fox and bunny, family cartoon, kids animation, cozy stories, animated series, friendship stories, bedtime stories, kawaii animation, animated shorts, enchanted forest
+
+
+5. LINKS (optional)
+-------------------
+Add your Instagram here once it exists, for example:
+  Instagram: https://instagram.com/<your handle>
+
+
+6. GOOD TO KNOW
+---------------
+- "Made for Kids": YouTube asks this for the channel and for every video. It's your choice; the engine never
+  decides it for you. Videos for kids and adults together are often set to "No", but read YouTube's guidance first.
+- Channel trailer (Customisation > Layout): once Episode 1 is out, a 30–60 s Short or a cut from Episode 1 works well.
+- Every video already comes with its own thumbnail, subtitles, description draft and chapters (in its folder in videos\).

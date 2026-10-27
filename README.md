@@ -121,6 +121,7 @@ The results are in `videos\<name>\<name>-report.txt`. Each line starts with `PAS
 | `tools\story-check.js` | The story check and voice bookkeeping that `make-video.js` and the studio app share |
 | `studio\` | The studio app: `server\server.js` (the local server), `src\` (the screens, React + TypeScript), `tests\` (`node studio\tests\api.test.js` and `node studio\tests\e2e.test.js`) |
 | `tools\youtube.js` | The YouTube files: thumbnail, subtitles and description draft |
+| `tools\channel-art.js` | The YouTube channel's profile picture, banner and watermark, plus the channel texts, in `channel\` (`node tools\channel-art.js`) |
 | `tools\tidy-videos.js` | Moves the files of videos made before each video had its own folder into `videos\<story>\` |
 | `tools\end-screen-guide.js` | Draws `docs\youtube-end-screen.png`, which shows where YouTube's end-screen elements go |
 | `tools\scenes.js` | Chapters and the extra checks for stories with scenes |
