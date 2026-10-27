@@ -1,0 +1,268 @@
+# ============================================================
+#  Ren & Yuki - Episode 4: The Star Who Waited   (~8-9 min)
+#
+#  Save as:  stories\episode-04-the-star-who-waited.txt
+#  New in this episode: the FALLEN STAR, and the forest at night.
+#  Still saved for later: the cottage, the beach and the snowy hill.
+#  Callbacks: the old lantern (Episode 3), the owl's "a light that has
+#  never gone out" (Episode 2), the little rise in the meadow where
+#  Ren stood in Episode 1, "always bring a snack", Ren's "very local
+#  wind", and the explorer's rules (this episode adds rule eight).
+#  It ends on a new mystery for Episode 5: the lantern keeps glowing,
+#  pointing beyond the forest, toward the far hills.
+#
+#  Lines starting with "# LATER:" are simplified for now. When the
+#  engine learns those actions (F4 Part D: holding props), change
+#  only those lines and make the video again.
+# ============================================================
+
+title: The Star Who Waited
+editing: auto
+mood voices: on
+
+
+# ================= Scene 1 - The hook =================
+scene: The Heart of the Forest
+place: forest
+time: night
+music: mystery
+
+ren enters from left to left
++ yuki enters from left to center
+# LATER: Ren carries the lantern (F4 Part D)
+lantern appears next to ren
+the lantern glows
+ren (whispers): Yuki. This is the bravest thing I've ever done.
+yuki (whispers, playful): You said that about the bridge.
+ren (whispers, proud): The bridge was practice.
+beat
+narrator: Above them, at the very top of the oldest tree in the forest, something was shining. Something small, and tired, and very, very old.
+ren and yuki look up
+title card: REN AND YUKI
+narrator: But first, every great expedition needs to be prepared. Even the ones that happen at night.
+
+
+# ================= Scene 2 - Getting ready =================
+scene: Getting Ready
+place: meadow
+time: sunset
+music: happy
+
+ren walks to center
++ yuki walks to right
+ren turns to you
+ren (excited): Good evening, world! Day four of the legendary explorers! The night edition!
+yuki stretches
+yuki (happy): I had the best nap. I dreamed the river was singing to me.
+ren (proud): I didn't nap. I was preparing.
+yuki (playful): Preparing what?
+ren (proud): The most important part of any expedition.
+ren counts on his paws
+ren (proud): Snacks. More snacks. And a backup snack, in case the other snacks get lonely.
+yuki (laughing): Ren!
+ren (playful): Rule number three. Always bring a snack. I'm not making the same mistake twice.
+yuki (happy): And the lantern?
+ren (proud): Safe and sound, right here.
+# LATER: Ren holds up the lantern (F4 Part D)
+lantern appears next to ren
+yuki looks at the lantern
+yuki (thinking): It's not glowing.
+ren (thinking): It only glows when we hold it together. Remember?
+yuki walks to ren
+ren holds out his paw to yuki
+yuki touches paws with ren
+the lantern glows
+sparkles
+yuki (surprised): Oh! Look at the light!
+narrator: The lantern's light leaned toward the forest, the way a flower leans toward the sun.
+ren (excited): It's showing us the way!
+time: dusk
+music: adventure
+ren (determined): Explorers, are you ready?
+yuki (determined): Ready!
+ren (shy): Are my ears shaking?
+yuki (playful): A little.
+ren (proud): Excellent. That means they're ready too.
+
+
+# ================= Scene 3 - The forest at night =================
+scene: The Forest at Night
+place: forest
+time: night
+music: tense
+
+ren enters from left to left
++ yuki enters from left to center
+# LATER: Ren carries the lantern (F4 Part D)
+lantern appears next to ren
+the lantern glows
+narrator: The forest at night was not the same forest they knew. The trees were taller. The shadows were longer. And everything was very, very quiet.
+ren sneaks to center
+yuki sneaks to center
+yuki (whispers): Ren... the broccoli trees don't look like broccoli anymore.
+ren (whispers, worried): What do they look like?
+yuki (whispers, scared): Very big, very dark broccoli.
+owl flies in from right to right
+owl (shouts): HOO!
+camera: shake
+ren jumps in fright
++ yuki jumps in fright
+ren hides behind yuki
+owl: Oh. It's you two. Good evening, little explorers.
+yuki (surprised): Mister Owl! You scared us!
+owl: Owls are very good at that. It's in all the books.
+yuki turns to ren
+yuki (playful): Ren, I can still see you.
+ren peeks out
+ren (shy): I'm being brave from behind. It's a special kind of brave.
+owl lands
+owl: You lit the lantern. And you followed it. I hoped you would.
+ren (determined): We're going to find the little light, Mister Owl. Tonight.
+owl: Then listen. From here, the path goes under the old roots, where the branches hang low.
+owl: Go slowly. Speak softly. And whatever you find at the heart of the forest, be kind to it.
+yuki (worried): Is it dangerous?
+owl: Hoo. No, little one. It's lonely. And lonely things are very easy to frighten.
+owl takes off
+owl flies away
+yuki looks at ren
+yuki (thinking): Lonely. Like you were. Before we met.
+ren (shy): Like we both were.
+music: mystery
+ren crawls to right
++ yuki crawls to right
+narrator: They crept under the old roots, past sleepy mushrooms and curled-up ferns, deeper and deeper into the heart of the forest.
+
+
+# ================= Scene 4 - The star who waited =================
+scene: The Star Who Waited
+music: magical
+
+ren walks to left
++ yuki walks to right
+ren and yuki look up
+reveal: forest
+narrator: And there, at the very heart of the forest, stood the oldest tree of all. At the top of its highest branch, something tiny was shining.
+star appears
+yuki (whispers, surprised): Ren... it's a star.
+ren (whispers, surprised): A real star? In a tree?
+narrator: The little star flickered, as if it had heard them. Then, ever so gently, it let go of its branch.
+yuki looks up
+slow motion 3
+star falls
+music: heartfelt
+ren and yuki feel surprised
+yuki looks down
+ren walks to yuki
+yuki (worried): It's so dim. Ren, I think it's tired.
+the star glows
+narrator: The little star flickered weakly, then a little brighter, as if it was trying very hard to say something.
+ren leans closer to yuki
+ren (shy): Hello, little star. Have you been up there all alone?
+the star glows
+yuki (sad): How long have you been waiting?
+narrator: A long, long time ago, the little star had fallen from the sky. The old tree caught it, and held it safe.
+narrator: Every night, it shone as brightly as it could, so that someone, one day, might see it and come.
+narrator: For a hundred years, nobody did.
+ren feels sad
+ren (sad): A hundred years. That's a very long time to be alone.
+yuki (sad): That's why the owl said it was lonely.
+ren sits down
+ren looks at the star
+ren (sad): I know what it's like. Finding something wonderful, and turning around, and there's nobody there.
+yuki (shy): But somebody came this time.
+ren (shy): Two somebodies.
+ren gets up
+ren (determined): Little star, we're going to help you get home.
+yuki (determined): But how? The sky is so far away.
+ren (thinking): The owl said its light never went out. It just needs to be high enough. And brave enough.
+yuki (thinking): Somewhere high. Somewhere with nothing in the way.
+ren (excited): The hill! The little hill in the meadow! The highest place I know!
+yuki (happy): The place where your legendary journey began.
+ren (proud): You remembered!
+yuki picks up the star
+narrator: Yuki lifted the little star as gently as she could. It was warm, like holding a cup of cocoa.
+yuki (happy): It's warm, Ren. I think it likes us.
+ren (happy): Everyone likes us. We're very likeable.
+ren and yuki feel happy
+
+
+# ================= Scene 5 - Home to the sky =================
+scene: Home to the Sky
+place: meadow
+time: night
+music: epic
+
+narrator: They carried the little star out of the forest, over the soft grass, all the way to the top of the little hill.
+ren walks to center
+yuki walks to center
+ren looks up
+yuki looks up
+narrator: Above them, the whole sky was full of stars, shining and twinkling, as if they were all waiting for someone.
+yuki (surprised): Ren, look. They're all twinkling.
+ren (whispers, surprised): They're waiting for it. Its family is waiting.
+yuki looks at ren
+yuki (sad): I'm going to miss it. We only just met.
+ren (shy): Me too. But it's been waiting a hundred years to go home.
+ren (shy): Explorer's rule number eight. Sometimes the bravest thing is letting go.
+yuki (shy): You didn't make that one up just now, did you?
+ren (shy): No. That one I really mean.
+music: magical
+yuki lets go of the star
+narrator: Yuki opened her paws. And the little star rose, slowly at first, then faster, up and up, toward all the other stars.
+star twinkles
+sparkles
+yuki (excited): It's flying! Ren, it's going home!
+ren (excited): Goodbye, little star! Don't forget us!
+heart floats down
+narrator: Just before it disappeared among the others, the little star sent something back down. A small golden heart, warm and glowing.
+yuki (surprised): For us?
+ren (shy): I think it's saying thank you.
+music: heartfelt
+ren and yuki look at each other
+hearts float up
+yuki (happy): We did it. We really did it.
+ren (happy): The greatest discovery in the history of the meadow.
+yuki (playful): Better than the oldest leaf?
+ren (playful): Slightly better than the oldest leaf.
+
+
+# ================= Scene 6 - Something new =================
+scene: Something New
+music: mystery
+
+owl flies in from left to left
+owl: Hoo. You brought it home. Well done, little explorers.
+ren (proud): All part of the plan.
+yuki (playful): We didn't have a plan.
+ren (proud): Not having a plan was the plan.
+owl lands
+owl: A star never forgets who helped it home. Remember that.
+# LATER: Ren holds the lantern (F4 Part D)
+lantern appears next to ren
+the lantern glows
+yuki looks at the lantern
+yuki (surprised): Mister Owl... the lantern is still glowing. And we're not even touching it.
+ren (surprised): But the star is home. Why is it still glowing?
+owl: Hoo. Because the lantern was never only about the star.
+owl: Look which way it's pointing, little ones.
+ren and yuki look right
+camera: pan to right
+narrator: The lantern's light no longer leaned toward the forest. It leaned the other way.
+narrator: Past the river. Past the meadow. Toward the far, far hills, where the snow never melts.
+yuki (whispers): The far hills...
+ren (whispers, excited): Another secret.
+owl: The forest had one secret. The world has many more.
+owl takes off
+owl flies away
+camera: pan to center
+ren yawns
+yuki yawns
+yuki (sleepy): Ren?
+ren (sleepy): Mm?
+yuki (sleepy): Thank you for not giving up. On the bridge. On the lantern. On the star.
+ren (shy): Thank you for coming with me. Every single time.
+ren and yuki sit down
+ren and yuki feel sleepy
+narrator: That night, two little explorers fell asleep on top of the little hill, under a sky that had one more star in it than before.
+narrator: And if you looked very closely, one of those stars twinkled a little brighter than all the rest. Just for them.
+title card: THE FAR HILLS

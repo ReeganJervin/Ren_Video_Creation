@@ -1,0 +1,13 @@
+# ============================================================
+#  Episode Short: "Brave From Behind" from Episode 4, The Star Who Waited
+#  (something in the dark forest goes HOO!)
+#  Make it:  make-video.bat shorts\ep4-brave-from-behind.txt
+# ============================================================
+
+title: Brave From Behind
+type: episode short
+from: episode-04-the-star-who-waited
+lines: 100-117
+hook: Something in the dark forest...
+thumbnail text: Brave From Behind
+ending: Watch the full episode!

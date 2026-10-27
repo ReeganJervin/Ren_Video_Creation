@@ -1,0 +1,13 @@
+# ============================================================
+#  Episode Short: "The Sea Monster" from Episode 3, The Old Lantern
+#  (Ren crosses the tiny bridge... almost)
+#  Make it:  make-video.bat shorts\ep3-the-sea-monster.txt
+# ============================================================
+
+title: The Sea Monster
+type: episode short
+from: episode-03-the-old-lantern
+lines: 138-154
+hook: Ren vs. the tiny bridge
+thumbnail text: SEA MONSTER?!
+ending: Watch the full episode!

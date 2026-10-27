@@ -1,0 +1,291 @@
+# ============================================================
+#  Ren & Yuki - Episode 3: The Old Lantern   (~8 min)
+#
+#  Save as:  stories\episode-03-the-old-lantern.txt
+#  New in this episode: the RIVER and the OLD LANTERN.
+#  Still saved for later: the fallen star (Episode 4), the cottage,
+#  the beach and the snowy hill.
+#  Callbacks: the owl's secret ("a light that has never gone out"),
+#  the little light Ren and Yuki both saw at the end of Episode 2,
+#  the explorer's rules (this episode adds rule number seven),
+#  Ren's "very local wind", and "always bring a snack".
+#
+#  Lines starting with "# LATER:" are simplified for now. When the
+#  engine learns those actions (F4 Part D: holding props), change
+#  only those lines and make the video again.
+# ============================================================
+
+title: The Old Lantern
+editing: auto
+mood voices: on
+
+
+# ================= Scene 1 - The hook =================
+scene: A Light by the Water
+place: river
+time: night
+music: mystery
+
+ren enters from left to left
++ yuki enters from left to center
+lantern appears at right
+the lantern glows
+shot: wide
+yuki hides behind ren
+ren (whispers): Yuki... the lantern. It's glowing all by itself.
+yuki peeks out
+yuki (whispers, scared): Lanterns don't do that. Do they?
+ren (whispers, worried): Explorer's rule number... I don't have a rule for this.
+beat
+narrator: Nobody had lit it. Nobody had touched it. And yet, there it was, shining by the river, as if it had been waiting for them.
+title card: REN AND YUKI
+narrator: But this adventure didn't start at night. It started, like most of their adventures, with one of Ren's plans.
+
+
+# ================= Scene 2 - Ren's plan =================
+scene: Ren's Plan
+place: meadow
+time: day
+music: happy
+
+ren walks to center
++ yuki walks to right
+ren turns to you
+ren (excited): Good morning, world! Day three of the legendary explorers!
+yuki (happy): Good morning, Ren. You look very... prepared.
+ren (proud): Because today, we find the little light in the forest.
+ren (proud): I made a plan. I drew a map. I even practised my brave face.
+yuki (playful): Show me the brave face.
+ren (determined): Hmph!
+beat
+yuki (laughing): You look like you swallowed a bee.
+ren (pouty): That's my bravest face!
+yuki (playful): And the map?
+# LATER: Ren holds up his map (F4 Part D)
+ren writes in the air
+ren (proud): Here is the meadow. Here is the forest. And here is the little light.
+yuki tilts her head
+yuki: Ren, that's a drawing of a broccoli.
+ren (shy): That's the forest. Forests look like broccoli from above. Everyone knows that.
+yuki (happy): Hehe. It's a very nice broccoli.
+yuki feels thinking
+yuki (thinking): But remember what the owl said. Secrets choose when they want to be found.
+ren (playful): Then we'll go somewhere the secret can see us very clearly.
+ren (excited): And we'll wave!
+ren waves
+owl flies in from left
+owl: Hoo... who is waving at my nap?
+ren jumps in fright
+ren (shouts, surprised): Mister Owl!
+owl (sleepy): Owls sleep in the day, little fox. It's in all the books.
+yuki (shy): Sorry, Mister Owl. We're going to look for the little light.
+owl: Hoo. I thought you might.
+owl: Then listen carefully, because I'll only say it once. I'm very sleepy.
+owl: No light can be found without a light of your own. Find the old lantern by the singing river.
+ren (surprised): A singing river?
+owl: And cross the bridge only when you're ready. Not a moment before.
+yuki (worried): A bridge? Over the water?
+owl (sleepy): Good luck, little explorers. Hoo... aaah.
+owl flies away
+ren (excited): A singing river! An old lantern! A secret bridge! Yuki, this is the best day of my life!
+yuki looks down
+yuki (worried): Mm-hm.
+ren (thinking): You didn't say "the best day of my life".
+yuki (shy): I'm fine. Let's go.
+
+
+# ================= Scene 3 - The singing river =================
+scene: The Singing River
+music: magical
+
+reveal: river
+narrator: They followed the sound of water, and the trees opened up onto a wide, sparkling river.
+narrator: The water ran over the stones with a soft, bubbling sound, almost like someone humming a song.
+yuki (surprised): Oh... it really is singing.
+ren (excited): It's beautiful! And look, there's the bridge!
+music: adventure
+ren runs to right
+ren trips
+ren falls down
+beat
+ren (proud): I meant to do that. I was testing the ground.
+yuki (playful): How was it?
+ren (pouty): Very... grounded.
+ren gets up
+ren (determined): Now. The old lantern. Explorers, spread out!
+ren crawls to left
++ narrator: Ren searched the riverbank very carefully. Mostly on his tummy.
+ren (thinking): Stone. Another stone. A stone that looks like a potato.
+yuki walks to center
+yuki looks around
+yuki (thinking): It's not on this side.
+yuki looks right
+yuki (surprised): Ren! Look! Over there, on the other side of the river!
+lantern appears at right
+sparkles around yuki
+ren gets up
+ren (excited): The old lantern!
+narrator: There, half-hidden in the reeds across the water, sat a little old lantern.
+ren (excited): Come on, let's cross the bridge!
+yuki feels worried
+yuki (worried): Ren, wait...
+
+
+# ================= Scene 4 - The bridge =================
+scene: The Bridge
+music: tense
+
+ren walks to center
+narrator: The bridge was old and narrow, and the river rushed underneath it, quick and cold.
+ren (proud): A tiny bridge. A tiny, tiny bridge. Watch this.
+ren walks to right slowly
+ren wobbles
+sting
+camera: shake
+narrator: Splash! Something jumped in the water, right under Ren's paws.
+ren jumps in fright
+ren (shouts, scared): A sea monster!
+ren runs to left
+ren hides behind yuki
+yuki (surprised): Ren, it was a fish. A very small fish.
+ren peeks out
+ren (scared): A very small sea monster.
+ren (shy): My ears are shaking again. It's the wind. The very local wind.
+yuki (happy): There isn't any wind, Ren.
+ren walks to center
+ren sits down
+ren sighs
+ren (sad): I'm a terrible explorer. I can't even cross a tiny bridge.
+music: heartfelt
+yuki walks to ren
+yuki (shy): Can I tell you something?
+ren (sad): Is it that I'm a terrible explorer?
+yuki (shy): It's that I'm scared of water. I've always been scared of water.
+ren (surprised): You are?
+yuki (sad): When the owl said bridge, I wanted to go home.
+yuki (sad): I didn't say anything, because you were so excited.
+ren gets up
+ren (sad): Yuki... you didn't have to come for me.
+yuki (determined): I didn't come for you. I came because I want to find the light too.
+yuki looks right
+yuki (worried): I just don't know how to stop being scared.
+ren tilts his head
+ren (thinking): Maybe you don't have to stop being scared.
+ren (shy): Remember rule number five? Being scared is less scary together.
+ren holds out his paw to yuki
+ren (happy): We cross together. One paw at a time.
+yuki touches paws with ren
+yuki (shy): One paw at a time.
+music: epic
+ren walks to right slowly
++ yuki walks to right slowly
+narrator: Step by step, paw in paw, they crossed. The river sang underneath them, and the bridge creaked, and neither of them let go.
+ren and yuki feel happy
+yuki hops
+yuki (excited): We did it! Ren, we crossed it!
+ren (excited): You crossed a bridge over water! That's the bravest thing I've ever seen!
+ren dances
+ren (proud): Explorer's rule number seven: a bridge is shorter when you cross it together.
+yuki (laughing): You're still making these up.
+ren (playful): And they're still true.
+
+
+# ================= Scene 5 - The old lantern =================
+scene: The Old Lantern
+time: sunset
+music: mystery
+
+ren walks to the lantern
+yuki walks to ren
+narrator: The lantern was old and dusty, with a little door and a candle that hadn't been lit for a very long time.
+yuki (surprised): It's so old. Who do you think it belonged to?
+ren (thinking): A legendary explorer. Obviously. Probably very handsome.
+ren looks at the lantern
+ren (determined): Now. Let's light it up.
+ren (shouts, determined): Lantern! Glow!
+beat
+ren (thinking): Maybe it needs a magic word. Please glow?
+beat
+ren (excited): A lantern-lighting dance!
+ren dances
+beat
+yuki (playful): It's not working, Ren.
+ren shrugs
+ren (pouty): Maybe it's a very sleepy lantern. Like the owl.
+time: dusk
+music: calm
+narrator: The sun went down behind the hills. The lantern stayed dark.
+yuki sits down
++ ren sits down
+yuki (sad): Maybe it doesn't work anymore. Maybe we came all this way for nothing.
+ren looks at yuki
+ren (shy): Not for nothing.
+yuki (surprised): What do you mean?
+ren (shy): This morning, you were scared of a bridge. Now you're on the other side of it.
+ren (happy): And I found out that you're even braver than me. That's not nothing.
+yuki (shy): You're not so bad yourself. For a fox who's scared of fish.
+ren (pouty): Very small sea monsters.
+yuki (laughing): Hehe.
+ren and yuki get up
+yuki looks at the lantern
+yuki (thinking): The owl said, no light can be found without a light of your own.
+ren (thinking): Maybe the lantern doesn't need a magic word. Or a dance.
+yuki (thinking): Maybe it needs...
+music: magical
+ren walks to the lantern
++ yuki walks to ren
+# LATER: Ren and Yuki touch the lantern at the same moment (F4 Part D)
+ren holds out his paw
++ yuki holds out her paw
+slow motion 2
+the lantern glows
+sparkles
+ren (surprised): ...both of us.
+narrator: The moment they reached for it together, the old lantern began to glow, softly at first, then warm and golden, like a tiny sun.
+yuki (excited): Ren! It's glowing!
+ren (excited): We did it! We lit a legendary lantern!
+ren and yuki hop
+
+
+# ================= Scene 6 - The answer =================
+scene: The Answer
+time: night
+music: heartfelt
+
+narrator: Night came to the river. The stars came out one by one, and the old lantern glowed brighter than all of them.
+ren and yuki look at the lantern
+yuki (shy): Ren... do you think it was waiting for us?
+ren (shy): Maybe it was waiting for two explorers who wouldn't give up.
+owl flies in from left to left
+owl: Hoo. So. The lantern chose you.
+yuki (surprised): Mister Owl! You came back!
+owl: I always come back. And I'm awake now, which helps.
+owl lands
+owl: That lantern has not glowed in a hundred years. It only shines for those who carry it together.
+ren (proud): Together. That's our speciality.
+owl: Then look. Look over there, at the old forest.
+ren and yuki look left
+camera: pan to left
+music: magical
+narrator: Far away, deep in the dark trees, a tiny light blinked. Once. Twice. Three times.
+yuki (whispers, surprised): It's answering.
+ren (whispers, excited): The little light! It's saying hello!
+owl: Hoo. Not hello, little ones. It's saying: I'm still here.
+camera: pan to center
+yuki (worried): What is it, Mister Owl?
+owl: Something that has waited a very long time for someone to come.
+owl: Tomorrow night, when the stars come out, follow the lantern's light. It will show you the way.
+owl takes off
+owl flies away
+ren yawns
+yuki yawns
+ren (sleepy): Tomorrow night. Legendary explorers need a legendary nap first.
+yuki (sleepy): And snacks.
+ren (sleepy): Rule number three. Always bring a snack.
+yuki (happy): You did make that one up.
+ren (happy): It's my favourite rule.
+ren and yuki look at the lantern
+narrator: That night, two little explorers fell asleep by a singing river, next to an old lantern that hadn't glowed in a hundred years.
+narrator: And deep in the old forest, something that had been waiting a very long time glowed back. Just a little brighter than before.
+ren and yuki wave
+title card: SEE YOU SOON

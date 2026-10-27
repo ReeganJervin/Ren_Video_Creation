@@ -9,7 +9,6 @@ Kitsu Studio turns a story written as a plain text file into a finished animated
 
 - How to use it: `README.md`. Every story line: `STORY-GUIDE.md`.
 - The plan: `ENGINE-ROADMAP.md` (version 3.1), with the detail files `ASSET-KIT.md` (F4) and `STUDIO-APP.md` (F9).
-- `PRODUCTION-SYSTEM.md` (the three video formats) is referred to by the roadmap but is not in the project yet.
 
 ## How the engine works
 
@@ -47,4 +46,6 @@ Kitsu Studio turns a story written as a plain text file into a finished animated
 - **F11 Part A** (thumbnails, subtitles, description draft) is done and approved. **F11 Part B** (series intro, theme jingle, end screen) is done and approved. **F7 Part A** (vertical 9:16, safe area) is done and approved. **F7 Part B** (Shorts: `type: short`, `type: episode short` in `tools/shorts.js`, cover frames, Short length check; examples in `shorts/`) is done and approved.
 - **F12 Part A** (eight new moods, mood sheet tool) is done and approved. **F12 Part B** (thought, whisper and shout bubbles, mood voices, epic/heartfelt/deep music, `stories/feelings-demo.txt`) is done and approved. **F3 Rig 2.0** has started: stop 1 (the skeleton, look unchanged) is done and approved; stop 2 (springy ears, tail and scarf, back view, `turns away`) is done and approved; stop 3 (movement library) is under way: clean turns (one blink per turn, owner's review) and the Episode 1 and 2 actions are done and approved; the second round (runs, sneaks, crawls, jumps, frights, trips, falls and gets up, lies down, hides behind and peeks out, shrugs, covers its eyes, stretches, yawns, sighs, dances) is done and waiting for the owner's review; climbing, jumping over, pushing and hiding behind props wait for ledges and props (F4 Part D, F5). Stop 4 (lip-sync: 8 mouth shapes per frame from the line's phonemes and the clip's loudness, `engine/lipsync.js`) is done and waiting for the owner's review. The movement demo (`stories/movement-demo.txt`, hide and seek, 2 min 37 s, all checks pass) finishes F3.
 - Next: F4 Part D (build-order step 10), then Milestone 2.
+- **Stories written:** Episodes 1–4 in `stories\` (Episode 3 "The Old Lantern": the river and the lantern; Episode 4 "The Star Who Waited": the fallen star, ending on a teaser for the far, snowy hills). Saved for later episodes: the cottage, the beach and the snowy hill. Shorts in `shorts\`: two episode Shorts from Episodes 3 and 4, and standalone Shorts (staring contest, compliment, who's taller, explorer's rules, perfect hiding spot, yawns are catching, dance-off).
+- **YouTube channel art:** `channel\` (made by `node tools\channel-art.js`).
 - `PRODUCTION-SYSTEM.md` (the three video formats, workflows and family-audience content guidelines) is in the project root.
