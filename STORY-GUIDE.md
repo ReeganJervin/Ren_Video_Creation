@@ -140,6 +140,8 @@ The amounts are in `config\voices.json` (`_moods` for moods, `_styles` for ways 
 | `<name> sighs` | A breath in, then a long breath out: shoulders and head drop, a slow blink |
 | `<name> dances` | A happy little dance: swaying, paws up in turn, a bounce on each beat (also `does a little dance`) |
 
+To see almost every action in one story, make `stories\movement-demo.txt` (a game of hide and seek, about 2½ minutes).
+
 All of these blend smoothly into whatever comes next. Turning (to walk, to talk, to look, to turn away) goes through solid poses (front, three-quarter, side, back) with a tiny squash at each switch and one quick blink per turn (small turns toward someone who is talking don't blink), never a see-through mix of two.
 | `<name> hugs <other name>` | Goes over and hugs them: both turn to each other, look happy, and little hearts float up between them. Then they step apart again, still facing each other, and both stay happy (until a later line gives them another mood) |
 | `<name> tilts its head` | A curious head tilt |

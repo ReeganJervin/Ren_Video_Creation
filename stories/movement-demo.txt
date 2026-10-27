@@ -1,0 +1,96 @@
+# ============================================================
+#  Movement: every action Ren and Yuki can do (F3)
+#  A morning of hide and seek in the meadow, about 2 minutes.
+#  Make it:  make-video.bat stories\movement-demo.txt
+# ============================================================
+
+title: Hide and Seek
+place: meadow
+time: day
+music: happy
+mood voices: on
+
+scene: Good Morning
+ren enters from left to center
+ren stretches
+ren yawns
+narrator: It was a lazy morning in the meadow, and Ren had only just woken up.
+ren (sleepy): What a beautiful, sleepy day.
+ren lies down
+wait 1
+yuki runs to right
+yuki hops twice
+yuki (excited): Ren! Ren! Wake up! Let's play hide and seek!
+ren gets up
+ren sighs
+ren (playful): Okay, okay. I'm up.
+ren turns to yuki
+yuki (happy): You count, and I hide!
+ren nods
+ren counts on his paws
+ren (thinking): How high should I count?
+ren writes in the air
+yuki holds out her paw to ren
+yuki: To ten! Not one more.
+ren touches paws with yuki
+ren shrugs
+ren (playful): Ten it is.
+
+scene: Counting
+ren covers his eyes
+ren: One. Two. Three...
+yuki sneaks to left
+yuki looks around
+yuki crawls to center
+yuki (whispers): Where can I hide?
+yuki tilts her head
+yuki hides behind ren
+ren: ...eight. Nine. Ten! Ready or not!
+ren turns to you
+ren looks around
+ren (thinking): Hmm. Where did she go?
+yuki peeks out
+yuki covers her eyes
+ren sneaks to left
+ren crouches
+ren stands up
+ren points left
+ren (surprised): Is she behind that flower? No.
+ren runs to right
+ren trips
+ren wobbles
+ren (shy): I meant to do that.
+ren walks to center
+ren shakes his head
+ren shrugs
+
+scene: Found You
+ren leans back
+yuki peeks out
+yuki (laughing): I'm right here!
+ren jumps in fright
+ren falls down
+ren (surprised): Yuki! You were behind me the whole time?
+yuki walks to left
+yuki (proud): The best hiding place is the one you never look at.
+ren gets up
+ren (happy): That was clever.
+ren leans closer
+yuki stretches her paws wide
+yuki (excited): My turn to count! You hide!
+ren sits down
+ren stands up
+ren raises his paws
+ren (excited): Let's dance first!
+music: epic
+ren dances
++ yuki dances
+ren jumps
++ yuki jumps
+ren and yuki hug
+narrator: And so they played all morning long, until the sun was high and both of them needed a nap.
+ren and yuki turn to you
+ren waves
++ yuki waves
+ren runs off to the right
+yuki runs to right

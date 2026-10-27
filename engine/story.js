@@ -68,12 +68,12 @@
     // running and sneaking are going somewhere at another pace: "runs to ...", "sneaks to ..." (also "tiptoes",
     // "creeps"); the pace rides on the move's "slow" field ('run' or 'sneak'), so every kind of move can have it
     const gait = /^runs?\b/.test(a) ? 'run' : /^(?:sneaks?|tiptoes?|creeps?)\b/.test(a) ? 'sneak' : /^crawls?\b/.test(a) ? 'crawl' : null;
+    if (gait === 'run' && (k = a.match(/^runs? (?:off|away)(?: to)?(?: the)? (left|right)$/))) return { type: 'exit', to: k[1], slow: 'run' };
     if (gait && / to /.test(a)) {
       const b = action(a.replace(/^\w+/, 'walks').replace(/ slowly$/, ''), group);
       if (b && 'slow' in b) b.slow = gait;
       return b;
     }
-    if (gait === 'run' && (k = a.match(/^runs? (?:off|away)(?: to)?(?: the)? (left|right)$/))) return { type: 'exit', to: k[1], slow: 'run' };
     if ((k = a.match(/^enters?(?: from (left|right))?(?: to (?:the )?(left|center|centre|right))?$/))) return { type: 'enter', from: k[1] || 'left', to: spot(k[2] || 'center') };
     if ((k = a.match(/^(?:walks?|moves?|goes|go|hops?|runs?) to (?:the )?(left|center|centre|right)( slowly)?$/))) return { type: 'walk', to: spot(k[1]), slow: !!k[2] };
     if ((k = a.match(new RegExp(`^(?:walks?|moves?|goes|go|hops?|runs?) (?:over )?to (${NAME})( slowly)?$`)))) return { type: 'walkTo', target: k[1], slow: !!k[2] };
