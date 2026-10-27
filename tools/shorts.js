@@ -7,10 +7,12 @@ const ffmpeg = require('ffmpeg-static');
 const { parseStory } = require('../engine/story.js');
 const ROOT = path.resolve(__dirname, '..');
 
-// "from: beginning-of-a-friendship" -> the story file: next to the Short, in stories/ or in episodes/
+// "from: episode-01-the-beginning-of-a-friendship" -> the story file: next to the Short, or anywhere in stories/
+// (stories/episodes/ first) or episodes/
 function findSource(from, shortPath) {
   const name = from.replace(/\.txt$/i, '').trim();
-  const tries = [path.resolve(path.dirname(shortPath), name + '.txt'), path.join(ROOT, 'stories', name + '.txt'), path.join(ROOT, 'episodes', name + '.txt')];
+  const deep = (dir, out = []) => { if (fs.existsSync(dir)) for (const e of fs.readdirSync(dir, { withFileTypes: true })) { if (e.name.startsWith('_')) continue; const p = path.join(dir, e.name); if (e.isDirectory()) deep(p, out); else if (e.name === name + '.txt') out.push(p); } return out; };
+  const tries = [path.resolve(path.dirname(shortPath), name + '.txt'), path.join(ROOT, 'stories', 'episodes', name + '.txt'), path.join(ROOT, 'stories', name + '.txt'), path.join(ROOT, 'episodes', name + '.txt'), ...deep(path.join(ROOT, 'stories')), ...deep(path.join(ROOT, 'episodes'))];
   return tries.find(f => fs.existsSync(f) && path.resolve(f) !== path.resolve(shortPath)) || null;
 }
 
@@ -18,7 +20,7 @@ function findSource(from, shortPath) {
 // without the series intro or end screen, with the Short's captions and framing. Returns { parsed, short }.
 function episodeSource(shortParsed, shortPath) {
   const sm = shortParsed.meta, file = findSource(sm.from, shortPath);
-  if (!file) throw new Error(`I can't find the story "${sm.from}" (looked next to the Short, in stories\\ and in episodes\\).`);
+  if (!file) throw new Error(`I can't find the story "${sm.from}" (looked next to the Short, and in stories\\ and its folders).`);
   const parsed = parseStory(fs.readFileSync(file, 'utf8'));
   if (parsed.errors.length) throw new Error(`The story ${path.basename(file)} has lines to fix first:\n\n${parsed.errors.join('\n\n')}`);
   Object.assign(parsed.meta, { format: sm.format === 'wide' ? 'wide' : 'vertical', intro: { at: 'none' }, ending: 'none', captions: sm.captions || 'narrator', framing: sm.framing });

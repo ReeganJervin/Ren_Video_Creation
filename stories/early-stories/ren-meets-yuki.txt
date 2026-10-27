@@ -1,0 +1,54 @@
+# ============================================================
+#  Ren Meets Yuki  (two characters: Ren the fox and Yuki the bunny)
+#  Check:  check-story.bat stories\early-stories\ren-meets-yuki.txt
+#  Watch:  preview.bat stories\early-stories\ren-meets-yuki.txt
+#  Make:   make-video.bat stories\early-stories\ren-meets-yuki.txt
+# ============================================================
+
+title: Ren Meets Yuki
+place: meadow
+time: day
+
+# --- Ren is all alone ---
+ren enters from left to left
++ narrator: One sunny morning, Ren was all alone.
+ren (sad): I wish I had a friend...
+
+# --- A bunny hops in ---
+yuki enters from right to right
++ narrator: Then a little bunny came hopping by.
+ren turns to yuki
+ren (surprised): Oh! Hello!
+yuki (surprised): Eek! A fox!
+yuki (shy): Um... I'm Yuki.
+
+# --- Making friends (close-up on both) ---
+ren walks to yuki
+camera: close
+ren (happy): I'm Ren! Will you be my friend?
+yuki looks at ren
+yuki (happy): Yes, please!
+camera: wide
+
+# --- Playing together ---
+ren (playful): Bet you can't hop as high as me!
+yuki (playful): Watch me!
+yuki hops twice
+ren hops
+yuki (pouty): Hmph! You hopped higher!
+ren (happy): Then let's hop together!
+ren and yuki hop twice
+
+# --- A hug (closer) ---
+camera: closer
+yuki hugs ren
++ narrator: And that was the start of a wonderful friendship.
+camera: wide
+
+# --- Evening ---
+time: sunset
+yuki (sad): The sun is going down...
+yuki (sleepy): And I'm so sleepy.
+ren (shy): Play again tomorrow?
+yuki (happy): Every day, Ren!
+ren and yuki wave

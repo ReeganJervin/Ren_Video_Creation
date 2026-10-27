@@ -41,7 +41,7 @@ Do all of this:
 Verify before you finish:
 1. Search the whole project (excluding node_modules, .venv, models, cache, build, videos) for "kitsu" (case-insensitive) and show me the remaining hits; only the project name "Kitsu Studio" and package name may remain.
 2. Run `node tools/make-video.js stories/<each story>.txt --check` for every story; all must pass.
-3. Run `node tools/make-video.js stories/the-fallen-star.txt --stills 3,12,22,30` and look at the PNGs in videos/ to confirm the character still draws correctly.
+3. Run `node tools/make-video.js stories/early-stories/the-fallen-star.txt --stills 3,12,22,30` and look at the PNGs in videos/ to confirm the character still draws correctly.
 ```
 
 ---
@@ -95,9 +95,9 @@ Add a second character: Yuki, a bunny, drawn to match reference/yuki-sheet.png (
    - Only characters that have entered are on screen. A story that never mentions Yuki must look exactly as before.
    - Speech bubbles: the bubble tail points at the character who is speaking, and the bubble is placed on the side away from the other character. Two bubbles must never overlap.
 
-5. Update STORY-GUIDE.md, README.md, stories/_template.txt and add an example story stories/ren-meets-yuki.txt (about 60 seconds) that shows Yuki entering, the two meeting, talking, every Yuki mood, a hug and hopping together.
+5. Update STORY-GUIDE.md, README.md, stories/demos-and-tests/_template.txt and add an example story stories/early-stories/ren-meets-yuki.txt (about 60 seconds) that shows Yuki entering, the two meeting, talking, every Yuki mood, a hug and hopping together.
 
-Verify: run --check on every story, render stills of ren-meets-yuki at 8-10 moments, look at each still and compare Yuki with reference/yuki-sheet.png, fix problems, then make the full video with `node tools/make-video.js stories/ren-meets-yuki.txt` and confirm every check in videos/ren-meets-yuki-report.txt passes. Show me the stills and the report.
+Verify: run --check on every story, render stills of ren-meets-yuki at 8-10 moments, look at each still and compare Yuki with reference/yuki-sheet.png, fix problems, then make the full video with `node tools/make-video.js stories/early-stories/ren-meets-yuki.txt` and confirm every check in videos/ren-meets-yuki-report.txt passes. Show me the stills and the report.
 ```
 
 ---
@@ -122,7 +122,7 @@ Story language:
 
 Add matching ambient sounds in engine/audio.js (meadow: breeze + birds as now; forest: birds + soft leaves; river: flowing water; snowy hill: soft wind; beach: waves), cross-fading on place changes.
 
-Update STORY-GUIDE.md and add example story stories/a-trip-around.txt that visits every place. Verify with --check and stills of each place at day and night (look at them and fix anything that looks off), then render the example and confirm the report passes.
+Update STORY-GUIDE.md and add example story stories/demos-and-tests/a-trip-around.txt that visits every place. Verify with --check and stills of each place at day and night (look at them and fix anything that looks off), then render the example and confirm the report passes.
 ```
 
 ---

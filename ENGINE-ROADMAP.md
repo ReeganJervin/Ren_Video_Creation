@@ -99,7 +99,7 @@ At every milestone, also render one of the owner's real stories (ask which one) 
 
 A full test means:
 1. Render **every** example story in `stories/` as a full video. All 10 checks must pass on each.
-2. Render the 12-minute stress test (`stories/test-12min.txt`) and report the time and memory.
+2. Render the 12-minute stress test (`stories/demos-and-tests/test-12min.txt`) and report the time and memory.
 3. Do R1 by frames against the commit from the previous milestone.
 4. Write a short milestone report: what passed, what failed, the render times.
 
@@ -134,7 +134,7 @@ Work through the steps **in this order**. The F-numbers are names, not the order
 | 6 | **F11 YouTube kit** (thumbnails, subtitles, description, series intro, end screen) | Done (approved) | `b86d4fb` (F11A), F11B (see git log) |
 | 7 | F7 Vertical 9:16 and Shorts (reuses F11's thumbnails, subtitles and description) | Done (Parts A and B approved) | F7A (see git log) |
 | 8 | **F12 Expression pack** (new moods, thought/whisper/shout bubbles, mood voices) | Done (Parts A and B approved) | |
-| 9 | F3 Rig 2.0 (joints, movement library, lip-sync), in **4 review stops** | Done (stops 1–4; stop 3 part 2 and stop 4 waiting for the owner's review). Demo: `stories/movement-demo.txt` (2 min 37 s, all checks pass). Climb, jump over, push and hiding behind props wait for F4 Part D / F5 | `1503770`, `3d047fe` (stop 3), `647b25a` (stop 4), F3 demo (see git log) |
+| 9 | F3 Rig 2.0 (joints, movement library, lip-sync), in **4 review stops** | Done (stops 1–4; stop 3 part 2 and stop 4 waiting for the owner's review). Demo: `stories/demos-and-tests/movement-demo.txt` (2 min 37 s, all checks pass). Climb, jump over, push and hiding behind props wait for F4 Part D / F5 | `1503770`, `3d047fe` (stop 3), `647b25a` (stop 4), F3 demo (see git log) |
 | 10 | F4 Asset Kit, Part D: prop acting, Season 1 props, extras landing on set pieces (needs F3) | Not started | |
 | 11 | **Milestone 2.** The owner then makes the real **Episode 1** | Not started | |
 | 12 | **F13 Storytelling tools** (weather, dreams and memories, sound library) | Not started | |
@@ -176,7 +176,7 @@ All work is committed on the git branch `Improvment` (never directly on `main`).
    - no stretch longer than 90 s without a voice line or action
    - the chapter rules are met
 
-**Part A review:** a 3-scene test story (`stories/test-scenes.txt`) using 3 music moods and 2 places. Show its report, the chapters file, the `--check` output, and stills from each scene.
+**Part A review:** a 3-scene test story (`stories/demos-and-tests/test-scenes.txt`) using 3 music moods and 2 places. Show its report, the chapters file, the `--check` output, and stills from each scene.
 
 **Commit message:** `F1A: scenes, music moods, chapters`
 
@@ -191,7 +191,7 @@ All work is committed on the git branch `Improvment` (never directly on `main`).
    - `--resume` continues after a crash or Ctrl+C without redoing finished chunks. A chunk is redone if the story changed (compare a hash of the plan).
 3. **Progress display:** overall %, the current scene, frames per second, and an estimated time left.
 4. **Stress test:**
-   - Generate `stories/test-12min.txt`: 12 scenes, all five places, both characters, about 120 lines.
+   - Generate `stories/demos-and-tests/test-12min.txt`: 12 scenes, all five places, both characters, about 120 lines.
    - Render it and report the total time, peak memory and the checks.
    - Compare speed with 1 worker against N workers on a 1-minute story.
 5. **Docs:** STORY-GUIDE.md (scenes, music, chapters) and README.md (`--workers`, `--resume`, and expected render times).
@@ -210,7 +210,7 @@ All work is committed on the git branch `Improvment` (never directly on `main`).
 - **Rendering:** chunks are scenes, and long scenes are split into pieces of at most 60 s. Frames are captured in the page (`toDataURL`) and encoded with x264 `veryfast` at CRF 18: twice as fast as `medium`, and it looks the same on flat cartoon colours (SSIM 0.997). `resume-video.bat` was added for the owner, and the soundtrack is also kept on `--resume` when nothing changed. If Playwright's browser can't be installed, `tools/browser.js` uses the installed Chrome or Edge.
 - **Measured on the owner's laptop** (Intel i3, 2 cores, 8 GB): 3 workers draw about 1.4× faster than 1 and about 2.5× faster than the old method; an 11-minute episode renders in about 30 minutes; peak memory about 2.1 GB.
 - **Sound (owner-approved change to every story's soundtrack):** the music comes up a little in the pauses between lines and dips under speech, so long episodes pass the "No sudden volume changes" check. The final music fade-out is curved, and the star's "arrival" chime is softer. Pictures and timing of existing stories did not change.
-- **`stories/test-12min.txt`** ended up at about 11 minutes and about 200 lines, with no `wait` lines (a pause before a loud line trips the volume check).
+- **`stories/demos-and-tests/test-12min.txt`** ended up at about 11 minutes and about 200 lines, with no `wait` lines (a pause before a loud line trips the volume check).
 
 ---
 
@@ -245,7 +245,7 @@ All work is committed on the git branch `Improvment` (never directly on `main`).
 - **Over the shoulder is a 2D trick** until F3 adds a back view: the shoulder character is drawn big, soft and darker at the frame edge, turned toward the other character.
 - Speech bubbles in shots shrink with the zoom and try spots beside or above the speaker before the frame corners; they never cover a face, and the tail stops before the face.
 - **R10:** stories with shots draw about 15% slower. The camera's own work is about 1%; the rest is close-ups painting more pixels. Stories without shots are not affected.
-- Example story: `stories/test-camera.txt`.
+- Example story: `stories/demos-and-tests/test-camera.txt`.
 
 ### Part B: automatic editing and timing
 1. **Automatic coverage, optional:**
@@ -257,7 +257,7 @@ All work is committed on the git branch `Improvment` (never directly on `main`).
    - `pause <seconds>`: a quiet pause (the same as `wait`).
    - `slow motion <seconds>`: slows the next action. This is for magical reveals, not fights.
 3. **Reveal helper:** `reveal: <prop or place>` does a slow push-in or pan, with a gentle magical music swell.
-4. **Docs and example:** STORY-GUIDE.md section "Camera & editing", plus the example `stories/camera-demo.txt`, about 90 s.
+4. **Docs and example:** STORY-GUIDE.md section "Camera & editing", plus the example `stories/demos-and-tests/camera-demo.txt`, about 90 s.
 
 **Acceptance:**
 - the demo passes all checks
@@ -273,7 +273,7 @@ All work is committed on the git branch `Improvment` (never directly on `main`).
 - In a shot of one character, nobody else's face is ever half in the frame (it is slid fully in or fully out). In an extreme close-up this wins over look room.
 - Acceptance: a face check (`StudioFilm.faces(t)`) over the whole demo, every 0.1 s: no face cut off in any framed shot.
 - **Voices (owner-approved):** every voice line is volume-matched to -22 LUFS with a 0.4 s soft start (also the owner's recordings), and place sounds are half as loud at night and under calm or bedtime music. The volume check limit became 2.5 LU (see section 1).
-- Demo: `stories/camera-demo.txt` (97 s).
+- Demo: `stories/demos-and-tests/camera-demo.txt` (97 s).
 
 ---
 
@@ -343,7 +343,7 @@ All work is committed on the git branch `Improvment` (never directly on `main`).
    - Use word or phoneme timing from the TTS. Kokoro tokens give phonemes; otherwise estimate from the text and audio energy.
    - Map them to 6–8 mouth shapes per view (A/I, E, O, U, M/B/P, F/V, rest).
    - **Voice-override recordings** use audio energy plus text alignment.
-4. **Docs and example:** STORY-GUIDE.md section "Movement", plus `stories/movement-demo.txt` (about 2 min, using every action).
+4. **Docs and example:** STORY-GUIDE.md section "Movement", plus `stories/demos-and-tests/movement-demo.txt` (about 2 min, using every action).
 
 **Acceptance:**
 - every action shown in stills and in a strip of 6 frames
@@ -503,7 +503,7 @@ Each effect has its own sound and uses the lighting system from F5. All of them 
 - **Safe-area check** (vertical only), every 0.25 s; a face is excused only while its character enters or exits across the edge (a walk that starts or ends off the picture), listed in the report; bubbles and captions always count.
 - **Found in the review, fixed for wide and vertical:** a talking mouth always used the happy open shape, so sad, shy and pouty lines looked like smiles; now it turns down at the corners in those moods (front and side view; `K.moodMouth`). After a hug the two stepped apart turned away from each other (back to back) and went back to their old mood; now they step back facing each other and both feel happy (R1: only the facing and mood keys of hug stories and some talking frames change; every story's length and voice times are identical).
 - The series intro, the end screen and the thumbnail are left out of vertical videos for now (Part B).
-- Review: `stories/sorry-yuki.txt --format vertical`: all checks pass, including the safe area.
+- Review: `stories/early-stories/sorry-yuki.txt --format vertical`: all checks pass, including the safe area.
 
 **Commit message:** `F7A: vertical format and safe area`
 
@@ -535,7 +535,7 @@ Each effect has its own sound and uses the lighting system from F5. All of them 
 - **Vertical, from the owner's F7A review:** sky props come down to y 400 inside the safe area; pairs keep a gap (300 in vertical) with tails inside; in conversations where the pair would be small, the camera frames the speaker close with the neighbour's face out; camera moves (push, pull, pan, follow, shake) work in vertical; shy, sad and worried talking mouths are small, flat, wobbly and turn down (Ren and Yuki), surprised keeps the round "o", pouty turns down.
 - **From the owner's Part B review:** the outline of big text ate the spaces between words; all big outlined text (hooks, word captions, end cards, covers, thumbnails, "Watch next!", title cards, the logo) gets extra word spacing, 0.22 of the font size (`WORD_GAP`; canvas `wordSpacing`, or wider spaces where letters are drawn one by one). R1: only frames with that text change.
 - **Studio:** completions and colours for `type`, `captions`, `loop`, `hook`, `framing`, `from`, `scenes`, `lines`, `sting`.
-- Examples: `shorts/explorers-rules.txt` (independent, 25.4 s) and `shorts/the-summit.txt` (episode, scene 1 of `beginning-of-a-friendship`, 28.4 s); both pass every check, including safe area. R1: all 20 stories' timing identical; frame differences are only talking mouths (surprised lines now "o", sad/shy/pouty lines turn down).
+- Examples: `shorts/standalone/explorers-rules.txt` (independent, 25.4 s) and `shorts/episode-shorts/ep1-the-summit.txt` (episode, scene 1 of `beginning-of-a-friendship`, 28.4 s); both pass every check, including safe area. R1: all 20 stories' timing identical; frame differences are only talking mouths (surprised lines now "o", sad/shy/pouty lines turn down).
 
 **Commit message:** `F7B: independent and episode Shorts, thumbnails, subtitles`
 
@@ -638,7 +638,7 @@ Each effect has its own sound and uses the lighting system from F5. All of them 
 - The thumbnail is drawn with its own framing, a **medium shot** by default (the characters fill about 55% of the height, standing below the title); `thumbnail shot: wide | medium | close` chooses. Auto prefers surprised or excited faces, eyes open, nobody in front of a face, and skips moments where a prop is still appearing. The title is measured first, so the framing leaves room for one or two lines.
 - `--youtube` makes only the three files (no video), for quick tests. A full render adds a "YouTube files" line to the report (NOTE, or WARN for a bubble or a cut-off face).
 - In the studio app's player the subtitles start **off** (the narrator's words are already on screen); CC turns them on.
-- Review story: `stories/youtube-demo.txt` (39 s, all checks pass). The owner's `beginning-of-a-friendship.txt` was not in the project yet.
+- Review story: `stories/demos-and-tests/youtube-demo.txt` (39 s, all checks pass). The owner's `beginning-of-a-friendship.txt` was not in the project yet.
 
 **Commit message:** `F11A: thumbnails, subtitles, description draft`
 
@@ -652,13 +652,13 @@ Each effect has its own sound and uses the lighting system from F5. All of them 
    - Empty space laid out for YouTube's end-screen elements: two video boxes and a subscribe circle, following YouTube's end-screen template (see `docs/youtube-end-screen.png`, which Part B also draws as a guide).
    - An optional narrator line, e.g. `ending text: See you next time!`
 3. **Checks:** all 10 checks still pass with the intro and end screen. Loudness stays even (the jingle isn't louder than the story).
-4. **Docs and example:** STORY-GUIDE.md section "YouTube", plus a short example `stories/youtube-demo.txt` (under 1 minute, with a hook scene, intro, end screen and thumbnail).
+4. **Docs and example:** STORY-GUIDE.md section "YouTube", plus a short example `stories/demos-and-tests/youtube-demo.txt` (under 1 minute, with a hook scene, intro, end screen and thumbnail).
 
 **Acceptance:** the demo passes all checks, R1 holds for stories without the new lines, and the owner approves the intro and jingle.
 
 **As built (F11B):**
 - The intro (5 s) and the end screen (the last 20 s) take their time in the story's timeline (story.js), so everything after them simply starts later; while they play, film.js draws them over the story (Ren and Yuki posed directly, so both appear even in a Ren-only story). `intro: after scene N` works for any scene. `ending text:` is a narrator line (its voice, caption and subtitle are made like any other).
-- Sound: the story's music fades out and the place's sounds go down to 30% under the jingle (music box and pads, 0.55 of the music bus). Measured on `stories/youtube-demo.txt`: intro -19.7 LUFS, story -18.8 / -20.0, end screen -22.0.
+- Sound: the story's music fades out and the place's sounds go down to 30% under the jingle (music box and pads, 0.55 of the music bus). Measured on `stories/demos-and-tests/youtube-demo.txt`: intro -19.7 LUFS, story -18.8 / -20.0, end screen -22.0.
 - `docs/youtube-end-screen.png` is drawn by `tools/end-screen-guide.js` from the engine's own end screen.
 - **Loud starts (owner's decision):** a voice line that comes in much louder than what plays just before it (the owl's "Hoo!" after a quiet moment reached 2.79 LU) gets a softer first second. make-video measures it in the mix itself, the way the check does (the rise as the line starts, and the drop 3 s later as it leaves the 3 s window); only lines over 2.3 LU are softened, and the soundtrack is made again. Every other line stays exactly as it was. The owl's voice is also 2 dB quieter (`"gain": -2` in `config/voices.json`, a new optional setting per voice).
 - **Butterflies and fireflies go around faces** (thumbnails and video): the film tells the place where the faces are, and `util.clear(x, y)` moves anything small flying in front of the characters out to the edge of a face. Only frames where an insect was on a face change (R1: a few frames in asset-test, ren-and-the-sleepy-star, test-12min, test-scenes and the-fallen-star, checked: only fireflies moved off faces).
@@ -698,7 +698,7 @@ Each effect has its own sound and uses the lighting system from F5. All of them 
 - Thumbnails also prefer `excited` (as surprised) and `laughing`, `proud`, `determined` faces.
 - **`tools/mood-sheet.js`:** every mood in every view plus talking, under the reference sheet (for F12 and the F3 reviews). It draws through the engine (`StudioFilm.character`, the same mood-to-face code as the intro and end screen).
 - Studio: the editor shows up to 100 suggestions (the new moods pushed some past 60).
-- Tests: `stories/test-serious-moods.txt` (night forest, tense then sad music, close shots: scared, worried, crying, sad, determined) and `stories/test-new-moods.txt` (excited, thinking, proud, laughing, the owl's fallback); both pass every check. R1: all 20 existing stories unchanged.
+- Tests: `stories/demos-and-tests/test-serious-moods.txt` (night forest, tense then sad music, close shots: scared, worried, crying, sad, determined) and `stories/demos-and-tests/test-new-moods.txt` (excited, thinking, proud, laughing, the owl's fallback); both pass every check. R1: all 20 existing stories unchanged.
 
 **Commit message:** `F12A: eight new moods`
 
@@ -712,7 +712,7 @@ Each effect has its own sound and uses the lighting system from F5. All of them 
    - The voice cache key includes the mood, so changed lines are remade and others aren't.
    - **Existing stories:** this changes how existing mood lines sound, so it's **off by default** for stories that already exist (`mood voices: on` turns it on). New stories made from the template have it on. Ask the owner whether to turn it on everywhere.
 3. **Music range for a family audience (section 0.6):** add `music: epic` (big, brave, for courage and great discoveries) and `music: heartfelt` (warm and emotional, for big feelings). Let `tense` and `sad` reach a deeper, fuller, more dramatic sound when a scene needs it, while staying away from horror. Update STORY-GUIDE.md's music table (e.g. `tense` is no longer described as "never scary", just "suspense, never horror").
-4. **Docs and example:** STORY-GUIDE.md sections "Moods" and "Ways of talking", plus `stories/feelings-demo.txt` (about 90 s) using every mood and bubble style, with one funny scene and one serious, emotional scene.
+4. **Docs and example:** STORY-GUIDE.md sections "Moods" and "Ways of talking", plus `stories/demos-and-tests/feelings-demo.txt` (about 90 s) using every mood and bubble style, with one funny scene and one serious, emotional scene.
 
 **Acceptance:** the demo passes all checks, R1 holds, and the owner approves the voice samples (one line in each mood, for Ren and Yuki).
 
@@ -723,7 +723,7 @@ Each effect has its own sound and uses the lighting system from F5. All of them 
 - **Music:** `epic` (heroic tune, cello, soft drums) and `heartfelt` (slow singing tune with a cello); `music: deep tense` and `music: deep sad` add a low cello (and for tense a soft heartbeat drum) and a fuller pad. Measured on the music stem: epic -24.0, heartfelt -24.7, deep tense -23.9, deep sad -24.2 LUFS (the others -24.0 to -25.1, bedtime -26.8).
 - `tools/voice-sample.js <character> --moods`: one line in every mood and way of talking, each named by the narrator.
 - Studio: completions for the ways of talking (after `ren (`), `mood voices:`, and `deep tense` / `deep sad`.
-- Example: `stories/feelings-demo.txt` (every mood and way of talking; a funny scene and a serious one with deep tense, deep sad, heartfelt and epic music).
+- Example: `stories/demos-and-tests/feelings-demo.txt` (every mood and way of talking; a funny scene and a serious one with deep tense, deep sad, heartfelt and epic music).
 
 **Commit message:** `F12B: thought, whisper and shout bubbles, mood voices`
 

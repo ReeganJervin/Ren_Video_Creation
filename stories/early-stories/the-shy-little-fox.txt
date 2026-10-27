@@ -1,0 +1,53 @@
+# ============================================================
+#  The Shy Little Fox  (no star - a story about being brave)
+#  Check:  check-story.bat stories\early-stories\the-shy-little-fox.txt
+#  Watch:  preview.bat stories\early-stories\the-shy-little-fox.txt
+#  Make:   make-video.bat stories\early-stories\the-shy-little-fox.txt
+# ============================================================
+
+title: The Shy Little Fox
+place: meadow
+time: day
+
+# --- Ren peeks in ---
+ren enters from left to left
++ narrator: In a sunny meadow lived a little fox who was very, very shy.
+ren feels shy
+ren looks around
+ren (shy): Um... is anybody there?
+ren looks at you
+ren (surprised): Oh! Someone is watching!
+ren exits to left
+
+# --- Trying again ---
+wait 1
+ren enters from left to center
++ narrator: But Ren didn't want to hide forever.
+ren feels shy
+ren tilts its head
+ren (shy): H-hello... my name is Ren.
+ren feels sad
+ren (sad): I'm not very good at making friends.
+
+# --- Getting brave ---
+camera: close
+narrator: So Ren took a deep breath...
+ren raises its paws
+sparkles
+title card: BE BRAVE
+ren lowers its paws
+ren feels happy
+ren (happy): Hello! I'm Ren! Will you be my friend?
+camera: wide
+
+# --- A new friend ---
+ren hops twice
+hearts float up
+ren walks to right
++ ren (happy): Come on, let's explore the meadow together!
+ren walks to left
++ time: sunset
+narrator: And from that day on, the shy little fox was never lonely again.
+ren turns to you
+ren waves
+ren exits to right

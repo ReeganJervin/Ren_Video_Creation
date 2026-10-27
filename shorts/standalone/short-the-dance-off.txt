@@ -1,0 +1,43 @@
+# ============================================================
+#  Ren & Yuki Short - The Dance-Off   (~35 s, vertical)
+#  Save as: shorts\standalone\short-the-dance-off.txt
+#  Uses: meadow, Ren, Yuki, dance, jump, trip, fall, shout bubbles.
+# ============================================================
+
+title: The Dance-Off
+type: short
+hook: Dance-off! Who wins?
+thumbnail text: DANCE-OFF!
+mood voices: on
+place: meadow
+time: sunset
+music: adventure
+
+ren enters from left to left
++ yuki enters from right to right
+ren (proud): I challenge you to a dance-off. The loser carries the snacks.
+yuki (determined): You're on!
+shot: medium on ren
+ren dances
+ren (excited): Ta-da! The legendary fox shuffle!
+shot: medium on yuki
+yuki dances
+yuki jumps
+sparkles around yuki
+yuki (proud): The bunny bounce.
+shot: close on ren
+ren (determined): Hmph. Time for my secret move.
+shot: medium on ren
+ren jumps
+ren trips
+ren falls down
+camera: shake
+beat
+ren (proud): That was the secret move.
+shot: medium on both
+yuki (laughing): It's called the fox flop!
+ren gets up
+ren (pouty): I'll carry the snacks.
+yuki (playful): And you'll teach me the fox flop.
+ren dances
++ yuki dances

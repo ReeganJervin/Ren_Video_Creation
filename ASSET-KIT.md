@@ -102,7 +102,7 @@ These are needed now so that new assets can be used at all. The full prop acting
 - **Full render** (`make-video.bat`) **refuses** while anything is missing, with the same list. `--allow-placeholders` overrides that for test renders, and the report then says `NOTE: rendered with N placeholders`.
 
 **Part A review:**
-- a test story `stories/asset-test.txt` that uses one existing prop (star), one missing prop, one missing set piece, one missing extra and one missing place
+- a test story `stories/demos-and-tests/asset-test.txt` that uses one existing prop (star), one missing prop, one missing set piece, one missing extra and one missing place
 - the `--check` output and `missing-assets.json` for it
 - stills showing the placeholders, plus a typo suggestion example
 - R1 for every story, including the star, heart and places moved into the registry
@@ -234,7 +234,7 @@ Give the owl a voice in `config/voices.json` and make a 5-second sample for the 
    - umbrella
    - flower
    - **leaf**, which Episode 1 needs
-3. **Episode 1 upgrade:** replace the `# LATER:` leaf lines in `stories/episode-01-the-day-our-adventure-began.txt` with real prop lines.
+3. **Episode upgrade:** replace the `# LATER:` lines (Ren holding the lantern, his map) in `stories/episodes/episode-03-the-old-lantern.txt` and `episode-04-the-star-who-waited.txt` with real prop lines.
 4. **Docs:** a "Props and assets" section in STORY-GUIDE.md, plus `stories/treasure-demo.txt` (a mini treasure hunt of about 2 min).
 
 **Acceptance:** the demo passes all checks, R1 holds, and the error messages are tested with a deliberately broken story.

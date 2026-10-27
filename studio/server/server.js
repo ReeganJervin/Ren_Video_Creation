@@ -16,6 +16,8 @@ const DIST = path.join(ROOT, 'studio', 'dist');
 const STATE = path.join(ROOT, 'build', process.env.KITSU_STUDIO_STATE || '_studio');
 const PORT = +process.env.KITSU_PORT || 3000, HOST = '127.0.0.1';
 const STORY_DIRS = ['stories', 'episodes'];
+// the template every new story starts from (it lives with the demos; a name starting with _ is never listed)
+const TEMPLATE = path.join(ROOT, 'stories', 'demos-and-tests', '_template.txt');
 // folders the browser may read files from
 const SERVED = ['engine', 'build', 'videos', 'assets', 'cache/voices', 'voice-overrides'];
 
@@ -47,13 +49,18 @@ const safeName = n => String(n || '').trim().toLowerCase().replace(/\.txt$/, '')
 
 // ---------- stories ----------
 const statusCache = new Map();
+// every story, in its folder and the folders inside it (stories/episodes/, stories/demos-and-tests/...), except
+// names starting with _ (the template, and stories/_deleted/)
 function storyFiles() {
   const out = [];
-  for (const d of STORY_DIRS) {
-    const dir = path.join(ROOT, d);
-    if (!fs.existsSync(dir)) continue;
-    for (const f of fs.readdirSync(dir)) if (f.endsWith('.txt') && !f.startsWith('_')) out.push(path.join(dir, f));
-  }
+  const walk = dir => {
+    for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+      if (e.name.startsWith('_')) continue;
+      if (e.isDirectory()) walk(path.join(dir, e.name));
+      else if (e.name.endsWith('.txt')) out.push(path.join(dir, e.name));
+    }
+  };
+  for (const d of STORY_DIRS) if (fs.existsSync(path.join(ROOT, d))) walk(path.join(ROOT, d));
   return out;
 }
 function storyInfo(abs) {
@@ -288,7 +295,7 @@ const api = {
     if (!name) throw new HttpError(400, 'Please give the story a name.');
     const abs = path.join(ROOT, 'stories', name + '.txt');
     if (fs.existsSync(abs)) throw new HttpError(409, `There is already a story called "${name}".`);
-    const tpl = fs.readFileSync(path.join(ROOT, 'stories', '_template.txt'), 'utf8');
+    const tpl = fs.readFileSync(TEMPLATE, 'utf8');
     const title = String(b.name).trim().replace(/\s+/g, ' ');
     fs.writeFileSync(abs, tpl.replace(/^title:.*$/m, `title: ${title}`));
     return { file: relOf(abs) };

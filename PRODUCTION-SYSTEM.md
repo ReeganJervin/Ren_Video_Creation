@@ -21,24 +21,22 @@
 
 ## 2. Folder structure
 
+As set up on 2026-10-27 (the owner's layout):
 ```
-universe/
-  series-bible.md            who Ren & Yuki are, how they talk, the rules of the world
-  episode-ideas.md
-episodes/
-  e01-the-rainbow-forest/
-    story.txt                the full episode (16:9)
-    shorts/
-      s01-the-hidden-door.txt     episode Shorts that point at story.txt
-      s02-yuki-gets-stuck.txt
+stories/
+  episodes/                  the series: episode-01-the-beginning-of-a-friendship.txt, episode-02-..., ...
+                             (anything in a folder called "episodes" gets the series intro by default)
+  early-stories/             the first little films and drafts
+  demos-and-tests/           demos, test stories, and _template.txt (what a new story starts from)
+  (new stories start here, in stories/ itself)
 shorts/
-  cookie-war.txt             independent Shorts (9:16)
-  sharing-an-umbrella.txt
-stories/                     existing test stories, unchanged
+  standalone/                independent Shorts (9:16): little stories of their own
+  episode-shorts/            episode Shorts: "from: episode-03-the-old-lantern" + the lines or scenes to show
 videos/
-  episodes/   e01-the-rainbow-forest.mp4 (+ report, chapters, subtitles, thumbnail)
-  shorts/     e01-s01-the-hidden-door.mp4, cookie-war.mp4 ...
+  <story-name>/              each video and all its files (report, chapters, subtitles, thumbnail...)
 ```
+A Short's `from:` is just the episode's file name; it is found in any folder inside `stories/`.
+(Planned later: `universe/series-bible.md` and `universe/episode-ideas.md`, see F10.)
 `make-video.bat` accepts any of these files. The **type** of each file is set inside it (see section 3).
 
 ---
@@ -212,4 +210,4 @@ The build order now lives in **`ENGINE-ROADMAP.md`, section 2**, and is updated 
 4. **Voices:** Kokoro for everything at first, or human actors from the first episode?
 5. **Language:** English only at first, or add more languages early?
 6. **Release rhythm:** for example, 3 Shorts a week and 1 episode a month.
-7. **The first videos:** decided: *The Owl's Lantern* (a standalone tale, about 4 min) as the first upload; *The Day Our Adventure Began* as Episode 1 after Milestone 2.
+7. **The first videos:** decided: *The Beginning of a Friendship* is Episode 1 (owner, 2026-10-27), followed by *Into the Forest*, *The Old Lantern* and *The Star Who Waited*. *The Day Our Adventure Began* was an earlier draft (in `stories/early-stories/`).

@@ -1,0 +1,448 @@
+# ============================================================
+#  REN & YUKI  -  The Day Our Adventure Began
+#  (an earlier draft of a first episode; the real Episode 1 is
+#   stories\episodes\episode-01-the-beginning-of-a-friendship.txt)
+#
+#  Save as:  stories\early-stories\the-day-our-adventure-began.txt
+#  Check:    check-story.bat stories\early-stories\the-day-our-adventure-began.txt
+#  Watch:    preview.bat stories\early-stories\the-day-our-adventure-began.txt
+#  Make:     make-video.bat stories\early-stories\the-day-our-adventure-began.txt
+#
+#  Lines starting with "# LATER:" mark moments that are simplified
+#  for now. When the engine learns those actions (ENGINE-ROADMAP
+#  F3 movement, F4 props), change only those lines and make the
+#  video again. Everything else stays the same.
+# ============================================================
+
+title: The Day Our Adventure Began
+place: meadow
+time: day
+
+
+# ============ Scene 1 - Hello, World! ============
+narrator: The morning sun rose over a beautiful little meadow, where the grass swayed and tiny flowers nodded in the breeze.
+ren enters
++ narrator: In the middle of this peaceful place lived a little fox named Ren.
+title card: REN AND YUKI
+narrator: Ren was curious, cheerful, and sure that he would become the greatest explorer the world had ever known.
+ren turns to you
+ren (happy): Good morning, world!
+wait 1
+ren tilts its head
+ren: Good morning?
+wait 1
+ren looks around
+ren: Hm. The world must still be waking up.
+ren feels happy
+ren (happy): Well, that's all right! I'll introduce myself anyway.
+ren turns to you
+ren (happy): Hello! My name is Ren. I'm a fox, an explorer, a discoverer, and...
+ren tilts its head
+ren (playful): ...an excellent judge of delicious things to eat!
+ren hops
+ren (happy): I live right here, in this wonderful world. And let me tell you something...
+ren raises its paws
+ren (surprised): This world is huge!
+ren lowers its paws
+ren (happy): It's got meadows, forests, rivers, hills, and probably a million places I've never even seen!
+sparkles
+ren (happy): And one day, I'm going to explore every single one of them!
+ren looks around
+ren: Of course, every great explorer has to start somewhere. And this meadow...
+ren looks left
+ren looks right
+ren turns to you
+ren (happy): ...is where my legendary journey begins!
+# LATER: a heroic pose, then a little wobble ("ren trips", F3)
+ren raises its paws
+ren hops
+ren lowers its paws
+ren (shy): Ahem. Perfect. Absolutely perfect.
+ren (happy): Come on, world! Show me what you've got!
+ren walks to right
++ narrator: And with that, the little fox set off on his very first adventure of the day.
+
+
+# ============ Scene 2 - The Greatest Explorer in the Meadow ============
+ren looks down
+ren (surprised): Oh! Look at this grass!
+# LATER: Ren leans down to inspect the grass (F3)
+ren: Green. Very green. Excellent grass.
+ren (happy): Five stars.
+ren walks to left
+ren (surprised): Ah-ha! A mysterious flower!
+# LATER: Ren crouches beside the flower (F3 "crouches")
+ren looks down
+ren tilts its head
+ren: Petals... stem... very suspicious.
+ren looks around
+ren (playful): I should probably investigate further.
+ren looks down
+wait 1.5
+ren blinks
+ren: Hm. It appears to be a very quiet flower.
+ren (shy): Perhaps it's shy. I understand. I can be shy too.
+ren (playful): Not usually, though. I'm normally extremely impressive.
+ren walks to center
++ narrator: Soon, he reached a small rise in the meadow, and climbed to the top.
+ren (surprised): Wow! From up here, I can see almost everything!
+ren looks left
+ren (happy): Meadow!
+ren looks right
+ren (happy): More meadow!
+ren looks around
+ren (surprised): And... the meadow I just came from!
+ren hops
+ren (happy): What a discovery! I should write that down.
+# LATER: Ren pretends to write a note in the air (F3 gesture)
+ren raises its paws
+ren: Explorer's journal. Today, I discovered that when you walk away from somewhere, it ends up behind you.
+ren lowers its paws
+ren (playful): Important scientific work.
+ren looks right
+ren: But the forest is over there. And the river is somewhere beyond those trees.
+ren (happy): And who knows what lies past the hills?
+ren (happy): One day, I'll go all the way out there. I'll discover places nobody knows about!
+ren turns to you
+ren (happy): And then I'll tell everybody about it!
+wait 1
+ren feels sad
+ren (sad): Everybody...
+ren looks around
++ narrator: For a moment, Ren's smile faded.
+ren feels happy
+ren hops
+ren (happy): Never mind! There's plenty more exploring to do!
+ren walks to right
+
+
+# ============ Scene 3 - A Very Important Discovery ============
+narrator: By the time the sun had climbed higher, Ren had explored nearly every corner of the meadow.
++ ren looks around
+ren looks up
+wait 1
+ren (surprised): I've found something!
+ren walks to center
+ren (surprised): A secret discovery!
+# LATER: Ren crouches and leans closer, then closer still (F3)
+ren looks down
+camera: close
+wait 1
+ren tilts its head
+ren: It's a leaf.
+# LATER: Ren picks up the leaf and studies it (F4 prop "leaf")
+ren: A very ordinary leaf.
+ren (surprised): But wait...
+ren (surprised): What if it's not an ordinary leaf? What if it's a rare leaf? A special leaf?
+ren (surprised): The oldest leaf in the meadow!
+camera: wide
+ren hops
+sparkles
+ren (happy): This is incredible!
+ren turns to you
+ren (happy): Did you see that? Did you see what I found?
+wait 1
+ren looks around
++ narrator: Only the breeze answered, moving gently through the grass.
+ren feels sad
+ren (sad): Oh. Right.
+ren looks down
+ren (sad): Well... I saw it. And that's what matters, isn't it?
+# LATER: Ren carefully puts the leaf back (F4)
+ren (shy): There you go, little leaf. Stay mysterious.
+ren feels normal
+ren: Now, where was I? Ah, yes! Exploring!
+ren walks to left slowly
++ narrator: He started walking again, but this time his steps were slower.
+narrator: Every time he found something interesting, he wanted to turn around and say, look at this!
+ren looks right
+narrator: But nobody was there.
+narrator: Ren had spent the whole morning talking to the world. For the first time, he wished the world would talk back.
+
+
+# ============ Scene 4 - The Quiet Nobody Talks About ============
+narrator: The afternoon passed slowly. The meadow was still beautiful, and nothing had changed.
+narrator: And yet, somehow, everything felt different to Ren.
+# LATER: Ren sits down in the grass (F3 "sits down")
+ren walks to center slowly
+ren feels sad
+ren looks up
++ narrator: For once, he wasn't pretending to be a legendary explorer. He simply watched the clouds drift across the sky.
+camera: close
+ren (sad): It's funny.
+ren (sad): I always thought being an explorer would mean having adventures every day.
+ren looks right
+ren: And I do have adventures.
+ren (shy): I find interesting things. I go to interesting places. I make up stories about what might be waiting for me.
+wait 1
+ren (sad): But sometimes...
+ren looks down
+ren (sad): Sometimes I wish there was somebody here.
+ren (sad): Somebody I could show things to.
+ren (shy): Somebody who would laugh at my silly discoveries. Or tell me that my ideas were silly.
+ren (shy): Maybe somebody who would come exploring with me.
+ren looks up
++ narrator: The breeze passed through the meadow. But the meadow remained empty.
+ren (sad): I wonder if there's anybody else out there who feels like this.
+camera: wide
+narrator: Somewhere in the forests, beside the rivers, or beyond the hills, there might be another little animal exploring alone.
+narrator: Someone who also had stories to tell. Someone who also wanted a friend.
+# LATER: Ren stands up (F3 "stands up")
+ren (sad): Well...
+ren turns to you
+ren (shy): Tomorrow is another day.
+ren looks around
+ren (happy): Maybe tomorrow will be different.
+ren feels normal
+ren walks to left
++ narrator: He didn't know that, before the day was over, his world really would change.
+
+
+# ============ Scene 5 - A Little Bunny in the Meadow ============
+time: sunset
+narrator: The sun began to soften, painting the meadow in warm golden light.
+yuki enters from right to right
++ narrator: Ren was wandering through the grass when he noticed something unusual. Someone was there.
+ren looks at yuki
+ren feels surprised
+yuki looks around
+narrator: A little bunny stood not far away, as though she wasn't quite sure where to go.
+yuki looks at ren
+ren and yuki look at each other
+wait 1.5
+ren and yuki feel shy
+narrator: Suddenly, saying hello seemed much harder than discovering the oldest leaf in the meadow.
+ren (shy): Um... hello.
+yuki (shy): Hello.
+wait 1
+ren (shy): Nice weather.
+yuki looks up
+yuki (shy): Yes. It is.
+ren (shy): Very... sunny.
+yuki (shy): Yes.
+ren (shy): Lots of sun.
+yuki feels happy
+wait 1
+ren feels sad
+ren (shy): Sorry. I'm not usually this bad at talking.
+yuki tilts its head
+yuki (surprised): Really?
+ren (surprised): Well, I talk all the time! Sometimes I talk so much, I have to stop just to hear myself think.
+ren (shy): That probably doesn't make any sense.
+yuki (happy): It's all right.
+ren feels happy
+ren walks to yuki
+ren (happy): I'm Ren, by the way.
+yuki (shy): I'm Yuki.
+ren (happy): Yuki. That's a nice name.
+yuki (shy): Thank you. Ren is a nice name too.
+ren (shy): Thank you.
+camera: close
+ren: Do you live around here?
+yuki: Not too far away.
+ren (happy): Oh! Do you come here often?
+yuki: Sometimes.
+ren: What do you do here?
+yuki (shy): I look around. I explore a little.
+ren (surprised): You explore?
+yuki (happy): Yes.
+ren (happy): That's... nice.
+ren looks down
+ren (shy): I explore too.
+yuki looks around
+yuki: On your own?
+ren (sad): Yes. Mostly.
+yuki feels sad
+wait 1
+yuki (sad): Oh. Me too.
+narrator: Neither of them knew it yet, but those two little words had brought them closer than they realised.
+camera: wide
+
+
+# ============ Scene 6 - Two Little Explorers ============
+narrator: Ren wanted to ask a hundred questions. Yuki had questions too. But neither knew which one should come first.
+yuki feels normal
+yuki looks left
+yuki: What do you like exploring?
+ren feels happy
+ren (happy): Oh! Lots of things!
+# LATER: Ren counts on his paws (F3 gesture)
+ren (happy): The meadow, obviously. And the forest. And the river. And the hills. And any place that looks interesting.
+ren (playful): Sometimes I even explore places that don't look interesting at first.
+yuki (surprised): Why?
+ren (happy): Because they might become interesting!
+yuki tilts its head
+yuki: That makes sense.
+ren (happy): Exactly! You never know what you'll find.
+ren (happy): I found an amazing leaf today. Well, it was a normal leaf. But it might be the oldest leaf in the entire meadow.
+yuki (surprised): The oldest leaf?
+ren (shy): Possibly.
+yuki: Did you find out how old it was?
+ren (shy): No.
+yuki (playful): Then how do you know it was the oldest?
+wait 1
+ren tilts its head
+ren: Hm. That's an excellent question.
+yuki (happy): Hehe!
+ren (pouty): Are you laughing at my discovery?
+yuki (playful): A little.
+ren (pouty): Well, I never! That was a very serious investigation.
+ren and yuki feel happy
+yuki (happy): Hahaha!
+ren (happy): Hahaha!
+ren and yuki hop
+narrator: Laughing together felt warmer than laughing alone. Somehow, it made the meadow seem a little brighter.
+yuki (shy): I like looking for interesting things too.
+ren (surprised): Really?
+yuki (shy): But sometimes I don't know what to do when I find something.
+ren: Like what?
+yuki: Like a beautiful place. Or something funny. I want to tell someone about it.
+yuki feels sad
+yuki looks down
+yuki (sad): But there's usually nobody to tell.
+camera: close
+wait 1
+ren (sad): I know exactly how that feels.
+yuki looks at ren
+yuki (surprised): You do?
+ren (sad): Sometimes I find something exciting, and I turn around to show someone...
+ren looks around
+ren (sad): ...and there's nobody there.
+yuki (sad): That happens to me too.
+ren and yuki look at each other
++ narrator: For the first time, neither of them had to pretend to be happier than they were.
+narrator: They had both been searching for something. Perhaps it wasn't a hidden treasure, or a mysterious place.
+narrator: Perhaps it was simply someone who understood.
+camera: wide
+
+
+# ============ Scene 7 - Would You Like to Explore Together? ============
+ren and yuki feel normal
+ren looks at yuki
+narrator: Ren had an idea. A very good idea. Possibly the best idea he had ever had.
+ren feels shy
+ren (shy): Um, Yuki?
+yuki: Yes?
+ren (shy): Can I ask you something?
+yuki: Of course.
+camera: close
+ren (shy): Would you... maybe... like to explore together sometime?
+yuki (surprised): Together?
+ren feels happy
+ren (happy): Yes! We could visit the forest. We could go to the river. We could see what lies beyond the hills.
+ren (happy): And if we found something amazing, we could both see it!
+ren (playful): And if we found something silly, we could laugh about it together.
+yuki looks left
++ narrator: Yuki imagined walking somewhere new, with someone beside her who would listen to her stories.
+yuki looks at ren
+yuki (shy): I think I'd like that.
+ren (surprised): Really?
+yuki (happy): Really.
+ren hops
+ren (happy): Wonderful! Excellent! Absolutely fantastic!
+ren (shy): Sorry. I'm doing the talking thing again.
+yuki (happy): Hehe. I don't mind.
+ren (happy): Good. Because I have a lot of ideas.
+yuki (playful): I noticed.
+ren (playful): And some of them are even good!
+yuki (happy): I'm sure they are.
+ren (happy): Then it's settled. Tomorrow, we'll go exploring!
+yuki tilts its head
+yuki: Tomorrow?
+ren (shy): If you're free.
+yuki (happy): I think I can make time.
+ren (happy): Then tomorrow it is!
+yuki: And the day after tomorrow?
+ren tilts its head
+ren: What about it?
+yuki (shy): Could we explore again then?
+ren (happy): Of course!
+yuki (happy): And the day after that?
+ren (happy): Of course!
+yuki (shy): Then... could we meet every day?
+camera: closer
+wait 1
+narrator: Ren had wished for so long for somebody to share his adventures with. Now, here was someone who wanted to come back.
+ren (shy): I'd really like that.
+yuki (shy): Me too.
+# LATER: Ren holds out his paw and Yuki gently touches it (F3 gestures)
+ren (happy): Then it's a promise. Tomorrow, we meet right here.
+ren and yuki hug
+yuki (happy): Tomorrow.
+camera: close
+ren (happy): And we'll have the greatest adventures ever!
+yuki (happy): Let's start with one adventure at a time.
+ren (playful): Very wise. You're already an excellent explorer.
+yuki (playful): And you're already a very silly fox.
+ren (surprised): Me? Silly?
+yuki (playful): Very.
+ren and yuki feel happy
+ren (happy): Hahaha!
+yuki (happy): Hehehe!
+ren and yuki hop
+camera: wide
+
+
+# ============ Scene 8 - The Beginning of Everything ============
+narrator: The sun sank lower over the meadow. Ren and Yuki stood together, looking out across the world.
+ren looks left
++ yuki looks left
+narrator: Nothing about the world had changed. And yet, for Ren, everything felt different.
+narrator: That morning, he had seen a place to explore alone. Now, he saw a place where their adventures could begin together.
+ren looks at yuki
+ren (shy): Yuki?
+yuki looks at ren
+yuki: Yes?
+ren (happy): I'm really glad you came here today.
+yuki (happy): I'm glad I did too.
+ren (shy): I was feeling a little lonely earlier.
+yuki (shy): So was I.
+yuki looks left
+yuki (sad): Sometimes I thought there was something wrong with me, because I didn't have anyone to explore with.
+ren (sad): There's nothing wrong with you.
+yuki looks at ren
+yuki (surprised): Really?
+ren (happy): Really. I think we just hadn't found each other yet.
+yuki feels happy
+yuki (happy): I think you're right.
+ren hops
+ren (happy): Well, that's all sorted now!
+yuki (playful): Is it?
+ren (happy): Of course! We have a plan.
+yuki tilts its head
+yuki: What plan?
+# LATER: Ren counts on his paws (F3 gesture)
+ren (happy): Tomorrow, we explore. The next day, we explore some more.
+ren (happy): Then we find new places, make new discoveries, and have lots of adventures.
+yuki (happy): That sounds like a wonderful plan.
+ren (shy): And if one of us feels lonely?
+yuki (happy): Then we'll remember that we're not alone anymore.
+ren (happy): Exactly.
+hearts float up
+narrator: They hadn't found a legendary treasure. They hadn't discovered a secret kingdom. Not yet.
+narrator: But they had found something wonderful all the same. A friend.
+narrator: Someone to listen. Someone to laugh with. Someone to share the next adventure.
+ren looks left
++ narrator: And somewhere beyond the meadow, a whole world was waiting for them.
+ren (shy): Yuki?
+yuki: Yes, Ren?
+ren (happy): Tomorrow... can we explore the forest?
+yuki (happy): I was hoping you'd ask.
+ren hops
+ren (happy): Then tomorrow, our adventure begins!
+yuki (happy): Our adventure begins.
+time: dusk
+narrator: And together, they watched the last golden light settle over the meadow.
+
+
+# ============ Closing narration ============
+camera: close
+narrator: Sometimes, the greatest adventures don't begin with a map, a treasure, or a magical discovery.
+narrator: Sometimes, they begin with a simple hello.
+narrator: And sometimes, when you feel like the only one in the world, you discover that someone else has been looking for a friend too.
+narrator: That evening, Ren and Yuki made a promise. They would meet again tomorrow. And the day after that. And every day they could.
+narrator: Because the world was a very big place...
+ren and yuki look at each other
++ narrator: ...and it was much more wonderful when they explored it together.
+title card: THE BEGINNING
+ren and yuki wave

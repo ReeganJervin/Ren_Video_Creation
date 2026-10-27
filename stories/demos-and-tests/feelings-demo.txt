@@ -1,0 +1,53 @@
+# ============================================================
+#  Feelings: every mood and every way of talking (F12)
+#  A funny scene, then a serious one, with mood voices on.
+#  Make it:  make-video.bat stories\demos-and-tests\feelings-demo.txt
+# ============================================================
+
+title: Feelings
+place: meadow
+time: day
+music: happy
+mood voices: on
+
+scene: The Cake
+ren enters from left to left
++ yuki enters from right to right
+yuki (excited): Ren! I baked a cake for our picnic!
+ren (surprised): A whole cake? Just for us?
+yuki (proud): Three layers. With strawberries on top.
+ren (thinks): Maybe she won't notice.
+yuki (thinks silently): Why is there a slice missing?
+yuki (thinking): Ren. Where is the fourth slice?
+ren (shy): Um. Quality control?
+yuki (pouty): Ren!
+ren (playful): It was very good quality.
+yuki (laughing): You are impossible!
+ren feels laughing
+wait 1
+yuki (whispers): Next time, I'm hiding it.
+ren (shouts, excited): I heard that!
+yuki (surprised): You have very big ears.
+ren (proud): The biggest in the whole meadow.
+
+scene: The Storm
+time: night
+music: deep tense
+narrator: That night, a storm rolled over the meadow.
+ren and yuki feel scared
+yuki (scared): Ren? Where are you?
+ren (shouts, worried): Yuki! Over here!
+yuki (crying): I thought I lost you.
+music: deep sad
+ren (sad): I'm here. I'm not going anywhere.
+ren walks to yuki
+ren hugs yuki
+music: heartfelt
+yuki (determined): Then we wait it out. Together.
+ren (worried): What if the thunder comes back?
+yuki (whispers): Then I will hold your paw.
+ren (sleepy): Together. And maybe a little nap.
+yuki (happy): Goodnight, Ren.
+music: epic
+time: day
+narrator: By morning the storm had passed, and a whole new adventure was waiting.

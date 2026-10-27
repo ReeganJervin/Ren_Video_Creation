@@ -60,7 +60,7 @@ popd
 
 echo.
 echo  ===== All set! =====
-echo  Try it:  make-video.bat stories\the-fallen-star.txt
+echo  Try it:  make-video.bat stories\early-stories\the-fallen-star.txt
 echo  Or double-click "Kitsu Studio.bat" to write and make videos in your browser.
 echo.
 pause

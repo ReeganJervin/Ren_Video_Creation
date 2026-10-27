@@ -37,7 +37,7 @@
 
 ### A1. Home screen
 - A list of stories (from `stories/`, and from `episodes/` if it exists), with title, length (from the last check), last-changed date and a status badge: `Has errors`, `Missing assets`, `Ready`, `Rendered`.
-- Buttons: **New story** (from `_template.txt`), **Open**, **Duplicate**, **Rename**, **Delete**. Delete asks first and moves the file to `stories/_deleted/`, so nothing is ever lost.
+- Buttons: **New story** (from `stories/demos-and-tests/_template.txt`, saved in `stories/`), **Open**, **Duplicate**, **Rename**, **Delete**. Delete asks first and moves the file to `stories/_deleted/`, so nothing is ever lost.
 
 ### A2. Story editor
 - **Code editor:** CodeMirror 6, with:

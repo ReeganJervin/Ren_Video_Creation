@@ -1,6 +1,6 @@
 # Story Guide: every line you can write
 
-A story is a plain text file in the `stories` folder. You can write it in Notepad, or in the studio app (double-click `Kitsu Studio.bat`), which checks every line as you type and shows a live preview. Each line is one thing that happens, and they happen **one after another, top to bottom**. The timing is automatic: each line waits until the one before it has finished. You never type seconds, except with `wait`.
+A story is a plain text file in the `stories` folder (episodes go in `stories\episodes\`, Shorts in `shorts\standalone\` or `shorts\episode-shorts\`; see README.md for every folder). You can write it in Notepad, or in the studio app (double-click `Kitsu Studio.bat`), which checks every line as you type and shows a live preview. Each line is one thing that happens, and they happen **one after another, top to bottom**. The timing is automatic: each line waits until the one before it has finished. You never type seconds, except with `wait`.
 
 ```
 title: Ren and the Fallen Star
@@ -140,7 +140,7 @@ The amounts are in `config\voices.json` (`_moods` for moods, `_styles` for ways 
 | `<name> sighs` | A breath in, then a long breath out: shoulders and head drop, a slow blink |
 | `<name> dances` | A happy little dance: swaying, paws up in turn, a bounce on each beat (also `does a little dance`) |
 
-To see almost every action in one story, make `stories\movement-demo.txt` (a game of hide and seek, about 2½ minutes).
+To see almost every action in one story, make `stories\demos-and-tests\movement-demo.txt` (a game of hide and seek, about 2½ minutes).
 
 All of these blend smoothly into whatever comes next. Turning (to walk, to talk, to look, to turn away) goes through solid poses (front, three-quarter, side, back) with a tiny squash at each switch and one quick blink per turn (small turns toward someone who is talking don't blink), never a see-through mix of two.
 | `<name> hugs <other name>` | Goes over and hugs them: both turn to each other, look happy, and little hearts float up between them. Then they step apart again, still facing each other, and both stay happy (until a later line gives them another mood) |
@@ -514,7 +514,7 @@ To add YouTube's end-screen elements: in YouTube Studio, open the video's **Edit
 
 The check report has a line about these files. It warns you if the thumbnail shows a speech bubble or a face cut off at the edge, so you can choose another moment.
 
-To make only these three files, without making the video again (the voices are made if needed): `node tools\make-video.js stories\my-story.txt --youtube`. An example: `stories\youtube-demo.txt`. In the studio app, the finished video shows the thumbnail, with **Open subtitles** and **Copy description**. The subtitles are off in the app's player (the narrator's words are already on screen); the **CC** button turns them on.
+To make only these three files, without making the video again (the voices are made if needed): `node tools\make-video.js stories\my-story.txt --youtube`. An example: `stories\demos-and-tests\youtube-demo.txt`. In the studio app, the finished video shows the thumbnail, with **Open subtitles** and **Copy description**. The subtitles are off in the app's player (the narrator's words are already on screen); the **CC** button turns them on.
 
 Before publishing, check YouTube's "altered or synthetic content" and "Made for Kids" settings. Whether a video is "Made for Kids" is your choice for each video.
 
@@ -536,7 +536,7 @@ What changes in a vertical video:
 
 A Short is a vertical video of 15 to 60 seconds. Put Shorts in the `shorts` folder. There are two kinds.
 
-**An independent Short** is a little story of its own. Write it like any story, with `type: short` at the top (an example: `shorts\explorers-rules.txt`):
+**An independent Short** is a little story of its own. Write it like any story, with `type: short` at the top (an example: `shorts\standalone\explorers-rules.txt`):
 
 ```
 title: Ren's Three Explorer Rules
@@ -554,12 +554,12 @@ narrator: And that is how Ren's very first expedition began.
 ending: The full story is on the channel!
 ```
 
-**An episode Short** is a part of a longer story, drawn again standing up (never cut out of the wide video), with the voices you already made. It needs only a few lines (an example: `shorts\the-summit.txt`):
+**An episode Short** is a part of a longer story, drawn again standing up (never cut out of the wide video), with the voices you already made. It needs only a few lines (an example: `shorts\episode-shorts\ep1-the-summit.txt`):
 
 ```
 title: The Summit Is 40 Steps Away
 type: episode short
-from: beginning-of-a-friendship
+from: episode-01-the-beginning-of-a-friendship
 scenes: 1
 hook: Ren's greatest expedition... is 40 steps long
 thumbnail text: The Summit
@@ -570,7 +570,7 @@ ending: Watch the full episode!
 |---|---|
 | `type: short` | An independent Short: vertical (unless you write `format: wide`), a little faster (shorter pauses, quicker walks), no series intro and no end screen |
 | `type: episode short` | A Short made from part of another story (with `from:` and `scenes:` or `lines:`) |
-| `from: beginning-of-a-friendship` | The story it comes from (looked for next to the Short, then in `stories` and `episodes`) |
+| `from: episode-01-the-beginning-of-a-friendship` | The story it comes from: just its file name, found in any folder inside `stories` |
 | `scenes: 2` or `scenes: 2-3` | Which scenes to show. A line that starts inside them is always heard to its end |
 | `lines: 40-55` | Or which lines of the story file to show (the line numbers in the editor) |
 | `hook: <text>` | Big text at the top for the first 3 seconds, to make people stay |

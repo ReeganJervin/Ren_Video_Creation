@@ -1,0 +1,67 @@
+# ============================================================
+#  Sorry, Yuki  (test story: a falling-out and making up)
+#  Check:  check-story.bat stories\early-stories\sorry-yuki.txt
+#  Watch:  preview.bat stories\early-stories\sorry-yuki.txt
+#  Make:   make-video.bat stories\early-stories\sorry-yuki.txt
+# ============================================================
+
+title: Sorry, Yuki
+place: beach
+time: day
+
+# --- A sunny race ---
+ren enters from left to left
++ narrator: Ren loved spending sunny days by the sea.
+yuki enters from right to right
+yuki (happy): Ren! Let's race to the waves!
+ren turns to yuki
+ren (playful): Okay! Ready... set... go!
+ren and yuki hop
+ren hops twice
+ren (happy): I win! I'm the fastest fox in the world!
+
+# --- Yuki gets upset ---
+yuki feels pouty
+yuki (pouty): Hmph! You started before I said go!
+ren (playful): Did not!
+yuki (sad): You always win. It's not fun anymore.
+yuki exits to right
+narrator: Yuki hopped away, and the beach suddenly felt very quiet.
+
+# --- Ren feels bad ---
+ren feels sad
+ren looks around
+camera: close
+ren (sad): Oh no... I wasn't being a good friend.
+wait 1
+camera: wide
+
+# --- Saying sorry ---
+time: sunset
+narrator: As the sun began to set, Ren went to find Yuki.
+ren walks to center
+yuki enters from right
+yuki feels sad
+ren walks to yuki
+ren (shy): Yuki... I'm sorry. I really did start too early.
+yuki looks at ren
+yuki (surprised): You're saying sorry?
+ren (happy): Winning isn't fun without you. Next time, you count!
+yuki feels happy
+yuki (playful): Hehe! Okay, but I'll win this time!
+title card: FRIENDS
+ren and yuki hug
+
+# --- A happy ending ---
+time: dusk
+narrator: They raced until the stars came out, and nobody kept score.
+ren and yuki hop
+time: night
+camera: close
+star appears
+ren looks at the star
++ yuki looks at the star
+star twinkles
+yuki (sleepy): Best day ever...
+ren (happy): Best friends ever.
+ren and yuki wave

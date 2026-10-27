@@ -1,0 +1,33 @@
+# ============================================================
+#  Asset Test  (the first four assets made with /new-asset)
+#  The cottage garden (place), the cottage (set piece), the lantern
+#  (prop) and the owl (extra, with its own voice), plus the star.
+#  Check:  check-story.bat stories\demos-and-tests\asset-test.txt
+# ============================================================
+
+title: Asset Test
+place: cottage garden
+time: day
+
+ren enters
++ narrator: One morning, Ren went to visit a little cottage garden.
+cottage appears at right
+ren looks at the cottage
+ren (surprised): What a cozy little cottage!
+the cottage opens
+lantern appears next to ren
+the lantern glows
+ren walks to the lantern
+ren (happy): A glowing lantern! I wonder who lives here.
+owl flies in from left
+owl (happy): Hoo! Welcome to my garden, little fox!
+ren waves at the owl
+owl lands
+ren (playful): Do you live in the cottage?
+owl: I live in the apple tree. But I look after the cottage.
+star appears at left
+ren (happy): And look, a little star came too!
+owl takes off
+the lantern stops glowing
+owl flies away
+narrator: And so Ren made a new friend in the cottage garden.

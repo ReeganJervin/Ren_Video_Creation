@@ -29,7 +29,7 @@ The command files below keep working exactly as before.
 
 ## Making a video
 
-1. Copy `stories\_template.txt` to a new name, for example `stories\my-story.txt`, and write your story. The full list of lines you can use is in **[STORY-GUIDE.md](STORY-GUIDE.md)**.
+1. Copy `stories\demos-and-tests\_template.txt` to a new name, for example `stories\my-story.txt`, and write your story. The full list of lines you can use is in **[STORY-GUIDE.md](STORY-GUIDE.md)**.
 2. Check it: `check-story.bat stories\my-story.txt`. This finds mistakes in seconds.
 3. Watch it live with sound (optional): `preview.bat stories\my-story.txt`. This opens in your browser. Press Ctrl+C in the window to stop.
 4. Make the video: `make-video.bat stories\my-story.txt`. You can also drag the story file onto `make-video.bat`.
@@ -78,15 +78,15 @@ For example: `node tools\make-video.js stories\my-story.txt --workers 2 --resume
 While drawing, the window shows how far it is, which scene it's on, how many frames per second it draws and about how long is left.
 
 There are example stories to try first:
-- `stories\the-fallen-star.txt` is your 50-second film, written as a story.
-- `stories\a-sunny-hello.txt` is a short daytime story that shows Ren's moods.
-- `stories\ren-meets-yuki.txt` is a one-minute story where Ren meets Yuki: talking, every Yuki mood, a hug and hopping together.
-- `stories\a-trip-around.txt` takes Ren and Yuki to every place: the meadow, forest, river, snowy hill and beach.
-- `stories\test-scenes.txt` is a story in three scenes, with three music moods and YouTube chapters.
-- `stories\test-camera.txt` shows every kind of shot and camera move.
-- `stories\camera-demo.txt` lets the camera edit by itself (`editing: auto`), with comic beats, slow motion and reveals.
-- `stories\feelings-demo.txt` shows every mood and way of talking (thinking, whispering, shouting), with mood voices.
-- `shorts\explorers-rules.txt` is an independent Short (vertical, about 25 s), and `shorts\the-summit.txt` is a Short made from scene 1 of `beginning-of-a-friendship` (see "Shorts" in STORY-GUIDE.md).
+- `stories\early-stories\the-fallen-star.txt` is your 50-second film, written as a story.
+- `stories\demos-and-tests\a-sunny-hello.txt` is a short daytime story that shows Ren's moods.
+- `stories\early-stories\ren-meets-yuki.txt` is a one-minute story where Ren meets Yuki: talking, every Yuki mood, a hug and hopping together.
+- `stories\demos-and-tests\a-trip-around.txt` takes Ren and Yuki to every place: the meadow, forest, river, snowy hill and beach.
+- `stories\demos-and-tests\test-scenes.txt` is a story in three scenes, with three music moods and YouTube chapters.
+- `stories\demos-and-tests\test-camera.txt` shows every kind of shot and camera move.
+- `stories\demos-and-tests\camera-demo.txt` lets the camera edit by itself (`editing: auto`), with comic beats, slow motion and reveals.
+- `stories\demos-and-tests\feelings-demo.txt` shows every mood and way of talking (thinking, whispering, shouting), with mood voices.
+- `shorts\standalone\explorers-rules.txt` is an independent Short (vertical, about 25 s), and `shorts\episode-shorts\ep1-the-summit.txt` is a Short made from scene 1 of `beginning-of-a-friendship` (see "Shorts" in STORY-GUIDE.md).
 
 ## Every video is checked automatically
 
@@ -105,7 +105,8 @@ The results are in `videos\<name>\<name>-report.txt`. Each line starts with `PAS
 
 | Folder or file | What it is |
 |---|---|
-| `stories\` | Your stories, plus the template and examples |
+| `stories\` | Your stories. New ones (and the studio's **New story**) start here. Inside: `episodes\` (the series: Episode 1, 2, 3...), `early-stories\` (the first little films and drafts) and `demos-and-tests\` (demos, test stories and `_template.txt`, the starting point for a new story) |
+| `shorts\` | The Shorts: `standalone\` (little stories of their own) and `episode-shorts\` (a part of an episode, drawn standing up) |
 | `config\voices.json` | The voices: the narrator, Ren, Yuki, and the owl (a Kokoro voice or a blend of two, with speed and pitch, and optionally `gain` in dB to make one voice quieter or louder than the others) |
 | `engine\characters.js` | The list of characters: their names, how they move, their sounds and how each mood looks on them |
 | `engine\ren.js` | Ren's fixed design (shape, colours, face, scarf) |
@@ -127,7 +128,7 @@ The results are in `videos\<name>\<name>-report.txt`. Each line starts with `PAS
 | `tools\scenes.js` | Chapters and the extra checks for stories with scenes |
 | `tools\render.js` | Draws the frames: several workers at once, scene by scene in pieces that `--resume` can keep |
 | `tools\browser.js` | Starts the drawing browser (or Chrome/Edge if setup couldn't download it) |
-| `tools\compare-engines.js` | For engine changes: checks that every story in `stories\` still looks and sounds exactly the same as before (`node tools\compare-engines.js`) |
+| `tools\compare-engines.js` | For engine changes: checks that every story in `stories\` (and its folders) still looks and sounds exactly the same as before (`node tools\compare-engines.js`) |
 | `voice-overrides\` | Optional: your own recordings for specific lines (see STORY-GUIDE.md) |
 
 ## Adding new things later

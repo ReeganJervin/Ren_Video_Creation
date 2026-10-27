@@ -57,7 +57,10 @@ async function main() {
   checkoutEngine();
   const NEW = require('../engine/story.js'), OLD = require(path.join(oldDir, 'engine', 'story.js'));
   // --only name: just that story
-  const only = process.argv.indexOf('--only'), stories = fs.readdirSync(path.join(ROOT, 'stories')).filter(f => f.endsWith('.txt') && (only < 0 || f === process.argv[only + 1] + '.txt'));
+  // (every story in stories/ and its folders, as paths like "episodes/episode-02-into-the-forest.txt")
+  const all = [], walk = (d, rel) => { for (const e of fs.readdirSync(d, { withFileTypes: true })) { if (e.name.startsWith('_')) continue; if (e.isDirectory()) walk(path.join(d, e.name), rel + e.name + '/'); else if (e.name.endsWith('.txt')) all.push(rel + e.name); } };
+  walk(path.join(ROOT, 'stories'), '');
+  const only = process.argv.indexOf('--only'), stories = all.filter(f => only < 0 || path.basename(f) === process.argv[only + 1] + '.txt');
   const server = await serve(), base = `http://127.0.0.1:${server.address().port}`;
   const browser = await require('./browser').launch({ exact: true });
   const open = async (engine, plan, size = { width: 1920, height: 1080 }) => {
@@ -84,7 +87,7 @@ async function main() {
   let allOk = true;
   const rows = [];
   for (const f of stories) {
-    const name = f.replace(/\.txt$/, ''), text = fs.readFileSync(path.join(ROOT, 'stories', f), 'utf8');
+    const name = path.basename(f, '.txt'), text = fs.readFileSync(path.join(ROOT, 'stories', f), 'utf8');
     const pa = OLD.parseStory(text), pb = NEW.parseStory(text);
     if (pb.errors.length) { rows.push(`FAIL  ${name}: the story has errors in the new engine`); allOk = false; continue; }
     if (pa.errors.length) { rows.push(`NEW   ${name.padEnd(26)} uses lines the old engine doesn't know, so it isn't compared`); continue; }

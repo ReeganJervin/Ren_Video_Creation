@@ -1,0 +1,62 @@
+# ============================================================
+#  Test Camera  (every shot type and camera move, in two places)
+#  Check:  check-story.bat stories\demos-and-tests\test-camera.txt
+#  Make:   make-video.bat stories\demos-and-tests\test-camera.txt
+# ============================================================
+
+title: Test Camera
+
+scene: Shots in the Meadow
+place: meadow
+time: day
+music: happy
+
+ren enters
++ yuki enters from right
++ narrator: Ren and Yuki met in the meadow to play.
+shot: wide
+yuki (happy): Hello, Ren! Do you want to play a game?
+shot: medium on ren
+ren (happy): Yes, please! What game shall we play?
+shot: close on yuki
+yuki (playful): Let's play hide and seek!
+shot: extreme close on ren
+ren (surprised): Hide and seek? I love hide and seek!
+shot: over the shoulder of ren
+yuki (happy): Then close your eyes and count to ten!
+shot: over the shoulder of yuki
+ren (happy): Okay! One, two, three...
+shot: wide
+ren exits to right
++ narrator: Ren went to count behind the big tree.
+
+scene: Moves in the Forest
+place: forest
+time: sunset
+music: adventure
+
+narrator: Yuki hopped into the forest to find a hiding place.
+camera: push in
+yuki looks around
+yuki (shy): Where can I hide?
+camera: pull out
+camera: follow yuki
+yuki walks to left
+star appears
+camera: pan to the star
+narrator: High above, a little star peeked down to watch.
+camera: pan to right
+ren enters from right
+ren (playful): Ready or not, here I come!
+camera: pan to yuki
+yuki hops
+camera: hold
+yuki (shy): Shh... I hope he doesn't find me.
+shot: wide
+ren walks to yuki
+camera: shake
+ren (surprised): Found you!
+shot: medium on both
+yuki (happy): Oh no! You found me!
+shot: wide
+ren and yuki hop

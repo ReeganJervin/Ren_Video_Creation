@@ -1,0 +1,54 @@
+# ============================================================
+#  Ren and the Sleepy Star  (test story)
+#  Check:  check-story.bat stories\early-stories\ren-and-the-sleepy-star.txt
+#  Watch:  preview.bat stories\early-stories\ren-and-the-sleepy-star.txt
+#  Make:   make-video.bat stories\early-stories\ren-and-the-sleepy-star.txt
+# ============================================================
+
+title: Ren and the Sleepy Star
+place: meadow
+time: day
+
+# --- Beginning: a happy day ---
+ren enters from right
++ narrator: One bright afternoon, Ren skipped through the meadow.
+ren turns to you
+title card: REN
+ren (happy): What a perfect day for an adventure!
+ren hops
+
+# --- Evening comes ---
+time: sunset
+narrator: The sun slowly began to set, painting the sky orange.
+ren walks to left
+ren looks up
+star appears
+ren (surprised): Oh! The first star of the evening!
+star twinkles
+
+# --- The star gets sleepy ---
+time: dusk
+star falls
+ren feels sad
+ren (sad): Oh no... little star, are you hurt?
+ren picks up the star
+camera: close
+star glows
++ ren (shy): It's okay. I'm right here with you.
+
+# --- Sending it home ---
+time: night
+camera: wide
+ren walks to center
+ren feels happy
+ren lets go of the star
++ narrator: With a gentle push, Ren sent the star back home.
+ren waves
+star twinkles
+heart floats down
+ren hops twice
+hearts float up
+
+# --- Goodnight ---
+ren (sleepy): Goodnight, little star...
+narrator: And from that night on, the star always shone a little brighter for Ren.

@@ -1,0 +1,169 @@
+# ============================================================
+# Ren & Yuki — Ren's Little World
+# Part 1: Before They Met
+# ============================================================
+#
+# Check:  check-story.bat stories\early-stories\ren-little-world.txt
+# Watch:  preview\.bat stories\early-stories\ren-little-world.txt
+# Make:   make-video.bat stories\early-stories\ren-little-world.txt
+#
+# ============================================================
+
+title: Ren's Little World
+place: meadow
+time: day
+
+# --- Scene 1: The World's Greatest Explorer ---
+
+ren enters from left to left
+ren (happy): Good morning, world!
+wait 1
+ren (surprised): What? No applause?
+ren (playful): Tough audience. I'll try again!
+ren (happy): GOOD MORNING, WORLD!
+wait 1
+ren (sad): Still nothing.
+ren (playful): Fine. I'll clap for myself.
+ren hops twice
+ren (happy): Thank you! Thank you! You're all too kind!
+ren (happy): My name is Ren! I'm a fox, a fearless explorer, and the greatest adventurer this meadow has ever seen!
+ren (playful): At least, I think so. I haven't met any competition yet.
+ren (happy): My mission is simple: discover mysteries, solve impossible puzzles, and find things nobody has ever found before!
+ren (surprised): Like hidden treasure!
+ren (happy): Secret tunnels!
+ren (playful): Mysterious creatures with terrible manners!
+ren (happy): And maybe a mountain made entirely of snacks!
+ren (sad): Especially that last one. I'm getting hungry.
+ren (happy): But every legendary explorer needs a legendary adventure.
+ren looks around
+ren (surprised): And today...
+wait 1
+ren (happy): TODAY, MY LEGENDARY ADVENTURE BEGINS!
+
+# --- Scene 2: The Mysterious Footprints ---
+
+narrator: Ren marched into the meadow with the confidence of an explorer who had absolutely no idea what he was doing.
+narrator: He was ready for danger, excitement, and perhaps a little treasure.
+ren walks to center
+ren (happy): All right, Ren. Stay alert. A great explorer notices everything.
+ren (playful): Strange noises. Hidden clues. Suspiciously delicious snacks.
+ren (surprised): Wait a second!
+ren (surprised): What is THAT?
+narrator: On the ground ahead of him was a trail of tiny footprints.
+ren (surprised): Tiny footprints!
+ren (shy): They weren't here yesterday. I think.
+ren (playful): Unless they were, and I failed to notice them. Which would be embarrassing.
+ren (surprised): But who made them?
+ren (happy): A secret agent?
+ren (surprised): A miniature monster?
+ren (playful): A very small giant with very small feet?
+ren (shy): That last one doesn't make any sense.
+ren (happy): Which makes it even more suspicious!
+ren looks around
+ren (sad): Hello? Tiny mysterious creature?
+wait 1
+ren (surprised): Nothing?
+ren (playful): Either it's very sneaky... or it has excellent hearing and terrible manners.
+narrator: Ren stared at the footprints. The trail continued across the meadow, disappearing farther away.
+ren (happy): This is it! My first real mystery!
+ren (playful): I shall call it... The Case of the Tiny Toes!
+ren (happy): Catchy. Mysterious. A little bit wiggly. Perfect!
+ren (happy): All right, tiny toes. I'm coming to find you!
+ren (shy): And if you're dangerous, please consider not being dangerous.
+ren (happy): Let's investigate!
+
+# --- Scene 3: Operation Don't Get Eaten ---
+
+narrator: Ren followed the mysterious footprints, trying very hard to look brave.
+ren (happy): Step one: approach the mystery calmly.
+ren (playful): Step two: solve the mystery.
+ren (happy): Step three: receive a medal for being amazing.
+ren (surprised): Wait! What if the creature eats explorers?
+ren (shy): I haven't included that in my plan.
+ren (playful): New step one: do not get eaten.
+ren looks around
+ren (shy): Hello? I'm a friendly explorer!
+ren (playful): I taste terrible, by the way. Probably.
+wait 1
+ren (surprised): Did something move?
+ren (shy): I saw something! I definitely saw something!
+ren (sad): Or maybe I blinked.
+ren (playful): Either way, very suspicious blinking.
+narrator: Ren tried to sneak forward, moving as quietly as he could.
+ren (happy): A great explorer never gives up!
+ren (shy): Unless the mystery is too mysterious.
+ren (playful): Or too bitey. Bitey mysteries are the worst.
+ren looks around
+ren (surprised): There! More footprints!
+ren (happy): The creature is getting closer... or I'm getting closer to the creature.
+ren (shy): I really hope it's the first one.
+ren (playful): Because then I can turn around and go home.
+narrator: Ren took a deep breath and tried to look like the bravest fox in the world.
+ren (happy): I am fearless! I am unstoppable! I am...
+wait 1
+ren (shy): ...a little bit nervous.
+ren (happy): But mostly fearless!
+ren (playful): If I survive this, I'm writing a book.
+ren (happy): "How to Be a Hero Without Actually Knowing How."
+ren (happy): It'll be a bestseller!
+
+# --- Scene 4: The Great Discovery ---
+
+narrator: At last, Ren reached the end of the mysterious trail.
+ren (surprised): This is it. The moment of truth.
+ren (shy): If something jumps out, I'm going to scream. Just so we're clear.
+ren (happy): All right, mystery. Show yourself!
+wait 1
+ren (surprised): ...A leaf?
+ren (sad): It's just a leaf.
+ren (shy): Wait a minute. Maybe it's a special leaf!
+ren (happy): A secret clue disguised as a leaf!
+ren (playful): A leaf spy! A leaf detective! A leaf with a very important mission!
+ren (surprised): But where did the footprints go?
+ren looks around
+ren (sad): Huh. I don't see anything else.
+ren (playful): Well, that was a very dramatic leaf.
+ren (happy): And I was very brave. Extremely brave.
+ren (shy): Nobody saw me hide behind absolutely nothing.
+narrator: Ren had spent the whole afternoon chasing a mystery, inventing monsters, and preparing a speech for his future fans.
+ren (happy): I should tell somebody about this!
+ren looks around
+wait 1
+ren (sad): Oh. Right.
+ren (shy): There's nobody here.
+ren (sad): I don't even have anyone to tell about the leaf.
+ren (playful): Although, to be fair, the leaf wasn't very talkative.
+narrator: Ren laughed at his own joke, but the laughter faded quickly.
+ren (sad): I wish somebody had been here.
+ren (shy): Somebody to investigate with me. Somebody to laugh when my big theories turn out to be silly.
+ren (sad): Somebody who would say, "Ren, that's just a leaf."
+ren (playful): And then I'd say, "A suspicious leaf!"
+ren (sad): It would have been more fun with a friend.
+
+# --- Scene 5: A Question for Tomorrow ---
+
+ren walks to center
+ren feels sad
+narrator: As the afternoon slowly turned to evening, the meadow became quiet again.
+ren (sad): I thought being an explorer would mean never being bored.
+ren (shy): There's always something to discover. Something to wonder about. Something to laugh at.
+ren (sad): But when something amazing happens...
+ren (sad): I have nobody to share it with.
+ren looks around
+ren (shy): I wonder if there's another little animal out there who feels the same way.
+ren (happy): Maybe someone exploring a forest.
+ren (happy): Maybe someone following a river.
+ren (shy): Maybe someone who talks to themselves when nobody else is around.
+ren (playful): Hopefully, they have better jokes than I do.
+wait 1
+ren (sad): I wish I could meet them.
+narrator: Ren looked toward the distant hills. The world suddenly felt much bigger than it had that morning.
+ren (shy): Tomorrow, I'll explore somewhere new.
+ren (happy): And who knows? Maybe I'll find a mystery even bigger than the Case of the Tiny Toes!
+ren (playful): Preferably one that doesn't involve getting eaten.
+ren (happy): And maybe... just maybe... I'll find someone to share it with.
+narrator: Ren headed home with a new mystery on his mind. Not the footprints. Not the leaf.
+narrator: He wondered whether, somewhere in this enormous world, a friend was waiting to be found.
+ren (shy): Good night, world.
+ren (happy): Tomorrow, let's make something interesting happen.
+narrator: Ren didn't know it yet, but his world was about to change. Before the next sunset, he would meet someone who might make every adventure better.

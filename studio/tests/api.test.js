@@ -51,7 +51,7 @@ const STORY = 'title: Studio API Test\nplace: meadow\ntime: day\n\nren enters\nr
     ok('new story starts from the template', got.status === 200 && /title: Studio API test/.test(got.body.text));
     let put = await req('PUT', '/api/story', { file, text: STORY, mtime: got.body.mtime });
     ok('save', put.status === 200 && fs.readFileSync(path.join(ROOT, file), 'utf8').includes('Hello! This is a test.'));
-    const crlf = fs.readFileSync(path.join(ROOT, 'stories', '_template.txt'), 'utf8').includes('\r\n');
+    const crlf = fs.readFileSync(path.join(ROOT, 'stories', 'demos-and-tests', '_template.txt'), 'utf8').includes('\r\n');
     ok('save keeps the file\'s line endings', fs.readFileSync(path.join(ROOT, file), 'utf8').includes('\r\n') === crlf, crlf ? 'CRLF' : 'LF');
     await wait(30); fs.appendFileSync(path.join(ROOT, file), '# changed in Notepad\n');
     put = await req('PUT', '/api/story', { file, text: STORY + 'ren waves\n', mtime: got.body.mtime });
