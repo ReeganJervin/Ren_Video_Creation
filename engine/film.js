@@ -941,13 +941,17 @@
     cx = clamp(cx, -220 + hw, 2140 - hw); cy = clamp(cy, -40 + hh, 1140 - hh);
     return { z, cx, cy };
   }
-  // Vertical (9:16): always framed on the characters, medium-close or closer, a little left of the middle, with
-  // the faces at about 43 % from the top (room above for bubbles and a Short's hook text) and inside the safe area
-  // (out of the bottom 20 %, the right 15 % and the top 8 %). "shot:" lines choose how close and on whom; camera moves
+  // Vertical (9:16): always framed on the characters, medium-close or closer, a little left of the middle, standing
+  // low in the picture: feet at about 76 % from the top (just above the bottom 20 % the phone's buttons cover), so
+  // there's no empty ground below them and plenty of room above for bubbles and a Short's hook text. Faces stay
+  // between 43 % and 63 % from the top (a close shot keeps the face up there and lets the feet go out of the
+  // picture), inside the safe area (out of the bottom 20 %, the right 15 % and the top 8 %). "shot:" lines choose how close and on whom; camera moves
   // come later (F7 Part B). fill: a character's height as a share of the picture's height.
   const VFILL = { wide: 0.28, medium: 0.36, close: 0.48, 'extreme close': 0.62, ots: 0.4 };
   // a framing of some characters: fill = a character's height as a share of the picture's height
   // place: where the group stands across the picture (0.435 of the width unless asked)
+  // where the faces go (a share of the picture's height from the top), for zoom z and feet d below the faces (world)
+  const vFaceAt = (z, d) => clamp(0.76 - z * d / H, 0.43, 0.63);
   function vFrame(ids, fill, t, place = 0.435) {
     // everyone near the middle of the stage counts, more and more as they come in (so an entrance glides)
     const ws = ids.map(id => ({ id, B: actorBody(id, t) })).map(q => ({ ...q, w: clamp((700 - Math.abs(q.B.x - RX)) / 200) })).filter(q => q.w > 0);
@@ -955,23 +959,25 @@
     const sw = ws.reduce((a, q) => a + q.w, 0), mx = ws.reduce((a, q) => a + q.B.x * q.w, 0) / sw;
     // the faces' height (the characters', not a flying extra's)
     const chars = ws.filter(q => !REG[q.id].extra), use = chars.length ? chars : ws;
-    const faceY = use.reduce((a, q) => a + toWorld(q.B, q.B.f * 6, REG[q.id].head).y * q.w, 0) / use.reduce((a, q) => a + q.w, 0);
+    const uw = use.reduce((a, q) => a + q.w, 0);
+    const faceY = use.reduce((a, q) => a + toWorld(q.B, q.B.f * 6, REG[q.id].head).y * q.w, 0) / uw;
+    const d = use.reduce((a, q) => a + q.B.y * q.w, 0) / uw - faceY;   // the feet, below the faces
     const half = Math.max(...ws.map(q => Math.abs(q.B.x - mx) * q.w));
     // as close as asked, but everyone fits between the left edge and the right 15 %, tails included
     const z = Math.max(0.9, Math.min(fill * H / 345, 0.83 * W / (2 * half + 340)));
-    let cx = mx + (W / 2 - place * W) / z, cy = faceY - (0.43 * H - H / 2) / z;
+    let cx = mx + (W / 2 - place * W) / z, cy = faceY - (vFaceAt(z, d) * H - H / 2) / z;
     const hw = W / 2 / z, hh = H / 2 / z;
     cx = clamp(cx, -400 + hw, 2320 - hw); cy = clamp(cy, -300 + hh, 1460 - hh);
-    return { z, cx, cy, pairFill: z * 345 / H };
+    return { z, cx, cy, d, pairFill: z * 345 / H };
   }
   const near = (id, t) => Math.abs(actorBody(id, t).x - RX) < 560;   // on the (narrow) stage
   const idsOf = on => (on && on.actors ? on.actors.filter(id => CAST.includes(id)) : CAST);
-  const vMix = (a, b, k) => ({ z: lerp(a.z, b.z, k), cx: lerp(a.cx, b.cx, k), cy: lerp(a.cy, b.cy, k) });
+  const vMix = (a, b, k) => ({ z: lerp(a.z, b.z, k), cx: lerp(a.cx, b.cx, k), cy: lerp(a.cy, b.cy, k), d: lerp(a.d || 0, b.d || 0, k) });
   // No half faces in vertical: every face (characters and extras) is either whole in the picture or fully out of it
   // (a neighbour's face cut by the edge, 15 % visible, looks like a mistake on a phone). For someone the shot isn't
   // about, the camera slides just far enough to leave the face out, as long as that keeps the shot's own characters
   // whole. Otherwise (or when the cut face belongs to the shot itself) the shot widens until everyone it needs is
-  // whole, inside the safe area, faces kept at the same height. Walking or flying in or out across the edge is left
+  // whole, inside the safe area, standing as low as before. Walking or flying in or out across the edge is left
   // alone (they have to cross it).
   function wholeFaces(cam, t, framed) {
     const half = 90 * KS, ears = 0.7 * half, L = W * 0.04, R = W * 0.85;
@@ -996,10 +1002,10 @@
         if (!cut(out, id) && show.filter(m => whole(cam, m)).every(m => whole(out, m)) && !here.some(q => q !== id && !cut(cam, q) && cut(out, q))) { cam = out; continue; }
         show.push(id);
       }
-      // otherwise wider, until everyone shown is whole inside the safe area, faces kept at the same height
-      const xs = show.map(fx), lo = Math.min(...xs) - half, hi = Math.max(...xs) + half;
-      const z = Math.min(cam.z, (R - L) / (hi - lo)), Y = cam.cy + (0.43 * H - H / 2) / cam.z;
-      cam = clampX({ ...cam, z, cx: (lo + hi) / 2 - ((L + R) / 2 - W / 2) / z, cy: Y - (0.43 * H - H / 2) / z });
+      // otherwise wider, until everyone shown is whole inside the safe area, standing as low as before
+      const xs = show.map(fx), lo = Math.min(...xs) - half, hi = Math.max(...xs) + half, d = cam.d || 0;
+      const z = Math.min(cam.z, (R - L) / (hi - lo)), Y = cam.cy + (vFaceAt(cam.z, d) * H - H / 2) / cam.z;
+      cam = clampX({ ...cam, z, cx: (lo + hi) / 2 - ((L + R) / 2 - W / 2) / z, cy: Y - (vFaceAt(z, d) * H - H / 2) / z });
     }
     return cam;
   }
