@@ -163,9 +163,10 @@
     if (a.keys.sit) K.sit = A_(id, 'sit', t);
     if (a.keys.nod) K.nod = A_(id, 'nod', t);
     springPose(id, t, K);
-    // a clean turn: as the drawing switches pose, a tiny squash and a blink
+    // a clean turn: as the drawing switches pose, a tiny squash; and one quick blink per turn (see turnBlink)
     const sw = turnSwitch(id, t);
-    if (sw > 0) { K.sy *= 1 - 0.04 * sw; K.sx *= 1 + 0.03 * sw; K.blink = Math.max(K.blink, sw); }
+    if (sw > 0) { K.sy *= 1 - 0.04 * sw; K.sx *= 1 + 0.03 * sw; }
+    if (turnBlink(id, t)) K.blink = 1;
     return K;
   }
 
@@ -197,6 +198,18 @@
     let s = 0;
     for (const B of TURN_SWITCHES) if ((e0 - B) * (e1 - B) < 0) s = Math.max(s, 1 - Math.abs(t - (t - 0.05 + 0.1 * (B - e0) / (e1 - e0))) / 0.05);
     return clamp(s);
+  }
+  // At most one blink per turn, fully closed for about 2 frames (no half-closed frames), at the turn's biggest switch:
+  // three-quarter / side (0.7), or side / back (1.35) when turning away or back. Only the story's own turns count
+  // (facing and away), not the small turn toward whoever is talking, so listening and talking never blink.
+  function turnBlink(id, t) {
+    if (REG[id].extra) return false;
+    const a = P.actors[id], away = u => (a.keys.away ? A_(id, 'away', u) : 0);
+    const turn = u => Math.max(Math.abs(A_(id, 'facing', u)), 2 * away(u));
+    const e0 = turn(t - 0.034), e1 = turn(t + 0.034);
+    if (Math.abs(e1 - e0) < 1e-4) return false;
+    const B = Math.max(away(t - 0.5), away(t + 0.5)) > 0.5 ? 1.35 : 0.7;
+    return (e0 - B) * (e1 - B) < 0;
   }
 
   // ---------- spring motion ----------
