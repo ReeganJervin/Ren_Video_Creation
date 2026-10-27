@@ -20,7 +20,7 @@ const EXPLAIN: Record<string, string> = {
 const STEPS: Record<string, string> = { starting: 'Starting', waiting: 'Waiting for another job', voices: 'Making voices', soundtrack: 'Making the soundtrack', drawing: 'Drawing the frames', joining: 'Joining the parts', checking: 'Checking the video', done: 'Done' };
 
 // the last render's checks and files, YouTube files included (F11)
-interface Report { results: CheckRow[] | null; video: string | null; thumbnail: string | null; subtitles: string | null; description: string | null }
+interface Report { results: CheckRow[] | null; video: string | null; thumbnail: string | null; subtitles: string | null; description: string | null; folder?: string }
 interface Props { file: string; name: string; check: CheckResult | null; job: Job | undefined; dirty: boolean; save(): Promise<boolean> }
 
 export function RenderPanel({ file, name, check, job, dirty, save }: Props) {
@@ -44,13 +44,15 @@ export function RenderPanel({ file, name, check, job, dirty, save }: Props) {
   const cancel = () => job && api.post('/api/jobs/cancel', { id: job.id }).catch(e => setError(e.message));
   const results = job?.state === 'done' ? job.results : running ? null : last?.results;
   const video = job?.state === 'done' ? job.video : running ? null : last?.video;
+  // every video's files are in its own folder: videos/<story>/ (a vertical copy too)
+  const folder = last?.folder || `videos/${name}/`;
   const report = (rows: CheckRow[]) => `Kitsu Studio check report for ${file}\n` + rows.map(r => `${r.status}  ${r.name}: ${r.detail}`).join('\n');
-  const copy = async (rows: CheckRow[]) => { try { await navigator.clipboard.writeText(report(rows)); setCopied(true); setTimeout(() => setCopied(false), 2000); } catch { setError('Copying did not work. The report is also in videos/' + name + '-report.txt'); } };
+  const copy = async (rows: CheckRow[]) => { try { await navigator.clipboard.writeText(report(rows)); setCopied(true); setTimeout(() => setCopied(false), 2000); } catch { setError('Copying did not work. The report is also in ' + folder + name + '-report.txt'); } };
   const failed = results?.filter(r => r.status === 'FAIL') || [];
   const [descCopied, setDescCopied] = useState(false);
   const copyDescription = async () => {
     try { const t = await (await fetch(last!.description!)).text(); await navigator.clipboard.writeText(t); setDescCopied(true); setTimeout(() => setDescCopied(false), 2000); }
-    catch { setError('Copying did not work. The description is in videos/' + name + '-description.txt'); }
+    catch { setError('Copying did not work. The description is in ' + folder + name + '-description.txt'); }
   };
 
   return (
@@ -92,7 +94,7 @@ export function RenderPanel({ file, name, check, job, dirty, save }: Props) {
                 <b>For YouTube</b>
                 {last.subtitles && <a className="button-link" href={last.subtitles} target="_blank" rel="noreferrer">Open subtitles</a>}
                 {last.description && <button onClick={copyDescription}>{descCopied ? 'Copied ✓' : 'Copy description'}</button>}
-                <button onClick={() => api.post('/api/open-folder', { path: `videos/${name}-thumbnail.jpg` })}>Show thumbnail file</button>
+                <button onClick={() => api.post('/api/open-folder', { path: last.thumbnail!.replace(/^\//, '') })}>Show thumbnail file</button>
               </div>
             </div>
           )}
@@ -106,7 +108,7 @@ export function RenderPanel({ file, name, check, job, dirty, save }: Props) {
             ))}
           </ul>
           <div className="result-buttons">
-            <button onClick={() => api.post('/api/open-folder', { path: `videos/${name}.mp4` })}>Open folder</button>
+            <button onClick={() => api.post('/api/open-folder', { path: video.replace(/^\//, '') })}>Open folder</button>
             <button onClick={() => copy(results)}>{copied ? 'Copied ✓' : failed.length ? 'Copy report for Claude Code' : 'Copy report'}</button>
           </div>
         </div>

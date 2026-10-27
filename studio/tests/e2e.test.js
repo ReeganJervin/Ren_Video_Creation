@@ -108,7 +108,7 @@ const wait = ms => new Promise(r => setTimeout(r, ms));
     await page.locator('.cm-line', { hasText: 'ren (happy)' }).click(); await wait(600);
     await page.getByRole('button', { name: 'Save still' }).click();
     await page.getByText(/Saved videos\//).waitFor({ timeout: 10000 });
-    ok('"Save still" saves the frame in videos/', fs.readdirSync(path.join(ROOT, 'videos')).some(f => f.startsWith(NAME + '-still-')));
+    ok('"Save still" saves the frame in videos/<story>/', fs.readdirSync(path.join(ROOT, 'videos', NAME)).some(f => f.startsWith(NAME + '-still-')));
     await wait(1200);
     await rec.close();   // the recording is finished here
 
@@ -132,7 +132,7 @@ const wait = ms => new Promise(r => setTimeout(r, ms));
     await shot(page, '09-render-done.png');
     const rows = await page.locator('.checks li').count(), fails = await page.locator('.checks li.row-fail').count();
     ok('the video is made and every check passes', rows >= 10 && fails === 0, `${rows} checks, ${fails} failed`);
-    ok('the video file exists', fs.existsSync(path.join(ROOT, 'videos', NAME + '.mp4')));
+    ok('the video file exists, in its own folder', fs.existsSync(path.join(ROOT, 'videos', NAME, NAME + '.mp4')));
     await page.getByRole('button', { name: '☾ Dark' }).click();
     await page.locator('.right').evaluate(e => e.scrollTo(0, 0));
     await shot(page, '10-dark.png');
@@ -167,7 +167,7 @@ const wait = ms => new Promise(r => setTimeout(r, ms));
     try { fs.rmdirSync(path.join(ROOT, 'stories', '_deleted')); } catch (_) { /* not empty, or not there */ }
     fs.rmSync(path.join(ROOT, 'build', NAME), { recursive: true, force: true });
     fs.rmSync(path.join(ROOT, 'build', '_studio-test-e2e'), { recursive: true, force: true });
-    for (const f of fs.readdirSync(path.join(ROOT, 'videos'))) if (f.startsWith(NAME)) fs.rmSync(path.join(ROOT, 'videos', f), { force: true });
+    fs.rmSync(path.join(ROOT, 'videos', NAME), { recursive: true, force: true });   // the video's own folder
     const bad = results.filter(r => !r.ok).length;
     console.log(`\n${results.filter(r => r.ok).length} end-to-end checks passed${bad || crashed ? ', and the test stopped on a failure' : ''}. Screenshots: ${OUT}`);
     process.exit(bad || crashed ? 1 : 0);

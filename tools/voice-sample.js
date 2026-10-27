@@ -27,7 +27,7 @@ fs.mkdirSync(path.dirname(story), { recursive: true });
 fs.writeFileSync(story, `title: Voice sample\n${lines.join('\n')}\n`);
 const r = spawnSync(process.execPath, [path.join(ROOT, 'tools', 'make-video.js'), story, '--stills', '0.1'], { cwd: ROOT, stdio: 'inherit' });
 const clips = lines.filter(l => !/^mood voices/.test(l)).map((_, i) => path.join(ROOT, 'build', '_voice-sample', 'voice', `${i}.wav`));
-for (const p of fs.readdirSync(path.join(ROOT, 'videos'))) if (p.startsWith('_voice-sample-')) fs.rmSync(path.join(ROOT, 'videos', p));   // the still it needed
+fs.rmSync(path.join(ROOT, 'videos', '_voice-sample'), { recursive: true, force: true });   // the still it needed (in its own video folder)
 if (r.status !== 0 || clips.some(c => !fs.existsSync(c))) { console.error('The voice sample could not be made (see above).'); process.exit(1); }
 fs.mkdirSync(out, { recursive: true });
 const file = path.join(out, moods ? `${who}-moods.wav` : `${who}.wav`);

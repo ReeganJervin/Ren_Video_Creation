@@ -9,6 +9,29 @@ const VOICE_LUFS = -22;   // every voice line is levelled to this loudness (see 
 const readVoices = () => JSON.parse(fs.readFileSync(path.join(ROOT, 'config/voices.json'), 'utf8'));
 // the build folder name for a story file: build/<name>/, videos/<name>.mp4
 const storyName = file => path.basename(file).replace(/\.[^.]+$/, '').replace(/[^\w-]+/g, '-');
+// Every video's files go together in their own folder, videos/<story>/: the video, its thumbnail or cover, subtitles,
+// description, chapters, credits, check report and stills. A vertical copy (<story>-vertical) goes in the same folder.
+const videoFolder = name => name.replace(/-vertical$/, '');
+const videoDir = name => path.join(ROOT, 'videos', videoFolder(name));
+const videoRel = (name, file = '') => `videos/${videoFolder(name)}/${file}`;
+// Videos made before each video had its own folder lie loose in videos/: moves this story's files (exact names only,
+// so another story's files are never touched) into videos/<story>/. Returns how many files moved.
+function tidyOldVideos(name) {
+  const loose = path.join(ROOT, 'videos'), dir = videoDir(name);
+  if (!fs.existsSync(loose)) return 0;
+  const base = videoFolder(name), mine = new Set();
+  for (const n of [base, base + '-vertical']) {
+    for (const s of ['.mp4', '.srt', '-thumbnail.jpg', '-cover.jpg', '-description.txt', '-chapters.txt', '-credits.txt', '-report.txt']) mine.add(n + s);
+  }
+  let moved = 0;
+  for (const f of fs.readdirSync(loose)) {
+    const still = [base, base + '-vertical'].some(n => f.startsWith(n + '-still-') && f.endsWith('.png'));
+    if (!(mine.has(f) || still) || !fs.statSync(path.join(loose, f)).isFile()) continue;
+    fs.mkdirSync(dir, { recursive: true });
+    fs.renameSync(path.join(loose, f), path.join(dir, f)); moved++;
+  }
+  return moved;
+}
 
 // An extra that speaks needs a voice in config/voices.json: without one, the voice is missing too.
 function addMissingVoices(parsed, voices) {
@@ -68,4 +91,4 @@ function checkStory(text, lens = {}, file = null) {
   return { parsed, plan: compileStory(parsed, lens), speech, voices };
 }
 
-module.exports = { ROOT, VOICE_LUFS, readVoices, storyName, addMissingVoices, lineVoice, voiceKey, cachedVoice, levelledVoice, overrideFile, checkStory, folderDefaults };
+module.exports = { ROOT, VOICE_LUFS, readVoices, storyName, videoFolder, videoDir, videoRel, tidyOldVideos, addMissingVoices, lineVoice, voiceKey, cachedVoice, levelledVoice, overrideFile, checkStory, folderDefaults };

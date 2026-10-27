@@ -144,7 +144,7 @@ These are needed now so that new assets can be used at all. The full prop acting
 - **Size limits:** warn if a picture is very large (over 4000 px), and if a place background is smaller than 1920×1080 (it will look blurry).
 - **Transparency:** warn if a prop or extra PNG has no transparent background (it would show a box).
 - **Credits are required for pictures.** If `credit:` is missing, `--check` says: *"Please add a credit line to lantern.txt: who made this picture?"*
-- Every video writes `videos/<story>-credits.txt`, listing all assets used and their credits. This matters later if the videos are sold.
+- Every video writes `videos/<story>/<story>-credits.txt`, listing all assets used and their credits. This matters later if the videos are sold.
 - **Copyright note for the docs:** use only pictures you made yourself or from tools whose terms allow commercial use. Don't use pictures found on the internet.
 
 **Part B review:** stills of `asset-test.txt` with all its missing assets replaced by test PNGs, including a two-state prop, a flipbook extra, and a picture place. Show each at day and at night, plus the warnings for a deliberately bad PNG (no transparency, no credit).

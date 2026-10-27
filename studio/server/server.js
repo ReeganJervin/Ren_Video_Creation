@@ -70,9 +70,15 @@ function storyInfo(abs) {
     } catch (e) { status = 'Has errors'; }
     statusCache.set(key, { title, duration, status, errors, missing });
   }
-  const s = { ...statusCache.get(key) }, name = engine().check.storyName(abs), mp4 = path.join(ROOT, 'videos', name + '.mp4');
-  if (s.status === 'Ready' && fs.existsSync(mp4) && fs.statSync(mp4).mtimeMs > st.mtimeMs) s.status = 'Rendered';
-  return { file: relOf(abs), name, folder: relOf(path.dirname(abs)), ...s, mtime: st.mtimeMs, video: fs.existsSync(mp4) ? `/videos/${name}.mp4` : null };
+  const s = { ...statusCache.get(key) }, name = engine().check.storyName(abs), mp4 = videoFile(name, name + '.mp4');
+  if (s.status === 'Ready' && fs.existsSync(mp4.abs) && fs.statSync(mp4.abs).mtimeMs > st.mtimeMs) s.status = 'Rendered';
+  return { file: relOf(abs), name, folder: relOf(path.dirname(abs)), ...s, mtime: st.mtimeMs, video: fs.existsSync(mp4.abs) ? mp4.url : null };
+}
+
+// a file of a video, in its own folder videos/<story>/: { abs (on disk), url (for the browser), rel (in the project) }
+function videoFile(name, file) {
+  const { check } = engine(), rel = check.videoRel(name, file);
+  return { abs: path.join(check.videoDir(name), file), url: '/' + rel, rel };
 }
 
 // "Line 12: message\n    "the line"" -> { line: 12, message }
@@ -207,7 +213,7 @@ function next() {
     if (j.cancelled) { j.state = 'cancelled'; j.message = j.kind === 'render' ? 'Stopped. Resume carries on from the parts already drawn.' : 'Stopped.'; }
     else if (code === 0) {
       j.state = 'done'; j.progress = 1; j.step = 'done';
-      if (j.kind === 'render') { j.results = readReport(j.name); j.video = `/videos/${j.name}.mp4`; }
+      if (j.kind === 'render') { j.results = readReport(j.name); j.video = videoFile(j.name, j.name + '.mp4').url; }
     } else { j.state = 'failed'; j.message = j.log.slice(-8).join('\n'); }
     current = null; emit(j); next();
   });
@@ -220,9 +226,9 @@ function cancelJob(j) {
   if (process.platform === 'win32') spawnSync('taskkill', ['/pid', String(j.pid), '/T', '/F'], { windowsHide: true });
   else try { process.kill(j.pid, 'SIGTERM'); } catch (_) { /* already gone */ }
 }
-// videos/<name>-report.txt -> [{ status, name, detail }]
+// videos/<name>/<name>-report.txt -> [{ status, name, detail }]
 function readReport(name) {
-  const f = path.join(ROOT, 'videos', `${name}-report.txt`);
+  const f = videoFile(name, `${name}-report.txt`).abs;
   if (!fs.existsSync(f)) return null;
   return fs.readFileSync(f, 'utf8').split(/\r?\n/).filter(Boolean).map(l => {
     const m = l.match(/^(PASS|FAIL|WARN|NOTE)\s+([^:]+):\s*(.*)$/);
@@ -330,30 +336,32 @@ const api = {
     cancelJob(j); return publicJob(j);
   },
   'GET /api/report': q => {
-    const name = engine().check.storyName(storyPath(q.get('file'))), has = f => fs.existsSync(path.join(ROOT, 'videos', f));
+    const name = engine().check.storyName(storyPath(q.get('file'))), url = f => { const v = videoFile(name, f); return fs.existsSync(v.abs) ? v.url : null; };
     return {
-      results: readReport(name), video: has(name + '.mp4') ? `/videos/${name}.mp4` : null,
+      results: readReport(name), video: url(name + '.mp4'),
       // the YouTube files (F11)
-      thumbnail: has(`${name}-thumbnail.jpg`) ? `/videos/${name}-thumbnail.jpg` : has(`${name}-cover.jpg`) ? `/videos/${name}-cover.jpg` : null,
-      subtitles: has(`${name}.srt`) ? `/videos/${name}.srt` : null,
-      description: has(`${name}-description.txt`) ? `/videos/${name}-description.txt` : null,
+      thumbnail: url(`${name}-thumbnail.jpg`) || url(`${name}-cover.jpg`),
+      subtitles: url(`${name}.srt`),
+      description: url(`${name}-description.txt`),
+      // the video's own folder, for "Open folder"
+      folder: videoFile(name, '').rel,
     };
   },
   // the subtitles as WebVTT, for the video player in the app
   'GET /api/subtitles.vtt': (q, req, res) => {
-    const f = path.join(ROOT, 'videos', engine().check.storyName(storyPath(q.get('file'))) + '.srt');
+    const name = engine().check.storyName(storyPath(q.get('file'))), f = videoFile(name, name + '.srt').abs;
     if (!fs.existsSync(f)) throw new HttpError(404, 'No subtitles yet.');
     const vtt = 'WEBVTT\n\n' + fs.readFileSync(f, 'utf8').replace(/\r\n/g, '\n').replace(/(\d\d:\d\d:\d\d),(\d\d\d)/g, '$1.$2');
     res.writeHead(200, { 'Content-Type': 'text/vtt; charset=utf-8', 'Cache-Control': 'no-store' }); res.end(vtt);
     return undefined;
   },
-  // the preview's current frame -> videos/<name>-still-<t>s.png (named like the CMD tool's stills)
+  // the preview's current frame -> videos/<name>/<name>-still-<t>s.png (named like the CMD tool's stills)
   'POST /api/still': async (q, req) => {
     const b = await body(req), name = engine().check.storyName(storyPath(b.file)), t = +b.t;
     const m = String(b.png || '').match(/^data:image\/png;base64,(.+)$/);
     if (!m || !isFinite(t)) throw new HttpError(400, 'Bad still.');
-    fs.mkdirSync(path.join(ROOT, 'videos'), { recursive: true });
-    const out = path.join(ROOT, 'videos', `${name}-still-${t.toFixed(1)}s.png`);
+    const out = videoFile(name, `${name}-still-${t.toFixed(1)}s.png`).abs;
+    fs.mkdirSync(path.dirname(out), { recursive: true });
     fs.writeFileSync(out, Buffer.from(m[1], 'base64'));
     return { file: relOf(out) };
   },

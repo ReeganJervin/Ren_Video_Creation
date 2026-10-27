@@ -104,7 +104,7 @@ const STORY = 'title: Studio API Test\nplace: meadow\ntime: day\n\nren enters\nr
     try { fs.rmdirSync(path.join(ROOT, 'stories', '_deleted')); } catch (_) { /* not empty, or not there */ }
     for (const n of ['studio-api-test-x']) {
       fs.rmSync(path.join(ROOT, 'build', n), { recursive: true, force: true });
-      for (const f of fs.readdirSync(path.join(ROOT, 'videos'))) if (f.startsWith(n)) fs.rmSync(path.join(ROOT, 'videos', f), { force: true });
+      fs.rmSync(path.join(ROOT, 'videos', n), { recursive: true, force: true });   // the video's own folder
     }
     fs.rmSync(path.join(ROOT, 'build', '_studio-test'), { recursive: true, force: true });
     const bad = results.filter(r => !r.ok).length;

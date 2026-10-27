@@ -22,7 +22,7 @@ Double-click **`Kitsu Studio.bat`**. Your browser opens the studio at http://loc
 
 - **Home:** all your stories, with their length and status (*Has errors*, *Missing assets*, *Ready*, *Rendered*). New story, Open, Duplicate, Rename and Delete. Delete moves the story to `stories\_deleted\`, so nothing is ever lost.
 - **Writing:** the editor colours each kind of line and suggests what you can write (type `ren ` and see). Mistakes get a red underline about half a second after you stop typing; point at one to read what's wrong. Things that don't exist yet get an orange underline, with the `/new-asset` command to copy for Claude Code. The story saves itself, and it stays a normal text file you can still open in Notepad. If someone else changes the file (Claude Code, or you in Notepad), the studio offers to load the new version.
-- **Preview:** play, pause and drag the timeline. Click a story line to jump to that moment; while it plays, the current line lights up. **Make voices** makes the voice lines that aren't made yet. **Save still** saves the picture in `videos\`.
+- **Preview:** play, pause and drag the timeline. Click a story line to jump to that moment; while it plays, the current line lights up. **Make voices** makes the voice lines that aren't made yet. **Save still** saves the picture in the story's video folder, `videos\<story>\`.
 - **Make video:** shows each step, the scene, the speed and the time left. You can cancel it and resume it later, and closing the browser doesn't stop it. When it's done, the video plays in the page with its checks in green and red, plus **Open folder** and **Copy report** (to paste to Claude Code).
 
 The command files below keep working exactly as before.
@@ -34,7 +34,9 @@ The command files below keep working exactly as before.
 3. Watch it live with sound (optional): `preview.bat stories\my-story.txt`. This opens in your browser. Press Ctrl+C in the window to stop.
 4. Make the video: `make-video.bat stories\my-story.txt`. You can also drag the story file onto `make-video.bat`.
 
-The video appears in the `videos` folder as `my-story.mp4`, along with a check report, `my-story-report.txt`, and `my-story-credits.txt`, which lists everything in the video and who made it. A story with at least 3 scenes also gets `my-story-chapters.txt`, ready to paste into a YouTube description (see "Scenes" in STORY-GUIDE.md). For uploading, every video also gets `my-story-thumbnail.jpg`, `my-story.srt` (subtitles) and `my-story-description.txt` (a description draft); see "YouTube" in STORY-GUIDE.md.
+Every video gets its own folder, `videos\my-story\`, with all of its files together: the video `my-story.mp4`, a check report, `my-story-report.txt`, and `my-story-credits.txt`, which lists everything in the video and who made it. A story with at least 3 scenes also gets `my-story-chapters.txt`, ready to paste into a YouTube description (see "Scenes" in STORY-GUIDE.md). For uploading, every video also gets `my-story-thumbnail.jpg`, `my-story.srt` (subtitles) and `my-story-description.txt` (a description draft); see "YouTube" in STORY-GUIDE.md. A vertical copy (`--format vertical`) and still images go in the same folder.
+
+Videos made before each video had its own folder are moved into their folders the next time you make them, or all at once with `node tools\tidy-videos.js` (only files named exactly after a story are moved).
 
 ### Still images (for checking)
 
@@ -67,7 +69,7 @@ The pieces that were already finished are kept. If you changed the story since t
 | Option | What it does |
 |---|---|
 | `--resume` | Carries on with a stopped video (this is what `resume-video.bat` does) |
-| `--format vertical` | Makes a vertical (9:16) version for Shorts: `videos\my-story-vertical.mp4` (see "Vertical videos" in STORY-GUIDE.md) |
+| `--format vertical` | Makes a vertical (9:16) version for Shorts: `videos\my-story\my-story-vertical.mp4` (see "Vertical videos" in STORY-GUIDE.md) |
 | `--workers 3` | Draws with 3 browser pages at once. The default is the number of processor threads minus 1. More workers are faster, until the computer is busy; the video looks exactly the same with any number of workers |
 | `--allow-placeholders` | Makes a test video even though the story uses things that don't exist yet (they appear as grey placeholders, and the report says so) |
 
@@ -97,7 +99,7 @@ After rendering, the video is tested for:
 
 Stories with scenes get three extra lines in the report: scene lengths, that something happens at least every 90 seconds, and whether a chapters file was made.
 
-The results are in `videos\<name>-report.txt`. Each line starts with `PASS`, `FAIL`, `WARN` (worth a look, but the video is fine) or `NOTE` (for your information).
+The results are in `videos\<name>\<name>-report.txt`. Each line starts with `PASS`, `FAIL`, `WARN` (worth a look, but the video is fine) or `NOTE` (for your information).
 
 ## What's inside
 
@@ -119,6 +121,7 @@ The results are in `videos\<name>-report.txt`. Each line starts with `PASS`, `FA
 | `tools\story-check.js` | The story check and voice bookkeeping that `make-video.js` and the studio app share |
 | `studio\` | The studio app: `server\server.js` (the local server), `src\` (the screens, React + TypeScript), `tests\` (`node studio\tests\api.test.js` and `node studio\tests\e2e.test.js`) |
 | `tools\youtube.js` | The YouTube files: thumbnail, subtitles and description draft |
+| `tools\tidy-videos.js` | Moves the files of videos made before each video had its own folder into `videos\<story>\` |
 | `tools\end-screen-guide.js` | Draws `docs\youtube-end-screen.png`, which shows where YouTube's end-screen elements go |
 | `tools\scenes.js` | Chapters and the extra checks for stories with scenes |
 | `tools\render.js` | Draws the frames: several workers at once, scene by scene in pieces that `--resume` can keep |

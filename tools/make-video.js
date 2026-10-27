@@ -1,6 +1,6 @@
 // Kitsu Studio: story text file -> finished MP4.
 //
-//   node tools/make-video.js stories/my-story.txt            make the video (videos/my-story.mp4)
+//   node tools/make-video.js stories/my-story.txt            make the video (videos/my-story/my-story.mp4, with all its files)
 //   node tools/make-video.js stories/my-story.txt --check    only check the story and show its timing
 //   node tools/make-video.js stories/my-story.txt --preview  open a live preview in your browser
 //   node tools/make-video.js stories/my-story.txt --stills 3,10.5   save still images (for checking)
@@ -10,7 +10,7 @@
 //     --resume      carry on with a render that was stopped, keeping the parts already drawn
 //   node tools/make-video.js stories/my-story.txt --voices   only make the voices (used by the studio app)
 //   node tools/make-video.js stories/my-story.txt --youtube  only make the YouTube files (thumbnail, subtitles, description)
-//   node tools/make-video.js stories/my-story.txt --format vertical   a vertical (9:16) version: videos/my-story-vertical.mp4
+//   node tools/make-video.js stories/my-story.txt --format vertical   a vertical (9:16) version: videos/my-story/my-story-vertical.mp4
 // With the environment variable KITSU_PROGRESS=1, progress is also printed as "@@{json}" lines (for the studio app).
 const fs = require('fs'), path = require('path'), http = require('http'), crypto = require('crypto'), os = require('os');
 const { spawn, spawnSync } = require('child_process');
@@ -20,7 +20,7 @@ const { parseStory, compileStory, PICTURES, CHARACTERS } = require('../engine/st
 const { readWav } = require('./wav');
 const { validate } = require('./validate');
 const { clock, hasScenes, chapters, sceneChecks } = require('./scenes');
-const { readVoices, storyName, addMissingVoices, lineVoice, cachedVoice, levelledVoice, overrideFile, VOICE_LUFS, folderDefaults } = require('./story-check');
+const { readVoices, storyName, videoDir, videoRel, tidyOldVideos, addMissingVoices, lineVoice, cachedVoice, levelledVoice, overrideFile, VOICE_LUFS, folderDefaults } = require('./story-check');
 const { youtubeFiles } = require('./youtube');
 const { episodeSource, applyWindow, sliceWav, shortLength } = require('./shorts');
 
@@ -151,8 +151,10 @@ async function main() {
   await page.goto(url + '&export=1');
   await page.evaluate(() => FILM.ready);
   const canvas = page.locator('#film');
-  const outDir = path.join(ROOT, 'videos');
+  // all of this video's files go in its own folder: videos/<story>/ (files from before that are moved in first)
+  const outDir = videoDir(name);
   fs.mkdirSync(outDir, { recursive: true });
+  tidyOldVideos(name);
 
   if (opt('stills')) {
     const shots = stillTimes(args[args.indexOf('--stills') + 1] || '', view);
@@ -160,14 +162,14 @@ async function main() {
       await page.evaluate(t => FILM.render(t), t);
       await canvas.screenshot({ path: path.join(outDir, `${name}-still-${tag}${t.toFixed(1)}s.png`) });
     }
-    say(`Saved ${shots.length} still(s) in videos/`);
+    say(`Saved ${shots.length} still(s) in ${videoRel(name)}`);
     await browser.close(); server.close(); return;
   }
   // only the YouTube files, without drawing the video
   if (opt('youtube')) {
     const row = await youtubeFiles(page, view, name, outDir, creditsText(plan));
     say(`${label(row)}  ${row.name}: ${row.detail}`);
-    say(`In videos/: ${name}-${view.height > view.width ? 'cover' : 'thumbnail'}.jpg, ${name}.srt and ${name}-description.txt`);
+    say(`In ${videoRel(name)}: ${name}-${view.height > view.width ? 'cover' : 'thumbnail'}.jpg, ${name}.srt and ${name}-description.txt`);
     await browser.close(); server.close(); return;
   }
 
@@ -242,9 +244,9 @@ async function main() {
   const report = results.map(r => `${label(r)}  ${r.name}: ${r.detail}`).join('\n');
   fs.writeFileSync(path.join(outDir, `${name}-report.txt`), report + '\n');
   say(report);
-  if (ch.text) say(`\nChapters for YouTube: videos/${name}-chapters.txt`);
+  if (ch.text) say(`\nChapters for YouTube: ${videoRel(name, name + '-chapters.txt')}`);
   const bad = results.filter(r => !r.ok).length;
-  say(bad ? `\nThe video was made, but ${bad} check(s) failed. See videos/${name}-report.txt` : `\nDone! Your video: videos/${name}.mp4`);
+  say(bad ? `\nThe video was made, but ${bad} check(s) failed. See ${videoRel(name, name + '-report.txt')}` : `\nDone! Your video and its files are in ${videoRel(name)}`);
 }
 
 // The assets a plan uses: [{ id, kind, name, credit, picture }]

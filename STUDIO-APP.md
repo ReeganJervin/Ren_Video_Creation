@@ -56,7 +56,7 @@
 - **Play, pause, scrub, and a timeline** with scene markers and voice-line markers.
 - **Click a story line to jump** to the moment it starts. While playing, the current line is highlighted in the editor.
 - **Voices:** "Make voices" runs the voice step as a background job (only new or changed lines, because of the cache), then the preview plays with sound. Until then it plays silently, using estimated timing.
-- **Still:** a "Save still" button saves the current frame as a PNG in `videos/`.
+- **Still:** a "Save still" button saves the current frame as a PNG in the story's video folder, `videos/<story>/`.
 
 ### A4. Render
 - **Make video** button, with options: workers (default from F1), and "allow placeholders" (only shown if assets are missing).

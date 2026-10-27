@@ -277,7 +277,7 @@ Pictures change colour with the time of day, like everything else, so a daytime 
 
 **Examples:** `docs\examples\pictures\` has a full set to copy and try: a lantern that glows, a cottage whose door opens, an owl that flies, blinks and talks, and the place "cottage garden" with flowers in front. These four now also exist as drawn assets, so to try the pictures, copy them into `assets\` **with a new name**: for example `lantern.png`, `lantern-glowing.png` and `lantern.txt` from `docs\examples\pictures\props\` become `assets\props\paper-lantern.png`, `paper-lantern-glowing.png` and `paper-lantern.txt`, and then `paper lantern appears at center` works. (With their own names they are ignored, and the check says so.) `bad-example-crate.png` shows what the check says about a picture without a see-through background or a credit. The engine never loads pictures from `docs\`, only from `assets\`.
 
-**Credits:** every picture needs a `credit:` line (who made it). The check reminds you, and a finished video can't be made with an uncredited picture. Every video also gets `videos\<story>-credits.txt`, listing everything in it and who made it. **Only use pictures you made yourself, or from a tool whose terms allow selling videos. Don't use pictures found on the internet.**
+**Credits:** every picture needs a `credit:` line (who made it). The check reminds you, and a finished video can't be made with an uncredited picture. Every video also gets `videos\<story>\<story>-credits.txt`, listing everything in it and who made it. **Only use pictures you made yourself, or from a tool whose terms allow selling videos. Don't use pictures found on the internet.**
 
 The check also warns about pictures that are very large (over 4000 pixels), place backgrounds smaller than 1920×1080 (they look blurry), and prop or animal pictures without a see-through background.
 
@@ -332,7 +332,7 @@ narrator: The forest was quiet, and the shadows were growing long.
 - Scenes are optional. A story without `scene:` lines works exactly as before.
 - Lines before the first `scene:` line make an opening scene named after the story's title.
 
-**Chapters for YouTube:** when a story has at least 3 scenes, each at least 10 seconds long, making the video also writes `videos\<name>-chapters.txt`, for example:
+**Chapters for YouTube:** when a story has at least 3 scenes, each at least 10 seconds long, making the video also writes `videos\<name>\<name>-chapters.txt`, for example:
 
 ```
 0:00 A Sunny Morning
@@ -464,7 +464,7 @@ star falls
 
 ## YouTube
 
-Every video comes with three files for uploading it, next to it in the `videos` folder:
+Every video comes with three files for uploading it, next to it in its own folder, `videos\<story>\`:
 
 | File | What it is |
 |---|---|
@@ -502,7 +502,7 @@ Before publishing, check YouTube's "altered or synthetic content" and "Made for 
 
 ## Vertical videos (9:16, for Shorts)
 
-Put `format: vertical` at the top of a story to make it 1080×1920, standing up, for YouTube Shorts and phones. Or make a vertical version of any story without changing it: `node tools\make-video.js stories\my-story.txt --format vertical` (it becomes `videos\my-story-vertical.mp4`, next to the wide one).
+Put `format: vertical` at the top of a story to make it 1080×1920, standing up, for YouTube Shorts and phones. Or make a vertical version of any story without changing it: `node tools\make-video.js stories\my-story.txt --format vertical` (it becomes `videos\my-story\my-story-vertical.mp4`, in the same folder as the wide one).
 
 What changes in a vertical video:
 - **The places** are drawn taller (more sky above, more ground below), not cut out of the wide picture.
