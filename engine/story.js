@@ -858,11 +858,15 @@
         case 'pass': who.forEach(a => { a.x = OFF[b.from]; dur = Math.max(dur, moveTo(a, s, OFF[b.from === 'left' ? 'right' : 'left'], false)); }); break;
         case 'prop': dur = propBeat(b, s); break;
         case 'walkToThing': {
-          // walks up beside the prop, on the side it comes from, and looks at it
+          // walks up beside the prop, on the side it comes from, and looks at it. If someone already stands
+          // there it takes the prop's other side when that one is free; otherwise the one standing steps aside.
           const a = who[0], p = props[b.thing];
           if (!p) { errors.push(`Line ${b.line}: there is no ${b.thing} here. Use "${b.thing} appears" first.`); break; }
-          const side = Math.sign(a.x - p.x) || -1;
-          dur = moveTo(a, s, Math.max(MINX, Math.min(MAXX, p.x + side * (p.size === 'big' ? 300 : BESIDE))), b.slow);
+          const beside = sd => Math.max(MINX, Math.min(MAXX, p.x + sd * (p.size === 'big' ? 300 : BESIDE)));
+          let side = Math.sign(a.x - p.x) || -1;
+          if (crowding(a, beside(side)) && !crowding(a, beside(-side))) side = -side;
+          dur = moveTo(a, s, beside(side), b.slow);
+          dur = Math.max(dur, makeWay([a], s));
           closeLook(a, s + dur - 0.5); a.open = { a: s + dur - 0.5, b: 1e9, target: { prop: P.props.indexOf(p) } }; a.out.lookAt.push(a.open);
           set(a, 'facing', s + dur - 0.4, -side * 0.5, 0.35);
           break;
