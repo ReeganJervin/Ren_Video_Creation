@@ -18,6 +18,7 @@ const ffmpeg = require('ffmpeg-static');
 const { renderVideo, fingerprint } = require('./render');
 const { parseStory, compileStory, PICTURES, CHARACTERS } = require('../engine/story.js');
 const { readWav } = require('./wav');
+const LIPSYNC = require('../engine/lipsync.js');
 const { validate } = require('./validate');
 const { clock, hasScenes, chapters, sceneChecks } = require('./scenes');
 const { readVoices, storyName, videoDir, videoRel, tidyOldVideos, addMissingVoices, lineVoice, cachedVoice, levelledVoice, overrideFile, VOICE_LUFS, folderDefaults } = require('./story-check');
@@ -95,7 +96,7 @@ async function main() {
   if (jobs.length) {
     say(`Making ${jobs.length} voice line(s)...`);
     progress({ step: 'voices', total: jobs.length });
-    const py = [path.join(ROOT, '.venv', 'Scripts', 'python.exe'), path.join(ROOT, '.venv', 'bin', 'python')].find(p => fs.existsSync(p));
+    const py = pythonPath();
     if (!py) fail('The voice tool is not installed yet. Please run setup.bat first.');
     if (!fs.existsSync(path.join(ROOT, 'models', 'kokoro.onnx'))) fail('The voice model is missing. Please run setup.bat first.');
     const jobsFile = path.join(buildDir, 'voice-jobs.json');
@@ -128,6 +129,7 @@ async function main() {
   if (plan.errors.length) fail(`Please fix these lines:\n\n${plan.errors.join('\n')}`);
   // (a line whose voice doesn't exist yet, like a new extra's, has no file and stays silent)
   plan.voice.forEach(v => { if (fs.existsSync(path.join(voiceDir, `${v.id}.wav`))) v.file = `/build/${name}/voice/${v.id}.wav`; else v.missing = true; });
+  addLips(plan, speech, voices, parsed.meta, voiceDir, buildDir);
   // the video as it is seen: for an episode Short its window, in its own time; otherwise the plan itself
   const view = shortView(plan);
   fs.writeFileSync(path.join(buildDir, 'plan.json'), JSON.stringify(plan));
@@ -317,6 +319,42 @@ function stillTimes(list, plan) {
 // Clips too short or quiet to measure are copied as they are.
 // A voice can have its own level ("gain" in config/voices.json, in dB).
 const SOFT_START = 0.4;
+function pythonPath() {
+  return [path.join(ROOT, '.venv', 'Scripts', 'python.exe'), path.join(ROOT, '.venv', 'bin', 'python')].find(p => fs.existsSync(p));
+}
+
+// Lip-sync: each spoken line gets its mouth shapes, frame by frame (v.lips; see engine/lipsync.js), from the line's
+// sounds and its final clip, so your own recordings get them too. The sounds come from the voice tool and are kept
+// in cache/phonemes.json; without the voice tool they are guessed from the spelling.
+function addLips(plan, speech, voices, meta, voiceDir, buildDir) {
+  const cacheFile = path.join(ROOT, 'cache', 'phonemes.json');
+  let cache = {};
+  try { cache = JSON.parse(fs.readFileSync(cacheFile, 'utf8')); } catch (e) { /* none yet */ }
+  const lines = plan.voice.filter(v => v.file && speech[v.id]).map(v => {
+    const b = speech[v.id], voice = lineVoice(b, voices, meta);
+    // (British voices read with British sounds, as in tts.py)
+    const lang = voice && voice.voice.trim().startsWith('b') ? 'en-gb' : 'en-us';
+    return { v, text: b.text, lang, key: `${lang}|${b.text}` };
+  });
+  const need = [...new Map(lines.filter(l => !(l.key in cache)).map(l => [l.key, l])).values()], py = pythonPath();
+  if (need.length && py) {
+    const inFile = path.join(buildDir, 'phoneme-lines.json'), outFile = path.join(buildDir, 'phonemes.json');
+    fs.writeFileSync(inFile, JSON.stringify(need.map(l => ({ text: l.text, lang: l.lang }))));
+    const r = spawnSync(py, [path.join(ROOT, 'tools', 'phonemes.py'), inFile, outFile], { stdio: 'inherit' });
+    if (r.status === 0 && fs.existsSync(outFile)) {
+      JSON.parse(fs.readFileSync(outFile, 'utf8')).forEach((ph, i) => { cache[need[i].key] = ph; });
+      fs.mkdirSync(path.dirname(cacheFile), { recursive: true });
+      fs.writeFileSync(cacheFile, JSON.stringify(cache, null, 1));
+    }
+  }
+  for (const l of lines) {
+    try {
+      const w = readWav(path.join(voiceDir, `${l.v.id}.wav`));
+      l.v.lips = LIPSYNC.lips(l.text, cache[l.key] || null, w.samples(), w.rate);
+    } catch (e) { /* a clip that can't be read keeps the simple talking mouth */ }
+  }
+}
+
 function levelVoice(src, dst, voiceGain = 0) {
   const r = spawnSync(ffmpeg, ['-hide_banner', '-i', src, '-af', 'loudnorm=print_format=json', '-f', 'null', '-'], { encoding: 'utf8' });
   let m = null;

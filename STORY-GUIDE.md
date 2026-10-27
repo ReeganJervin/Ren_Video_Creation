@@ -601,6 +601,8 @@ voice-overrides\my-story\line-12.wav
 
 The timing adapts to your recording automatically, and its volume is matched to the other voices, so it doesn't sound louder or quieter than the rest. (Every voice line is volume-matched this way, whichever voice says it.)
 
+**Lip-sync:** in a finished video, the character's mouth makes the shapes of what is said (lips closing for m, b and p, the lip on the teeth for f and v, round for o and oo, wide for a and e) and opens wider on louder words. It works for your own recordings too, as long as the line in the story says the same words. The quick preview in the studio still uses the simple talking mouth.
+
 ## When something is wrong
 
 `check-story.bat stories\my-story.txt` tells you exactly which line has a problem and why. For example:

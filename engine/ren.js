@@ -387,6 +387,26 @@
       c.fillStyle = C.mouth; c.fill(); c.stroke();
       if (a > 0.45) { c.save(); c.clip(); c.beginPath(); c.ellipse(0, 15 * a, 7, 5 * a, 0, 0, Math.PI * 2); c.fillStyle = C.tongue; c.fill(); c.restore(); }
     };
+    // lip-sync shapes (K.viseme, see engine/lipsync.js), opened by a (0..1); drawn at Ren's size, scaled for others
+    const teeth = () => { c.save(); c.clip(); c.fillStyle = '#fff'; c.fillRect(-15, -2, 30, 5.5); c.restore(); };
+    const visemeShape = (v, a) => {
+      switch (v) {
+        case 'X': omega(); break;
+        case 'M': c.beginPath(); c.moveTo(-9, 3); c.quadraticCurveTo(0, 6, 9, 3); c.stroke(); break;   // lips pressed together
+        case 'F':   // the lower lip tucked under the top teeth
+          path(c, () => { c.moveTo(-9, 1); c.quadraticCurveTo(0, 3, 9, 1); c.quadraticCurveTo(6, 8, 0, 8.5); c.quadraticCurveTo(-6, 8, -9, 1); });
+          c.fillStyle = C.mouth; c.fill(); teeth(); c.stroke(); break;
+        case 'A': openShape(0.55 + 0.45 * a); break;
+        case 'E': {   // wide and not so deep, the top teeth showing
+          const h = 0.45 + 0.45 * a;
+          path(c, () => { c.moveTo(-13, 0); c.quadraticCurveTo(0, 2, 13, 0); c.quadraticCurveTo(10, 11 * h, 0, 12 * h); c.quadraticCurveTo(-10, 11 * h, -13, 0); });
+          c.fillStyle = C.mouth; c.fill(); teeth(); c.stroke(); break;
+        }
+        case 'O': { const ry = 4.5 + 5.5 * a; c.beginPath(); c.ellipse(0, 1 + ry, 7, ry, 0, 0, Math.PI * 2); c.fillStyle = C.mouth; c.fill(); c.stroke(); break; }
+        case 'U': { const ry = 4 + 1.5 * a; c.beginPath(); c.ellipse(0, 2 + ry, 4.5, ry, 0, 0, Math.PI * 2); c.fillStyle = C.mouth; c.fill(); c.stroke(); break; }
+        default: openShape(0.25 + 0.35 * a);   // C: most other consonants, a little open
+      }
+    };
     // talking in a sad, shy or pouty mood: the open mouth turns down at the corners (it never looks like a smile)
     const downShape = (a, w) => {
       path(c, () => { c.moveTo(-w, 8); c.quadraticCurveTo(0, -1, w, 8); c.quadraticCurveTo(w * 0.6, 8 + 13 * a, 0, 8 + 13 * a); c.quadraticCurveTo(-w * 0.6, 8 + 13 * a, -w, 8); });
@@ -428,6 +448,7 @@
         else if (K.moodMouth === 'laugh') laughShape(0.7 + 0.3 * K.talk);
         else if (K.moodMouth === 'set') firmShape(K.talk);
         else if (K.moodMouth === 'hmm') openShape(K.talk * 0.65);
+        else if (K.viseme) visemeShape(K.viseme, K.talk);
         else openShape(K.talk);
         break;
       case 'laugh': laughShape(1); break;

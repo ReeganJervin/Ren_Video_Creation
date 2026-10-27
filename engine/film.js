@@ -155,7 +155,12 @@
     for (const v of P.voice) {
       if (v.who !== id || t < v.t || t >= v.t + v.len) continue;
       K.mouth = 'talk';
-      K.talk = 0.25 + 0.75 * Math.abs(Math.sin((t - v.t) * 13.5)) * (0.6 + 0.4 * Math.abs(Math.sin((t - v.t) * 4.7 + 1)));
+      if (v.lips) {
+        // lip-sync (see engine/lipsync.js): the shape for this frame, and how open, eased between frames
+        const L = v.lips, u = (t - v.t) * L.fps, i = Math.min(L.open.length - 1, Math.floor(u)), j = Math.min(L.open.length - 1, i + 1);
+        K.viseme = L.shape[i] || 'X';
+        K.talk = K.viseme === 'X' || K.viseme === 'M' ? 0 : lerp(+L.open[i], L.shape[j] === K.viseme ? +L.open[j] : +L.open[i], u - i) / 9;
+      } else K.talk = 0.25 + 0.75 * Math.abs(Math.sin((t - v.t) * 13.5)) * (0.6 + 0.4 * Math.abs(Math.sin((t - v.t) * 4.7 + 1)));
     }
     if (K.mouth === 'talk' && K.pawPose === 'yawn') K.pawW *= 0.15;   // move the paw away so the talking mouth shows
     K.blink = 0;

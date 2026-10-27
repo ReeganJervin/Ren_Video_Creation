@@ -362,6 +362,12 @@ All work is committed on the git branch `Improvment` (never directly on `main`).
 - **Later (need ledges and props, F4 Part D / F5):** `climbs up/down`, `jumps over/down`, `pushes`, and hiding behind a prop or a place feature.
 - **R1:** every existing story compiles to exactly the same plan; the new channels and lists exist only in stories that use them.
 
+**As built (stop 4, lip-sync):**
+- Kokoro (kokoro-onnx) has no timing output for this model (`has_timings` is false), so timing is estimated, as planned: `tools/phonemes.py` gets each line's phonemes from Kokoro's own phonemizer (en-gb for British voices; cached in `cache/phonemes.json`, about 0.3 s for a whole story), and `engine/lipsync.js` spreads them over the voiced parts of the final clip (loudness every 10 ms, a tenth of the peak; gaps under 60 ms still count as speech), each sound weighted by how long it usually lasts. Without the voice tool the sounds are guessed from the spelling.
+- 8 shapes, one per video frame: X rest, M (m b p, lips pressed; always shown, even for one frame), F (f v, lip on the teeth), A, E (wide, teeth showing), O (round), U (small round, also w and r), C (other consonants, a little open). Single-frame shapes take their neighbour's, so the mouth doesn't flicker. How open: the loudness. Drawn in all three views (the mouth is shared), Yuki's scaled to her smaller mouth. Mood mouths (sad, worried, laughing, determined…) keep their own shape and open with the loudness.
+- make-video adds `lips` ({ fps, shape, open } strings) to each voiced line of the plan; your own recordings get it too (the line's text gives the sounds). Plans without it (the studio's quick preview, a line with no voice yet) keep the old talking mouth.
+- Review sheet: three lines with the waveform above the speaker's mouth, frame by frame, each frame labelled with its shape and openness.
+
 **Commit message:** `F3B: movement library, blending, lip-sync`
 
 ---
