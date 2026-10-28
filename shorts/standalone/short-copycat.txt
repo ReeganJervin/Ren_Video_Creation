@@ -1,0 +1,36 @@
+# ============================================================
+#  Ren & Yuki Short - Copycat   (~35 s, vertical)
+#  Yuki copies everything Ren does. Ren tries to trick her.
+#  Uses: meadow, Ren, Yuki, hops, waves, stretches, dances.
+# ============================================================
+
+title: Copycat
+type: short
+hook: She copies EVERYTHING he does
+thumbnail text: COPYCAT!
+mood voices: on
+place: meadow
+time: sunset
+music: happy
+
+ren enters from left to left
++ yuki enters from right to right
+ren hops
+yuki hops
+ren (pouty): Stop copying me.
+yuki (pouty): Stop copying me.
+ren waves
+yuki waves
+ren stretches
+yuki stretches
+shot: close on ren
+ren (thinking): Ha. I'll trick her. Something she would never say.
+ren (proud): Yuki is the cleverest bunny in the whole meadow.
+beat
+shot: close on yuki
+yuki (playful): I know.
+shot: medium on both
+ren (surprised): That's not copying!
+yuki (laughing): Some things are just true.
+ren dances
++ yuki dances

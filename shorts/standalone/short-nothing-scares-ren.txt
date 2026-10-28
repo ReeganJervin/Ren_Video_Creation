@@ -1,0 +1,36 @@
+# ============================================================
+#  Ren & Yuki Short - Nothing Scares Ren   (~35 s, vertical)
+#  Ren is the bravest fox in the meadow. Mostly.
+#  Uses: forest, Ren, Yuki, sneak, hide behind, fright, shout bubbles.
+# ============================================================
+
+title: Nothing Scares Ren
+type: short
+hook: Nothing scares this fox. Nothing.
+thumbnail text: NOT Scared!
+mood voices: on
+place: forest
+time: day
+music: happy
+
+ren enters from left to center
+ren turns to you
+ren (proud): Nothing scares me. Not the dark. Not thunder. Not even spiders.
+ren (proud): I am made of one hundred percent courage.
+music: tense
+yuki enters from right to right
+yuki sneaks to ren
+shot: close on ren
+ren (proud): Some say I'm the bravest fox who ever lived.
+beat
+shot: medium on both
+yuki (shouts, playful): Boo!
+camera: shake
+ren jumps in fright
+ren runs to left
+ren hides behind yuki
+music: happy
+yuki (laughing): Made of courage?
+ren peeks out
+ren (shy): Ninety-nine percent courage.
+ren (shy): And one percent very surprised.

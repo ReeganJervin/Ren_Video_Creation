@@ -1,0 +1,46 @@
+# ============================================================
+#  Ren & Yuki Short - The Last Cookie   (~40 s, vertical)
+#  Two friends, one cookie, a very serious negotiation... and an owl.
+#  Uses: meadow, Ren, Yuki, the owl, the cookie, moods.
+# ============================================================
+
+title: The Last Cookie
+type: short
+hook: One cookie. Two friends. Big problem.
+thumbnail text: The LAST Cookie
+mood voices: on
+place: meadow
+time: day
+music: happy
+
+ren enters from left to left
++ yuki enters from right to right
+cookie appears at center
+ren and yuki look at the cookie
+shot: extreme close on ren
+ren (determined): The last cookie.
+shot: extreme close on yuki
+yuki (determined): The last cookie.
+shot: medium on both
+ren (thinking): Let's be fair. I found it, so I get the big half.
+yuki (thinking): I saw it first, so I get the big half.
+ren (pouty): Cookies don't have a big half!
+yuki (playful): Then you won't mind if I take this half.
+music: tense
+ren and yuki look at each other
+beat
+owl flies in from right to right
+owl (happy): Hoo! Is that a cookie?
+ren jumps in fright
++ yuki jumps in fright
+owl: Since you're both being so fair... I'll keep it safe for you.
+the cookie disappears
+owl flies away
+camera: shake
+narrator: Nobody saw that cookie ever again.
+music: happy
+shot: medium on both
+ren (sad): We should have shared it.
+yuki (sad): Next time, we share it straight away.
+ren (playful): Deal. But I get the big half.
+yuki (laughing): Ren!

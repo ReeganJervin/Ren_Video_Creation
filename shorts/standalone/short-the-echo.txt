@@ -1,0 +1,41 @@
+# ============================================================
+#  Ren & Yuki Short - The Echo   (~40 s, vertical)
+#  Ren talks to the "echo" by the river. The echo has opinions.
+#  Uses: river, Ren, Yuki (hiding behind Ren), whispers, shouts.
+# ============================================================
+
+title: The Echo
+type: short
+hook: This echo talks back...
+thumbnail text: Talking Echo?!
+mood voices: on
+place: river
+time: day
+music: calm
+
+ren enters from left to center
++ yuki enters from left to left
+yuki hides behind ren
+ren (shouts, happy): Hellooo!
+yuki (whispers, playful): Hellooo...
+ren (surprised): An echo! A real echo!
+ren (shouts, proud): I am the bravest fox in the meadow!
+yuki (whispers, playful): ...second bravest...
+shot: close on ren
+ren (surprised): What?
+ren (shouts, determined): The BRAVEST!
+yuki (whispers, playful): ...the bunny is braver...
+ren (pouty): This echo is very rude.
+music: tense
+ren (shouts, thinking): Echo! Who's there?
+beat
+yuki peeks out
+shot: medium on both
+yuki (laughing): It's me!
+ren jumps in fright
+ren (shouts, surprised): Yuki!
+music: happy
+ren (pouty): How long have you been there?
+yuki (playful): Since "Hellooo".
+ren (shy): So you heard the bravest fox part.
+yuki (playful): The second bravest fox.

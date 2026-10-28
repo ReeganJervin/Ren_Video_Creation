@@ -1,0 +1,42 @@
+# ============================================================
+#  Ren & Yuki Short - Don't Wake the Owl   (~40 s, vertical)
+#  Sneaking past a sleeping owl at night. What could go wrong?
+#  Uses: forest at night, Ren, Yuki, the owl, sneak, trip, whispers.
+# ============================================================
+
+title: Don't Wake the Owl
+type: short
+hook: Whatever you do... don't wake the owl.
+thumbnail text: SHHH!
+mood voices: on
+place: forest
+time: night
+music: tense
+
+owl flies in from right to right
+owl lands
+owl feels sleepy
+ren and yuki enter from left to left
+yuki (whispers, worried): Shh. Mister Owl is sleeping.
+ren (whispers, determined): Leave it to me. I'm a master of sneaking.
+ren sneaks to center
+shot: close on ren
+ren (whispers, proud): Silent as a feather.
+ren trips
+camera: shake
+ren falls down
+beat
+shot: close on yuki
+yuki covers her eyes
+shot: medium on both
+ren (whispers, scared): Did I wake him?
+ren gets up
+ren (whispers, proud): Phew. Still asleep. Told you. Master of sneaking.
+owl feels normal
+owl: Hoo. I was never asleep.
+ren jumps in fright
++ yuki jumps in fright
+music: happy
+owl (playful): Owls sleep in the day. It's night, little fox.
+ren (shy): ...I knew that.
+yuki (laughing): Master of sneaking!
