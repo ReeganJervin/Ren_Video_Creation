@@ -10,9 +10,7 @@
 #  the explorer's rules (this episode adds rule number seven),
 #  Ren's "very local wind", and "always bring a snack".
 #
-#  Lines starting with "# LATER:" are simplified for now. When the
-#  engine learns those actions (F4 Part D: holding props), change
-#  only those lines and make the video again.
+#  Props in paws (F4 Part D): Ren's map, and Ren carrying the lantern.
 # ============================================================
 
 title: The Old Lantern
@@ -61,8 +59,9 @@ beat
 yuki (laughing): You look like you swallowed a bee.
 ren (pouty): That's my bravest face!
 yuki (playful): And the map?
-# LATER: Ren holds up his map (F4 Part D)
-ren writes in the air
+ren holds the map
+ren opens the map
+ren holds up the map
 ren (proud): Here is the meadow. Here is the forest. And here is the little light.
 yuki tilts her head
 yuki: Ren, that's a drawing of a broccoli.
@@ -76,6 +75,7 @@ ren waves
 owl flies in from left
 owl: Hoo... who is waving at my nap?
 ren jumps in fright
+ren drops the map
 ren (shouts, surprised): Mister Owl!
 owl (sleepy): Owls sleep in the day, little fox. It's in all the books.
 yuki (shy): Sorry, Mister Owl. We're going to look for the little light.
@@ -234,7 +234,6 @@ yuki (thinking): Maybe it needs...
 music: magical
 ren walks to the lantern
 + yuki walks to ren
-# LATER: Ren and Yuki touch the lantern at the same moment (F4 Part D)
 ren holds out his paw
 + yuki holds out her paw
 slow motion 2
@@ -243,6 +242,8 @@ sparkles
 ren (surprised): ...both of us.
 narrator: The moment they reached for it together, the old lantern began to glow, softly at first, then warm and golden, like a tiny sun.
 yuki (excited): Ren! It's glowing!
+ren picks up the lantern
+ren holds up the lantern
 ren (excited): We did it! We lit a legendary lantern!
 ren and yuki hop
 

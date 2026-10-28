@@ -593,7 +593,13 @@
     c.translate(...S);
     c.rotate(rot);
     armShape(c, len, i < 0 ? -J(K, 'elbowL') : J(K, 'elbowR'));
+    if (i > 0) holdAtPaw(c, K, len, J(K, 'elbowR'));
     c.restore();
+  }
+  // something held in the near paw (K.hold, from the film): drawn at the paw's end, after the arm
+  function holdAtPaw(c, K, len, elbow) {
+    if (!K.hold) return;
+    c.save(); if (elbow) pivot(c, 0, len * 0.5, elbow); K.hold.at(c, 0, len - 6); c.restore();
   }
   // thinking: the near paw goes up to the chin (point T, in body coordinates) from shoulder S; a paw pose for the face
   // ({ eyes, yawn }: points per arm, or none) sends it there instead
@@ -819,6 +825,7 @@
     c.rotate(rot);
     armShape(c, len, -J(K, far ? 'elbowL' : 'elbowR'));
     if (far) { c.fillStyle = 'rgba(60,30,15,0.25)'; c.fill(); }
+    else holdAtPaw(c, K, len, -J(K, 'elbowR'));
     c.restore();
   }
   function drawSideScarf(c, farKnot, swing = 0) {

@@ -11,6 +11,8 @@
     size: 'small',                       // small (in a paw) | medium | big (a set piece, stands behind the characters)
     height: 90,                          // on-screen pixels, next to Ren (about 345 px tall)
     hold: 'one paw',                     // one paw | both paws (not for big props)
+    // grip: -45,                        // optional: the height (y) the paw holds it at; without it, the middle
+    // hangs: true,                      // optional, with grip: it hangs from the paw by that point (a lantern's handle)
     states: [],                          // e.g. ['closed', 'open'] or ['off', 'glowing']: the first is where it starts
     glow: false,                         // true if "the my prop glows" should work
     motion: 'none',                      // none | sway | bob | flicker | spin

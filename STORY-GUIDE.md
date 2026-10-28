@@ -205,7 +205,28 @@ Besides Ren, Yuki and the star, a story can use **props** (small things like a l
 | `ren looks at the cottage` | Looks at it (and keeps looking until the next look) |
 | `ren waves at the cottage` | Waves while looking at it |
 
-Set pieces stand behind the characters. Props and set pieces stay where they are until they disappear, or until the story moves to another place.
+Set pieces stand behind the characters. Props and set pieces stay where they are until they disappear, or until the story moves to another place (unless someone is holding them: see below).
+
+### In their paws: picking up, carrying and giving
+
+Ren and Yuki can hold one small prop at a time, in the near paw (props marked "both paws" are held in both). Big set pieces, like the cottage, can't be picked up.
+
+| Line | What happens |
+|---|---|
+| `ren finds the leaf` | A surprised look and a little sparkle at it. If it isn't here yet, it appears next to Ren first (good for discoveries) |
+| `ren picks up the lantern` | Walks up to it, crouches and lifts it into his paw (also `picks the lantern up`) |
+| `ren holds the lantern` | If it isn't here yet, Ren simply has it in his paw already (as if he brought it along); good at the start of a scene. If it's on the ground, he picks it up |
+| `ren holds up the map` | Holds it up high for a moment, with a little sparkle, then lowers it again |
+| `ren carries the lantern to right` | Picks it up if needed, then goes there with it: `left`, `center`, `right`, someone (`to yuki`), or a prop that's here (`to the cottage`) |
+| `ren puts down the lantern` | Crouches and puts it on the ground in front of him (also `puts the lantern down`) |
+| `ren drops the leaf` | His paws fly open and it falls, with a little bounce |
+| `ren gives the cookie to yuki` | They step together, Ren holds it out, and Yuki takes it (she looks happy) |
+| `yuki opens the map` / `yuki closes the map` | Opens or closes it (for things that open). If it's on the ground, she goes to it first |
+
+- **Things travel with whoever holds them.** Change the place (`place: forest`) and the lantern is still in Ren's paw; things on the ground stay behind.
+- `the lantern glows` works in a paw too (the light moves with Ren, and is brightest at night).
+- **Clear messages when something can't happen**, for example: *"Line 22: Ren isn't holding the lantern."*, *"Ren's paws are full: Ren is holding the map. Put it down first."*, *"Yuki is holding the lantern, not Ren."*, *"The cottage is too big to pick up."*
+- A thing that doesn't exist yet (like `sword`) is shown as a grey placeholder and goes on the missing list, as usual.
 
 ### Extras (animals and creatures)
 
@@ -227,8 +248,11 @@ Extras can do the simple things characters do:
 |---|---|---|
 | `star` | prop | Everything in "The star" above, plus `star appears at left`, `the star glows` |
 | `heart` | prop | `hearts float up`, `heart floats down`, plus `heart appears at right` |
-| `lantern` | prop (also `little lantern`, `old lantern`) | `lantern appears next to ren`, `the lantern glows` (the candle lights; brightest at night), `the lantern stops glowing`, `ren walks to the lantern`, `ren looks at the lantern` |
+| `lantern` | prop (also `little lantern`, `old lantern`) | `lantern appears next to ren`, `the lantern glows` (the candle lights; brightest at night), `the lantern stops glowing`, `ren walks to the lantern`, `ren looks at the lantern`, `ren picks up the lantern` (it hangs from his paw by its handle) |
 | `cottage` | set piece (also `little cottage`) | `cottage appears at right`, `the cottage opens` / `closes` (the door), `ren walks to the cottage`, `ren looks at the cottage`. About twice Ren's height, with a door his size; its windows (and an open door) glow warm at dusk and night |
+| `leaf` | prop (also `big leaf`, `green leaf`, `old leaf`, `oldest leaf`) | `ren finds the leaf`, `ren picks up the leaf`, `ren holds up the leaf`; held by the stem |
+| `map` | prop (also `old map`, `treasure map`) | `ren holds the map`, `ren opens the map` (it unrolls into a hand-drawn map: a forest, a river, a dotted path and a red X), `ren closes the map` |
+| `cookie` | prop (also `big cookie`, `biscuit`, `snack`) | `yuki gives the cookie to ren`, `ren holds up the cookie` |
 | `owl` | extra (also `little owl`) | `owl flies in from left`, `owl flies away`, `owl lands`, `owl takes off`, `owl (happy): Hoo!` (it has its own voice), `ren waves at the owl`, `ren walks to the owl`. A small round brown owl that blinks, looks around and opens its beak to talk |
 
 Places are listed in "Places" below. New assets are added here as they are created (with `/new-asset` in Claude Code).

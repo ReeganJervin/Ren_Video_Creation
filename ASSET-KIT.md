@@ -239,6 +239,15 @@ Give the owl a voice in `config/voices.json` and make a 5-second sample for the 
 
 **Acceptance:** the demo passes all checks, R1 holds, and the error messages are tested with a deliberately broken story.
 
+**As built (stop 1, prop acting):**
+- **Lines:** `finds`, `picks up`, `holds` (new: if the prop isn't there yet, it's already in the paw, for the start of a scene), `holds up`, `carries … [to <spot | name | prop>]`, `puts down`, `drops`, `gives … to <name>`, `opens` / `closes`. One prop at a time per character (or the star); big set pieces can't be held.
+- **Errors:** "Ren isn't holding the lantern.", "Ren's paws are full: Ren is holding the map. Put it down first.", "Yuki is holding the lantern, not Ren.", "The cottage is too big to pick up.", "Ren can't pick up Yuki.", "The lantern can't open or close.", plus spelling help. Tested with a deliberately broken story.
+- **How it's drawn:** a held prop is drawn by the character's own drawing at the near paw (`K.hold.at(c, x, y)`), upright and at world size, in every view (front, three-quarter, side; behind the body in the back view), so it moves with walks, hops, runs and turns. Picking up glides it from the ground to the paw (0.35 s); put down and dropped props land where they were left (a drop bounces). Light (a lit lantern) is drawn after the time-of-day colour at the paw; someone hiding behind another shows only the soft glow.
+- **Assets:** `grip` (the y the paw holds) and `hangs` (it hangs from there, like the lantern's handle) in the asset description. New props: `leaf`, `map` (rolled / open), `cookie`.
+- **Continuity:** a held prop goes with its holder through a change of place; everything else stays behind. Plans: `holds` and `spots` on a prop record, only when used (R1: every story compiles to the same plan, apart from the asset file list, which grows with every new asset).
+- **Episodes 3 and 4:** the `# LATER:` lines are now real: Ren's map (Episode 3), Ren carrying the lantern (Episodes 3 and 4).
+- **Stop 2 (next):** the rest of the Season 1 props, `uses … on …`, `pulls`, `the map shows <text>`, extras landing on set pieces, `stories/demos-and-tests/treasure-demo.txt`.
+
 **Commit message:** `F4D: prop actions, continuity and Season 1 props`
 
 ---

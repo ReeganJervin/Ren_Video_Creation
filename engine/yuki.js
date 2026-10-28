@@ -510,7 +510,11 @@
     const dx = K.f * 6;
     const tgt = K.pawPose === 'cheeks' ? [headPt(dx, -22, 48), headPt(dx, 22, 48)] : K.pawPose === 'yawn' ? [null, headPt(dx, 8 + K.f * 22, 36)] : K.pawPose === 'chin' ? [null, headPt(dx, 14 + K.f * 22, 58)]
       : K.pawPose === 'eyes' ? [headPt(dx, -36 + K.f * 20, 8), headPt(dx, 36 + K.f * 20, 8)] : [null, null];
-    [-1, 1].forEach((i, k) => { const S = [i * 48 + K.f * 4, -88]; armFrom(c, S, [i * 36 + K.f * 4, -86], toward(pawFrom(S, i < 0 ? K.armL : K.armR, i, 34 + 0.6 * J(K, i < 0 ? 'reachL' : 'reachR'), 1.1, J(K, i < 0 ? 'elbowL' : 'elbowR')), tgt[k], K), i); });
+    [-1, 1].forEach((i, k) => {
+      const S = [i * 48 + K.f * 4, -88], P = toward(pawFrom(S, i < 0 ? K.armL : K.armR, i, 34 + 0.6 * J(K, i < 0 ? 'reachL' : 'reachR'), 1.1, J(K, i < 0 ? 'elbowL' : 'elbowR')), tgt[k], K);
+      armFrom(c, S, [i * 36 + K.f * 4, -86], P, i);
+      if (i > 0 && K.hold) K.hold.at(c, P[0], P[1] + 4);   // something held in the near paw (from the film)
+    });
   }
 
   // ---------- THREE-QUARTER view (0.3 <= |f| < 0.7), drawn facing right ----------
@@ -574,7 +578,11 @@
     const tgt = K.pawPose === 'cheeks' ? [headPt(6, -14, 48), headPt(6, 66, 44)] : K.pawPose === 'yawn' ? [null, headPt(6, 46, 36)] : K.pawPose === 'chin' ? [null, headPt(6, 50, 54)]
       : K.pawPose === 'eyes' ? [headPt(6, 2, 8), headPt(6, 66, 8)] : [null, null];
     const sh = [[-46, -88], [54, -88]], inner = [[-36, -86], [44, -86]];
-    [-1, 1].forEach((i, k) => armFrom(c, sh[k], inner[k], toward(pawFrom(sh[k], i < 0 ? K.armL : K.armR, i, (k ? 30 : 34) + 0.6 * J(K, i < 0 ? 'reachL' : 'reachR'), 1.1, J(K, i < 0 ? 'elbowL' : 'elbowR')), tgt[k], K), i));
+    [-1, 1].forEach((i, k) => {
+      const P = toward(pawFrom(sh[k], i < 0 ? K.armL : K.armR, i, (k ? 30 : 34) + 0.6 * J(K, i < 0 ? 'reachL' : 'reachR'), 1.1, J(K, i < 0 ? 'elbowL' : 'elbowR')), tgt[k], K);
+      armFrom(c, sh[k], inner[k], P, i);
+      if (i > 0 && K.hold) K.hold.at(c, P[0], P[1] + 4);
+    });
   }
 
   // ---------- SIDE profile (|f| >= 0.7), drawn facing right ----------
@@ -692,7 +700,9 @@
     const P = el ? [E[0] + len / 2 * Math.sin(a + el), E[1] + len / 2 * Math.cos(a + el)] : [S[0] + len * Math.sin(a), S[1] + len * Math.cos(a)];
     const tgt = K.pawPose === 'cheeks' ? headPt(4, 56, 38) : K.pawPose === 'yawn' ? headPt(4, 74, 38) : K.pawPose === 'chin' ? headPt(4, 50, 52) : K.pawPose === 'eyes' ? headPt(4, 44, 2) : null;
     bow(c, 44, -100, 0.95, true, 0.25);
-    sideArm(c, [S[0] - 6, S[1] + 2], toward(P, tgt, K), tgt ? null : E);
+    const PP = toward(P, tgt, K);
+    sideArm(c, [S[0] - 6, S[1] + 2], PP, tgt ? null : E);
+    if (K.hold) K.hold.at(c, PP[0], PP[1] + 4);
   }
 
   // ---------- BACK view (turned away) ----------

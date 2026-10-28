@@ -44,6 +44,12 @@
     '<name> stretches its paws wide', '<name> nods', '<name> shakes its head', '<name> points at <other name>|you|the star|<prop>', '<name> points up|left|right',
     `<name> feels ${MOODS.join('|')}`, '<name> hugs <other name>', '<name> picks up the star', '<name> lets go of the star',
     '<name> raises its paws', '<name> lowers its paws', '<name> blinks', '<name> and <name> hop | wave | look at each other | feel <mood>',
+    '<name> runs to left|center|right|<other name>', '<name> runs off to the left|right', '<name> sneaks to left|center|right', '<name> crawls to left|center|right',
+    '<name> jumps', '<name> jumps in fright', '<name> trips', '<name> falls down', '<name> gets up', '<name> lies down',
+    '<name> hides behind <other name>', '<name> peeks out', '<name> shrugs', '<name> covers its eyes', '<name> stretches', '<name> yawns', '<name> sighs', '<name> dances',
+    '<name> finds the <prop>', '<name> picks up the <prop>', '<name> holds the <prop>', '<name> holds up the <prop>',
+    '<name> carries the <prop> [to left|center|right|<other name>|the <prop>]', '<name> puts down the <prop>', '<name> drops the <prop>',
+    '<name> gives the <prop> to <other name>', '<name> opens the <prop>', '<name> closes the <prop>',
     'star appears', 'star falls', 'star glows', 'star twinkles', 'star rises', 'star disappears',
     'hearts float up', 'heart floats down', 'sparkles [around <name>]', 'title card: <WORD>',
     `place: ${PLACES.names().join('|')}`, 'time: day|sunset|dusk|night', 'camera: wide|close|closer', 'wait <seconds>',
@@ -139,6 +145,20 @@
     if (/^(?:lands?|settles?)(?: down| on the ground)?$/.test(a)) return { type: 'land', down: true };
     if (/^(?:takes? off|flies up)$/.test(a)) return { type: 'land', down: false };
     if ((k = a.match(/^swims? (?:by|past)(?: from(?: the)? (left|right))?$/))) return { type: 'pass', from: k[1] || 'left', how: 'swim' };
+    // props in paws (asset kit, Part D): find, pick up, hold up, carry, put down, drop, give, open and close a prop
+    {
+      const TH = '(?:the |a |an |its |his |her |their )?(.+?)', hold = (act, th, more = {}) => (/^(?:eyes?|mouth|paws?|ears?|tail|head)$/.test(ASSETS.norm(th)) ? null : { type: 'hold', act, thing: ASSETS.norm(th), ...more });
+      if ((k = a.match(new RegExp(`^finds? ${TH}$`)))) return hold('find', k[1]);
+      if ((k = a.match(new RegExp(`^picks? up ${TH}$`)) || a.match(new RegExp(`^picks? ${TH} up$`)))) return hold('pick', k[1]);
+      if ((k = a.match(new RegExp(`^holds? up ${TH}$`)) || a.match(new RegExp(`^holds? ${TH} up$`)))) return hold('up', k[1]);
+      if ((k = a.match(new RegExp(`^holds? ${TH}$`)))) return hold('hold', k[1]);
+      if ((k = a.match(new RegExp(`^carr(?:y|ies) ${TH} to (?:the |a |an )?(.+)$`)))) return hold('carry', k[1], { to: ASSETS.norm(k[2]) });
+      if ((k = a.match(new RegExp(`^carr(?:y|ies) ${TH}$`)))) return hold('pick', k[1]);
+      if ((k = a.match(new RegExp(`^puts? down ${TH}$`)) || a.match(new RegExp(`^puts? ${TH} down$`)))) return hold('put', k[1]);
+      if ((k = a.match(new RegExp(`^drops? ${TH}$`)))) return hold('drop', k[1]);
+      if ((k = a.match(new RegExp(`^gives? ${TH} to (${NAME})$`)))) return hold('give', k[1], { target: k[2] });
+      if ((k = a.match(new RegExp(`^(opens?|closes?) ${TH}$`)))) return hold(/^open/.test(k[1]) ? 'open' : 'close', k[2]);
+    }
     // things (props and set pieces): "walks to the lantern", "looks at the cottage", "waves at the owl"
     if ((k = a.match(/^(?:walks?|moves?|goes|go|hops?|runs?) (?:over )?to (?:the |a |an )?(.+?)( slowly)?$/))) return { type: 'walkToThing', thing: ASSETS.norm(k[1]), slow: !!k[2] };
     if ((k = a.match(/^looks? at (?:the |a |an )?(.+)$/))) return { type: 'lookAtThing', thing: ASSETS.norm(k[1]) };
@@ -453,7 +473,21 @@
         const b = action(a, who.length > 1);
         if (!b) return err(`I don't know how ${names} can "${a}".`);
         // a "thing" is another character or extra (then it's the usual action), or a prop or set piece
-        if (b.thing) {
+        if (b.type === 'hold') {
+          const HELD = { pick: 'pick up', hold: 'hold', up: 'hold up', carry: 'carry', put: 'put down', drop: 'drop', give: 'give' };
+          if (NAMES.includes(b.thing) || CHARACTERS[b.thing]) return err(`${names} can't ${HELD[b.act] || b.act} ${title(toId(b.thing))}. Only props can be ${b.act === 'find' ? 'found' : 'held'} like that.`);
+          const asset = ASSETS.find(b.thing, 'prop');
+          if (asset && HELD[b.act] && asset.size === 'big') return err(`The ${b.thing} is too big to ${HELD[b.act]}.`);
+          if (asset && (b.act === 'open' || b.act === 'close') && !asset.states.includes('open')) return err(`The ${b.thing} can't open or close.`);
+          if (b.act === 'carry' && b.to && !/^(left|center|centre|right)$/.test(b.to) && !NAMES.includes(b.to) && !ASSETS.find(b.to, 'prop')) return err(`I don't know where "${b.to}" is. Carry it to the left, center or right, to someone, or to a prop that's here.`);
+          if (who.length > 1) return err(`Only one character can do this at a time. Write it for ${title(toId(who[0]))} or ${title(toId(who[1]))}.`);
+          if (!asset) {
+            const sg = ASSETS.suggest(b.thing, ASSETS.all('prop').flatMap(x => x.names));
+            if (sg) return err(`I don't know "${b.thing}". Did you mean "${sg}"?`);
+            needs('prop', b.thing, { find: 'is found', hold: 'is held', pick: 'is picked up', up: 'is held up', carry: 'is carried', put: 'is put down', drop: 'is dropped', give: 'is given', open: 'opens', close: 'closes' }[b.act], { size: 'small' });
+          }
+          b.asset = asset ? asset.id : null;
+        } else if (b.thing) {
           if (NAMES.includes(b.thing)) { b.target = b.thing; b.type = { walkToThing: 'walkTo', lookAtThing: 'lookAt', wave: 'wave', point: 'point' }[b.type]; delete b.thing; }
           else {
             const asset = ASSETS.find(b.thing, 'prop');
@@ -555,6 +589,7 @@
     // props and set pieces on stage now (by name), and every one that ever appears
     P.props = [];
     let props = {};
+    const heldBy = new Map();   // prop -> the id of whoever holds it
     // the missing list, with the places and times of day where each missing thing shows up
     const missing = (parsed.missing || []).map(e => ({ ...e, places: [], times: [] }));
     let nowTime = meta.time;
@@ -586,6 +621,10 @@
       P.actors[id] = A[id].out;
     });
     let focus = cast[0], holder = null;
+    // props in paws: who holds what (a.holding = { p, how, h }); the arms' rest pose depends on it
+    const HOLD_ARM = a => (a.def.moves === 'hop' ? 0.85 : 0.45);   // carrying something in the near paw
+    const restR = a => (holder === a.id ? -1.2 : a.holding ? (a.holding.how === 'both' ? -1.2 : HOLD_ARM(a)) : ARM_R);
+    const restL = a => (a.holding && a.holding.how === 'both' ? -1.2 : ARM_R);
     let star = { state: 'none', x: 0, y: 0, r: 20 };
     let t = 0.6, prevStart = 0.6;
     const voiceWins = [];
@@ -654,15 +693,15 @@
     // Nobody stops on top of a small prop (it would be hidden behind them): they stop beside it, on the side
     // they come from, about one body-width away. Big set pieces stand behind everyone, so they don't count.
     const BESIDE = 230;
-    function clearOfProps(x, from) {
+    function clearOfProps(x, from, except) {
       if (x < 0 || x > 1920) return x;   // walking off stage
-      for (const p of Object.values(props)) if (p.size !== 'big' && !p.sky && Math.abs(x - p.x) < BESIDE - 1) x = p.x + (Math.sign(from - p.x) || -1) * BESIDE;
+      for (const p of Object.values(props)) if (p !== except && p.size !== 'big' && !p.sky && !heldBy.has(p) && Math.abs(x - p.x) < BESIDE - 1) x = p.x + (Math.sign(from - p.x) || -1) * BESIDE;
       return x;
     }
     // slow: true for a careful walk, or the pace 'run' / 'sneak' (running: about twice as fast, leaning forward and
     // bouncing; sneaking: crouched low on tiptoe, slow, paws up in front, little hops for hoppers)
-    function moveTo(a, s, x1, slow) {
-      x1 = clearOfProps(x1, a.x);
+    function moveTo(a, s, x1, slow, except) {
+      x1 = clearOfProps(x1, a.x, except);
       const dist = Math.abs(x1 - a.x);
       if (dist < 4) return 0;
       const dir = x1 > a.x ? 1 : -1, gait = slow === 'run' || slow === 'sneak' || slow === 'crawl' ? slow : null;
@@ -688,7 +727,7 @@
         a.ch.crouch.push({ t: s, v: 0.88, dur: 0.3 }, { t: s + 0.15 + dur, v: 1, dur: 0.35 });
         pose(a, 'rig.spine', s, dir * 0.12, 0.3); pose(a, 'rig.spine', s + 0.15 + dur, 0, 0.35);
         set(a, 'armL', s, 0.75, 0.3); set(a, 'armR', s, 0.75, 0.3);
-        set(a, 'armL', s + 0.15 + dur, ARM_R, 0.35); set(a, 'armR', s + 0.15 + dur, holder === a.id ? -1.2 : ARM_R, 0.35);
+        set(a, 'armL', s + 0.15 + dur, restL(a), 0.35); set(a, 'armR', s + 0.15 + dur, restR(a), 0.35);
       }
       if (gait === 'crawl') {
         // down low, bent right over with the paws reaching forward and the head up, slowly; upright at the end
@@ -698,7 +737,7 @@
         set(a, 'armL', s, 0.55, 0.3); set(a, 'armR', s, 0.55, 0.3);
         const steps = Math.max(2, Math.round(dur / 0.45));
         for (let k = 1; k < steps; k++) { set(a, 'armL', s + 0.15 + k * dur / steps, k % 2 ? 0.8 : 0.45, 0.2); set(a, 'armR', s + 0.15 + k * dur / steps, k % 2 ? 0.45 : 0.8, 0.2); }
-        set(a, 'armL', s + 0.15 + dur, ARM_R, 0.4); set(a, 'armR', s + 0.15 + dur, holder === a.id ? -1.2 : ARM_R, 0.4);
+        set(a, 'armL', s + 0.15 + dur, restL(a), 0.4); set(a, 'armR', s + 0.15 + dur, restR(a), 0.4);
       }
       set(a, 'facing', s + 0.15 + dur, 0, 0.45);
       set(a, 'lookX', s, dir * 0.6, 0.3); set(a, 'lookY', s, 0, 0.3);
@@ -857,6 +896,7 @@
         // an extra swimming past: in from one side and out the other
         case 'pass': who.forEach(a => { a.x = OFF[b.from]; dur = Math.max(dur, moveTo(a, s, OFF[b.from === 'left' ? 'right' : 'left'], false)); }); break;
         case 'prop': dur = propBeat(b, s); break;
+        case 'hold': dur = holdBeat(b, s, who[0]); break;
         case 'walkToThing': {
           // walks up beside the prop, on the side it comes from, and looks at it. If someone already stands
           // there it takes the prop's other side when that one is free; otherwise the one standing steps aside.
@@ -885,7 +925,7 @@
             if (holder === a.id) P.warnings.push(`Line ${b.line}: ${a.def.name} is holding the star, so they wave with the star in their paws.`);
             if (b.target) lookAtActor(a, A[b.target], s, false);
             if (p) { closeLook(a, s); a.open = { a: s, b: 1e9, target: { prop: P.props.indexOf(p) } }; a.out.lookAt.push(a.open); }
-            set(a, 'armR', s, 2.35, 0.4); a.out.waves.push({ a: s + 0.4, b: s + 2.2 }); set(a, 'armR', s + 2.2, holder === a.id ? -1.2 : ARM_R, 0.4);
+            set(a, 'armR', s, 2.35, 0.4); a.out.waves.push({ a: s + 0.4, b: s + 2.2 }); set(a, 'armR', s + 2.2, restR(a), 0.4);
           });
           dur = 2.6; break;
         }
@@ -907,14 +947,14 @@
         case 'wobble': who.forEach(a => {
           // a small loss of balance (arms out), then steady again
           [[0, 0.14, 0.18], [0.25, -0.1, 0.22], [0.52, 0.06, 0.2], [0.78, 0, 0.25]].forEach(([d, v, dd]) => pose(a, 'rig.hips', s + d, v, dd));
-          set(a, 'armL', s, 0.95, 0.2); set(a, 'armR', s, 0.95, 0.2); set(a, 'armL', s + 0.85, ARM_R, 0.3); set(a, 'armR', s + 0.85, ARM_R, 0.3);
+          set(a, 'armL', s, 0.95, 0.2); set(a, 'armR', s, 0.95, 0.2); set(a, 'armL', s + 0.85, restL(a), 0.3); set(a, 'armR', s + 0.85, ARM_R, 0.3);
         }); dur = 1.1; break;
         case 'count': who.forEach(a => {
           // both paws up in front of the chest, one tapping the other three times, eyes on the paws
           set(a, 'armL', s, 0.25, 0.35); set(a, 'armR', s, 0.25, 0.35); pose(a, 'rig.elbowL', s, 1.9, 0.35); pose(a, 'rig.elbowR', s, 1.9, 0.35);
           set(a, 'lookY', s, 0.6, 0.3); set(a, 'lookX', s, 0, 0.3);
           [0.55, 1.0, 1.45].forEach((d, i) => { set(a, 'armL', s + d, 0.5, 0.12); set(a, 'armL', s + d + 0.18, 0.25, 0.14); pose(a, 'nod', s + d, 4, 0.1); pose(a, 'nod', s + d + 0.15, 0, 0.12); });
-          set(a, 'armL', s + 2.0, ARM_R, 0.4); set(a, 'armR', s + 2.0, ARM_R, 0.4); pose(a, 'rig.elbowL', s + 2.0, 0, 0.4); pose(a, 'rig.elbowR', s + 2.0, 0, 0.4); set(a, 'lookY', s + 2.0, 0, 0.4);
+          set(a, 'armL', s + 2.0, restL(a), 0.4); set(a, 'armR', s + 2.0, ARM_R, 0.4); pose(a, 'rig.elbowL', s + 2.0, 0, 0.4); pose(a, 'rig.elbowR', s + 2.0, 0, 0.4); set(a, 'lookY', s + 2.0, 0, 0.4);
         }); dur = 2.3; break;
         case 'write': who.forEach(a => {
           // a paw up high, tracing little loops in the air, eyes following it
@@ -926,7 +966,7 @@
           // the near paw held out toward the other (the near arm is the right one whenever a character is turned)
           const o = b.target ? A[b.target] : others(a)[0], dir = o ? toward(a, o) : (a.x >= 960 ? -1 : 1);
           set(a, 'facing', s, dir * 0.45, 0.35); set(a, 'armR', s, 1.35, 0.35); pose(a, 'rig.elbowR', s, -0.15, 0.35);
-          set(a, 'armR', s + 2.6, holder === a.id ? -1.2 : ARM_R, 0.4); pose(a, 'rig.elbowR', s + 2.6, 0, 0.4);
+          set(a, 'armR', s + 2.6, restR(a), 0.4); pose(a, 'rig.elbowR', s + 2.6, 0, 0.4);
         }); dur = 0.8; break;
         case 'touch': {
           // the two step close, turn to each other and touch paws (a soft chime), then step apart again
@@ -935,7 +975,7 @@
           [[a, dir], [o, -dir]].forEach(([q, d2]) => {
             closeLook(q, p); set(q, 'facing', p, d2 * 0.45, 0.3); set(q, 'lookX', p, d2 * 0.6, 0.3);
             set(q, 'armR', p, 1.3, 0.35); pose(q, 'rig.elbowR', p, 0.12, 0.35);
-            set(q, 'armR', p + 1.4, holder === q.id ? -1.2 : ARM_R, 0.4); pose(q, 'rig.elbowR', p + 1.4, 0, 0.4); set(q, 'lookX', p + 1.4, 0, 0.4);
+            set(q, 'armR', p + 1.4, restR(q), 0.4); pose(q, 'rig.elbowR', p + 1.4, 0, 0.4); set(q, 'lookX', p + 1.4, 0, 0.4);
             q.out.exprs.push({ a: p + 0.2, b: p + 1.6, mood: 'happy' }); q.toYou = false;
           });
           sfx('twinkle', p + 0.35, { midi: 88, gain: 0.12 });
@@ -944,7 +984,7 @@
         }
         case 'wide': who.forEach(a => {
           set(a, 'armL', s, 1.5, 0.4); set(a, 'armR', s, 1.5, 0.4); set(a, 'lookY', s, -0.2, 0.4);
-          set(a, 'armL', s + 1.7, ARM_R, 0.45); set(a, 'armR', s + 1.7, ARM_R, 0.45); set(a, 'lookY', s + 1.7, 0, 0.45);
+          set(a, 'armL', s + 1.7, restL(a), 0.45); set(a, 'armR', s + 1.7, ARM_R, 0.45); set(a, 'lookY', s + 1.7, 0, 0.45);
         }); dur = 2.0; break;
         case 'nod': who.forEach(a => {   // (two nods, the eyes dipping with the head)
           [[0, 15, 0.16], [0.22, 0, 0.16], [0.44, 15, 0.16], [0.66, 0, 0.2]].forEach(([d, v, dd]) => pose(a, 'nod', s + d, v, dd));
@@ -963,7 +1003,7 @@
           if (dir) { set(a, 'facing', s, dir * 0.45, 0.35); set(a, 'lookX', s, dir * 0.8, 0.3); }
           set(a, 'lookY', s, b.at === 'up' ? -1 : 0, 0.3);
           set(a, 'armR', s, Math.min(2.6, Math.max(0.6, ang)), 0.35); pose(a, 'rig.elbowR', s, 0, 0.3); pose(a, 'rig.reachR', s, b.at === 'up' ? 24 : 14, 0.35); pose(a, 'rig.reachR', s + 1.9, 0, 0.4);
-          set(a, 'armR', s + 1.9, holder === a.id ? -1.2 : ARM_R, 0.4); set(a, 'lookX', s + 1.9, 0, 0.4); set(a, 'lookY', s + 1.9, 0, 0.4);
+          set(a, 'armR', s + 1.9, restR(a), 0.4); set(a, 'lookX', s + 1.9, 0, 0.4); set(a, 'lookY', s + 1.9, 0, 0.4);
         }); dur = 0.8; break;
         // ---- the movement library, part 2: jumps, frights, trips and falls (a comic fall: never hurt) ----
         case 'jump': who.forEach(a => {
@@ -972,7 +1012,7 @@
           a.out.hops.push({ t0, t1, h: a.def.hop.h * 2.1 });
           if (a.def.hop.sound === 'light') { sfx('hopUp', t0); sfx('hopLand', t1); } else { sfx('boingUp', t0); sfx('boingLand', t1); }
           set(a, 'armL', t0, 2.2, 0.2); set(a, 'armR', t0, 2.2, 0.2);
-          set(a, 'armL', t1, ARM_R, 0.3); set(a, 'armR', t1, holder === a.id ? -1.2 : ARM_R, 0.3);
+          set(a, 'armL', t1, restL(a), 0.3); set(a, 'armR', t1, restR(a), 0.3);
         }); dur = 1.25; break;
         case 'fright': who.forEach(a => {
           // a startled little jump: scared face (ears back, wide eyes), paws flung up, leaning back; then it settles
@@ -982,7 +1022,7 @@
           sfx(a.def.hop.sound === 'light' ? 'hopUp' : 'boingUp', t0); sfx('softLand', t1);
           set(a, 'armL', s, 1.9, 0.12); set(a, 'armR', s, 1.9, 0.12);
           pose(a, 'rig.spine', s, -dir * 0.1, 0.15); pose(a, 'rig.spine', s + 1.1, 0, 0.4);
-          set(a, 'armL', s + 1.0, ARM_R, 0.4); set(a, 'armR', s + 1.0, holder === a.id ? -1.2 : ARM_R, 0.4);
+          set(a, 'armL', s + 1.0, restL(a), 0.4); set(a, 'armR', s + 1.0, restR(a), 0.4);
         }); dur = 1.4; break;
         case 'trip': who.forEach(a => {
           // a stumble forward, arms windmilling, a surprised face; caught just in time, then upright again
@@ -995,7 +1035,7 @@
           set(a, 'armL', s + 0.5, 1.7, 0.15); set(a, 'armR', s + 0.5, 0.7, 0.15);
           pose(a, 'rig.spine', s + 0.4, -dir * 0.07, 0.25); pose(a, 'rig.neck', s + 0.45, 0, 0.25);
           pose(a, 'rig.spine', s + 0.7, 0, 0.3);
-          set(a, 'armL', s + 0.75, ARM_R, 0.3); set(a, 'armR', s + 0.75, holder === a.id ? -1.2 : ARM_R, 0.3);
+          set(a, 'armL', s + 0.75, restL(a), 0.3); set(a, 'armR', s + 0.75, restR(a), 0.3);
         }); dur = 1.15; break;
         case 'fall': who.forEach(a => {
           // tips back, paws up, and plops down on the bottom with a soft bump (it stays sitting until "gets up")
@@ -1009,7 +1049,7 @@
           a.out.hops.push({ t0: s + 0.45, t1: s + 0.7, h: 14, face: false });   // a little bounce on landing
           sfx('softLand', s + 0.37);
           pose(a, 'rig.spine', s + 0.5, -dir * 0.06, 0.4);   // still leaning back a little, sitting on the bottom
-          set(a, 'armL', s + 0.7, ARM_R, 0.4); set(a, 'armR', s + 0.7, holder === a.id ? -1.2 : ARM_R, 0.4);
+          set(a, 'armL', s + 0.7, restL(a), 0.4); set(a, 'armR', s + 0.7, restR(a), 0.4);
         }); dur = 1.5; break;
         // ---- the movement library, part 3: gestures, lying down, hiding and peeking ----
         case 'shrug': who.forEach(a => {
@@ -1017,7 +1057,7 @@
           const sa = a.def.moves === 'hop' ? 1.15 : 0.8;   // (short arms go out further, so the shrug reads)
           set(a, 'armL', s, sa, 0.25); set(a, 'armR', s, sa, 0.25); pose(a, 'rig.elbowL', s, -0.9, 0.25); pose(a, 'rig.elbowR', s, -0.9, 0.25);
           pose(a, 'nod', s, 6, 0.25); set(a, 'tilt', s, 0.14, 0.25); a.ch.crouch.push({ t: s, v: 0.97, dur: 0.25 });
-          set(a, 'armL', s + 1.1, ARM_R, 0.4); set(a, 'armR', s + 1.1, holder === a.id ? -1.2 : ARM_R, 0.4); pose(a, 'rig.elbowL', s + 1.1, 0, 0.4); pose(a, 'rig.elbowR', s + 1.1, 0, 0.4);
+          set(a, 'armL', s + 1.1, restL(a), 0.4); set(a, 'armR', s + 1.1, restR(a), 0.4); pose(a, 'rig.elbowL', s + 1.1, 0, 0.4); pose(a, 'rig.elbowR', s + 1.1, 0, 0.4);
           pose(a, 'nod', s + 1.1, 0, 0.4); set(a, 'tilt', s + 1.1, 0, 0.4); a.ch.crouch.push({ t: s + 1.1, v: 1, dur: 0.4 });
         }); dur = 1.5; break;
         case 'coverEyes': who.forEach(a => {
@@ -1031,7 +1071,7 @@
           set(a, 'armL', s, 2.3, 0.45); set(a, 'armR', s, 2.3, 0.45); pose(a, 'rig.reachL', s, 26, 0.45); pose(a, 'rig.reachR', s, 26, 0.45);
           a.ch.crouch.push({ t: s, v: 1.05, dur: 0.45 }, { t: s + 1.6, v: 1, dur: 0.45 });
           set(a, 'lookY', s, -0.6, 0.45); a.out.exprs.push({ a: s + 0.2, b: s + 1.8, mood: 'joy' });
-          set(a, 'armL', s + 1.6, ARM_R, 0.45); set(a, 'armR', s + 1.6, holder === a.id ? -1.2 : ARM_R, 0.45);
+          set(a, 'armL', s + 1.6, restL(a), 0.45); set(a, 'armR', s + 1.6, restR(a), 0.45);
           pose(a, 'rig.reachL', s + 1.6, 0, 0.45); pose(a, 'rig.reachR', s + 1.6, 0, 0.45); set(a, 'lookY', s + 1.6, 0, 0.45);
         }); dur = 2.1; break;
         case 'yawn': who.forEach(a => {
@@ -1046,7 +1086,7 @@
           set(a, 'lookY', s, -0.3, 0.45); set(a, 'lookY', s + 0.55, 0.35, 0.5); set(a, 'lookY', s + 1.3, 0, 0.4);
           pose(a, 'nod', s + 0.55, 8, 0.6); pose(a, 'nod', s + 1.3, 0, 0.4);
           set(a, 'armL', s + 0.55, 0.05, 0.5); set(a, 'armR', s + 0.55, holder === a.id ? -1.2 : 0.05, 0.5);
-          set(a, 'armL', s + 1.3, ARM_R, 0.4); set(a, 'armR', s + 1.3, holder === a.id ? -1.2 : ARM_R, 0.4);
+          set(a, 'armL', s + 1.3, restL(a), 0.4); set(a, 'armR', s + 1.3, restR(a), 0.4);
           a.out.blinkExtra.push(s + 0.65);
         }); dur = 1.7; break;
         case 'dance': who.forEach(a => {
@@ -1061,7 +1101,7 @@
           }
           const e = s + 3.15;
           pose(a, 'rig.hips', e, 0, 0.35); pose(a, 'rig.spine', e, 0, 0.35); set(a, 'facing', e, 0, 0.35);
-          set(a, 'armL', e, ARM_R, 0.35); set(a, 'armR', e, holder === a.id ? -1.2 : ARM_R, 0.35);
+          set(a, 'armL', e, restL(a), 0.35); set(a, 'armR', e, restR(a), 0.35);
         }); dur = 3.5; break;
         case 'lie': who.forEach(a => {
           // lies down on the side, facing the front, head toward the middle of the stage (until "gets up")
@@ -1118,7 +1158,7 @@
           const d = pairUp(a, o, s, c, HUG, false);
           const p = s + Math.max(0, d - 0.35), dir = toward(a, o);
           [[a, dir], [o, -dir]].forEach(([q, d2]) => {
-            const inner = d2 > 0 ? 'armR' : 'armL', outer = d2 > 0 ? 'armL' : 'armR', rest = holder === q.id ? -1.2 : ARM_R;
+            const inner = d2 > 0 ? 'armR' : 'armL', outer = d2 > 0 ? 'armL' : 'armR', rest = restR(q);
             closeLook(q, p);
             set(q, 'facing', p, d2 * 0.15, 0.3); set(q, 'lookX', p, d2 * 0.5, 0.3); set(q, 'lookY', p, 0, 0.3);
             set(q, 'tilt', p, d2 * 0.14, 0.35);
@@ -1143,7 +1183,7 @@
         case 'blink': who.forEach(a => a.out.blinkExtra.push(s)); dur = 0.4; break;
         case 'paws': {
           who.forEach(a => {
-            const v = b.up ? 2.7 : holder === a.id ? -1.2 : ARM_R;
+            const v = b.up ? 2.7 : restR(a);
             set(a, 'armL', s, v, 0.5); set(a, 'armR', s, v, 0.5);
             if (holder === a.id) P.star.push({ type: b.up ? 'raise' : 'lower', t0: s, t1: s + 0.6, who: a.id });
           });
@@ -1152,6 +1192,7 @@
         case 'pickup': {
           const a = who[0];
           if (star.state !== 'ground') { errors.push(`Line ${b.line}: there is no star on the ground to pick up. Use "star falls" first.`); break; }
+          if (a.holding) { errors.push(`Line ${b.line}: ${a.def.name}'s paws are full: ${a.def.name} is holding the ${a.holding.p.name}. Put it down first.`); break; }
           const side = star.x >= a.x ? 1 : -1;
           const d = moveTo(a, s, star.x - side * 115, true);
           const p = s + Math.max(0, d - 0.3);
@@ -1184,7 +1225,7 @@
           const from = star.state === 'sky' ? { x: star.x, y: star.y } : { x: Math.min(1700, a.x + 420), y: 110 };
           P.heartDown.push({ t0: s, t1: s + 1.3, burst: s + 1.65, from, who: a.id });
           sfx('pop', s, { gain: 0.4 });
-          if (holder !== a.id) { set(a, 'armL', s + 0.6, 1.9, 0.45); set(a, 'armR', s + 0.6, 1.9, 0.45); set(a, 'armL', s + 1.65, ARM_R, 0.3); set(a, 'armR', s + 1.65, ARM_R, 0.3); }
+          if (holder !== a.id) { set(a, 'armL', s + 0.6, 1.9, 0.45); set(a, 'armR', s + 0.6, 1.9, 0.45); set(a, 'armL', s + 1.65, restL(a), 0.3); set(a, 'armR', s + 1.65, ARM_R, 0.3); }
           a.out.exprs.push({ a: s + 1.4, b: s + 2.4, mood: 'joy' });
           closeLook(a, s); a.out.lookAt.push({ a: s, b: s + 1.6, target: 'heart' });
           sfx('sparkles', s + 1.65, { n: 6, seed: Math.round(s * 10) });
@@ -1300,14 +1341,22 @@
     if (endAt !== null) t = Math.max(endAt + END, t + 1.5) - 1.8;
 
     // a change of place: the props stay behind (they go as the page turns)
-    function leavePlace(at) { Object.values(props).forEach(p => { p.t1 = at; }); props = {}; }
+    // (a prop someone holds goes with them)
+    function leavePlace(at) {
+      const kept = {};
+      Object.entries(props).forEach(([k, p]) => { if (heldBy.has(p)) kept[k] = p; else p.t1 = at; });
+      props = kept;
+    }
 
     // Props and set pieces: appear somewhere, disappear, glow or stop glowing, open or close.
     function propBeat(b, s) {
       const cur = props[b.name];
       if (b.act !== 'appear') {
         if (!cur) { errors.push(`Line ${b.line}: there is no ${b.name} here. Use "${b.name} appears" first.`); return 0; }
-        if (b.act === 'disappear') { cur.t1 = s + 0.5; delete props[b.name]; sfx('sparkles', s, { n: 4, seed: 70 + P.props.indexOf(cur) }); return 0.7; }
+        if (b.act === 'disappear') {
+          if (heldBy.has(cur)) letGo(A[heldBy.get(cur)], s + 0.5);
+          cur.t1 = s + 0.5; delete props[b.name]; sfx('sparkles', s, { n: 4, seed: 70 + P.props.indexOf(cur) }); return 0.7;
+        }
         if (b.act === 'glow' || b.act === 'unglow') { cur.glow.push({ t: s, on: b.act === 'glow' }); if (b.act === 'glow') sfx('twinkle', s + 0.1, { midi: 91, gain: 0.12 }); return 0.8; }
         cur.states.push({ t: s, state: b.act === 'open' ? 'open' : 'closed' }); sfx('pop', s + 0.1, { gain: 0.3 });
         return 0.8;
@@ -1333,8 +1382,153 @@
       x = Math.max(120, Math.min(1800, x));
       const p = { name: b.name, asset: b.asset, missing: !asset, size, height, x, y: sky ? (VERT ? 400 : 300) : feetY(x), sky, t0: s, t1: null, states: [], glow: [] };
       P.props.push(p); props[b.name] = p;
-      sfx('pop', s + 0.1, { gain: 0.35 }); sfx('sparkles', s + 0.15, { n: 3, seed: 50 + P.props.length });
+      if (!b.quiet) { sfx('pop', s + 0.1, { gain: 0.35 }); sfx('sparkles', s + 0.15, { n: 3, seed: 50 + P.props.length }); }
       return 0.8;
+    }
+
+    // ---- props in paws (asset kit, Part D) ----
+    // where a prop stands now (it may have been put down somewhere else since it appeared)
+    function groundAt(p) { return p.at || { x: p.x, y: p.y }; }
+    // a hold on p by a from t (lift: it glides up from where it stood); continues: a new pose of the same hold
+    function takeHold(a, p, t, how, lift = true) {
+      const h = { t0: t, t1: null, who: a.id, how, from: groundAt(p), ...(lift ? {} : { lift: false }) };
+      (p.holds = p.holds || []).push(h); heldBy.set(p, a.id); a.holding = { p, how, h };
+      return h;
+    }
+    // a lets go at t; the prop lands at (x) (put down, or dropped), or goes to someone else (no landing)
+    function letGo(a, t, land) {
+      const hd = a.holding; if (!hd) return;
+      hd.h.t1 = t; heldBy.delete(hd.p); a.holding = null;
+      if (land) { const y = feetY(land.x); (hd.p.spots = hd.p.spots || []).push({ t, x: land.x, y, fall: land.fall }); hd.p.at = { x: land.x, y }; }
+    }
+    // a hold's pose changes (held up high, then back): a new segment of the same hold, without the lift
+    function rehold(a, t, how) { const hd = a.holding; hd.h.t1 = t; const h = { t0: t, t1: null, who: a.id, how, from: hd.h.from, lift: false }; hd.p.holds.push(h); hd.h = h; hd.how = how; }
+    function both(p) { const as = p.asset && ASSETS.ASSETS[p.asset]; return as && as.hold === 'both paws' ? 'both' : 'one'; }
+    function holdBeat(b, s, a) {
+      const p = props[b.thing], what = `the ${b.thing}`, Name = a.def.name;
+      const fail = msg => { errors.push(`Line ${b.line}: ${msg}`); return 0; };
+      const mustHold = () => (a.holding && a.holding.p === p ? null : fail(`${Name} isn't holding ${what}.`));
+      if (b.act === 'find') {
+        let d = 0;
+        if (!p) { focus = a.id; d = propBeat({ act: 'appear', name: b.thing, asset: b.asset, where: {}, line: b.line }, s); }
+        const q = props[b.thing]; if (!q) return d;
+        const g = groundAt(q), side = Math.sign(g.x - a.x) || 1;
+        if (Math.abs(g.x - a.x) > 330) d += moveTo(a, s + d, g.x - side * 200, false, q);
+        const t = s + d;
+        set(a, 'facing', t, side * 0.5, 0.3); set(a, 'lookX', t, side * 0.8, 0.3); set(a, 'lookY', t, 0.7, 0.3);
+        a.out.exprs.push({ a: t, b: t + 1.6, mood: 'surprised' });
+        P.sparkles.push({ t: t + 0.3, at: { x: g.x, y: g.y - q.height * 0.6 }, small: true }); sfx('twinkle', t + 0.3, { midi: 91, gain: 0.12 });
+        set(a, 'lookY', t + 1.6, 0, 0.4); a.toYou = false;
+        return d + 1.8;
+      }
+      if (b.act === 'hold') {
+        if (p && heldBy.get(p) === a.id) return 0.1;
+        if (!p) {
+          // not here yet: it's simply in their paw (as if they brought it along)
+          if (a.holding) return fail(`${Name}'s paws are full: ${Name} is holding the ${a.holding.p.name}. Put it down first.`);
+          if (holder === a.id) return fail(`${Name}'s paws are full: ${Name} is holding the star.`);
+          focus = a.id; propBeat({ act: 'appear', name: b.thing, asset: b.asset, where: {}, line: b.line, quiet: true }, s);
+          const q = props[b.thing], how = both(q);
+          takeHold(a, q, s, how, false);
+          set(a, 'armR', s, restR(a), 0.35); set(a, 'armL', s, restL(a), 0.35);
+          return 0.5;
+        }
+        b = { ...b, act: 'pick' };
+      }
+      if (!p) return fail(`there is no ${b.thing} here. Use "${b.thing} appears" first.`);
+      if (b.act === 'pick' || (b.act === 'carry' && !(a.holding && a.holding.p === p))) {
+        if (heldBy.has(p)) return heldBy.get(p) === a.id ? (b.act === 'carry' ? carryOn(b, s, a, p) : 0.1) : fail(`${title(heldBy.get(p))} is holding ${what}, not ${Name}.`);
+        if (a.holding) return fail(`${Name}'s paws are full: ${Name} is holding the ${a.holding.p.name}. Put it down first.`);
+        if (holder === a.id) return fail(`${Name}'s paws are full: ${Name} is holding the star.`);
+        if (p.sky) return fail(`${what} is up in the sky, out of reach.`);
+        const g = groundAt(p), side = Math.sign(g.x - a.x) || 1;
+        const d = Math.abs(g.x - a.x) > 100 ? moveTo(a, s, g.x - side * 95, false, p) : 0, t = s + Math.max(0, d - 0.3);
+        set(a, 'facing', t, side * 0.6, 0.3); set(a, 'lookX', t, side * 0.7, 0.3); set(a, 'lookY', t, 0.8, 0.3);
+        a.ch.crouch.push({ t, v: 0.88, dur: 0.35 }, { t: t + 0.85, v: 1, dur: 0.4 });
+        const how = both(p);
+        set(a, 'armR', t, 0.7, 0.35); if (how === 'both') set(a, 'armL', t, 0.7, 0.35);
+        takeHold(a, p, t + 0.5, how);
+        set(a, 'armR', t + 0.8, restR(a), 0.4); set(a, 'armL', t + 0.8, restL(a), 0.4);
+        set(a, 'facing', t + 1.1, 0, 0.4); set(a, 'lookX', t + 1.1, 0, 0.4); set(a, 'lookY', t + 1.1, 0, 0.4);
+        sfx('rustle', t, { dur: 0.6, gain: 0.5 }); sfx('pop', t + 0.55, { gain: 0.25 });
+        a.toYou = false;
+        const dur = (t - s) + 1.4;
+        return b.act === 'carry' ? dur + carryOn(b, s + dur, a, p) : dur;
+      }
+      if (b.act === 'carry') return carryOn(b, s, a, p);
+      if (mustHold()) return 0;
+      if (b.act === 'up') {
+        // held up high for everyone to see (a little sparkle), then back
+        const was = a.holding.how;
+        set(a, 'armR', s, 2.5, 0.35); if (was === 'both') set(a, 'armL', s, 2.5, 0.35);
+        rehold(a, s + 0.2, 'up');
+        set(a, 'lookY', s, -0.5, 0.35); set(a, 'facing', s, 0, 0.35);
+        P.sparkles.push({ t: s + 0.5, who: a.id, small: true }); sfx('twinkle', s + 0.45, { midi: 93, gain: 0.12 });
+        rehold(a, s + 2.0, was);
+        set(a, 'armR', s + 1.9, restR(a), 0.4); set(a, 'armL', s + 1.9, restL(a), 0.4); set(a, 'lookY', s + 1.9, 0, 0.4);
+        return 2.4;
+      }
+      if (b.act === 'put' || b.act === 'drop') {
+        const dir = Math.sign(a.ch.facing.length ? a.ch.facing[a.ch.facing.length - 1].v : 0) || (a.x >= 960 ? -1 : 1);
+        const x = Math.max(120, Math.min(1800, a.x + dir * (b.act === 'put' ? 100 : 75)));
+        if (b.act === 'put') {
+          a.ch.crouch.push({ t: s, v: 0.88, dur: 0.35 }, { t: s + 0.8, v: 1, dur: 0.4 });
+          set(a, 'armR', s, 0.7, 0.35); set(a, 'armL', s, ARM_R, 0.35); set(a, 'lookY', s, 0.8, 0.3);
+          letGo(a, s + 0.45, { x, fall: 'put' });
+          set(a, 'armR', s + 0.8, restR(a), 0.4); set(a, 'lookY', s + 1.0, 0, 0.4);
+          sfx('softLand', s + 0.7, { gain: 0.4 });
+          return 1.3;
+        }
+        // dropped: the paws fly open, it falls with a little bounce
+        set(a, 'armR', s, 1.4, 0.12); set(a, 'armL', s, 1.4, 0.12);
+        letGo(a, s + 0.1, { x, fall: 'drop' });
+        set(a, 'lookY', s + 0.2, 0.8, 0.25);
+        set(a, 'armR', s + 0.7, restR(a), 0.4); set(a, 'armL', s + 0.7, restL(a), 0.4); set(a, 'lookY', s + 1.2, 0, 0.4);
+        sfx('softLand', s + 0.1 + 0.32);
+        return 1.3;
+      }
+      if (b.act === 'give') {
+        const o = A[b.target];
+        if (!o || !onStage(o)) return fail(`${title(b.target)} isn't here to take ${what}.`);
+        if (o.holding) return fail(`${o.def.name}'s paws are full: ${o.def.name} is holding the ${o.holding.p.name}.`);
+        if (holder === o.id) return fail(`${o.def.name}'s paws are full: ${o.def.name} is holding the star.`);
+        const c = (a.x + o.x) / 2, d = pairUp(a, o, s, c, 250, false), t = s + Math.max(0, d - 0.3), dir = toward(a, o), how = a.holding.how === 'up' ? 'one' : a.holding.how;
+        [[a, dir], [o, -dir]].forEach(([q, d2]) => { closeLook(q, t); set(q, 'facing', t, d2 * 0.45, 0.3); set(q, 'lookX', t, d2 * 0.6, 0.3); q.toYou = false; });
+        set(a, 'armR', t, 1.25, 0.35); set(o, 'armR', t + 0.15, 1.25, 0.35);
+        letGo(a, t + 0.6); takeHold(o, p, t + 0.6, how, false);
+        set(a, 'armR', t + 0.9, restR(a), 0.4); set(a, 'armL', t + 0.9, restL(a), 0.4);
+        set(o, 'armR', t + 0.9, restR(o), 0.4); set(o, 'armL', t + 0.9, restL(o), 0.4);
+        o.out.exprs.push({ a: t + 0.5, b: t + 1.8, mood: 'happy' });
+        sfx('twinkle', t + 0.6, { midi: 88, gain: 0.1 });
+        return (t - s) + 1.4;
+      }
+      if (b.act === 'open' || b.act === 'close') {
+        let d = 0;
+        if (!(a.holding && a.holding.p === p)) {
+          const g = groundAt(p), side = Math.sign(g.x - a.x) || 1;
+          if (Math.abs(g.x - a.x) > (p.size === 'big' ? 300 : 260)) d = moveTo(a, s, g.x - side * (p.size === 'big' ? 230 : 160), false, p);
+          set(a, 'facing', s + d, side * 0.6, 0.3); set(a, 'armR', s + d, 1.1, 0.35); set(a, 'armR', s + d + 0.8, restR(a), 0.4);
+        } else { set(a, 'armL', s, 0.9, 0.3); set(a, 'armL', s + 0.7, restL(a), 0.4); }
+        p.states.push({ t: s + d + 0.35, state: b.act === 'open' ? 'open' : 'closed' }); sfx('pop', s + d + 0.4, { gain: 0.3 });
+        return d + 1.0;
+      }
+      return 0;
+    }
+    // carrying something somewhere: a spot, someone, or a prop that's here
+    function carryOn(b, s, a, p) {
+      if (!b.to) return 0;
+      if (/^(left|center|centre|right)$/.test(b.to)) return goToSpot(a, s, spots()[spot(b.to)], false);
+      const o = A[toId(b.to)];
+      if (o) {
+        if (!onStage(o)) { errors.push(`Line ${b.line}: ${title(b.to)} isn't here.`); return 0; }
+        const d = pairUp(a, o, s, nearestSpot((a.x + o.x) / 2), GAP, false);   // (side by side, as "walks to" does)
+        lookAtActor(a, o, s + Math.max(0.2, d - 0.4), false);
+        return d;
+      }
+      const q = props[b.to];
+      if (!q) { errors.push(`Line ${b.line}: there is no ${b.to} here. Use "${b.to} appears" first.`); return 0; }
+      const g = groundAt(q), side = Math.sign(a.x - g.x) || -1;
+      return moveTo(a, s, g.x + side * (q.size === 'big' ? 230 : 150), false, q);
     }
 
     function starBeat(b, s) {
@@ -1382,7 +1576,7 @@
           set(a, 'armL', s, 2.7, 0.5); set(a, 'armR', s, 2.7, 0.5);
           P.star.push({ type: 'raise', t0: s, t1: s + 0.9, who: a.id });
           s0 = s + 1.0;
-          set(a, 'armL', s0 + 0.3, ARM_R, 0.7); set(a, 'armR', s0 + 0.3, ARM_R, 0.7);
+          set(a, 'armL', s0 + 0.3, restL(a), 0.7); set(a, 'armR', s0 + 0.3, ARM_R, 0.7);
           sfx('twinkle', s + 0.4, { midi: 91, gain: 0.1 });
         }
         P.star.push({ type: 'rise', t0: s0, t1: s0 + 4.2, from: star.state === 'held' ? 'overhead' : { x: star.x, y: star.y }, to, r0: 30, r1: 14, who: a.id });
@@ -1397,7 +1591,7 @@
       }
       if (act === 'disappears') {
         if (star.state === 'none') return 0;
-        if (star.state === 'held') { set(h, 'armL', s + 0.4, ARM_R, 0.5); set(h, 'armR', s + 0.4, ARM_R, 0.5); holder = null; }
+        if (star.state === 'held') { set(h, 'armL', s + 0.4, restL(h), 0.5); set(h, 'armR', s + 0.4, ARM_R, 0.5); holder = null; }
         P.star.push({ type: 'vanish', t0: s, t1: s + 0.8 });
         sfx('sparkles', s, { n: 4, seed: 40 });
         star = { state: 'none' };
@@ -1406,6 +1600,7 @@
       return 0;
     }
 
+    P.props.forEach(q => { delete q.at; });   // (only for working out where things are)
     const turned = {};
     talks.forEach(k => k.pairs.forEach(([q, dir]) => {
       const list = turned[q.id] || (turned[q.id] = []), last = list[list.length - 1];

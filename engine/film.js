@@ -183,6 +183,7 @@
     if (K.run) (K.rig || (K.rig = {})).spine = (K.rig.spine || 0) + (Math.sign(K.f) || 1) * 0.14 * K.run;
     if (a.keys.nod) K.nod = A_(id, 'nod', t);
     if (a.keys.roll) K.roll = A_(id, 'roll', t);   // lying down: the whole body tipped over (radians)
+    if (P.props) for (const p of P.props) { const h = p.holds && holdOf(p, t); if (h && h.who === id) K.hold = holdHook(p, h, t); }   // a prop in its paw
     springPose(id, t, K);
     // a clean turn: as the drawing switches pose, a tiny squash; and one quick blink per turn (see turnBlink)
     const sw = turnSwitch(id, t);
@@ -488,7 +489,69 @@
   function propPoint(i, t) {
     const p = P.props[i];
     if (!p || t < p.t0 || (p.t1 !== null && t > p.t1)) return null;
-    return { vis: true, x: p.x, y: p.y - p.height * 0.6 };
+    const h = holdOf(p, t);
+    if (h) { const B = actorBody(h.who, t); return { vis: true, ...toWorld(B, B.f * 30, REG[h.who].chest) }; }
+    const g = groundOf(p, t);
+    return { vis: true, x: g.x, y: g.y - p.height * 0.6 };
+  }
+  // ---------- props in paws (asset kit, Part D) ----------
+  // A prop someone holds has holds: [{ t0, t1, who, how: 'one' | 'both' | 'up', from }] (t0: the lift starts; t1: let
+  // go, or null) and, once put down or dropped somewhere, spots: [{ t, x, y, fall: 'put' | 'drop' }]. Props without
+  // them are drawn exactly as before.
+  const LIFT = 0.35, LAND = 0.32;
+  let curCam = null;   // this frame's camera (a prop being lifted comes from where it stood)
+  const holdOf = (p, t) => (p.holds ? p.holds.find(h => t >= h.t0 && (h.t1 === null || t < h.t1)) || null : null);
+  function groundOf(p, t) { let g = { x: p.x, y: p.y, t: -1, fall: null }; if (p.spots) for (const q of p.spots) if (q.t <= t) g = q; return g; }
+  // the prop's state at t (open, glowing...) and how far its glow is on
+  function propLook(p, t) {
+    const st = lastAt(p.states, t), gl = lastAt(p.glow, t), asset = p.asset && StudioAssets.ASSETS[p.asset];
+    const glowA = gl ? (gl.on ? ease((t - gl.t) / 0.4) : 1 - ease((t - gl.t) / 0.4)) : 0;
+    let state = st ? st.state : asset && asset.states.length ? asset.states[0] : 'closed';
+    if (glowA > 0.5 && asset && asset.states.includes('glowing')) state = 'glowing';
+    return { st, asset, glowA, state };
+  }
+  // how a held prop sits on the paw: it hangs from its grip (a lantern by its handle), or is held in the middle, or
+  // (held up) rests on top of the paw. Returns how far down to draw it from the paw.
+  function gripOf(p, how) {
+    const a = p.asset && StudioAssets.ASSETS[p.asset];
+    if (a && a.hangs) return -a.grip;   // (a lantern always hangs by its handle)
+    return how === 'up' ? 6 : a && a.grip !== undefined ? -a.grip : p.height * 0.5;
+  }
+  // The character's drawing calls hold.at(c, x, y) with its near paw (in the drawing's own coordinates): the prop is
+  // drawn there, upright, at the world's size (the character's own scale taken out); while being lifted it glides
+  // there from where it stood. Where it was drawn is kept for the light pass (a lit lantern stays bright).
+  function holdHook(p, h, t) {
+    return {
+      at(c, x, y) {
+        const m = c.getTransform(), q = m.transformPoint(new DOMPoint(x, y)), s = Math.sqrt(Math.abs(m.a * m.d - m.b * m.c)) / KS;
+        let px = q.x, py = q.y, sc = s, dy = gripOf(p, h.how);
+        if (h.lift !== false && t < h.t0 + LIFT && curCam) {
+          const u = ease((t - h.t0) / LIFT), g = toScreen(curCam, h.from);
+          px = lerp(g.x, q.x, u); py = lerp(g.y, q.y, u) - Math.sin(u * Math.PI) * 20 * s; sc = lerp(curCam.z, s, u); dy = lerp(0, dy, u);
+        }
+        const L = propLook(p, t);
+        c.save(); c.setTransform(sc, 0, 0, sc, px, py); c.translate(0, dy); c.lineJoin = 'round'; c.lineCap = 'round';
+        if (!L.asset) drawPropPlaceholder(c, p, L.st ? L.state : null); else if (!L.asset.emissive) L.asset.draw(c, t, L.state, { tau: 0, tint: null });
+        c.restore();
+        h.dev = { t, x: px, y: py, s: sc, dy };
+      },
+    };
+  }
+  // after the characters: the light of held props (a glow, a lit flame), never darkened by the time of day
+  function drawHeldLight(c, t) {
+    for (const p of P.props) {
+      const h = p.holds && holdOf(p, t);
+      if (!h || !h.dev || h.dev.t !== t) continue;
+      const L = propLook(p, t);
+      if (!(L.glowA > 0 || (L.asset && (L.asset.emissive || L.asset.drawLight)))) continue;
+      c.save(); c.setTransform(h.dev.s, 0, 0, h.dev.s, h.dev.x, h.dev.y); c.translate(0, h.dev.dy);
+      if (L.glowA > 0) { c.save(); c.globalCompositeOperation = 'lighter'; glow(c, 0, -p.height * 0.55, p.height * 1.3, '255,222,140', 0.45 * L.glowA); c.restore(); }
+      // (someone hiding behind another: only the soft glow shows, not the lit lantern in front of them)
+      const hiding = (P.actors[h.who].behind || []).some(w => t >= w.a && t < w.b);
+      if (!hiding && L.asset && L.asset.emissive) L.asset.draw(c, t, L.state, {});
+      else if (!hiding && L.asset && L.asset.drawLight) L.asset.drawLight(c, t, L.state, {});
+      c.restore();
+    }
   }
   const lastAt = (list, t) => { let v = null; for (const e of list) if (e.t <= t) v = e; return v; };
   // Props stand on the ground behind the characters (or float in the sky), drawn with the scenery so they share
@@ -499,13 +562,14 @@
     const light = { tau, tint: tod(tau, PN.tint) };
     P.props.forEach(p => {
       if (t < p.t0 || (p.t1 !== null && t >= p.t1)) return;
+      if (p.holds && holdOf(p, t)) return;   // in someone's paw: their drawing draws it
       const a = p.t1 !== null ? clamp((p.t1 - t) / 0.5) : 1, pop = easeOutBack((t - p.t0) / 0.4);
-      const st = lastAt(p.states, t), gl = lastAt(p.glow, t), asset = p.asset && StudioAssets.ASSETS[p.asset];
-      const glowA = gl ? (gl.on ? ease((t - gl.t) / 0.4) : 1 - ease((t - gl.t) / 0.4)) : 0;
-      let state = st ? st.state : asset && asset.states.length ? asset.states[0] : 'closed';
-      if (glowA > 0.5 && asset && asset.states.includes('glowing')) state = 'glowing';
+      const { st, asset, glowA, state } = propLook(p, t);
+      // put down (a short way) or dropped (from paw height, with a little bounce) where it stands now
+      const g = groundOf(p, t), u = g.fall ? (t - g.t) / LAND : 1;
+      const lift = u >= 1 ? (g.fall === 'drop' ? Math.abs(Math.sin((t - g.t - LAND) * 14)) * 10 * Math.exp(-(t - g.t - LAND) * 7) : 0) : (g.fall === 'drop' ? 80 * (1 - u * u) : 26 * (1 - ease(u)));
       HP.cam(1);
-      c.save(); c.translate(p.x, p.y); c.globalAlpha = a; c.scale(pop, pop);
+      c.save(); c.translate(g.x, g.y - lift); c.globalAlpha = a; c.scale(pop, pop);
       if (pass === 'base') {
         if (!asset) drawPropPlaceholder(c, p, st ? state : null); else if (!asset.emissive) asset.draw(c, t, state, light);
       } else {
@@ -1065,6 +1129,7 @@
     const shout = P.bubbles.find(q => q.style === 'shout' && t >= q.t0 + 0.12 && t < q.t0 + 0.6);
     if (shout) { const u = 1 - (t - shout.t0 - 0.12) / 0.48; cam = { ...cam, cx: cam.cx + Math.sin(t * 61) * 7 * u / cam.z, cy: cam.cy + Math.cos(t * 53) * 5 * u / cam.z }; }
     c.setTransform(1, 0, 0, 1, 0, 0); c.globalAlpha = 1; c.globalCompositeOperation = 'source-over';
+    curCam = cam;
     const PN = placeAt(t);
     HP.cam = p => applyCam(c, cam, p);
     PN.draw(c, t, cam, tau, HP);
@@ -1079,6 +1144,7 @@
     k.globalAlpha = tau < 1 ? 0.06 * tau : 0.06 + 0.08 * (tau - 1); k.fillStyle = tod(tau, PN.tint); k.fillRect(0, 0, W, H);
     k.globalAlpha = 1; k.globalCompositeOperation = 'source-over';
     c.drawImage(layer, 0, 0);
+    if (P.props && P.props.some(p => p.holds)) drawHeldLight(c, t);
 
     applyCam(c, cam, 1);
     const S = starAt(t);

@@ -145,6 +145,8 @@ function vocab() {
     characters: Object.keys(story.CHARACTERS), moods: story.MOODS, music: story.MUSIC, places: places.names(),
     times: ['day', 'sunset', 'dusk', 'night'],
     props: all('prop').flatMap(a => a.names), extras: all('extra').flatMap(a => a.names),
+    // the props a character can hold (small ones, by their main name), for "picks up the …" and the like
+    holdable: all('prop').filter(a => a.size !== 'big' && !['star', 'heart'].includes(a.id)).map(a => a.names[0]),
     help: story.HELP,
   };
 }

@@ -10,6 +10,7 @@
 //   states    e.g. ['closed', 'open'] or ['off', 'glowing'] (optional; the first one is where it starts)
 //   glow      true if "the X glows" works
 //   hold      'one paw' | 'both paws' (not for big props)
+//   grip      optional: the y the paw holds it at (default: the middle); hangs: true = it hangs from there (a lantern)
 //   anchors, motion, sounds   optional
 //   draw(c, t, state, light)   the drawing, with (0, 0) where it stands on the ground. light = { tau, tint }
 //   Things that give light are never darkened by the time of day (they look brightest at night):

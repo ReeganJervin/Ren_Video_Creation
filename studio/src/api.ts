@@ -18,7 +18,7 @@ export interface Job {
   scene?: string; fps?: number; left?: number; voices?: { done: number; total: number };
   log: string[]; results: CheckRow[] | null; message?: string; video?: string; created: number; started?: number; ended?: number;
 }
-export interface Vocab { characters: string[]; moods: string[]; music: string[]; places: string[]; times: string[]; props: string[]; extras: string[]; help: string[] }
+export interface Vocab { characters: string[]; moods: string[]; music: string[]; places: string[]; times: string[]; props: string[]; extras: string[]; help: string[]; holdable?: string[] }
 
 export class ApiError extends Error { constructor(public status: number, message: string, public extra: Record<string, unknown> = {}) { super(message); } }
 

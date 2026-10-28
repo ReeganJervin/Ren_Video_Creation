@@ -21,6 +21,7 @@
 
   register({
     id: 'lantern', kind: 'prop', names: ['lantern', 'little lantern', 'old lantern'], size: 'small', height: 95, hold: 'one paw',
+    grip: -86, hangs: true,   // held by the ring handle on top, so it hangs from the paw (even held up high)
     states: ['off', 'glowing'], glow: true, motion: 'flicker', credit: 'Claude Code',
     draw(c, t, state) {
       c.save(); c.lineJoin = 'round'; c.lineCap = 'round';

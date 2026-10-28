@@ -42,6 +42,8 @@ export const storyHighlight = syntaxHighlighting(HighlightStyle.define([
 // "<name> walks to left|center|right" -> ["walks to left", "walks to center", "walks to right"] (an optional "[...]" part
 // and anything after a "<text>" placeholder are left for the writer). "<other name>", "<mood>" and "<prop>" are filled in.
 function expand(template: string, v: Vocab, self: string): string[] {
+  // things held in a paw: only the props that can be held, by their main name
+  const props = v.holdable && /^(finds|picks|holds|carries|puts|drops|gives|opens|closes)\b/.test(template) ? v.holdable : v.props;
   let out = [''];
   for (const tok of template.split(' ')) {
     if (!tok || tok.startsWith('[') || /^<(text|seconds|WORD|name\|.*)>$/.test(tok)) break;
@@ -49,8 +51,9 @@ function expand(template: string, v: Vocab, self: string): string[] {
     if (tok === '<other' || tok === '<name>') alts = v.characters.filter(c => c !== self);
     else if (tok === 'name>') continue;
     else if (tok === '<mood>') alts = v.moods;
-    else if (tok === '<prop>') alts = v.props;
-    else if (tok.includes('|') && !tok.includes('<')) alts = tok.split('|');
+    else if (tok === '<prop>') alts = props;
+    // choices, some of them names or props ("left|center|right|<other name>"; "name>" is skipped next)
+    else if (tok.includes('|')) alts = tok.split('|').flatMap(a => (a === '<other' ? v.characters.filter(c => c !== self) : a === '<prop>' ? props : a.startsWith('<') ? [] : [a]));
     else if (tok.startsWith('<')) break;
     else alts = [tok];
     out = out.flatMap(o => alts.map(a => (o ? o + ' ' : '') + a));

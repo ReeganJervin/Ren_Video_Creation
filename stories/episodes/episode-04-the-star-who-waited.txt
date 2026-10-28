@@ -12,9 +12,8 @@
 #  It ends on a new mystery for Episode 5: the lantern keeps glowing,
 #  pointing beyond the forest, toward the far hills.
 #
-#  Lines starting with "# LATER:" are simplified for now. When the
-#  engine learns those actions (F4 Part D: holding props), change
-#  only those lines and make the video again.
+#  Props in paws (F4 Part D): Ren carries the lantern all episode
+#  (it goes with him from place to place).
 # ============================================================
 
 title: The Star Who Waited
@@ -30,8 +29,7 @@ music: mystery
 
 ren enters from left to left
 + yuki enters from left to center
-# LATER: Ren carries the lantern (F4 Part D)
-lantern appears next to ren
+ren holds the lantern
 the lantern glows
 ren (whispers): Yuki. This is the bravest thing I've ever done.
 yuki (whispers, playful): You said that about the bridge.
@@ -39,6 +37,7 @@ ren (whispers, proud): The bridge was practice.
 beat
 narrator: Above them, at the very top of the oldest tree in the forest, something was shining. Something small, and tired, and very, very old.
 ren and yuki look up
+ren puts down the lantern
 title card: REN AND YUKI
 narrator: But first, every great expedition needs to be prepared. Even the ones that happen at night.
 
@@ -64,8 +63,8 @@ yuki (laughing): Ren!
 ren (playful): Rule number three. Always bring a snack. I'm not making the same mistake twice.
 yuki (happy): And the lantern?
 ren (proud): Safe and sound, right here.
-# LATER: Ren holds up the lantern (F4 Part D)
-lantern appears next to ren
+ren holds the lantern
+ren holds up the lantern
 yuki looks at the lantern
 yuki (thinking): It's not glowing.
 ren (thinking): It only glows when we hold it together. Remember?
@@ -94,9 +93,6 @@ music: tense
 
 ren enters from left to left
 + yuki enters from left to center
-# LATER: Ren carries the lantern (F4 Part D)
-lantern appears next to ren
-the lantern glows
 narrator: The forest at night was not the same forest they knew. The trees were taller. The shadows were longer. And everything was very, very quiet.
 ren sneaks to center
 yuki sneaks to center
@@ -239,9 +235,7 @@ yuki (playful): We didn't have a plan.
 ren (proud): Not having a plan was the plan.
 owl lands
 owl: A star never forgets who helped it home. Remember that.
-# LATER: Ren holds the lantern (F4 Part D)
-lantern appears next to ren
-the lantern glows
+ren holds up the lantern
 yuki looks at the lantern
 yuki (surprised): Mister Owl... the lantern is still glowing. And we're not even touching it.
 ren (surprised): But the star is home. Why is it still glowing?
