@@ -31,7 +31,7 @@ stories/
   (new stories start here, in stories/ itself)
 shorts/
   standalone/                independent Shorts (9:16): little stories of their own
-  episode-shorts/            episode Shorts: "from: episode-03-the-old-lantern" + the lines or scenes to show
+  episode-shorts/            episode Shorts: "from: episode-05-the-hungry-road" + the lines or scenes to show
 videos/
   <story-name>/              each video and all its files (report, chapters, subtitles, thumbnail...)
 ```
@@ -210,4 +210,4 @@ The build order now lives in **`ENGINE-ROADMAP.md`, section 2**, and is updated 
 4. **Voices:** Kokoro for everything at first, or human actors from the first episode?
 5. **Language:** English only at first, or add more languages early?
 6. **Release rhythm:** for example, 3 Shorts a week and 1 episode a month.
-7. **The first videos:** decided: *The Beginning of a Friendship* is Episode 1 (owner, 2026-10-27), followed by *Into the Forest*, *The Old Lantern* and *The Star Who Waited*. *The Day Our Adventure Began* was an earlier draft (in `stories/early-stories/`).
+7. **The first videos:** decided: *The Beginning of a Friendship* is Episode 1 (owner, 2026-10-27), followed by *Into the Forest*, then the owner's arc (2026-10-28): *The Light in the Deep Forest*, *The Great Tree*, *The Hungry Road*, *Ren, Wake Up!* and *The Cave Nobody Enters* (see `stories/episodes/season-1-plan.md`). *The Day Our Adventure Began*, *The Old Lantern* and *The Star Who Waited* are earlier drafts (in `stories/early-stories/`).

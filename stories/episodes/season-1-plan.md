@@ -1,0 +1,96 @@
+# Ren & Yuki – Season 1 plan (Episodes 1–7)
+
+The owner's story, developed into seven episodes. Episodes 3–7 are written (see "The files" below), following "The owner's decisions".
+
+**The big arc:** two lonely explorers meet (Ep 1) → the forest and its secret light (Ep 2) → the fallen star (Ep 3) → the Great Tree and the map (Ep 4) → the long road, hunger and sacrifice (Ep 5–6) → the Dark Cave nobody enters (Ep 7, cliffhanger into Season 2 / Episode 8).
+
+**Running threads that pay off:** the explorer's rules (one new rule per episode), "the big half" (cookies), Ren's "very local wind" (when he's scared), Yuki's condition "sometimes I choose where we go", the owl's grumbling.
+
+---
+
+## Episode 1 – The Beginning of a Friendship *(done)*
+Ren's "summit", Yuki's Hill of Extremely Important Sitting, the first hello. Rules 1–4.
+
+## Episode 2 – Into the Forest *(done)*
+Lost in the forest, the owl, "a light that has never gone out". Rules 5–6. Ends: *deep in the old forest, something began to glow.*
+
+---
+
+## Episode 3 – The Light in the Deep Forest *(rewritten from the owner's story)*
+**New:** the deep forest at night, the fallen star.
+1. **Hook (night, deep forest):** a glow between giant roots. Ren whispering: *"Yuki… it's breathing."* Title card. *"But that morning…"*
+2. **Day three (meadow):** they both saw the light last night. Yuki wants to go and look; Ren is scared but pretends it's "very local wind".
+3. **The forest edge:** even in daylight, a tiny light flickers far inside. The owl arrives. Yuki asks about it. The owl: *nobody knows; that part of the forest has been dark and quiet since before I hatched; no creature goes that deep, not even me.* Ren: *"Great! Lovely! Let's go home."*
+4. **Courage:** Yuki takes a few steps in alone. Ren catches up: *rule five: being scared is less scary together.* The owl grumbles and comes too: *"Someone has to stop you walking in circles."*
+5. **The deep forest (dusk → night):** sneaking, crawling under roots, a fright from a shadow, the owl's jokes. Suspense, never horror.
+6. **The light:** high in the branches, a fallen star. As they arrive, it slips and falls at their feet. Yuki picks it up; it's warm.
+7. **The legend:** the owl remembers its grandmother's story: *"When a fallen star is found, carry it to the Great Tree at the heart of the forest on the night of the full moon, and the tree will give you what it has kept."* Ren: *"Treasure!"*
+8. **End:** the three set off together, under a moon that's almost full. **New rule 7.**
+
+## Episode 4 – The Great Tree
+**New:** the Great Tree, the full moon, the map.
+1. **The long walk:** half a day of walking (morning → sunset), the owl's sore feathers, Ren's jokes, Yuki carrying the star.
+2. **The Great Tree** at full moon: enormous, silver in the moonlight.
+3. **The star:** Yuki places it on the tree. A few seconds of silence… then the star rises into the sky and joins the others (a beautiful moment).
+4. **The gift:** the tree lets something fall: **a map.**
+5. **Disappointment:** the owl: *"A map? A MAP? I flew half a day for a map!"* and *"Good luck finding a treasure with some dumb map."* Yuki is tired and disappointed too: *"We thought it was treasure. Let's go home, Ren."*
+6. **Ren refuses:** he opens the map: paths, a river, mountains, and an **X**. *"Don't you see? It's not a map instead of the treasure. It's a map **to** the treasure!"* A real, gentle argument.
+7. **Yuki decides:** callback to Ep 1: *"Sometimes I choose where we go… Today, you choose."*
+8. **Goodbye:** the owl comes back to say goodbye properly, then flies home laughing: *"Good luck with your dumb map! Hoo-hoo-hoo!"* **Rule 8**, and Yuki's rule 9.
+
+## Episode 5 – The Hungry Road
+**New:** the river (first time), the road on the map.
+1. **The journey:** following the map, the river (stepping stones; Yuki doesn't like water), beautiful places.
+2. **Hunger:** no food for a long time. Ren has **the last cookie** (a callback to "the big half"). They argue… and Ren gives Yuki **the big half**. Character growth.
+3. **A hungry night** under the stars. The next day they're weaker.
+4. **Ren's plan:** *"Wait under this tree. I'll find food."* He walks far and finds a fruit tree.
+5. **The fruit:** round, shiny fruit Ren has never seen. He sniffs it, then takes one small bite to make sure it's safe for Yuki. It's sweet… then the trees start to spin, and he faints under the tree.
+6. **Cliffhanger:** the sun goes down. *Ren didn't come back.*
+
+## Episode 6 – Ren, Wake Up!
+1. **Yuki waits,** then worries, then searches, calling his name.
+2. **She finds Ren** lying under the fruit tree, the fruit piled next to him. She thinks he's napping and scolds him: *"You were supposed to come back!"*
+3. **He wakes up:** *"I found food… for you."* He realises he fainted because he hadn't eaten or drunk anything for so long.
+4. **Yuki is upset, then touched:** *"You silly fox. You saved it all for me?"* They eat until they're full, and drink at the river. Yuki gives Ren **the big half** this time.
+5. **A night talk under the stars:** why the treasure matters (Ren wanted to be legendary so he wouldn't be alone; now he just wants to find it with Yuki). **Rule 10:** *"Always eat and drink before being brave."* In the morning, the map points to the far white hills.
+
+## Episode 7 – The Cave Nobody Enters
+**New:** a second owl, the Dark Cave.
+1. **The far white hills:** first snow, playing; **a cold night** keeping each other warm, rule 11, and their star from Ep 4 twinkling above them.
+1. **The grey owl.** Yuki asks if there's treasure nearby. The owl laughs: *"Treasure? Here? Why would there be any treasure here? You guys are dumb."*
+2. **They tell the whole story** and show the map. The owl looks: *"That X… that's the Dark Cave. Nobody has ever gone inside."*
+3. **Why:** *"Even I can't see in there. And a fire goes out the moment you step inside."*
+4. **Yuki is sad:** *"So the whole journey was for nothing."* **Ren is thrilled:** *"Nobody has ever explored it! That means it's full of things nobody has ever found!"*
+5. **The owl:** *"You guys really are dumb. And you, little fox, you're even dumber than the bunny."* Leaving: *"One more thing. Sometimes animals go in to shelter from the rain or the sun… and nobody has seen them come out."*
+6. **Cliffhanger:** they reach the cave mouth at dusk, paw in paw. From deep inside, Ren thinks he hears… a voice. **THE DARK CAVE.**
+
+---
+
+## The owner's decisions (2026-10-28)
+
+1. **The fruit scene:** the original version. Ren smells and tastes the unknown fruit to check it's safe for Yuki, then faints (because he hadn't eaten or drunk anything for so long). In Ep 6 Yuki makes him promise: no more tasting strange fruit alone; scary things are done together.
+2. **The owls' words:** as written ("dumb"), said in a teasing, grumpy way.
+3. **No lantern setup in Ep 4 or Ep 7.** Later: inside the cave they find the lantern; when Ren touches it he hears a voice saying something, and when he repeats it, the lantern starts to glow. (Ep 7 ends with Ren thinking he hears a voice from deep inside the cave.)
+4. **Seven episodes;** Ep 5 and Ep 6 each have more journey moments.
+5. **The old Episodes 3 and 4** ("The Old Lantern", "The Star Who Waited") are drafts now, in `stories/early-stories/`, with their two Shorts.
+
+## The explorer's rules so far
+1. Always look confident. 2. If something goes wrong, call it an experiment. 3. Always bring a snack. 4. The view is better with two. (Ep 1)
+5. Being scared is less scary together. 6. If two explorers imagine the same thing, it's probably real. (Ep 2)
+7. When a star falls at your feet, you follow it. (Ep 3)
+8. A map is a promise: you have to see where it leads. 9. Next time, bring more snacks (Yuki's). (Ep 4)
+10. Always eat and drink before being brave. (Ep 6)
+11. When it's cold, sit closer. (Ep 7)
+
+## The files
+`stories/episodes/`: `episode-03-the-light-in-the-deep-forest.txt`, `episode-04-the-great-tree.txt`, `episode-05-the-hungry-road.txt`, `episode-06-ren-wake-up.txt`, `episode-07-the-cave-nobody-enters.txt`.
+Episode Shorts (`shorts/episode-shorts/`): `ep3-a-very-dangerous-leaf`, `ep5-the-big-half`, `ep6-wake-up-silly-fox`.
+
+## New things the episodes need (made with `/new-asset`, part of F4 Part D stop 2)
+- **The Great Tree:** a huge, very old set piece with a hollow where the star goes (Ep 4)
+- **A fruit tree** (set piece) and **the fruit** (prop): round, shiny fruit Ren has never seen before (Ep 5–6)
+- **The grey owl:** an older, grumpier owl, grey as a storm cloud (Ep 7; it has its own voice in `config/voices.json`)
+- **The Dark Cave:** the cave mouth, a set piece on the snowy hill (Ep 7; the inside of the cave is F5)
+- **A full moon** at night (Ep 4; today's moon is a crescent)
+
+Until they exist, the episodes can be previewed with grey placeholders.

@@ -1,0 +1,194 @@
+# ============================================================
+#  Ren & Yuki - Episode 4: The Great Tree   (~8-9 min)
+#
+#  Save as:  stories\episodes\episode-04-the-great-tree.txt
+#  The owner's story: half a day's walk to the Great Tree, the full
+#  moon, the star goes home, the tree drops a map, the owl gives up,
+#  Ren refuses to, and Yuki chooses to follow the map with him.
+#  New in this episode: the Great Tree (a set piece still to be made:
+#  until then it shows as a placeholder), the map.
+#  Callbacks: the legend (Episode 3), Yuki's condition "sometimes I
+#  choose where we go" (Episode 1), "very local wind".
+#  This episode adds explorer's rule number eight.
+# ============================================================
+
+title: The Great Tree
+editing: auto
+mood voices: on
+
+
+# ================= Scene 1 - Previously =================
+scene: Previously
+place: forest
+time: night
+music: magical
+
+ren and yuki enter from left to center
+owl flies in from right to right
+narrator: Last time, deep in the forest, two little explorers found something nobody had seen in a thousand years.
+star appears
+star falls
+yuki picks up the star
+narrator: A fallen star. And the owl remembered an old, old legend.
+owl: Carry the star to the Great Tree, at the very center of the forest, on the night of the full moon...
+owl: ...and the tree will give you what it has kept for a thousand years.
+ren (whispers, excited): Treasure.
+title card: REN AND YUKI
+
+
+# ================= Scene 2 - The long walk =================
+scene: The Long Walk
+time: day
+music: adventure
+
+narrator: The next morning, the three of them set off for the center of the forest.
+ren walks to right
+yuki walks to center
+owl: Hoo. Not that way, little fox. The other way.
+ren (proud): I knew that. I was testing you.
+ren walks to left
+narrator: They walked. And walked. And walked some more.
+yuki (happy): The star is so warm. It's like carrying a little sun.
+ren (playful): Can I carry it for a while?
+yuki (playful): No.
+ren (pouty): Why not?
+yuki (playful): Because you'd drop it. And then you'd say it was an experiment.
+ren (shy): ...That's fair.
+time: sunset
+narrator: By the afternoon, their legs were tired, and the owl's patience was even more tired.
+owl (pouty): Hoo. My feathers ache. My wings ache. Even my beak aches, and I haven't used it for walking.
+ren (playful): You haven't used your feet either. You've been flying the whole time.
+owl (pouty): Flying slowly. Next to you. That's much harder.
+yuki (laughing): Hehe!
+yuki (thinking): Mister Owl, how will we know when we've found the Great Tree?
+owl: Hoo. Trust me, little one. You'll know.
+
+
+# ================= Scene 3 - The Great Tree =================
+scene: The Great Tree
+time: night
+music: epic
+
+narrator: As night fell, the trees around them grew taller and taller... until, suddenly, they stopped.
+great tree appears at right
+reveal: forest
+narrator: In the middle of a wide, silent clearing stood the biggest tree any of them had ever seen.
+narrator: Its branches reached the clouds. Its roots were as big as hills. And above it, the full moon was shining.
+ren (whispers, surprised): Whoa.
+yuki (whispers, surprised): It's... enormous.
+owl (surprised): Hoo... the Great Tree. It's real. My grandmother was right.
+ren and yuki look at the great tree
+ren (shy): I feel very small.
+yuki (shy): You are very small.
+ren (pouty): Thank you, Yuki.
+music: magical
+owl: Look. There, in the trunk. A hollow, shaped like a little star.
+yuki walks to the great tree
+narrator: Yuki stepped forward, holding the star very gently in her paws.
+yuki (shy): Ren... come with me?
+ren walks to yuki
+ren (shy): Always.
+yuki raises her paws
+narrator: She placed the star in the hollow of the Great Tree.
+beat
+narrator: For a moment, nothing happened.
+ren (whispers, worried): Is it broken?
+yuki (whispers): Shh.
+yuki lets go of the star
+narrator: Then the star began to glow, brighter and brighter, and rose up out of the tree, up into the sky, to join all the other stars.
+star twinkles
+sparkles
+yuki (excited): Ren! It's going home!
+ren (excited): Goodbye, little star!
+
+
+# ================= Scene 4 - Just a map =================
+scene: Just a Map
+music: mystery
+
+narrator: Then the Great Tree gave a long, slow creak. And something came floating down from its highest branches.
+ren finds the map
+ren picks up the map
+ren (excited): The treasure! The legendary treasure!
+ren opens the map
+beat
+ren (surprised): It's... a map.
+owl (surprised): A map?
+owl (shouts, pouty): A MAP?
+music: tense
+owl (pouty): Hoo! I flew half a day for a map! My feathers hurt, my wings hurt, and I missed my whole afternoon nap. For a piece of old paper!
+yuki (sad): We thought it would be treasure.
+owl (pouty): I'm going home. Good luck finding a treasure with some dumb map. Hoo-hoo-hoo-hoo!
+owl takes off
+yuki feels sad
+yuki (sad): Mister Owl is right, Ren. It's just a map.
+yuki (sad): We're tired and hungry. Let's go home too.
+ren looks at the map
+shot: close on ren
+narrator: But Ren didn't move. He was staring at the map, and his eyes were getting bigger and bigger.
+ren (surprised): Yuki. Look at this.
+ren holds up the map
+ren (excited): Paths. A river. Mountains. And there, right at the end... an X.
+yuki (surprised): An X?
+ren (excited): Don't you see? It's not a map instead of the treasure.
+ren (excited): It's a map to the treasure!
+
+
+# ================= Scene 5 - The argument =================
+scene: The Argument
+music: heartfelt
+
+yuki (worried): Ren, that X is so far away. We don't know the way. We don't have any food.
+ren (determined): We didn't know the way here either. And we made it.
+yuki (pouty): We made it because Mister Owl showed us the way.
+ren (determined): Then we'll follow the map. That's what maps are for.
+yuki (sad): What if it's just another piece of paper at the end? What if there's nothing there?
+ren (shy): Then at least we'll know.
+ren (shy): Yuki, a thousand years. This tree kept this map for a thousand years. For somebody to find it.
+ren (shy): And it gave it to us.
+beat
+yuki looks at ren
+narrator: Yuki looked at the map. Then she looked at Ren. His ears were shaking. But this time, it wasn't the wind.
+yuki (thinking): You're scared.
+ren (shy): A little.
+yuki (thinking): But you still want to go.
+ren (determined): More than anything.
+yuki sighs
+yuki (shy): Do you remember the very first day we met? On the hill?
+ren (surprised): The Hill of Extremely Important Sitting.
+yuki (happy): I said I had one condition. Sometimes, I choose where we go.
+yuki (happy): Today... you choose.
+ren (excited): Really? You mean it?
+yuki (playful): Before I change my mind.
+ren hops twice
+ren (excited): Yes! Yes yes yes! Legendary!
+ren (proud): Explorer's rule number eight: a map is a promise. You have to see where it leads.
+yuki (playful): And rule number nine: next time, we bring more snacks.
+ren (shy): ...That one is a very good rule.
+
+
+# ================= Scene 6 - Goodbye, Mister Owl =================
+scene: Goodbye, Mister Owl
+time: night
+music: calm
+
+owl flies in from left to left
+owl: Hoo. I came back to say goodbye. Properly.
+yuki (happy): Mister Owl!
+owl: So. You're really following that dumb map.
+ren (proud): All the way to the X.
+owl (laughing): Hoo-hoo-hoo! The two silliest explorers in the whole forest, chasing a treasure on a piece of paper.
+owl: ...Be careful, little ones. The world past this forest is very big.
+yuki (shy): Thank you for everything, Mister Owl.
+ren (happy): We'll tell you all about the treasure when we find it!
+owl: Hoo. If you find it. Good luck with your dumb map! Hoo-hoo-hoo!
+owl flies away
+ren and yuki look at each other
+narrator: And so the owl flew home, laughing all the way.
+narrator: And two little explorers stood under the full moon, holding a map that nobody had read for a thousand years.
+ren looks right
++ yuki looks right
+ren (happy): Ready, Yuki?
+yuki (happy): Ready.
+narrator: The real adventure was only just beginning.
+title card: SEE YOU SOON

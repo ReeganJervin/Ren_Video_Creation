@@ -234,7 +234,8 @@ Give the owl a voice in `config/voices.json` and make a 5-second sample for the 
    - umbrella
    - flower
    - **leaf**, which Episode 1 needs
-3. **Episode upgrade:** replace the `# LATER:` lines (Ren holding the lantern, his map) in `stories/episodes/episode-03-the-old-lantern.txt` and `episode-04-the-star-who-waited.txt` with real prop lines.
+   - **for Season 1, Episodes 3–7** (see `stories/episodes/season-1-plan.md`): the **Great Tree** (a huge set piece with a star-shaped hollow), a **fruit tree** and the **fruit**, the **grey owl** (an older, grumpier owl; its voice is already in `config/voices.json`), the **Dark Cave** (the cave mouth, a set piece on the snowy hill), and a **full moon** for Episode 4
+3. **Episode upgrade:** replace the `# LATER:` lines (Ren holding the lantern, his map) with real prop lines. Done in stop 1 (in the drafts now in `stories/early-stories/`); the new Episodes 3–7 use the prop lines directly.
 4. **Docs:** a "Props and assets" section in STORY-GUIDE.md, plus `stories/treasure-demo.txt` (a mini treasure hunt of about 2 min).
 
 **Acceptance:** the demo passes all checks, R1 holds, and the error messages are tested with a deliberately broken story.

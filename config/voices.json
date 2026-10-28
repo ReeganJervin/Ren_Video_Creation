@@ -21,6 +21,12 @@
     "pitch": 1.08,
     "gain": -2
   },
+  "grey-owl": {
+    "voice": "bm_george:0.7+bm_lewis:0.3",
+    "speed": 0.88,
+    "pitch": 0.97,
+    "gain": -2
+  },
   "_styles": {
     "_about": "Ways of talking: speed and pitch multiply the voice, gain is in dB, echo and breath are effects (0..1).",
     "think": {

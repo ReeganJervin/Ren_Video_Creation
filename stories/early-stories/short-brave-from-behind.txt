@@ -6,7 +6,7 @@
 
 title: Brave From Behind
 type: episode short
-from: episode-04-the-star-who-waited
+from: the-star-who-waited
 lines: 100-117
 hook: Something in the dark forest...
 thumbnail text: Brave From Behind

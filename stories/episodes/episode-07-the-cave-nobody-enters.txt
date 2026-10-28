@@ -1,0 +1,188 @@
+# ============================================================
+#  Ren & Yuki - Episode 7: The Cave Nobody Enters   (~8 min)
+#
+#  Save as:  stories\episodes\episode-07-the-cave-nobody-enters.txt
+#  The owner's story: on the road they meet another owl, who laughs at
+#  the idea of treasure, reads the map, and tells them about the Dark
+#  Cave nobody has ever entered (too dark even for an owl, and fire
+#  goes out inside). Yuki is sad, Ren is thrilled. And the owl's
+#  warning: some who went inside never came back.
+#  New in this episode: the snowy hill (first time), the grey owl and
+#  the Dark Cave (still to be made: placeholders until then).
+#  It ends at the cave: to be continued in Episode 8.
+# ============================================================
+
+title: The Cave Nobody Enters
+editing: auto
+mood voices: on
+
+
+# ================= Scene 1 - The hook =================
+scene: The Cave
+place: snowy hill
+time: dusk
+music: mystery
+
+ren and yuki enter from left to left
+dark cave appears at right
+narrator: At the end of the map, high in the snowy hills, there was a cave.
+narrator: A cave so dark that even the moonlight wouldn't go inside.
+ren and yuki look at the dark cave
+yuki (whispers, scared): Ren... nobody has ever gone in there.
+ren (whispers, determined): Then we'll be the first.
+beat
+title card: REN AND YUKI
+the dark cave disappears
+narrator: But that morning, they didn't even know the cave existed.
+
+
+# ================= Scene 2 - The far white hills =================
+scene: The Far White Hills
+time: day
+music: magical
+
+reveal: snowy hill
+narrator: After three days of walking, the trees ended, and the world turned white.
+ren (surprised): Yuki! Look! It's snow! Real snow!
+yuki (excited): It's so soft! And so cold!
+yuki hops twice
+ren runs to center
+ren trips
+ren falls down
+camera: shake
+yuki (laughing): Ren!
+ren (laughing): I meant to do that! It's a snow test!
+ren gets up
+yuki dances
+ren dances
+narrator: For a little while, they forgot about the map, and the treasure, and their tired legs. They just played in the snow.
+ren sighs
+ren (happy): I wish the owl could see this. He'd say it's too cold for his feathers.
+
+
+# ================= Scene 3 - A cold night =================
+scene: A Cold Night
+time: night
+music: calm
+
+narrator: But snow is soft in the daytime, and very, very cold at night.
+ren and yuki sit down
+yuki (sad): Ren... I'm freezing. My ears are like icicles.
+ren (sad): My tail is so cold, it's gone stiff. Look. It's a tail-shaped icicle.
+yuki (laughing): Hehe! Stop it!
+ren walks to yuki
+ren (shy): Here. Sit closer. Two explorers are warmer than one.
+yuki (shy): Is that a rule?
+ren (thinking): It is now. Rule number eleven: when it's cold, sit closer.
+yuki (happy): That's a good one.
+ren and yuki look up
+star appears
+star twinkles
+narrator: Above them, one star was twinkling brighter than all the others. Twinkling, almost as if it was waving.
+yuki (surprised): Ren... do you think that's our star? The one from the Great Tree?
+ren (happy): It's watching over us. Making sure we don't get lost.
+yuki (shy): Thank you, little star.
+ren (whispers, happy): Goodnight, little star.
+narrator: And under the light of a star they had helped home, the two little explorers fell asleep, keeping each other warm.
+time: day
+music: happy
+yuki stretches
+ren yawns
+yuki (thinking): Ren... look. Someone's watching us.
+yuki looks up
+
+
+# ================= Scene 4 - The grey owl =================
+scene: The Grey Owl
+music: calm
+
+grey owl flies in from right to right
+narrator: Sitting on a snowy rock was an owl. Not their owl. An older one, grey as a storm cloud, with very serious eyes.
+grey owl lands
+grey owl: Hoo. Who's making all that noise in my hills?
+ren (shy): Sorry! We were just testing the snow.
+yuki walks to center
+yuki (shy): Excuse me, Mister Grey Owl. Do you know if there's any treasure somewhere around here?
+beat
+grey owl (laughing): Treasure? Hoo-hoo-hoo-hoo!
+grey owl (laughing): Treasure? Here? Why would there be any treasure here? You guys are dumb.
+ren (pouty): We are not dumb! We have a map!
+grey owl: A map. Hoo. Let me guess. You drew it yourself.
+yuki (determined): No. A Great Tree gave it to us.
+grey owl (surprised): ...A what?
+narrator: So they told him everything. The light in the deep forest. The fallen star. The legend. The Great Tree, and the full moon, and the star going home.
+narrator: And the map that fell from the highest branches.
+yuki holds the map
+yuki holds up the map
+grey owl looks at the map
+grey owl (surprised): Hoo. Hoo hoo.
+music: mystery
+grey owl: That's the Great Tree's mark. And this path goes up here, into my hills.
+grey owl: And the X... the X is the Dark Cave.
+ren (excited): A dark cave! Full of treasure!
+grey owl: A dark cave that nobody has ever entered, little fox. Nobody.
+yuki (surprised): Why not?
+grey owl: Because it is dark. Very, very dark. Even I can't see anything inside. And I'm an owl.
+grey owl: And if you take a fire in there, it goes out the moment you step inside. Every time.
+grey owl: Nobody knows why. That's why nobody goes in.
+
+
+# ================= Scene 5 - Two different faces =================
+scene: Two Different Faces
+music: sad
+
+yuki feels sad
+yuki looks down
+yuki (sad): So the X is a cave that nobody can see inside.
+yuki (sad): All those days of walking. The hunger. Ren fainting under the tree.
+yuki (crying): It was all a waste of time. And strength. For nothing.
+music: adventure
+ren (excited): Nothing? Yuki, it's the opposite of nothing!
+yuki (surprised): What?
+ren (excited): Nobody has ever gone inside! Nobody has ever explored it!
+ren (excited): That means everything in there has never been found! Every rock, every corner, every treasure! It's all still waiting!
+ren dances
+ren (excited): It's going to be the best adventure ever!
+grey owl (laughing): Hoo-hoo-hoo! You guys really are dumb.
+grey owl (playful): And you, little fox. You're even dumber than the bunny.
+ren (pouty): Thank you. I think.
+grey owl takes off
+narrator: The grey owl spread his wings to leave. Then he stopped, and turned back.
+grey owl: Hoo. One more thing.
+music: deep tense
+grey owl: It's true that nobody has ever explored the cave.
+grey owl: But sometimes, animals go inside. To hide from the rain. Or from the heat of the sun.
+beat
+grey owl: And they never came back out. Remember that.
+grey owl flies away
+music: tense
+
+
+# ================= Scene 6 - Together =================
+scene: Together
+time: dusk
+music: heartfelt
+
+ren and yuki look at each other
+yuki (scared): Ren... did you hear what he said?
+ren (worried): I heard.
+yuki (scared): They never came back.
+ren (shy): I know. My ears are shaking. And this time, I promise, it isn't the wind.
+yuki (shy): Mine are too.
+ren (shy): We made a promise under the fruit tree. We do the scary things together.
+yuki (determined): Together.
+ren holds out his paw to yuki
+yuki touches paws with ren
+music: mystery
+dark cave appears at right
+ren and yuki look at the dark cave
+narrator: And so, as the sun went down over the snowy hills, two little explorers stood at the mouth of the Dark Cave.
+narrator: Inside, it was darker than the darkest night.
+ren walks to the dark cave slowly
++ yuki walks to the dark cave slowly
+narrator: And for just a moment, from somewhere deep inside, Ren thought he heard something.
+ren (whispers, surprised): Yuki... did you hear that?
+yuki (whispers, scared): Hear what?
+beat
+narrator: It sounded like a voice.
+title card: THE DARK CAVE

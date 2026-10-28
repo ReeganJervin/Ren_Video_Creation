@@ -1,0 +1,194 @@
+# ============================================================
+#  Ren & Yuki - Episode 6: Ren, Wake Up!   (~7-8 min)
+#
+#  Save as:  stories\episodes\episode-06-ren-wake-up.txt
+#  The owner's story: Yuki waits a long time, searches, finds Ren
+#  under the fruit tree, thinks he's napping and scolds him; he wakes
+#  up, realises he fainted because he hadn't eaten or drunk anything
+#  for so long, and they eat until their tummies are full.
+#  Needs (still to be made: placeholders until then): the fruit tree,
+#  the fruit.
+#  Callbacks: Ren's "explorer's promise" (Ep 5), the big half (Ep 5),
+#  the Hill of Extremely Important Sitting (Ep 1).
+#  This episode adds explorer's rule number ten.
+# ============================================================
+
+title: Ren, Wake Up!
+editing: auto
+mood voices: on
+
+
+# ================= Scene 1 - Waiting =================
+scene: Waiting
+place: river
+time: sunset
+music: calm
+
+yuki enters from left to center
+yuki holds the map
+yuki sits down
+narrator: Last time, two hungry explorers were following a very old map. Ren went to find food, and promised to come right back.
+narrator: Yuki waited in the shade of a big tree, just like he asked.
+yuki looks right
+yuki (happy): He'll be back soon. He promised.
+time: dusk
+narrator: She waited while the sun went down.
+yuki looks around
+yuki (thinking): He's probably found too much food to carry. That would be just like him.
+time: night
+music: sad
+narrator: She waited while the stars came out, one by one.
+yuki (worried): Ren?
+yuki gets up
+yuki (worried): He should be back by now.
+yuki (sad): What if he's lost? What if he's hurt?
+yuki looks right
+narrator: Yuki was tired. She was hungry. And the dark forest was very, very big.
+yuki (scared): Being scared is less scary together. But there's nobody here to be scared with.
+beat
+yuki (determined): Then I'll go and find him. So we can be scared together again.
+title card: REN AND YUKI
+yuki exits to right
+
+
+# ================= Scene 2 - Searching =================
+scene: Searching
+place: forest
+time: night
+music: tense
+
+yuki enters from left to left
+shot: close on yuki
+yuki (shouts, worried): Ren! Ren, where are you?
+fruit tree appears at right
+ren enters from right to right
+ren lies down
+yuki looks around
+yuki (shouts, scared): Ren! Can you hear me?
+narrator: The forest didn't answer. Only the wind, and the leaves, and her own little footsteps.
+yuki (sad): Please be okay. Please, please be okay.
+yuki looks right
+beat
+yuki (surprised): Wait... what's that? Under that tree?
+reveal: ren
+music: mystery
+narrator: Under a tree full of round, shiny fruit, a little orange shape was lying very, very still.
+yuki (shouts, surprised): Ren!
+yuki runs to center
+
+
+# ================= Scene 3 - Wake up! =================
+scene: Wake Up!
+music: calm
+
+yuki looks at ren
+narrator: Yuki looked at him. His eyes were closed. His tail was curled up. And he was breathing slowly.
+yuki (thinking): He's... sleeping?
+beat
+yuki feels pouty
+yuki (shouts, pouty): Ren!
+yuki (pouty): I've been waiting for hours! I was so worried! And you're taking a nap?
+yuki (pouty): Under a fruit tree! With a whole tree of food right there!
+yuki (shouts, pouty): Wake up, you silly fox!
+camera: shake
+ren gets up
+ren (sleepy): Mm... five more minutes...
+yuki (shouts, pouty): Ren!
+ren (surprised): Yuki? Is it morning?
+yuki (pouty): It's the middle of the night! You promised you'd come right back!
+ren (shy): I did come back. I mean... I was going to.
+ren looks at the fruit tree
+ren (excited): Yuki, look! I found food! A whole tree of it!
+yuki (thinking): Then why didn't you come back?
+ren (thinking): I don't know. I took one bite to make sure it was safe for you. It was sweet. And then...
+ren (thinks): And then everything started spinning.
+ren (thinks): Wait. When did I last eat? The tiny piece of cookie. Yesterday.
+ren (thinks): And water? I didn't drink anything since the river.
+ren (thinks): The fruit wasn't bad. It was good. I was just too empty to stay awake.
+ren (shy): I think... I fainted. Because I hadn't eaten or drunk anything for so long.
+yuki (surprised): You fainted?
+music: heartfelt
+yuki feels sad
+yuki (sad): Ren... you gave me the big half of the cookie. And you kept going without anything.
+yuki (sad): And then you tasted a strange fruit, all alone, just to check it was safe for me?
+ren (shy): You were so hungry. I didn't want you to get sick.
+yuki (crying): You silly, silly fox. What if something had happened to you?
+yuki (crying): I'd have no one to be scared with.
+ren (shy): I'm sorry, Yuki. I didn't mean to scare you.
+yuki walks to ren
+yuki hugs ren
+yuki (shy): Promise me. No more tasting strange fruit on your own. We do the scary things together.
+ren (shy): Explorer's promise. A real one this time.
+
+
+# ================= Scene 4 - Full tummies =================
+scene: Full Tummies
+music: happy
+
+yuki puts down the map
+yuki finds the fruit
+yuki picks up the fruit
+yuki (playful): Now. You. Eat. First.
+ren (surprised): But you're hungry too!
+yuki (playful): This time, you get the big half.
+yuki gives the fruit to ren
+narrator: Ren took a bite. Then another. Then another.
+ren (excited): Mmm! It's so good!
+yuki (happy): Then there's no time to waste.
+narrator: And so, under the fruit tree in the middle of the night, two hungry explorers had the biggest feast of their lives.
+ren and yuki feel happy
+ren (laughing): Hahaha!
+yuki (laughing): Hehehe!
+narrator: They ate one fruit. Then two. Then five. Then they stopped counting.
+ren and yuki hop
+ren (sleepy): I can't eat another bite.
+yuki (sleepy): Me neither. My tummy is as round as the moon.
+ren and yuki sit down
+ren (proud): Explorer's rule number ten: always eat and drink before being brave.
+yuki (playful): That's the first rule you made that makes perfect sense.
+ren (proud): I'm getting better at this.
+
+
+# ================= Scene 5 - Under the stars =================
+scene: Under the Stars
+music: heartfelt
+
+ren and yuki look up
+narrator: Above them, the sky was full of stars. And one of them was twinkling just a little brighter than the rest.
+yuki (shy): Ren? Can I ask you something?
+ren (shy): Of course.
+yuki (shy): Why do you want the treasure so much?
+ren looks at yuki
+ren (thinking): I don't know. I think... before I met you, I wanted to be legendary. So that someone, somewhere, would notice me.
+ren (shy): So I wouldn't be alone anymore.
+yuki (shy): And now?
+ren (happy): Now I want to find it with you. That's all.
+yuki (shy): I noticed you, you know. On the hill. Even before you said hello.
+ren (surprised): You did?
+yuki (playful): It's hard not to notice a fox shouting "I conquer the summit".
+ren (shy): ...Fair.
+yuki (happy): Let's find that treasure, Ren. Together.
+ren (happy): Together.
+narrator: That night, two little explorers fell asleep under a fruit tree, with full tummies and happy hearts.
+
+
+# ================= Scene 6 - The road goes on =================
+scene: The Road Goes On
+time: day
+music: adventure
+
+narrator: In the morning, they drank from a cold, clear stream, filled their paws with fruit, and opened the map again.
+yuki picks up the map
+yuki walks to left
+yuki opens the map
+yuki (thinking): Ren, look at the X. It's past the forest. Past the hills.
+ren (thinking): Up there, where the mountains are white.
+yuki (surprised): Snow?
+ren (excited): Snow! I've never seen snow!
+yuki (playful): Neither have I.
+ren (determined): Then that's where we're going.
+ren walks to right
++ yuki walks to right
+narrator: And with full tummies, and a promise to do the scary things together, the two explorers set off toward the far white hills.
+narrator: They had no idea who they would meet there. Or what was waiting at the end of the map.
+title card: SEE YOU SOON

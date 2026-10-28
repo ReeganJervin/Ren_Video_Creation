@@ -1,0 +1,203 @@
+# ============================================================
+#  Ren & Yuki - Episode 5: The Hungry Road   (~8 min)
+#
+#  Save as:  stories\episodes\episode-05-the-hungry-road.txt
+#  The owner's story: following the map, the river, getting hungry,
+#  the last cookie (Ren lets Yuki have the big piece), Ren goes to
+#  find fruit, tastes it to be sure it's safe for Yuki... and faints.
+#  New in this episode: the river (first time), the fruit tree and
+#  the fruit (still to be made: until then they show as placeholders).
+#  Callbacks: "the big half" (the cookie Shorts), rule three "always
+#  bring a snack", rule nine "next time, we bring more snacks" (Ep 4).
+# ============================================================
+
+title: The Hungry Road
+editing: auto
+mood voices: on
+
+
+# ================= Scene 1 - The hook =================
+scene: The Fruit Tree
+place: forest
+time: sunset
+music: mystery
+
+ren enters from left to center
+fruit tree appears at right
+narrator: The little fox had walked a very long way, all alone, to find food for his friend.
+ren looks at the fruit tree
+ren (whispers, determined): For Yuki.
+beat
+narrator: But first, let's go back to the beginning of the hungry road.
+title card: REN AND YUKI
+
+
+# ================= Scene 2 - Following the map =================
+scene: Following the Map
+place: meadow
+time: day
+music: adventure
+
+ren walks to left
+yuki enters from right to right
+ren holds the map
+ren opens the map
+ren (excited): Good morning, world! Day one of the Great Treasure Expedition!
+yuki (playful): Day five of being legendary explorers. Day one of being completely lost.
+ren (proud): We're not lost. We have a map.
+yuki walks to ren
+yuki looks at the map
+yuki (thinking): Which way does it say?
+ren (thinking): It says... past the meadow, over the river, then follow the sun.
+yuki (thinking): Ren. You're holding it upside down.
+beat
+ren (shy): I was checking the other side.
+yuki (laughing): Hehe!
+ren closes the map
+ren gives the map to yuki
+yuki (playful): I'll carry the map. You can carry the being-lost.
+ren (determined): The river! Let's go!
+ren walks to right
++ yuki walks to center
+
+
+# ================= Scene 3 - The river =================
+scene: The River
+place: river
+time: day
+music: magical
+
+reveal: river
+narrator: By midmorning, they reached a wide, sparkling river. The water ran over the stones with a soft, bubbling song.
+yuki (surprised): It's beautiful.
+ren (excited): And the map says we cross it!
+yuki feels worried
+yuki (worried): Cross it? Over the water?
+ren (thinking): There's a little bridge. And it's only a tiny river. A small, friendly, splashy river.
+yuki (shy): I don't like deep water, Ren.
+ren walks to yuki
+ren (shy): Then hold on to my paw. One step at a time.
+ren holds out his paw to yuki
+yuki touches paws with ren
+ren walks to right slowly
++ yuki walks to right slowly
+narrator: Step by step, paw in paw, they crossed the little bridge. Yuki didn't look down once.
+yuki hops
+yuki (excited): We did it!
+ren (proud): Of course we did. Legendary explorers aren't afraid of tiny rivers.
+narrator: A fish jumped out of the water, right next to Ren.
+camera: shake
+ren jumps in fright
+yuki (laughing): Not afraid of tiny rivers?
+ren (pouty): I'm afraid of surprise fish. That's completely different.
+
+
+# ================= Scene 4 - The last cookie =================
+scene: The Last Cookie
+time: sunset
+music: calm
+
+narrator: They walked all day. Past the river. Through the long grass. Up a very long hill.
+narrator: And by the afternoon, their tummies were rumbling louder than their footsteps.
+yuki puts down the map
+yuki sits down
+yuki (sad): Ren... I'm so hungry.
+ren (sad): Me too. My tummy is making noises I didn't know it could make.
+yuki (sad): We should have brought more food. Rule number nine.
+ren (thinking): Wait. Wait, wait, wait.
+ren holds the cookie
+ren (excited): I saved one! The very last cookie!
+yuki (surprised): Ren!
+ren (happy): Rule number three. Always bring a snack. I finally did it!
+narrator: There was just one problem. There was only one cookie. And there were two very hungry explorers.
+ren (thinking): Okay. Let's be fair. We break it in half.
+narrator: Ren broke the cookie in two. One piece was big. One piece was very, very small.
+ren looks at yuki
+narrator: Ren looked at the big piece. Then he looked at Yuki.
+ren (shy): You have the big half.
+yuki (surprised): Ren, you always want the big half.
+ren (shy): I know. But you're hungrier. And you crossed the river today. That deserves the big half.
+yuki (shy): Are you sure?
+ren (playful): Quick, before I change my mind.
+ren gives the cookie to yuki
+narrator: And Ren ate the tiniest piece of cookie in the history of the world.
+yuki (happy): Thank you, Ren.
+hearts float up
+ren (sad): ...It was a really, really small piece.
+yuki (laughing): Hehe!
+
+
+# ================= Scene 5 - Still hungry =================
+scene: Still Hungry
+time: night
+music: sad
+
+narrator: That night, they slept under the stars. Their tummies were still rumbling.
+ren and yuki look up
+yuki (sleepy): Ren?
+ren (sleepy): Mm?
+yuki (sleepy): Do you think the treasure is food?
+ren (sleepy): I hope it's a mountain made entirely of cookies.
+yuki (sleepy): ...Me too.
+time: day
+narrator: The next morning, they were even hungrier. Yuki's ears were drooping, and her steps were getting slower and slower.
+yuki sighs
+yuki (sad): Ren... I don't think I can walk much further.
+ren (worried): Yuki...
+ren looks around
+narrator: Ren looked around. Grass. Trees. Rocks. Nothing to eat.
+ren (determined): Okay. You wait here, in the shade of this tree. Rest.
+ren (determined): I'll go and find some food. Some fruit. Anything.
+yuki (worried): Alone? Ren, you're hungry too.
+ren (proud): I'm a legendary explorer. Legendary explorers can go for days without food.
+yuki (worried): You said your tummy was making noises you didn't know it could make.
+ren (shy): ...They're very legendary noises.
+ren (happy): I'll be right back. I promise.
+yuki (shy): Promise?
+ren (happy): Explorer's promise.
+ren runs off to the right
+narrator: And off he ran, as fast as his tired little legs could carry him.
+yuki walks to left slowly
+yuki exits to left
+narrator: Yuki curled up in the shade of the big tree, and waited.
+
+
+# ================= Scene 6 - The fruit tree =================
+scene: The Fruit Tree
+place: forest
+time: sunset
+music: mystery
+
+narrator: Ren searched everywhere. Under the bushes. Behind the rocks. Up the hills.
+ren enters from left to left
+ren looks around
+ren (sad): Nothing. Nothing anywhere.
+fruit tree appears at right
+ren looks right
+ren (surprised): Wait... is that...
+ren (excited): A fruit tree! A whole tree full of fruit!
+ren runs to the fruit tree
+narrator: The branches were heavy with round, shiny fruit that Ren had never seen before.
+ren finds the fruit
+ren picks up the fruit
+ren (thinking): Hmm. What kind of fruit are you?
+ren leans closer
+narrator: He sniffed it. It smelled sweet.
+ren (thinking): It smells good. But what if it isn't safe? What if it makes Yuki sick?
+ren (determined): I'll try it first. Just one small bite. If it's safe for me, it's safe for Yuki.
+beat
+narrator: Ren took one small bite.
+ren (surprised): Mm! It's sweet! It's really good!
+ren (happy): Yuki is going to love this.
+narrator: But then, Ren's head started to feel very light. And the trees started to spin.
+music: deep sad
+ren wobbles
+ren (sleepy): Oh... that's... funny...
+ren (sleepy): Yuki... I found... the food...
+ren lies down
+narrator: And the little fox fell fast asleep, under the fruit tree, far away from his friend.
+beat
+narrator: Back under the shady tree, Yuki waited. And waited.
+narrator: The sun went down. The stars came out.
+narrator: And Ren didn't come back.
+title card: SEE YOU SOON

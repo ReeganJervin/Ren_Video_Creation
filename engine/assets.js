@@ -48,7 +48,7 @@
   }
 
   // Things a story usually means as a big set piece, so a missing one gets a set-piece placeholder.
-  const BIG = /\b(house|cottage|hut|tent|well|tree|stump|cart|wagon|signpost|sign|tower|castle|bridge|boat|statue|rock|boulder|gate|fence|door|shop|bakery|barn|mill|fountain|bench|table)\b/;
+  const BIG = /\b(house|cottage|hut|tent|well|tree|stump|cart|wagon|signpost|sign|tower|castle|bridge|boat|statue|rock|boulder|gate|fence|door|shop|bakery|barn|mill|fountain|bench|table|cave)\b/;
   const guessSize = name => (BIG.test(norm(name)) ? 'big' : 'small');
 
   // A simple extra (animal or creature) works on the stage like a small character: this makes its description.

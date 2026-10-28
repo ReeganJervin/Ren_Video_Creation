@@ -6,7 +6,7 @@
 
 title: The Sea Monster
 type: episode short
-from: episode-03-the-old-lantern
+from: the-old-lantern
 lines: 138-154
 hook: Ren vs. the tiny bridge
 thumbnail text: SEA MONSTER?!

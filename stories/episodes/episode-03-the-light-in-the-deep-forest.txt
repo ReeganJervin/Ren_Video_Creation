@@ -1,0 +1,207 @@
+# ============================================================
+#  Ren & Yuki - Episode 3: The Light in the Deep Forest   (~8-9 min)
+#
+#  Save as:  stories\episodes\episode-03-the-light-in-the-deep-forest.txt
+#  The owner's story: the next day, the light in the deep forest,
+#  the owl who has never gone that deep, the fallen star, and the
+#  legend of the Great Tree.
+#  New in this episode: the deep forest at night, the fallen star.
+#  Callbacks: the little light at the end of Episode 2, "very local
+#  wind", rule five ("being scared is less scary together"), the owl.
+#  This episode adds explorer's rule number seven.
+# ============================================================
+
+title: The Light in the Deep Forest
+editing: auto
+mood voices: on
+
+
+# ================= Scene 1 - The hook =================
+scene: Something Is Glowing
+place: forest
+time: night
+music: mystery
+
+ren and yuki enter from left to center
+ren sneaks to left
+narrator: Deep in the oldest part of the forest, where no path goes, something was glowing.
+ren and yuki look up
+ren (whispers, scared): Yuki... it's glowing.
+yuki (whispers, surprised): It's beautiful.
+ren (whispers, worried): Beautiful things can still be scary.
+beat
+title card: REN AND YUKI
+narrator: But that morning, nobody had planned to go anywhere near the deep forest. Well. Almost nobody.
+
+
+# ================= Scene 2 - The morning after =================
+scene: The Morning After
+place: meadow
+time: day
+music: happy
+
+ren walks to center
++ yuki walks to right
+ren turns to you
+ren (happy): Good morning, world! Day three of the legendary explorers!
+ren yawns
+ren (sleepy): I barely slept. I kept thinking about that little light.
+yuki (excited): Me too! I dreamed about it all night.
+yuki (thinking): Ren, we both saw it. Deep in the forest, just before we left.
+ren (thinking): Maybe it was a firefly. A very big firefly. With a lantern.
+yuki (playful): Fireflies don't carry lanterns.
+ren (shy): This one could be very organised.
+yuki (determined): Let's go and look. Just a little look.
+shot: close on ren
+ren (shy): A little look. At the deep, dark, mysterious part of the forest.
+yuki (playful): Your ears are shaking.
+ren (pouty): It's the wind.
+yuki (happy): Is it the very local wind again?
+ren (proud): The most local wind in the whole meadow.
+
+
+# ================= Scene 3 - The light in the trees =================
+scene: The Light in the Trees
+place: forest
+time: day
+music: magical
+
+narrator: They walked to the edge of the forest, where the tall trees began.
+yuki looks left
+yuki (surprised): Ren, look! There it is!
+camera: pan to left
+narrator: Far away, between the darkest trees, a tiny light was flickering. Even in the daytime.
+camera: pan to center
+ren (surprised): It's still there. It's real.
+owl flies in from right to right
+owl: Hoo. I thought I'd find you two here.
+ren jumps in fright
+ren (shouts, surprised): Mister Owl! You have to stop doing that!
+owl lands
+owl: Doing what? Flying? It's what owls do.
+yuki walks to center
+yuki (shy): Mister Owl, do you know what that light is? Deep in the forest?
+music: mystery
+owl feels worried
+owl: Hoo. Nobody knows, little one.
+owl: That part of the forest is very old and very dark. No creature goes that deep. Not the deer. Not the foxes. Not even me.
+owl: That light has been there since before I hatched. My grandmother saw it. Her grandmother saw it too.
+yuki (surprised): And nobody ever went to see what it was?
+owl: Nobody. Some places are better left alone.
+ren (happy): Great! Lovely! Mystery solved. It's a nice light. Let's go home.
+yuki looks left
+yuki (determined): I want to see it.
+ren (surprised): Yuki!
+yuki walks to left
+narrator: Yuki took a few steps toward the dark trees. On her own.
+music: heartfelt
+ren (worried): Yuki, wait!
+ren runs to yuki
+ren (shy): You can't go in there alone.
+yuki (shy): I know. I'm scared too.
+ren (shy): Then remember rule number five. Being scared is less scary together.
+ren holds out his paw to yuki
+yuki touches paws with ren
+yuki (happy): Together.
+owl (pouty): Hoo. Hoo hoo. Oh, fine.
+owl takes off
+owl: Someone has to make sure you two don't walk in circles again.
+ren (happy): Mister Owl! You're coming with us?
+owl: Only to the edge of the deep forest. And only because you two are terrible at directions.
+
+
+# ================= Scene 4 - Into the deep forest =================
+scene: Into the Deep Forest
+time: dusk
+music: tense
+
+narrator: The deeper they went, the taller the trees became, and the darker the forest grew.
+ren sneaks to center
+yuki sneaks to center
+yuki (whispers): Ren... the trees are so big here.
+ren (whispers, worried): Big trees are fine. Big trees are friendly. Probably.
+owl: Hoo. Duck your heads. The roots here grow very low.
+ren crawls to right
+yuki crawls to right
+ren (whispers): Explorer's tip. Crawling is just walking, but closer to the ground.
+yuki (whispers, playful): You made that up.
+ren (whispers, proud): I make up all the best things.
+narrator: Something moved in the shadows.
+camera: shake
+ren jumps in fright
+yuki jumps in fright
+ren hides behind yuki
+yuki looks around
+yuki (whispers, scared): What was that?
+owl: Hoo. That was a leaf. Falling. Very slowly.
+ren peeks out
+ren (shy): A very dangerous leaf.
+yuki (laughing): Ren!
+ren walks to left
+owl: This is as far as I have ever been.
+owl feels scared
+owl (worried): From here on, I don't know the way either.
+yuki looks left
+yuki (whispers, surprised): The light is close now. I can feel it. It's warm.
+
+
+# ================= Scene 5 - The fallen star =================
+scene: The Fallen Star
+time: night
+music: magical
+
+narrator: And there, high in the branches of the oldest tree, something was shining.
+star appears
+reveal: the star
+yuki (whispers, surprised): Ren... it's a star. A real star.
+ren (whispers, surprised): In a tree?
+owl (surprised): Hoo... I don't believe it.
+narrator: The little star flickered, as if it had heard them. Then, ever so gently, it let go of its branch.
+yuki looks up
+slow motion 3
+star falls
+ren and yuki feel surprised
+the star glows
+narrator: It landed softly in the moss, right at their feet. Its light was warm, like a cup of cocoa on a cold night.
+yuki picks up the star
+yuki (happy): It's warm, Ren. It's not scary at all.
+ren (shy): It's beautiful.
+music: heartfelt
+owl: Hoo... wait. Wait, wait, wait.
+owl feels thinking
+owl: A star that fell to the ground. My grandmother used to tell me a story about this.
+yuki (surprised): What story?
+owl: An old, old legend. Every owl knows it, but no owl ever believed it.
+owl: When a fallen star is found, you must carry it to the Great Tree, at the very center of the deep forest.
+owl: And on the night of the full moon, if you give the star to the Great Tree...
+beat
+owl: ...the tree will give you what it has kept for a thousand years.
+ren (excited): Treasure!
+owl: Hoo. That's what the legend says. Treasure.
+ren (excited): A legendary treasure! For legendary explorers! It's perfect!
+yuki (thinking): The Great Tree... at the very center. How far is it?
+owl: Far. Very far. Half a day of walking, at least. Through the darkest part of the forest.
+ren (determined): Then we start tomorrow morning!
+yuki (determined): And the full moon is in two nights.
+owl (pouty): Hoo. Let me guess. You want me to come too.
+ren and yuki look at the owl
+ren (happy): Please, Mister Owl?
+yuki (shy): Please?
+owl: ...Hoo. Fine. But I'm only coming to make sure you don't lose the star.
+
+
+# ================= Scene 6 - The journey begins =================
+scene: The Journey Begins
+music: epic
+
+ren (proud): Explorer's rule number seven: when a star falls at your feet, you follow it.
+yuki (happy): Even into the deepest forest?
+ren (proud): Especially into the deepest forest.
+owl: Hoo. That's not a rule. That's an excuse to get lost.
+ren (playful): Those are my favourite kind of rules.
+ren and yuki look left
+narrator: So the three of them set off together: a little fox, a little bunny, and a very grumpy owl, carrying a star through the dark.
+narrator: Somewhere ahead, at the very center of the forest, the Great Tree was waiting.
+narrator: It had been waiting for a thousand years.
+ren and yuki wave
+title card: SEE YOU SOON
