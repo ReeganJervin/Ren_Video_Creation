@@ -194,8 +194,8 @@ music: deep sad
 ren wobbles
 ren (sleepy): Oh... that's... funny...
 ren (sleepy): Yuki... I found... the food...
-ren lies down
-narrator: And the little fox fell fast asleep, under the fruit tree, far away from his friend.
+ren faints
+narrator: And the little fox fainted, right there under the fruit tree, far away from his friend.
 beat
 narrator: Back under the shady tree, Yuki waited. And waited.
 narrator: The sun went down. The stars came out.

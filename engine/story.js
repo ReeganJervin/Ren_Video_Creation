@@ -45,7 +45,7 @@
     `<name> feels ${MOODS.join('|')}`, '<name> hugs <other name>', '<name> picks up the star', '<name> lets go of the star',
     '<name> raises its paws', '<name> lowers its paws', '<name> blinks', '<name> and <name> hop | wave | look at each other | feel <mood>',
     '<name> runs to left|center|right|<other name>', '<name> runs off to the left|right', '<name> sneaks to left|center|right', '<name> crawls to left|center|right',
-    '<name> jumps', '<name> jumps in fright', '<name> trips', '<name> falls down', '<name> gets up', '<name> lies down',
+    '<name> jumps', '<name> jumps in fright', '<name> trips', '<name> falls down', '<name> gets up', '<name> lies down', '<name> faints', '<name> wakes up',
     '<name> hides behind <other name>', '<name> peeks out', '<name> shrugs', '<name> covers its eyes', '<name> stretches', '<name> yawns', '<name> sighs', '<name> dances',
     '<name> finds the <prop>', '<name> picks up the <prop>', '<name> holds the <prop>', '<name> holds up the <prop>',
     '<name> carries the <prop> [to left|center|right|<other name>|the <prop>]', '<name> puts down the <prop>', '<name> drops the <prop>',
@@ -101,6 +101,8 @@
     if (/^(?:falls?(?: down| over)?|tumbles?(?: down| over)?)$/.test(a)) return { type: 'fall' };
     if (/^gets? (?:back )?up$/.test(a)) return { type: 'stand' };
     if (/^(?:lies|lie|lays?|lying) down$/.test(a)) return { type: 'lie' };
+    if (/^(?:faints?|passes out|pass out|collapses?)$/.test(a)) return { type: 'faint' };
+    if (/^wakes? up$/.test(a)) return { type: 'wake' };
     if ((k = a.match(new RegExp(`^hides? behind (${NAME})$`)))) return { type: 'hide', target: k[1] };
     if (/^peeks? out$/.test(a)) return { type: 'peek' };
     if (/^shrugs?$/.test(a)) return { type: 'shrug' };
@@ -935,6 +937,7 @@
         case 'stand': who.forEach(a => {
           pose(a, 'sit', s, 0, 0.5); pose(a, 'rig.spine', s, 0, 0.4); a.ch.crouch.push({ t: s, v: 1, dur: 0.4 });
           if (a.ch.roll) pose(a, 'roll', s, 0, 0.55);   // up from lying down too
+          if (a.faint) { a.faint.b = s; a.faint = null; }   // (and awake, if they had fainted)
         }); dur = who.some(a => a.ch.roll) ? 0.9 : 0.7; break;
         case 'crouch': who.forEach(a => { pose(a, 'sit', s, 0.55, 0.4); a.ch.crouch.push({ t: s, v: 0.94, dur: 0.4 }); }); dur = 0.6; break;
         case 'lean': who.forEach(a => {
@@ -1110,6 +1113,24 @@
           pose(a, 'roll', s, dir * 1.4, 0.7); sfx('softLand', s + 0.6, { gain: 0.5 });
           set(a, 'armL', s, 0.35, 0.5); set(a, 'armR', s, holder === a.id ? -1.2 : 0.35, 0.5);
         }); dur = 1.2; break;
+        case 'faint': who.forEach(a => {
+          // a little wobble, the eyes close, and down onto the side, limp (until "wakes up" and "gets up");
+          // anything in the paws falls
+          const dir = a.x >= 960 ? -1 : 1;
+          if (a.holding) letGo(a, s + 0.35, { x: Math.max(120, Math.min(1800, a.x + dir * 90)), fall: 'drop' });
+          [[0, 0.1, 0.18], [0.2, -0.08, 0.2], [0.42, 0, 0.2]].forEach(([d, v, dd]) => pose(a, 'rig.hips', s + d, v, dd));
+          a.faint = { a: s + 0.25, b: 1e9, mood: 'fainted' }; a.out.exprs.push(a.faint);
+          set(a, 'facing', s, 0, 0.3); pose(a, 'sit', s, 0, 0.3); set(a, 'lookX', s, 0, 0.3); set(a, 'lookY', s, 0.3, 0.3);
+          set(a, 'armL', s + 0.35, 0.3, 0.4); set(a, 'armR', s + 0.35, holder === a.id ? -1.2 : 0.3, 0.4);
+          pose(a, 'roll', s + 0.45, dir * 1.45, 0.45);
+          sfx('softLand', s + 0.9, { gain: 0.6 });
+        }); dur = 1.5; break;
+        case 'wake': who.forEach(a => {
+          // the eyes open (still lying there): a slow blink, a look around
+          if (a.faint) { a.faint.b = s + 0.3; a.faint = null; }
+          a.out.blinkExtra.push(s + 0.5);
+          set(a, 'lookY', s + 0.3, 0, 0.4);
+        }); dur = 0.9; break;
         case 'hide': who.forEach(a => {
           // tucks in just behind the other one (drawn behind them), crouched down, until it moves again
           const o = A[b.target];

@@ -20,6 +20,8 @@
         shy: { eyes: 'shy', mouth: 'tinyfrown', brows: 0.75, droop: 0.62, blush: 0.8, lookY: 0.6 },
         sad: { mouth: 'frown', brows: 1, droop: 0.42, lookY: 0.3 },
         sleepy: { eyes: 'sleepy', mouth: 'yawn', droop: 0.48, lookY: 0.2 },
+        // (not a story mood: the face while fainted, from "ren faints" until "ren wakes up")
+        fainted: { eyes: 'sleepy', mouth: 'tinyfrown', droop: 0.8, brows: 0.5, lookY: 0.3 },
         playful: { eyes: 'happy', mouth: 'smile', droop: -0.05, blush: 0.4, wag: 1 },
         pouty: { mouth: 'pout', brows: -1, blush: 0.35, puff: 1 },
         joy: { eyes: 'happy', mouth: 'open', blush: 0.25, wag: 1 },
@@ -45,6 +47,7 @@
         shy: { eyes: 'shy', mouth: 'tinyfrown', brows: 0.7, droop: 0.15, flop: 1, blush: 0.85, lookY: 0.5, pawPose: 'cheeks', pawW: 1 },
         sad: { mouth: 'frown', brows: 1, droop: 0.5, lookY: 0.3 },
         sleepy: { eyes: 'sleepy', mouth: 'yawn', droop: 1.25, lookY: 0.2, pawPose: 'yawn', pawW: 1 },
+        fainted: { eyes: 'sleepy', mouth: 'tinyfrown', droop: 1.3, brows: 0.5, lookY: 0.3 },
         playful: { eyes: 'playful', mouth: 'tongue', blush: 0.3 },
         pouty: { eyes: 'pouty', mouth: 'pout', brows: -1, blush: 0.4, puff: 1 },
         joy: { eyes: 'happy', mouth: 'open', blush: 0.3 },

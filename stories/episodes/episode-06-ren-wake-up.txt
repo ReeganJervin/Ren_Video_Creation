@@ -62,7 +62,7 @@ shot: close on yuki
 yuki (shouts, worried): Ren! Ren, where are you?
 fruit tree appears at right
 ren enters from right to right
-ren lies down
+ren faints
 yuki looks around
 yuki (shouts, scared): Ren! Can you hear me?
 narrator: The forest didn't answer. Only the wind, and the leaves, and her own little footsteps.
@@ -91,10 +91,11 @@ yuki (pouty): I've been waiting for hours! I was so worried! And you're taking a
 yuki (pouty): Under a fruit tree! With a whole tree of food right there!
 yuki (shouts, pouty): Wake up, you silly fox!
 camera: shake
-ren gets up
+ren wakes up
 ren (sleepy): Mm... five more minutes...
 yuki (shouts, pouty): Ren!
 ren (surprised): Yuki? Is it morning?
+ren gets up
 yuki (pouty): It's the middle of the night! You promised you'd come right back!
 ren (shy): I did come back. I mean... I was going to.
 ren looks at the fruit tree
