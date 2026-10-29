@@ -11,6 +11,11 @@
 //   glow      true if "the X glows" works
 //   hold      'one paw' | 'both paws' (not for big props)
 //   grip      optional: the y the paw holds it at (default: the middle); hangs: true = it hangs from there (a lantern)
+//             hilt: true = held there even when held up high (a sword)
+//   glowsFor  optional: ['ren'] = it lights up by itself in their paw, and goes out when they let go (the sword)
+//   glowColor optional: 'r,g,b' of its soft glow; halo: false = no soft glow (its drawLight makes its own)
+//   lean      optional: how much (radians) a long prop leans away from the body in a paw; raise: the arm when held up
+//   fixed     optional: true = it can't be picked up or carried (a lever)
 //   slot      optional, set pieces: [x, y] of a place the little star fits (the Great Tree's hollow); someone holding
 //             the star who raises their paws beside it puts the star in there
 //   anchors, motion, sounds   optional

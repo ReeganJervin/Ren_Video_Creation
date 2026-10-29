@@ -60,7 +60,7 @@
     'camera: push in|pull out|pan to <name|the star|left|center|right>|follow <name>|shake|hold',
     'editing: auto', 'beat', 'slow motion <seconds>', 'reveal: the star|<name>|<place>',
     '<prop> appears [at left|center|right | on the ground | in the sky | next to <name>]', '<prop> disappears',
-    'the <prop> glows | stops glowing | opens | closes', '<name> walks to the <prop>', '<name> looks at the <prop>',
+    'the <prop> glows | stops glowing | opens | closes | overflows', '<name> walks to the <prop>', '<name> looks at the <prop>',
     '<extra> enters | exits | flies in | flies away | lands | takes off | swims by | hops', '<extra>: <text>',
     `Characters: ${BASE.join(', ')}`,
   ];
@@ -452,9 +452,9 @@
       if (/^(a |the |golden )*hearts? floats? down$/i.test(line)) return beat('heartDown');
       if ((m = line.match(/^(?:the |a |little )*star\s+(appears|falls|glows|twinkles|rises|disappears)$/i))) return beat('star', { act: m[1].toLowerCase() });
       // any prop or set piece: "lantern appears at left", "the chest opens", "the lantern glows"
-      if ((m = line.match(/^(?:the |a |an )?([a-z][a-z' -]{0,30}?)\s+(appears?|disappears?|vanishes|glows|stops glowing|opens|closes)(?:\s+(.+?))?[.!]*$/i)) && !NAMES.includes(ASSETS.norm(m[1]))) {
+      if ((m = line.match(/^(?:the |a |an )?([a-z][a-z' -]{0,30}?)\s+(appears?|disappears?|vanishes|glows|stops glowing|opens|closes|overflows)(?:\s+(.+?))?[.!]*$/i)) && !NAMES.includes(ASSETS.norm(m[1]))) {
         const name = ASSETS.norm(m[1]), verb = m[2].toLowerCase(), rest = (m[3] || '').toLowerCase();
-        const act = /^appear/.test(verb) ? 'appear' : /^(disappear|vanish)/.test(verb) ? 'disappear' : verb === 'glows' ? 'glow' : verb === 'stops glowing' ? 'unglow' : verb === 'opens' ? 'open' : 'close';
+        const act = /^appear/.test(verb) ? 'appear' : /^(disappear|vanish)/.test(verb) ? 'disappear' : verb === 'glows' ? 'glow' : verb === 'stops glowing' ? 'unglow' : verb === 'opens' ? 'open' : verb === 'overflows' ? 'overflow' : 'close';
         let where = null, k;
         if (act === 'appear') {
           if (!rest || rest === 'on the ground') where = { ground: true };
@@ -467,9 +467,10 @@
         if (!asset) {
           const s = ASSETS.suggest(name, ASSETS.all('prop').flatMap(a => a.names));
           if (s) return err(`I don't know "${name}". Did you mean "${s}"?`);
-          needs('prop', name, { appear: 'appears', disappear: 'disappears', glow: 'glows', unglow: 'glows', open: 'opens', close: 'closes' }[act], { size: ASSETS.guessSize(name) });
+          needs('prop', name, { appear: 'appears', disappear: 'disappears', glow: 'glows', unglow: 'glows', open: 'opens', close: 'closes', overflow: 'overflows' }[act], { size: ASSETS.guessSize(name) });
         } else if ((act === 'glow' || act === 'unglow') && !asset.glow) return err(`The ${name} can't glow.`);
         else if ((act === 'open' || act === 'close') && !asset.states.includes('open')) return err(`The ${name} can't open or close.`);
+        else if (act === 'overflow' && !asset.states.includes('overflowing')) return err(`The ${name} can't overflow.`);
         return beat('prop', { name, asset: asset ? asset.id : null, act, where });
       }
 
@@ -487,6 +488,7 @@
           if (NAMES.includes(b.thing) || CHARACTERS[b.thing]) return err(`${names} can't ${HELD[b.act] || b.act} ${title(toId(b.thing))}. Only props can be ${b.act === 'find' ? 'found' : 'held'} like that.`);
           const asset = ASSETS.find(b.thing, 'prop');
           if (asset && HELD[b.act] && asset.size === 'big') return err(`The ${b.thing} is too big to ${HELD[b.act]}.`);
+          if (asset && HELD[b.act] && asset.fixed) return err(`The ${b.thing} is fixed in place, so it can't be picked up or carried.`);
           if (asset && (b.act === 'open' || b.act === 'close') && !asset.states.includes('open')) return err(`The ${b.thing} can't open or close.`);
           if (b.act === 'carry' && b.to && !/^(left|center|centre|right)$/.test(b.to) && !NAMES.includes(b.to) && !ASSETS.find(b.to, 'prop')) return err(`I don't know where "${b.to}" is. Carry it to the left, center or right, to someone, or to a prop that's here.`);
           if (who.length > 1) return err(`Only one character can do this at a time. Write it for ${title(toId(who[0]))} or ${title(toId(who[1]))}.`);
@@ -1399,6 +1401,12 @@
           cur.t1 = s + 0.5; delete props[b.name]; sfx('sparkles', s, { n: 4, seed: 70 + P.props.indexOf(cur) }); return 0.7;
         }
         if (b.act === 'glow' || b.act === 'unglow') { cur.glow.push({ t: s, on: b.act === 'glow' }); if (b.act === 'glow') sfx('twinkle', s + 0.1, { midi: 91, gain: 0.12 }); return 0.8; }
+        if (b.act === 'overflow') {
+          // treasure spilling over: a pop, a shower of sparkles and a happy chime
+          cur.states.push({ t: s, state: 'overflowing' }); sfx('pop', s + 0.1, { gain: 0.35 });
+          const g = groundAt(cur); [0.15, 0.45, 0.8].forEach((o, i) => { P.sparkles.push({ t: s + o, at: { x: g.x + (i - 1) * 40, y: g.y - cur.height * 0.8 }, small: true }); sfx('twinkle', s + o, { midi: [88, 91, 96][i], gain: 0.12 }); });
+          return 1.2;
+        }
         cur.states.push({ t: s, state: b.act === 'open' ? 'open' : 'closed' }); sfx('pop', s + 0.1, { gain: 0.3 });
         return 0.8;
       }
@@ -1434,12 +1442,20 @@
     function takeHold(a, p, t, how, lift = true) {
       const h = { t0: t, t1: null, who: a.id, how, from: groundAt(p), ...(lift ? {} : { lift: false }) };
       (p.holds = p.holds || []).push(h); heldBy.set(p, a.id); a.holding = { p, how, h };
+      // a prop that only glows for someone (the legendary sword, for Ren) lights up in their paw
+      const as = p.asset && ASSETS.ASSETS[p.asset];
+      if (as && as.glowsFor && as.glowsFor.includes(a.id) && !(p.glow.length && p.glow[p.glow.length - 1].on)) {
+        const g = t + (lift ? 0.45 : 0.15);
+        p.glow.push({ t: g, on: true, held: true }); sfx('twinkle', g, { midi: 96, gain: 0.14 }); sfx('chime', g + 0.2, { midi: 91, gain: 0.12 });
+      }
       return h;
     }
     // a lets go at t; the prop lands at (x) (put down, or dropped), or goes to someone else (no landing)
     function letGo(a, t, land) {
       const hd = a.holding; if (!hd) return;
       hd.h.t1 = t; heldBy.delete(hd.p); a.holding = null;
+      const gl = hd.p.glow[hd.p.glow.length - 1];
+      if (gl && gl.on && gl.held) hd.p.glow.push({ t, on: false });   // (its light goes out when it leaves their paw)
       if (land) { const y = feetY(land.x); (hd.p.spots = hd.p.spots || []).push({ t, x: land.x, y, fall: land.fall }); hd.p.at = { x: land.x, y }; }
     }
     // a hold's pose changes (held up high, then back): a new segment of the same hold, without the lift
@@ -1500,8 +1516,8 @@
       if (mustHold()) return 0;
       if (b.act === 'up') {
         // held up high for everyone to see (a little sparkle), then back
-        const was = a.holding.how;
-        set(a, 'armR', s, 2.5, 0.35); if (was === 'both') set(a, 'armL', s, 2.5, 0.35);
+        const was = a.holding.how, pa = a.holding.p.asset && ASSETS.ASSETS[a.holding.p.asset], up = (pa && pa.raise) || 2.5;
+        set(a, 'armR', s, up, 0.35); if (was === 'both') set(a, 'armL', s, up, 0.35);
         rehold(a, s + 0.2, 'up');
         set(a, 'lookY', s, -0.5, 0.35); set(a, 'facing', s, 0, 0.35);
         P.sparkles.push({ t: s + 0.5, who: a.id, small: true }); sfx('twinkle', s + 0.45, { midi: 93, gain: 0.12 });

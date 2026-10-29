@@ -523,6 +523,7 @@
   function gripOf(p, how) {
     const a = p.asset && StudioAssets.ASSETS[p.asset];
     if (a && a.hangs) return -a.grip;   // (a lantern always hangs by its handle)
+    if (a && a.hilt) return how === 'up' ? 18 : -a.grip;   // (a sword: by its grip; held up, by the end of the grip, so the blade clears the head)
     return how === 'up' ? 6 : a && a.grip !== undefined ? -a.grip : p.height * 0.5;
   }
   // The character's drawing calls hold.at(c, x, y) with its near paw (in the drawing's own coordinates): the prop is
@@ -538,10 +539,12 @@
           px = lerp(g.x, q.x, u); py = lerp(g.y, q.y, u) - Math.sin(u * Math.PI) * 20 * s; sc = lerp(curCam.z, s, u); dy = lerp(0, dy, u);
         }
         const L = propLook(p, t);
-        c.save(); c.setTransform(sc, 0, 0, sc, px, py); c.translate(0, dy); c.lineJoin = 'round'; c.lineCap = 'round';
-        if (!L.asset) drawPropPlaceholder(c, p, L.st ? L.state : null); else if (!L.asset.emissive) L.asset.draw(c, t, L.state, { tau: 0, tint: null });
+        // a long prop (the sword) leans a little away from the body, so it doesn't cross the face
+        const lean = L.asset && L.asset.lean ? L.asset.lean * (h.how === 'up' ? 0.35 : 1) * (Math.sign(px - toScreen(curCam || { z: 1, cx: W / 2, cy: H / 2 }, { x: actorX(h.who, t), y: 0 }).x) || 1) : 0;
+        c.save(); c.setTransform(sc, 0, 0, sc, px, py); c.rotate(lean); c.translate(0, dy); c.lineJoin = 'round'; c.lineCap = 'round';
+        if (!L.asset) drawPropPlaceholder(c, p, L.st ? L.state : null); else if (!L.asset.emissive) L.asset.draw(c, t, L.state, { tau: 0, tint: null, held: true });
         c.restore();
-        h.dev = { t, x: px, y: py, s: sc, dy };
+        h.dev = { t, x: px, y: py, s: sc, dy, lean };
       },
     };
   }
@@ -552,12 +555,12 @@
       if (!h || !h.dev || h.dev.t !== t) continue;
       const L = propLook(p, t);
       if (!(L.glowA > 0 || (L.asset && (L.asset.emissive || L.asset.drawLight)))) continue;
-      c.save(); c.setTransform(h.dev.s, 0, 0, h.dev.s, h.dev.x, h.dev.y); c.translate(0, h.dev.dy);
-      if (L.glowA > 0) { c.save(); c.globalCompositeOperation = 'lighter'; glow(c, 0, -p.height * 0.55, p.height * 1.3, '255,222,140', 0.45 * L.glowA); c.restore(); }
+      c.save(); c.setTransform(h.dev.s, 0, 0, h.dev.s, h.dev.x, h.dev.y); c.rotate(h.dev.lean || 0); c.translate(0, h.dev.dy);
+      if (L.glowA > 0 && !(L.asset && L.asset.halo === false)) { c.save(); c.globalCompositeOperation = 'lighter'; glow(c, 0, -p.height * 0.55, p.height * 1.3, (L.asset && L.asset.glowColor) || '255,222,140', 0.45 * L.glowA); c.restore(); }
       // (someone hiding behind another: only the soft glow shows, not the lit lantern in front of them)
       const hiding = (P.actors[h.who].behind || []).some(w => t >= w.a && t < w.b);
-      if (!hiding && L.asset && L.asset.emissive) L.asset.draw(c, t, L.state, {});
-      else if (!hiding && L.asset && L.asset.drawLight) L.asset.drawLight(c, t, L.state, {});
+      if (!hiding && L.asset && L.asset.emissive) L.asset.draw(c, t, L.state, { held: true });
+      else if (!hiding && L.asset && L.asset.drawLight) L.asset.drawLight(c, t, L.state, { held: true });
       c.restore();
     }
   }
@@ -581,7 +584,7 @@
       if (pass === 'base') {
         if (!asset) drawPropPlaceholder(c, p, st ? state : null); else if (!asset.emissive) asset.draw(c, t, state, light);
       } else {
-        if (glowA > 0) { c.save(); c.globalCompositeOperation = 'lighter'; glow(c, 0, -p.height * 0.55, p.height * 1.3, '255,222,140', 0.45 * glowA * a); c.restore(); }
+        if (glowA > 0 && !(asset && asset.halo === false)) { c.save(); c.globalCompositeOperation = 'lighter'; glow(c, 0, -p.height * 0.55, p.height * 1.3, (asset && asset.glowColor) || '255,222,140', 0.45 * glowA * a); c.restore(); }
         if (asset && asset.emissive) asset.draw(c, t, state, light);
         else if (asset && asset.drawLight) asset.drawLight(c, t, state, light);
       }

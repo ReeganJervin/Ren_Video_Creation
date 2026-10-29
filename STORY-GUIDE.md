@@ -202,6 +202,7 @@ Besides Ren, Yuki and the star, a story can use **props** (small things like a l
 | `the lantern disappears` | It fades away |
 | `the lantern glows` / `the lantern stops glowing` | A soft glow around it |
 | `the cottage opens` / `the cottage closes` | Opens or closes it (if it has a door or lid) |
+| `the treasure chest overflows` | Fills it to overflowing (only things that can: the treasure chest) |
 | `ren walks to the lantern` | Walks up beside it and looks at it |
 | `ren looks at the cottage` | Looks at it (and keeps looking until the next look) |
 | `ren waves at the cottage` | Waves while looking at it |
@@ -259,6 +260,17 @@ Extras can do the simple things characters do:
 | `fruit` | prop (also `round fruit`, `shiny fruit`, `strange fruit`) | `ren finds the fruit`, `ren picks up the fruit`, `yuki gives the fruit to ren`, `ren holds up the fruit`. A round, shiny fruit nobody has seen before: peach, pink and violet, with golden freckles and a little star-shaped crown |
 | `dark cave` | set piece (also `cave`, `cave mouth`) | `dark cave appears at right`, `ren and yuki look at the dark cave`, `ren walks to the dark cave slowly`, `the dark cave disappears`. A snowy rock hill with a wide mouth that is dark all the way in, and a faint cold mist drifting out. Mysterious, never scary (going inside is F5) |
 | `grey owl` | extra (also `gray owl`, `old owl`) | Everything the owl does (`grey owl flies in from right`, `grey owl lands`, `grey owl takes off`, `grey owl flies away`, `grey owl looks at the map`), and he talks with his own deep, slow voice. An older, grumpier grey owl with bushy white eyebrows, round spectacles and half-closed eyes; they open wide when he's `surprised` and close happily when he's `laughing` |
+| `sword` | prop (also `legendary sword`, `starfang`, `old sword`, `magic sword`) | **Starfang**, the legendary sword: a broad silver blade with old runes (its name), golden wing-shaped guard with a blue star-gem, a golden star pommel. Nearly as tall as Ren. On the ground it stands planted point-down. `ren picks up the sword`: **it lights up ice-blue only in Ren's paw** (runes, edges and gem), and goes out when he puts it down or gives it away; for anyone else it stays plain. `ren holds up the sword`: raised high like a hero. `the sword glows` works for anyone |
+| `coin` | prop (also `golden coin`, `gold coin`, `old coin`) | `ren finds the coin`, `ren picks up the coin`, `ren gives the coin to yuki`. A thick gold coin with the Great Tree's mark, with a slow glint |
+| `treasure chest` | prop (also `chest`, `treasure box`, `old chest`) | `treasure chest appears at center`, `the treasure chest opens` / `ren opens the treasure chest` (gold glints inside and glows warm), **`the treasure chest overflows`** (coins and gems heap up over the rim and spill onto the grass, with sparkles), `the treasure chest closes`, `ren carries the treasure chest to left` (both paws). About half Ren's height |
+| `pile of gold` | set piece (also `gold`, `treasure`, `heap of gold`) | `pile of gold appears at right`, `ren runs to the pile of gold`. A big heap of coins and gems with a little golden crown on top; glints twinkle on it and it glows warm at night |
+| `ancient book` | prop (also `book`, `old book`, `magic book`, `book of legends`) | `yuki holds the book`, `yuki opens the book` (old rune-writing, and a drawing of the Great Tree and the star), `the book glows` |
+| `orb` | prop (also `artefact`, `artifact`, `magic orb`, `crystal ball`) | `orb appears at center`, `ren picks up the orb` (both paws), `the orb glows` (the violet mist inside lights up, with tiny stars) |
+| `stone door` | set piece (also `door`, `ancient door`, `stone gate`) | `stone door appears at center`, `the stone door opens` (the door sinks into the ground and warm golden light shines out), `the stone door closes`. Round stones, moss, a carved Great Tree and a star-shaped socket in the door |
+| `lever` | prop (also `old lever`, `stone lever`) | `lever appears next to ren`, `ren walks to the lever`. Fixed in place, so it can't be picked up. Pulling it (`ren pulls the lever`) comes in the next part of stop 2 |
+| `pebble` | prop (also `shiny pebble`, `shiny stone`, `little stone`) | `yuki finds the pebble`, `yuki picks up the pebble`, `yuki holds up the pebble`. A small smooth lilac pebble that winks with light |
+| `umbrella` | prop (also `yellow umbrella`, `brolly`) | `ren holds the umbrella`, `ren opens the umbrella` (it pops open over his head), `ren closes the umbrella`. Sunny yellow with white dots |
+| `flower` | prop (also `little flower`, `pink flower`, `pretty flower`) | `yuki finds the flower`, `yuki picks up the flower`, `yuki gives the flower to ren`. Held by the stem |
 | `owl` | extra (also `little owl`) | `owl flies in from left`, `owl flies away`, `owl lands`, `owl takes off`, `owl (happy): Hoo!` (it has its own voice), `ren waves at the owl`, `ren walks to the owl`. A small round brown owl that blinks, looks around and opens its beak to talk |
 
 Places are listed in "Places" below. New assets are added here as they are created (with `/new-asset` in Claude Code).

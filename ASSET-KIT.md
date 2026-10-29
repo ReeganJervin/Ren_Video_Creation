@@ -248,7 +248,8 @@ Give the owl a voice in `config/voices.json` and make a 5-second sample for the 
 - **Continuity:** a held prop goes with its holder through a change of place; everything else stays behind. Plans: `holds` and `spots` on a prop record, only when used (R1: every story compiles to the same plan, apart from the asset file list, which grows with every new asset).
 - **Episodes 3 and 4:** the `# LATER:` lines are now real: Ren's map (Episode 3), Ren carrying the lantern (Episodes 3 and 4).
 - **Stop 2, first part (built, waiting for the owner's review):** the Season 1 episode assets: the Great Tree (set piece with a `slot`, the star-shaped hollow: raising the star beside it puts the star in there), the full moon (`moon: full`), the fruit tree, the fruit, the Dark Cave and the grey owl (an extra with its own `moods`: wide eyes when surprised, happy eyes when laughing).
-- **Stop 2, second part (next):** the rest of the Season 1 props, `uses … on …`, `pulls`, `the map shows <text>`, extras landing on set pieces, `stories/demos-and-tests/treasure-demo.txt`.
+- **Stop 2, second part (built, waiting for the owner's review):** the rest of the Season 1 props: Starfang the legendary sword (it lights up only in Ren's paw: `glowsFor`; held by its `hilt`, it `lean`s out a little and is `raise`d high), the golden coin, the treasure chest (`the treasure chest overflows`), the pile of gold, the ancient book, the orb, the stone door, the lever (`fixed`: it can't be picked up), the shiny pebble, the umbrella and the flower. Held props get `light.held` in their drawing, so a sword can stand point-down on the ground and blade-up in a paw.
+- **Stop 2, third part (next):** `uses … on …`, `pulls`, `the map shows <text>`, extras landing on set pieces, `stories/demos-and-tests/treasure-demo.txt`.
 
 **Commit message:** `F4D: prop actions, continuity and Season 1 props`
 

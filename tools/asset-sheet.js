@@ -28,7 +28,7 @@ function storyFor(time) {
   if (asset.kind === 'extra') return head + `ren enters to right\nwait 0.4\n${N} enters\nwait 1.2\n${N}: Hello! I am the ${N}.\nwait 1.2\n${asset.moves === 'fly' ? `${N} lands\nwait 1\n${N} takes off\nwait 0.8\n` : `${N} hops\nwait 0.6\n`}narrator: That is all.\n`;
   const st = asset.states || [];
   return head + 'ren enters to left\n+ yuki enters from right to right\nwait 0.4\n' + `${N} appears at center\nwait 1\n` +
-    (st.includes('open') ? `the ${N} opens\nwait 1\n` : '') + (asset.glow ? `the ${N} glows\nwait 1.2\n` : '') + 'narrator: That is all.\n';
+    (st.includes('open') ? `the ${N} opens\nwait 1\n` : '') + (st.includes('overflowing') ? `the ${N} overflows\nwait 1.4\n` : '') + (asset.glow ? `the ${N} glows\nwait 1.2\n` : '') + 'narrator: That is all.\n';
 }
 function momentsFor(plan) {
   const M = [];
