@@ -520,7 +520,7 @@ Each effect has its own sound and uses the lighting system from F5. All of them 
    - It re-renders the time window (it never crops), and the audio window gets fades.
    - Voices come from the cache.
 3. **Outputs:** reuse F11 (thumbnail, subtitles, description). Add a **vertical cover frame** (1080×1920) for Shorts.
-4. **Length checks:** 15–60 s for Shorts, with a warning outside that range.
+4. **Length checks:** 15 s to 3 min for Shorts (YouTube's limit), with a warning outside that range; 30–60 s works best.
 5. **Examples:**
    - `shorts/the-last-cookie.txt` (independent)
    - `episodes/demo/shorts/s01.txt` (taken from the 12-minute test; F7 comes before the cave kit in F5)
@@ -535,7 +535,7 @@ Each effect has its own sound and uses the lighting system from F5. All of them 
 - **Vertical, from the owner's F7A review:** sky props come down to y 400 inside the safe area; pairs keep a gap (300 in vertical) with tails inside; in conversations where the pair would be small, the camera frames the speaker close with the neighbour's face out; camera moves (push, pull, pan, follow, shake) work in vertical; shy, sad and worried talking mouths are small, flat, wobbly and turn down (Ren and Yuki), surprised keeps the round "o", pouty turns down.
 - **From the owner's Part B review:** the outline of big text ate the spaces between words; all big outlined text (hooks, word captions, end cards, covers, thumbnails, "Watch next!", title cards, the logo) gets extra word spacing, 0.22 of the font size (`WORD_GAP`; canvas `wordSpacing`, or wider spaces where letters are drawn one by one). R1: only frames with that text change.
 - **Studio:** completions and colours for `type`, `captions`, `loop`, `hook`, `framing`, `from`, `scenes`, `lines`, `sting`.
-- Examples: `shorts/standalone/explorers-rules.txt` (independent, 25.4 s) and `shorts/episode-shorts/ep1-the-summit.txt` (episode, scene 1 of `beginning-of-a-friendship`, 28.4 s); both pass every check, including safe area. R1: all 20 stories' timing identical; frame differences are only talking mouths (surprised lines now "o", sad/shy/pouty lines turn down).
+- Examples: `shorts/standalone/1-explorers-rules.txt` (independent, 25.4 s) and `shorts/episode-shorts/ep1-1-the-summit.txt` (episode, scene 1 of `beginning-of-a-friendship`, 28.4 s); both pass every check, including safe area. R1: all 20 stories' timing identical; frame differences are only talking mouths (surprised lines now "o", sad/shy/pouty lines turn down).
 
 **Commit message:** `F7B: independent and episode Shorts, thumbnails, subtitles`
 

@@ -1,7 +1,7 @@
 # ============================================================
 #  Episode Short: "Wake Up, Silly Fox!" from Episode 6, Ren, Wake Up!
 #  (Yuki finds Ren "napping" under the fruit tree)
-#  Make it:  make-video.bat shorts\episode-shorts\ep6-wake-up-silly-fox.txt
+#  Make it:  make-video.bat shorts\episode-shorts\ep6-1-wake-up-silly-fox.txt
 # ============================================================
 
 title: Wake Up, Silly Fox!

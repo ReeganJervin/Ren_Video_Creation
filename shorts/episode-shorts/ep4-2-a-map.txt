@@ -1,0 +1,12 @@
+# ============================================================
+#  Episode Short: "A MAP?!" from Episode 4, The Great Tree
+#  (the Great Tree's thousand-year-old treasure is... a map)
+#  Make it:  make-video.bat shorts\episode-shorts\ep4-2-a-map.txt
+# ============================================================
+
+title: A MAP?!
+type: episode short
+from: episode-04-the-great-tree
+lines: 110-122
+hook: The legendary treasure is finally here!
+thumbnail text: A MAP?!

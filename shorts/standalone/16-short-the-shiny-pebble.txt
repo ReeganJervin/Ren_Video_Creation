@@ -1,0 +1,40 @@
+# ============================================================
+#  Ren & Yuki Short - The Shiny Pebble   (vertical)
+#  Ren finds a legendary treasure: a pebble (uses the shiny pebble).
+#  Make it:  make-video.bat shorts\standalone\16-short-the-shiny-pebble.txt
+# ============================================================
+
+title: The Shiny Pebble
+type: short
+hook: Ren found a LEGENDARY treasure!
+thumbnail text: Legendary Treasure!
+mood voices: on
+place: meadow
+time: day
+music: happy
+
+ren enters from left to left
++ yuki enters from right to right
+ren finds the pebble
+ren picks up the pebble
+ren (excited): Yuki! I found a legendary treasure!
+yuki walks to ren
+yuki looks at the pebble
+yuki (thinking): Ren. That's a pebble.
+shot: close on ren
+ren (proud): It's a legendary pebble.
+yuki (playful): What makes it legendary?
+ren (thinking): It's shiny. It's round. And I found it.
+ren (proud): Those are the three rules of legendary pebbles.
+shot: medium on both
+yuki (laughing): Hehe!
+beat
+ren (shy): Here. It's for you.
+ren gives the pebble to yuki
+yuki (surprised): For me?
+ren (shy): Every legendary explorer should have a treasure.
+yuki feels shy
+hearts float up
+yuki (shy): I'll keep it forever.
+shot: close on ren
+ren (proud): Good. Because I'll need to borrow it on Tuesdays.

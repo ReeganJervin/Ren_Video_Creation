@@ -1,6 +1,6 @@
 # ============================================================
 #  Ren & Yuki Short - Who's Taller?   (~35 s, vertical)
-#  Save as: shorts\standalone\short-whos-taller.txt
+#  Save as: shorts\standalone\7-short-whos-taller.txt
 #  Uses: meadow, Ren, Yuki, new moods, shout bubbles.
 # ============================================================
 

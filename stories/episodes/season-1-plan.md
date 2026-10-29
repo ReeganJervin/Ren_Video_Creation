@@ -84,7 +84,7 @@ Lost in the forest, the owl, "a light that has never gone out". Rules 5–6. End
 
 ## The files
 `stories/episodes/`: `episode-03-the-light-in-the-deep-forest.txt`, `episode-04-the-great-tree.txt`, `episode-05-the-hungry-road.txt`, `episode-06-ren-wake-up.txt`, `episode-07-the-cave-nobody-enters.txt`.
-Episode Shorts (`shorts/episode-shorts/`): `ep3-a-very-dangerous-leaf`, `ep5-the-big-half`, `ep6-wake-up-silly-fox`.
+Episode Shorts (`shorts/episode-shorts/`), two per episode: `ep1-1-the-summit`, `ep1-2-whos-talking`, `ep2-1-very-local-wind`, `ep2-2-the-tree-has-wings`, `ep3-1-a-very-dangerous-leaf`, `ep3-2-a-very-organised-firefly`, `ep4-1-youd-drop-it`, `ep4-2-a-map`, `ep5-1-the-big-half`, `ep5-2-the-upside-down-map`, `ep6-1-wake-up-silly-fox`, `ep6-2-rule-number-ten`, `ep7-1-you-guys-are-dumb`, `ep7-2-dumber-than-the-bunny`.
 
 ## New things the episodes need (made in F4 Part D stop 2, waiting for the owner's review)
 - **The Great Tree:** a huge, very old set piece with a hollow where the star goes (Ep 4)

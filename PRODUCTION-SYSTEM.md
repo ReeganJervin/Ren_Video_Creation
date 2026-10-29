@@ -90,7 +90,7 @@ How the engine handles it:
 - It renders the chosen time window, with the scene's positions, moods, time of day and props exactly as they are at that moment.
 - **Audio:** it re-renders the episode soundtrack for that window, then adds a short fade-in, a fade-out (or a music sting), and the hook and end-card sounds.
 - **Vertical framing:** it uses the vertical camera rules (section 4.1) rather than cropping.
-- **Length:** it warns if the result is shorter than 15 s or longer than 60 s. The 60 s target is our choice; YouTube currently allows Shorts up to 3 minutes.
+- **Length:** it warns if the result is shorter than 15 s or longer than 3 minutes (YouTube's limit). Aim for 30–60 s: that's where Shorts are watched to the end and loop.
 
 ### 3.4 Independent Short (type 3)
 ```
@@ -160,12 +160,12 @@ Each video can also produce:
 ### 5.2 Episode Short (30–60 s, 9:16)
 1. While watching the finished episode, note the best moments: the funniest exchange, a magical reveal, or a heartwarming beat.
 2. Create `episodes/<ep>/shorts/sNN-name.txt` with `from:`, `scenes:` or `lines:`, a `hook:`, and an `ending:`.
-3. Run `check-story.bat`. It confirms the length (15–60 s) and that the chosen scenes or lines exist.
+3. Run `check-story.bat`. It confirms the length (15 s to 3 min; aim for 30–60 s) and that the chosen scenes or lines exist.
 4. Run `make-video.bat`, then review the safe area, the framing and the start and end.
 5. **Upload:** link the full episode in the Short (YouTube lets you link a "related video").
 
 **Checks added for Shorts:**
-- **Length** is 15–60 s.
+- **Length** is 15 s to 3 min (aim for 30–60 s).
 - **Safe area:** no bubble, caption or face inside the areas the app covers.
 - **First frame:** shows a character within 0.5 s.
 - **Audio:** fades in and out cleanly, with no cut-off words at the start or end of the window.

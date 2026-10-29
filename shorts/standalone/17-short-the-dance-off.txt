@@ -1,6 +1,6 @@
 # ============================================================
 #  Ren & Yuki Short - The Dance-Off   (~35 s, vertical)
-#  Save as: shorts\standalone\short-the-dance-off.txt
+#  Save as: shorts\standalone\17-short-the-dance-off.txt
 #  Uses: meadow, Ren, Yuki, dance, jump, trip, fall, shout bubbles.
 # ============================================================
 

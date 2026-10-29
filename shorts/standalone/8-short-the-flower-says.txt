@@ -1,0 +1,41 @@
+# ============================================================
+#  Ren & Yuki Short - The Flower Says   (vertical)
+#  Ren asks a flower whether Yuki thinks he's brave (uses the flower).
+#  Make it:  make-video.bat shorts\standalone\8-short-the-flower-says.txt
+# ============================================================
+
+title: The Flower Says
+type: short
+hook: The flower knows the answer...
+thumbnail text: The Flower Says...
+mood voices: on
+place: meadow
+time: sunset
+music: calm
+
+ren enters from left to left
+ren holds the flower
+ren (whispers): Okay, flower. Tell me the truth.
+ren (whispers): Yuki thinks I'm brave.
+ren (whispers, worried): Yuki thinks I'm not brave.
+ren (whispers): Brave.
+ren (whispers, worried): Not brave.
+beat
+shot: close on ren
+ren (surprised): Wait. That was the last petal.
+ren (sad): The flower says not brave.
+yuki enters from right to right
+yuki (playful): What does the flower say?
+ren jumps in fright
+camera: shake
+ren (shouts, scared): Nothing! The flower is very quiet! It's a quiet flower!
+shot: medium on both
+yuki walks to ren
+yuki (thinking): Ren, you walked into the dark forest with me. Twice.
+ren (shy): It was a very small forest.
+yuki (happy): You're the bravest fox I know.
+ren feels happy
+hearts float up
+ren (proud): See, flower? I told you.
+shot: close on yuki
+yuki (playful): Also the only fox I know.

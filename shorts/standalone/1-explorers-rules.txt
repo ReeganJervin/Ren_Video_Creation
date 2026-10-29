@@ -2,7 +2,7 @@
 #  Short: Ren's three explorer rules
 #  (an independent Short made from Ren's lines in
 #   stories\episodes\episode-01-the-beginning-of-a-friendship.txt, scene 2)
-#  Make it:  make-video.bat shorts\standalone\explorers-rules.txt
+#  Make it:  make-video.bat shorts\standalone\1-explorers-rules.txt
 # ============================================================
 
 title: Ren's Three Explorer Rules

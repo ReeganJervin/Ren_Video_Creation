@@ -1,7 +1,7 @@
 # ============================================================
 #  Episode Short: "The Big Half" from Episode 5, The Hungry Road
 #  (one cookie, two hungry explorers)
-#  Make it:  make-video.bat shorts\episode-shorts\ep5-the-big-half.txt
+#  Make it:  make-video.bat shorts\episode-shorts\ep5-1-the-big-half.txt
 # ============================================================
 
 title: The Big Half

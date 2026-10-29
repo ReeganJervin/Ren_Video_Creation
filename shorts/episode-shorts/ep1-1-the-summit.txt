@@ -1,7 +1,7 @@
 # ============================================================
 #  Episode Short: the opening of "The Beginning of a Friendship"
 #  (scene 1, drawn again for the vertical picture)
-#  Make it:  make-video.bat shorts\episode-shorts\ep1-the-summit.txt
+#  Make it:  make-video.bat shorts\episode-shorts\ep1-1-the-summit.txt
 # ============================================================
 
 title: The Summit Is 40 Steps Away

@@ -86,7 +86,7 @@ There are example stories to try first:
 - `stories\demos-and-tests\test-camera.txt` shows every kind of shot and camera move.
 - `stories\demos-and-tests\camera-demo.txt` lets the camera edit by itself (`editing: auto`), with comic beats, slow motion and reveals.
 - `stories\demos-and-tests\feelings-demo.txt` shows every mood and way of talking (thinking, whispering, shouting), with mood voices.
-- `shorts\standalone\explorers-rules.txt` is an independent Short (vertical, about 25 s), and `shorts\episode-shorts\ep1-the-summit.txt` is a Short made from scene 1 of `beginning-of-a-friendship` (see "Shorts" in STORY-GUIDE.md).
+- `shorts\standalone\1-explorers-rules.txt` is an independent Short (vertical, about 25 s), and `shorts\episode-shorts\ep1-1-the-summit.txt` is a Short made from scene 1 of `beginning-of-a-friendship` (see "Shorts" in STORY-GUIDE.md).
 
 ## Every video is checked automatically
 

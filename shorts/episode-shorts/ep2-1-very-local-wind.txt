@@ -1,0 +1,12 @@
+# ============================================================
+#  Episode Short: "Very Local Wind" from Episode 2, Into the Forest
+#  (Yuki chooses the dark forest, and Ren's ears start shaking)
+#  Make it:  make-video.bat shorts\episode-shorts\ep2-1-very-local-wind.txt
+# ============================================================
+
+title: Very Local Wind
+type: episode short
+from: episode-02-into-the-forest
+lines: 51-64
+hook: She wants to go WHERE?
+thumbnail text: Very Local Wind

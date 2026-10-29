@@ -1,7 +1,7 @@
 # ============================================================
 #  Episode Short: "A Very Dangerous Leaf" from Episode 3,
 #  The Light in the Deep Forest (sneaking into the deep forest)
-#  Make it:  make-video.bat shorts\episode-shorts\ep3-a-very-dangerous-leaf.txt
+#  Make it:  make-video.bat shorts\episode-shorts\ep3-1-a-very-dangerous-leaf.txt
 # ============================================================
 
 title: A Very Dangerous Leaf

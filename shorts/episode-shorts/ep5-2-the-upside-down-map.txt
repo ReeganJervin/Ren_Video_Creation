@@ -1,0 +1,12 @@
+# ============================================================
+#  Episode Short: "The Upside-Down Map" from Episode 5, The Hungry Road
+#  (Ren reads the map, very confidently, upside down)
+#  Make it:  make-video.bat shorts\episode-shorts\ep5-2-the-upside-down-map.txt
+# ============================================================
+
+title: The Upside-Down Map
+type: episode short
+from: episode-05-the-hungry-road
+lines: 45-58
+hook: We're not lost. We have a map.
+thumbnail text: Upside Down!

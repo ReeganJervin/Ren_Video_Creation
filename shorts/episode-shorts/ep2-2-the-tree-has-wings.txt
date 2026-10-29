@@ -1,0 +1,12 @@
+# ============================================================
+#  Episode Short: "The Tree Has Wings!" from Episode 2, Into the Forest
+#  (the owl says hello, and they've walked past his tree five times)
+#  Make it:  make-video.bat shorts\episode-shorts\ep2-2-the-tree-has-wings.txt
+# ============================================================
+
+title: The Tree Has Wings!
+type: episode short
+from: episode-02-into-the-forest
+lines: 131-142
+hook: Something in the forest is watching them...
+thumbnail text: The Tree Has Wings!

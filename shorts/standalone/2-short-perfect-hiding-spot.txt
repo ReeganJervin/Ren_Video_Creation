@@ -1,6 +1,6 @@
 # ============================================================
 #  Ren & Yuki Short - The Perfect Hiding Spot   (~35 s, vertical)
-#  Save as: shorts\standalone\short-perfect-hiding-spot.txt
+#  Save as: shorts\standalone\2-short-perfect-hiding-spot.txt
 #  Uses: meadow, Ren, Yuki, hide and peek, covers eyes, moods.
 # ============================================================
 

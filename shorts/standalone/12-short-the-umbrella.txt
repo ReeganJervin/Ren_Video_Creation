@@ -1,0 +1,39 @@
+# ============================================================
+#  Ren & Yuki Short - The Umbrella   (vertical)
+#  Ren is ready for a storm on a sunny day (uses the umbrella).
+#  Make it:  make-video.bat shorts\standalone\12-short-the-umbrella.txt
+# ============================================================
+
+title: The Umbrella
+type: short
+hook: Ren is ready for the storm!
+thumbnail text: Storm Ready!
+mood voices: on
+place: meadow
+time: day
+music: happy
+
+ren enters from left to left
++ yuki enters from right to right
+ren holds the umbrella
+ren opens the umbrella
+ren (proud): Don't worry, Yuki. I'm ready for the storm.
+yuki looks up
+yuki (thinking): Ren, there isn't a single cloud in the sky.
+ren (proud): That's what the storm wants you to think.
+yuki (playful): It's sunny. Very sunny.
+shot: close on ren
+ren (thinking): Then it's a sun umbrella. For shade. And for style.
+ren feels proud
+shot: medium on both
+yuki (laughing): Hehe! It does look very stylish.
+yuki walks to ren
+yuki (shy): Can I stand in the shade too?
+ren (surprised): In my very stylish shade?
+yuki (happy): Please?
+ren (happy): Explorer's rule: the shade is better with two.
+hearts float up
+shot: close on yuki
+yuki (playful): That's not a real rule.
+shot: close on ren
+ren (proud): It is now.

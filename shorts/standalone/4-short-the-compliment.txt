@@ -1,6 +1,6 @@
 # ============================================================
 #  Ren & Yuki Short - The Compliment   (~35 s, vertical)
-#  Save as: shorts\standalone\short-the-compliment.txt
+#  Save as: shorts\standalone\4-short-the-compliment.txt
 #  Uses: meadow, Ren, Yuki, hearts, new moods, whisper and shout bubbles.
 # ============================================================
 

@@ -1,0 +1,12 @@
+# ============================================================
+#  Episode Short: "You Guys Are Dumb" from Episode 7, The Cave Nobody Enters
+#  (a grumpy grey owl laughs at the treasure hunters)
+#  Make it:  make-video.bat shorts\episode-shorts\ep7-1-you-guys-are-dumb.txt
+# ============================================================
+
+title: You Guys Are Dumb
+type: episode short
+from: episode-07-the-cave-nobody-enters
+lines: 102-112
+hook: Is there treasure around here?
+thumbnail text: Treasure? HERE?

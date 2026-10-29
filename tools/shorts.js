@@ -83,7 +83,7 @@ function sliceWav(file, plan, D) {
   fs.renameSync(tmp, file);
 }
 
-// The length of a Short: 15 to 60 seconds (a warning outside)
-const shortLength = D => ({ ok: true, warn: D < 15 || D > 60, note: D >= 15 && D <= 60, name: 'Short length', detail: `${D.toFixed(1)} s (a Short should be 15 to 60 s)` });
+// The length of a Short: YouTube takes up to 3 minutes; 30 to 60 s works best (a warning outside 15 s to 3 min)
+const shortLength = D => ({ ok: true, warn: D < 15 || D > 180, note: D >= 15 && D <= 180, name: 'Short length', detail: `${D.toFixed(1)} s (a Short can be 15 s to 3 min; 30 to 60 s works best)` });
 
 module.exports = { findSource, episodeSource, applyWindow, sliceWav, shortLength };

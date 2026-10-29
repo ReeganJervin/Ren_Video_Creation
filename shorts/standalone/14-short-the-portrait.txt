@@ -1,0 +1,41 @@
+# ============================================================
+#  Ren & Yuki Short - The Portrait   (vertical)
+#  Yuki draws Ren's heroic side. It looks like a potato.
+#  Make it:  make-video.bat shorts\standalone\14-short-the-portrait.txt
+# ============================================================
+
+title: The Portrait
+type: short
+hook: Yuki draws Ren's portrait...
+thumbnail text: The Portrait
+mood voices: on
+place: meadow
+time: sunset
+music: happy
+
+ren enters from left to left
++ yuki enters from right to right
+yuki (happy): Hold still, Ren. I'm drawing your portrait.
+ren (proud): Make sure you get my heroic side.
+ren turns to you
+ren (proud): This is my heroic side.
+yuki (thinking): Hmm. Can you look more... legendary?
+ren raises his paws
+ren (proud): Like this?
+yuki (playful): Less legendary. You're scaring the butterflies.
+ren lowers his paws
+beat
+yuki (happy): Done! Do you want to see?
+ren walks to yuki
+ren looks down
+shot: close on ren
+ren (thinking): Yuki. Why do I look like a potato?
+shot: close on yuki
+yuki (playful): That's your heroic side.
+shot: medium on both
+ren (pouty): The ears are very good, though.
+yuki (laughing): Hehe! Thank you.
+ren (proud): Now I'll draw you.
+narrator: Ren drew Yuki. It looked like a cloud with ears.
+shot: close on yuki
+yuki (playful): It's very accurate.

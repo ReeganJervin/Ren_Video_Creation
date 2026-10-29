@@ -1,6 +1,6 @@
 # ============================================================
 #  Ren & Yuki Short - The Staring Contest   (~30 s, vertical)
-#  Save as: shorts\standalone\short-staring-contest.txt
+#  Save as: shorts\standalone\3-short-staring-contest.txt
 #  Uses: meadow, Ren, Yuki, new moods, shout and thought bubbles.
 # ============================================================
 
