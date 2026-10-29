@@ -19,9 +19,11 @@ if (!voices[who] || who.startsWith('_')) { console.error(`There is no voice call
 if (moods && who === 'narrator') { console.error('The narrator has no moods.'); process.exit(1); }
 // a story that the normal voice step turns into voice clips (levelled like every line in a video)
 const text = given || 'I never thought we would find it, right here in the meadow.';
-const lines = !moods ? [`${who === 'narrator' ? 'narrator' : who}: ${text}`]
-  : ['mood voices: on', ...MOODS.flatMap(m => [`narrator: ${m[0].toUpperCase() + m.slice(1)}.`, `${who}${m === 'normal' ? '' : ` (${m})`}: ${text}`]),
-    ...[['Thinking out loud', 'thinks'], ['Whispering', 'whispers'], ['Shouting', 'shouts']].flatMap(([n, s]) => [`narrator: ${n}.`, `${who} (${s}): ${text}`])];
+// (a voice id with dashes, like grey-owl, is written with spaces in a story: "grey owl: Hoo.")
+const say = who.replace(/-/g, ' ');
+const lines = !moods ? [`${say}: ${text}`]
+  : ['mood voices: on', ...MOODS.flatMap(m => [`narrator: ${m[0].toUpperCase() + m.slice(1)}.`, `${say}${m === 'normal' ? '' : ` (${m})`}: ${text}`]),
+    ...[['Thinking out loud', 'thinks'], ['Whispering', 'whispers'], ['Shouting', 'shouts']].flatMap(([n, s]) => [`narrator: ${n}.`, `${say} (${s}): ${text}`])];
 const story = path.join(ROOT, 'build', '_voice-sample.txt');
 fs.mkdirSync(path.dirname(story), { recursive: true });
 fs.writeFileSync(story, `title: Voice sample\n${lines.join('\n')}\n`);
