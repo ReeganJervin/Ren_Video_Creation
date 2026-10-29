@@ -11,13 +11,16 @@
 //   glow      true if "the X glows" works
 //   hold      'one paw' | 'both paws' (not for big props)
 //   grip      optional: the y the paw holds it at (default: the middle); hangs: true = it hangs from there (a lantern)
+//   slot      optional, set pieces: [x, y] of a place the little star fits (the Great Tree's hollow); someone holding
+//             the star who raises their paws beside it puts the star in there
 //   anchors, motion, sounds   optional
 //   draw(c, t, state, light)   the drawing, with (0, 0) where it stands on the ground. light = { tau, tint }
 //   Things that give light are never darkened by the time of day (they look brightest at night):
 //   emissive  true if the whole asset gives light (the star): it is drawn after the time-of-day colour
 //   drawLight(c, t, state, light)   optional: just the parts that give light, drawn after the time-of-day colour
 //   credit    who made it
-// Extras also have moves ('walk' | 'hop' | 'fly' | 'swim' | 'float') and draw(c, K) like a character.
+// Extras also have moves ('walk' | 'hop' | 'fly' | 'swim' | 'float') and draw(c, K) like a character, and optionally
+// moods: { surprised: { wide: 1 }, laughing: { eyes: 'happy' }, ... } for their own faces (the rest look normal).
 (function (root) {
   const ASSETS = {};
   const norm = s => String(s).toLowerCase().trim().replace(/^(the|a|an) /, '').replace(/[-_\s]+/g, ' ');
@@ -56,7 +59,7 @@
     const h = a.height || 110, fly = /^(fly|float)$/.test(a.moves || '') ? 230 : 0;
     // (the F12 moods are there too; an extra shows them as the nearest older mood, and --check says so)
     const moods = {}; ['normal', 'happy', 'surprised', 'shy', 'sad', 'sleepy', 'playful', 'pouty', 'joy',
-      'excited', 'proud', 'thinking', 'worried', 'scared', 'determined', 'laughing', 'crying'].forEach(m => { moods[m] = {}; });
+      'excited', 'proud', 'thinking', 'worried', 'scared', 'determined', 'laughing', 'crying'].forEach(m => { moods[m] = (a.moods && a.moods[m]) || {}; });
     return {
       name: a.label || id.replace(/-/g, ' ').replace(/^./, ch => ch.toUpperCase()), extra: true, missing: !!a.missing,
       moves: a.moves === 'hop' ? 'hop' : 'walk', fly, speed: 240, hop: { h: Math.round(h * 0.4), sound: 'light' },

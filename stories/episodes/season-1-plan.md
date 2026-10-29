@@ -86,11 +86,11 @@ Lost in the forest, the owl, "a light that has never gone out". Rules 5–6. End
 `stories/episodes/`: `episode-03-the-light-in-the-deep-forest.txt`, `episode-04-the-great-tree.txt`, `episode-05-the-hungry-road.txt`, `episode-06-ren-wake-up.txt`, `episode-07-the-cave-nobody-enters.txt`.
 Episode Shorts (`shorts/episode-shorts/`): `ep3-a-very-dangerous-leaf`, `ep5-the-big-half`, `ep6-wake-up-silly-fox`.
 
-## New things the episodes need (made with `/new-asset`, part of F4 Part D stop 2)
+## New things the episodes need (made in F4 Part D stop 2, waiting for the owner's review)
 - **The Great Tree:** a huge, very old set piece with a hollow where the star goes (Ep 4)
 - **A fruit tree** (set piece) and **the fruit** (prop): round, shiny fruit Ren has never seen before (Ep 5–6)
 - **The grey owl:** an older, grumpier owl, grey as a storm cloud (Ep 7; it has its own voice in `config/voices.json`)
 - **The Dark Cave:** the cave mouth, a set piece on the snowy hill (Ep 7; the inside of the cave is F5)
-- **A full moon** at night (Ep 4; today's moon is a crescent)
+- **A full moon** at night (Ep 4: the story line `moon: full`; the moon is a crescent unless a story asks)
 
-Until they exist, the episodes can be previewed with grey placeholders.
+All five exist now (`engine/props/great-tree.js`, `fruit-tree.js`, `fruit.js`, `dark-cave.js`, `engine/extras/grey-owl.js`, and the `moon: full` line). Episodes 3–7 have nothing missing.

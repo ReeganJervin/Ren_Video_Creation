@@ -6,7 +6,7 @@
 #  the last cookie (Ren lets Yuki have the big piece), Ren goes to
 #  find fruit, tastes it to be sure it's safe for Yuki... and faints.
 #  New in this episode: the river (first time), the fruit tree and
-#  the fruit (still to be made: until then they show as placeholders).
+#  the fruit (made in F4 Part D stop 2).
 #  Callbacks: "the big half" (the cookie Shorts), rule three "always
 #  bring a snack", rule nine "next time, we bring more snacks" (Ep 4).
 # ============================================================

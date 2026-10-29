@@ -58,9 +58,19 @@
     c.globalAlpha = 1;
     const ma = clamp((tau - 2.2) / 0.6);
     if (ma > 0) {
-      c.save(); c.globalAlpha = ma; c.globalCompositeOperation = 'lighter'; glow(c, 330, 200, 160, '230,230,255', 0.25); c.globalCompositeOperation = 'source-over';
-      c.beginPath(); c.rect(0, 0, 800, 600); c.arc(356, 182, 56, 0, Math.PI * 2); c.clip('evenodd');
-      c.beginPath(); c.arc(330, 200, 62, 0, Math.PI * 2); c.fillStyle = '#fff6d6'; c.fill(); c.restore();
+      if (h.moon === 'full') {
+        // the full moon: bigger, brighter, with a few soft grey patches
+        c.save(); c.globalAlpha = ma; c.globalCompositeOperation = 'lighter'; glow(c, 330, 200, 260, '230,232,255', 0.4); c.globalCompositeOperation = 'source-over';
+        const mg = c.createRadialGradient(306, 176, 10, 330, 200, 84); mg.addColorStop(0, '#fffdf0'); mg.addColorStop(1, '#f6ecc8');
+        c.beginPath(); c.arc(330, 200, 84, 0, Math.PI * 2); c.fillStyle = mg; c.fill();
+        c.fillStyle = 'rgba(205,200,180,0.45)';
+        [[300, 180, 18, 14], [356, 222, 22, 16], [350, 166, 10, 8], [312, 236, 9, 7]].forEach(([x, y, rx, ry]) => { c.beginPath(); c.ellipse(x, y, rx, ry, 0.3, 0, Math.PI * 2); c.fill(); });
+        c.restore();
+      } else {
+        c.save(); c.globalAlpha = ma; c.globalCompositeOperation = 'lighter'; glow(c, 330, 200, 160, '230,230,255', 0.25); c.globalCompositeOperation = 'source-over';
+        c.beginPath(); c.rect(0, 0, 800, 600); c.arc(356, 182, 56, 0, Math.PI * 2); c.clip('evenodd');
+        c.beginPath(); c.arc(330, 200, 62, 0, Math.PI * 2); c.fillStyle = '#fff6d6'; c.fill(); c.restore();
+      }
     }
     h.cam(0.15);
     const sunY = sunYAt(tau);

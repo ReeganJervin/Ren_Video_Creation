@@ -52,7 +52,7 @@
     '<name> gives the <prop> to <other name>', '<name> opens the <prop>', '<name> closes the <prop>',
     'star appears', 'star falls', 'star glows', 'star twinkles', 'star rises', 'star disappears',
     'hearts float up', 'heart floats down', 'sparkles [around <name>]', 'title card: <WORD>',
-    `place: ${PLACES.names().join('|')}`, 'time: day|sunset|dusk|night', 'camera: wide|close|closer', 'wait <seconds>',
+    `place: ${PLACES.names().join('|')}`, 'time: day|sunset|dusk|night', 'moon: full|crescent', 'camera: wide|close|closer', 'wait <seconds>',
     'scene: <name>', `music: ${MUSIC.join('|')}`, 'music: deep tense|deep sad', 'thumbnail: auto|<seconds>|scene <number>', 'thumbnail shot: wide|medium|close', 'thumbnail text: <text>',
     'format: wide|vertical', 'type: short|episode short', 'captions: narrator|all|off', 'loop: on', 'sting', 'hook: <text>', 'framing: close|medium|wide',
     'from: <story>', 'scenes: <number>|<number>-<number>', 'lines: <number>-<number>', 'ending: <text> (the end card of a Short)', 'intro: series|none|after scene <number>', 'ending: end screen|none', 'ending text: <text>',
@@ -170,7 +170,7 @@
 
   // Extras: names in the story that enter, fly, swim, hop or talk but aren't characters. Known extras come from
   // the asset registry; unknown ones are missing extras, shown as placeholders. Typos of known names are errors.
-  const KEYS = /^(title|title card|place|time|camera|shot|scene|music|editing|reveal|narrator|wait|pause|weather|light|format|type|thumbnail|thumbnail text|thumbnail shot|intro|ending|ending text|type|captions|loop|from|scenes|lines|hook|framing|sting|mood voices)$/;
+  const KEYS = /^(title|title card|place|time|moon|camera|shot|scene|music|editing|reveal|narrator|wait|pause|weather|light|format|type|thumbnail|thumbnail text|thumbnail shot|intro|ending|ending text|type|captions|loop|from|scenes|lines|hook|framing|sting|mood voices)$/;
   function findExtras(lines, errors) {
     const found = {};
     lines.forEach((raw, i) => {
@@ -368,6 +368,13 @@
         const v = m[1].toLowerCase();
         if (!(v in TIMES)) return err(`Unknown time "${m[1]}". Use: day, sunset, dusk or night`);
         if (!started) meta.time = v; else beat('time', { value: v });
+        return;
+      }
+      // the moon at night: a crescent (as always), or full
+      if ((m = line.match(/^moon\s*:\s*(.+)$/i))) {
+        const v = m[1].trim().toLowerCase().replace(/^(a |the )/, '').replace(/\s+moon$/, '');
+        if (!/^(full|crescent)$/.test(v)) return err(`Use: moon: full, or moon: crescent`);
+        if (!started) meta.moon = v; else beat('moon', { value: v });
         return;
       }
       // shots cut instantly, like an edit: "shot: close on yuki", "shot: over the shoulder of ren"
@@ -587,7 +594,7 @@
     const ARM_R = 0.16;
     const sfx = (type, at, o = {}) => P.sfx.push({ type, t: at, ...o });
     // an extra (a simple animal) has only the first eight moods: a newer one shows as the nearest of those
-    const moodNote = (a, mood, line) => { if (a.def.extra && FALLBACK[mood]) P.warnings.push(`Line ${line}: the ${a.def.name.toLowerCase()} has no "${mood}" face, so it looks ${FALLBACK[mood]}.`); };
+    const moodNote = (a, mood, line) => { if (a.def.extra && FALLBACK[mood] && !Object.keys(a.def.moods[mood] || {}).length) P.warnings.push(`Line ${line}: the ${a.def.name.toLowerCase()} has no "${mood}" face, so it looks ${FALLBACK[mood]}.`); };
     // props and set pieces on stage now (by name), and every one that ever appears
     P.props = [];
     let props = {};
@@ -1207,8 +1214,18 @@
             const v = b.up ? 2.7 : restR(a);
             set(a, 'armL', s, v, 0.5); set(a, 'armR', s, v, 0.5);
             if (holder === a.id) P.star.push({ type: b.up ? 'raise' : 'lower', t0: s, t1: s + 0.6, who: a.id });
+            // raising the star next to a set piece with a place for it (the Great Tree's hollow): it goes in there
+            const slotted = b.up && holder === a.id && Object.values(props).find(p => !p.t1 && !p.sky && p.asset && ASSETS.ASSETS[p.asset].slot && Math.abs(p.x - a.x) < 520);
+            if (slotted) {
+              const [sx, sy] = ASSETS.ASSETS[slotted.asset].slot, at = { x: slotted.x + sx, y: groundAt(slotted).y + sy };
+              P.star.push({ type: 'place', t0: s + 0.7, t1: s + 1.7, to: at, who: a.id }, { type: 'slot', t0: s + 1.7, at, r: 26 });
+              set(a, 'armL', s + 1.6, restL(a), 0.6); set(a, 'armR', s + 1.6, ARM_R, 0.6);
+              sfx('softLand', s + 1.7); sfx('twinkle', s + 1.75, { midi: 93, gain: 0.1 });
+              holder = null; star = { state: 'ground', x: at.x, y: at.y, r: 26 };
+              dur = 2.0;
+            }
           });
-          dur = 0.8; break;
+          dur = Math.max(dur || 0, 0.8); break;
         }
         case 'pickup': {
           const a = who[0];
@@ -1260,6 +1277,9 @@
           dur = letters.length * 0.22 + 0.6;
           break;
         }
+        case 'moon':
+          (P.moon = P.moon || []).push({ t: s, value: b.value });
+          dur = 0; break;
         case 'time':
           // a scene that opens somewhere new switches the sky while the page is white; otherwise it changes slowly
           if (b.snap && scene && scene.turn) setG('tau', scene.t0 + PT / 2, TIMES[b.value], 0.001); else setG('tau', s, TIMES[b.value], 4);

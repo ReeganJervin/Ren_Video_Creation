@@ -285,6 +285,9 @@
     if (Object.keys(r).length) K.rig = { ...r, ...(K.rig || {}) };
   }
 
+  // the moon: a crescent unless the story says "moon: full"
+  function moonAt(t) { let m = P.meta.moon || 'crescent'; for (const e of P.moon || []) if (e.t <= t) m = e.value; return m; }
+
   // ---------- star / hearts ----------
   let starSegs = [], flickers = [];
   function starAt(t) {
@@ -304,6 +307,11 @@
       case 'ground': { const a = t - seg.t0; p = { x: seg.at.x, y: seg.at.y - Math.abs(Math.sin(a * 9)) * 18 * Math.exp(-a * 5) }; r = seg.r; break; }
       case 'pickup': { const q = ease(u), ch = chest(); p = { x: lerp(seg.from.x, ch.x, q), y: lerp(seg.from.y, ch.y, q) - Math.sin(q * Math.PI) * 40 }; r = lerp(26, 28, q); break; }
       case 'held': case 'raise': case 'lower': p = chest(); r = 28 + 2 * bright; break;
+      case 'place': {
+        const from = seg._from || (seg._from = (() => { const B = actorBody(seg.who, seg.t0); return toWorld(B, 0, REG[seg.who].overhead); })());
+        const q = ease(u); p = { x: lerp(from.x, seg.to.x, q), y: lerp(from.y, seg.to.y, q) - Math.sin(q * Math.PI) * 50 }; r = lerp(28, 26, q); break;
+      }
+      case 'slot': p = seg.at; r = seg.r; break;
       case 'rise': {
         const from = seg.from === 'overhead' ? (seg._from || (seg._from = (() => { const B = actorBody(seg.who, seg.t0); return toWorld(B, 0, REG[seg.who].overhead); })())) : seg.from;
         const c = { x: from.x - (seg.to.x - from.x) * 0.9, y: Math.min(from.y, seg.to.y) - 50 };
@@ -1132,6 +1140,7 @@
     curCam = cam;
     const PN = placeAt(t);
     HP.cam = p => applyCam(c, cam, p);
+    HP.moon = moonAt(t);
     PN.draw(c, t, cam, tau, HP);
     if (P.props && P.props.length) drawProps(c, t, tau, PN, 'base');
     c.setTransform(1, 0, 0, 1, 0, 0); c.globalCompositeOperation = 'multiply'; c.fillStyle = tod(tau, PN.grade); c.fillRect(0, 0, W, H); c.globalCompositeOperation = 'source-over';

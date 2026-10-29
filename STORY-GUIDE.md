@@ -254,6 +254,11 @@ Extras can do the simple things characters do:
 | `leaf` | prop (also `big leaf`, `green leaf`, `old leaf`, `oldest leaf`) | `ren finds the leaf`, `ren picks up the leaf`, `ren holds up the leaf`; held by the stem |
 | `map` | prop (also `old map`, `treasure map`) | `ren holds the map`, `ren opens the map` (it unrolls into a hand-drawn map: a forest, a river, a dotted path and a red X), `ren closes the map` |
 | `cookie` | prop (also `big cookie`, `biscuit`, `snack`) | `yuki gives the cookie to ren`, `ren holds up the cookie` |
+| `great tree` | set piece (also `old tree`, `giant tree`) | `great tree appears at right`, `ren and yuki look at the great tree`, `yuki walks to the great tree`. Enormous (its crown fills the top of the picture), with roots like hills, hanging vines and a star-shaped hollow in the trunk. Someone holding the star who stands beside it and `raises her paws` puts the star into the hollow; `yuki lets go of the star` then makes it rise out of the tree into the sky. At night the moon silvers its crown and the hollow shimmers |
+| `fruit tree` | set piece (also `tree full of fruit`) | `fruit tree appears at right`, `ren runs to the fruit tree`, `ren looks at the fruit tree`. A friendly round tree, a bit taller than two Rens, full of the round fruit, with a few fallen ones in the grass |
+| `fruit` | prop (also `round fruit`, `shiny fruit`, `strange fruit`) | `ren finds the fruit`, `ren picks up the fruit`, `yuki gives the fruit to ren`, `ren holds up the fruit`. A round, shiny fruit nobody has seen before: peach, pink and violet, with golden freckles and a little star-shaped crown |
+| `dark cave` | set piece (also `cave`, `cave mouth`) | `dark cave appears at right`, `ren and yuki look at the dark cave`, `ren walks to the dark cave slowly`, `the dark cave disappears`. A snowy rock hill with a wide mouth that is dark all the way in, and a faint cold mist drifting out. Mysterious, never scary (going inside is F5) |
+| `grey owl` | extra (also `gray owl`, `old owl`) | Everything the owl does (`grey owl flies in from right`, `grey owl lands`, `grey owl takes off`, `grey owl flies away`, `grey owl looks at the map`), and he talks with his own deep, slow voice. An older, grumpier grey owl with bushy white eyebrows, round spectacles and half-closed eyes; they open wide when he's `surprised` and close happily when he's `laughing` |
 | `owl` | extra (also `little owl`) | `owl flies in from left`, `owl flies away`, `owl lands`, `owl takes off`, `owl (happy): Hoo!` (it has its own voice), `ren waves at the owl`, `ren walks to the owl`. A small round brown owl that blinks, looks around and opens its beak to talk |
 
 Places are listed in "Places" below. New assets are added here as they are created (with `/new-asset` in Claude Code).
@@ -422,6 +427,7 @@ music: tense
 | Line | What happens |
 |---|---|
 | `time: night` | The sky slowly changes over 4 seconds (`day`, `sunset`, `dusk`, `night`). Stars, moon and fireflies come out at night |
+| `moon: full` | The moon at night is full (big and bright) from here on; `moon: crescent` goes back to the usual crescent. Before the first line of the story, it sets how the story starts |
 | `camera: close` | The camera slowly moves closer to the characters on stage. Also `closer`, or `wide` to go back |
 | `wait 2` | A pause of 2 seconds |
 

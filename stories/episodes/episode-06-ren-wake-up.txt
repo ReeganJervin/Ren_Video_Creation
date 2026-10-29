@@ -6,7 +6,7 @@
 #  under the fruit tree, thinks he's napping and scolds him; he wakes
 #  up, realises he fainted because he hadn't eaten or drunk anything
 #  for so long, and they eat until their tummies are full.
-#  Needs (still to be made: placeholders until then): the fruit tree,
+#  New things it uses (made in F4 Part D stop 2): the fruit tree,
 #  the fruit.
 #  Callbacks: Ren's "explorer's promise" (Ep 5), the big half (Ep 5),
 #  the Hill of Extremely Important Sitting (Ep 1).

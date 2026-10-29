@@ -5,8 +5,8 @@
 #  The owner's story: half a day's walk to the Great Tree, the full
 #  moon, the star goes home, the tree drops a map, the owl gives up,
 #  Ren refuses to, and Yuki chooses to follow the map with him.
-#  New in this episode: the Great Tree (a set piece still to be made:
-#  until then it shows as a placeholder), the map.
+#  New in this episode: the Great Tree (a set piece, made in F4 Part D
+#  stop 2), the full moon, the map.
 #  Callbacks: the legend (Episode 3), Yuki's condition "sometimes I
 #  choose where we go" (Episode 1), "very local wind".
 #  This episode adds explorer's rule number eight.
@@ -67,6 +67,7 @@ owl: Hoo. Trust me, little one. You'll know.
 # ================= Scene 3 - The Great Tree =================
 scene: The Great Tree
 time: night
+moon: full
 music: epic
 
 narrator: As night fell, the trees around them grew taller and taller... until, suddenly, they stopped.
