@@ -47,6 +47,15 @@ function applyWindow(plan, sm) {
   for (const v of plan.voice) if (v.t >= t0 && v.t < t1) t1 = Math.max(t1, v.t + v.len + 0.6);
   t1 = Math.min(t1, plan.duration);
   const L = t1 - t0, sh = x => (typeof x === 'number' ? x - t0 : x), inWin = (a, b) => (b === undefined || b === null ? a >= t0 && a < t1 : b > t0 && a < t1);
+  // the speech bubbles and captions of the lines heard in the Short, and no others: a bubble still up from the line
+  // just before the window, or one opening for a line just after it, is left out (bubbles and captions belong to
+  // the voice lines in order, characters' lines to bubbles and the narrator's to captions; a silent thought has no
+  // voice and is kept when it starts in the window)
+  const heard = v => v.t >= t0 && v.t < t1;
+  const talk = plan.voice.filter(v => v.who !== 'narrator'), narr = plan.voice.filter(v => v.who === 'narrator');
+  let bi = 0;
+  plan.bubbles = plan.bubbles.filter(b => (b.silent ? b.t0 >= t0 && b.t0 < t1 : talk[bi] ? heard(talk[bi++]) : inWin(b.t0, b.t1)));
+  plan.captions = plan.captions.filter((c, i) => (narr[i] ? heard(narr[i]) : inWin(c.t0, c.t1)));
   // what the page draws: the window, and the Short's own pictures in the Short's time
   plan.window = { t0, t1 };
   plan.wordCaps = (plan.wordCaps || []).filter(q => inWin(q.t0, q.t1)).map(q => ({ ...q, t0: sh(q.t0), t1: sh(q.t1) }));
