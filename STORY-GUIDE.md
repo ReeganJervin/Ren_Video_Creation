@@ -437,6 +437,29 @@ narrator: Suddenly, the ground began to shake!
 music: tense
 ```
 
+## Light and darkness
+
+For dark places: a cave, a dungeon, the forest on a moonless night. Darkness covers the picture, and only things that give light shine through it, each in its own colour: the lantern (warm), Starfang in Ren's paw (ice-blue), the orb (violet), the star, and the torches and crystals of underground places. Ren and Yuki get a thin rim of that light on the side that faces it.
+
+| Line | What it does |
+|---|---|
+| `light: dark` | Very dark: you only see what the lights show. Also `light: dim` (shadowy, but you can still see) and `light: bright` (normal). At the top it sets the start; later in the story the light changes slowly (about 1.5 s) |
+| `<name> lights the lantern` | Lights it, in the paw or on the ground (walks over first). Works for anything that can glow: `lantern`, `orb`, `sword` and more |
+| `<name> puts out the lantern` | Puts it out again. Also `blows out the lantern` |
+| `the orb glows` | Also lights up the darkness (and `the orb stops glowing`) |
+
+```
+place: forest
+time: night
+light: dark
+
+ren holds the lantern
+ren (worried): It's so dark, Yuki.
+ren lights the lantern
+```
+
+Underground places are dark by themselves, so you don't need to write `light: dark` there. Outdoor places are bright unless the story says otherwise. See `stories\demos-and-tests\light-demo.txt`.
+
 ## Scene and camera
 
 | Line | What happens |

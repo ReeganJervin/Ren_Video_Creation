@@ -1,0 +1,53 @@
+# ============================================================
+#  Light and darkness (F5 Part A)
+#  Ren and Yuki in the dark forest at night, with the lantern,
+#  the orb and Starfang. About 1 minute 30.
+#  Make it:  make-video.bat stories\demos-and-tests\light-demo.txt
+# ============================================================
+
+title: Little Lights
+place: forest
+time: night
+light: dim
+music: mystery
+mood voices: on
+
+ren enters from left to left
++ yuki enters from left to right
++ narrator: The night was so dark that even the fireflies stayed close to home.
+ren holds the lantern
+light: dark
+yuki (scared): Ren? Ren, where did the forest go?
+ren (worried): It's still here. It's just... hiding.
+ren lights the lantern
+ren (proud): There. A little light, for a little fox.
+yuki (whispers): And a little bunny.
+ren walks to yuki
+yuki (happy): Much better.
+
+orb appears at center
+the orb glows
+music: magical
+yuki (surprised): Look! Something is shining.
+yuki walks to the orb
+yuki looks at the orb
+yuki (thinking): It's warm. Like it's been waiting for us.
+ren puts out the lantern
+ren (playful): See? We don't even need my lantern now.
+the orb stops glowing
+yuki (scared): Ren! Light it again! Light it again!
+ren lights the lantern
+ren (laughing): Hehe! Sorry, sorry.
+
+sword appears next to ren
+ren puts down the lantern
+ren picks up the sword
+ren holds up the sword
+music: epic
+ren (determined): Starfang! Show us the way!
+yuki (surprised): It only glows for you.
+ren (shy): I know. I don't know why either.
+the orb glows
+yuki (happy): Three little lights. That's enough for anything.
+light: dim
+narrator: And with three little lights, the dark didn't feel so dark any more.

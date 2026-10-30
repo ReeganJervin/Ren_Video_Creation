@@ -27,6 +27,8 @@
   // ways of talking, written with a mood or alone: "ren (shouts, excited): …", "yuki (thinks silently): …"
   const STYLES = { thinks: 'think', think: 'think', 'thinks silently': 'think', whispers: 'whisper', whisper: 'whisper', shouts: 'shout', shout: 'shout' };
   const KS = 1.15;              // character scale (fixed)
+  // how dark it is (the darkness drawn over the picture, 0 to 1): "light: bright | dim | dark"
+  const LIGHT_LEVELS = { bright: 0, dim: 0.55, dark: 0.86 };
   const GAP = 280;              // closest two characters may stand (centre to centre)
   const HUG = 230;              // cheek to cheek
   const MINX = 300, MAXX = 1620;
@@ -163,6 +165,9 @@
       if ((k = a.match(new RegExp(`^drops? ${TH}$`)))) return hold('drop', k[1]);
       if ((k = a.match(new RegExp(`^gives? ${TH} to (${NAME})$`)))) return hold('give', k[1], { target: k[2] });
       if ((k = a.match(new RegExp(`^(opens?|closes?) ${TH}$`)))) return hold(/^open/.test(k[1]) ? 'open' : 'close', k[2]);
+      // light (F5): "ren lights the lantern", "yuki puts out the lantern" (also "blows out")
+      if ((k = a.match(new RegExp(`^lights? (?:up )?${TH}$`)))) return hold('light', k[1]);
+      if ((k = a.match(new RegExp(`^(?:puts?|blows?) out ${TH}$`)) || a.match(new RegExp(`^(?:puts?|blows?) ${TH} out$`)))) return hold('douse', k[1]);
     }
     // things (props and set pieces): "walks to the lantern", "looks at the cottage", "waves at the owl"
     if ((k = a.match(/^(?:walks?|moves?|goes|go|hops?|runs?) (?:over )?to (?:the |a |an )?(.+?)( slowly)?$/))) return { type: 'walkToThing', thing: ASSETS.norm(k[1]), slow: !!k[2] };
@@ -373,6 +378,13 @@
         if (!started) meta.time = v; else beat('time', { value: v });
         return;
       }
+      // how much light there is (F5): a dark cave, a dim hall; places underground start dark by themselves
+      if ((m = line.match(/^light\s*:\s*(.+)$/i))) {
+        const v = m[1].trim().toLowerCase();
+        if (!(v in LIGHT_LEVELS)) return err(`Use: light: bright, light: dim, or light: dark`);
+        if (!started) meta.light = v; else beat('light', { value: v });
+        return;
+      }
       // the moon at night: a crescent (as always), or full
       if ((m = line.match(/^moon\s*:\s*(.+)$/i))) {
         const v = m[1].trim().toLowerCase().replace(/^(a |the )/, '').replace(/\s+moon$/, '');
@@ -493,12 +505,13 @@
           if (asset && HELD[b.act] && asset.size === 'big') return err(`The ${b.thing} is too big to ${HELD[b.act]}.`);
           if (asset && HELD[b.act] && asset.fixed) return err(`The ${b.thing} is fixed in place, so it can't be picked up or carried.`);
           if (asset && (b.act === 'open' || b.act === 'close') && !asset.states.includes('open')) return err(`The ${b.thing} can't open or close.`);
+          if (asset && (b.act === 'light' || b.act === 'douse') && !asset.glow) return err(`The ${b.thing} can't be lit. Things that give light: ${ASSETS.all('prop').filter(x => x.glow && x.size !== 'big').map(x => x.names[0]).join(', ')}.`);
           if (b.act === 'carry' && b.to && !/^(left|center|centre|right)$/.test(b.to) && !NAMES.includes(b.to) && !ASSETS.find(b.to, 'prop')) return err(`I don't know where "${b.to}" is. Carry it to the left, center or right, to someone, or to a prop that's here.`);
           if (who.length > 1) return err(`Only one character can do this at a time. Write it for ${title(toId(who[0]))} or ${title(toId(who[1]))}.`);
           if (!asset) {
             const sg = ASSETS.suggest(b.thing, ASSETS.all('prop').flatMap(x => x.names));
             if (sg) return err(`I don't know "${b.thing}". Did you mean "${sg}"?`);
-            needs('prop', b.thing, { find: 'is found', hold: 'is held', pick: 'is picked up', up: 'is held up', carry: 'is carried', put: 'is put down', drop: 'is dropped', give: 'is given', open: 'opens', close: 'closes' }[b.act], { size: 'small' });
+            needs('prop', b.thing, { find: 'is found', hold: 'is held', pick: 'is picked up', up: 'is held up', carry: 'is carried', put: 'is put down', drop: 'is dropped', give: 'is given', open: 'opens', close: 'closes', light: 'glows', douse: 'glows' }[b.act], { size: 'small' });
           }
           b.asset = asset ? asset.id : null;
         } else if (b.thing) {
@@ -591,6 +604,9 @@
     const feetY = x => PLACES.PLACES[here].ground(x), spots = () => squeeze(PLACES.PLACES[here].pos);
     const errors = [];
     const G = { tau: [], zoom: [], bright: [] };
+    // light and darkness: a channel only stories that ask for it (or visit a dark place) have
+    const lightPlaces = [place.id, ...beats.filter(b => b.type === 'place').map(b => b.value)];
+    if (meta.light || beats.some(b => b.type === 'light') || lightPlaces.some(id => PLACES.PLACES[id] && PLACES.PLACES[id].dark)) G.light = [];
     const setG = (k, t, v, dur = 0.4) => G[k].push({ t, v, dur });
     const P = {
       meta, actors: {}, voice: [], captions: [], bubbles: [], titles: [], hearts: [], heartDown: [], sparkles: [],
@@ -1315,6 +1331,7 @@
         case 'moon':
           (P.moon = P.moon || []).push({ t: s, value: b.value });
           dur = 0; break;
+        case 'light': setG('light', s, LIGHT_LEVELS[b.value], 1.5); dur = 0; break;
         case 'time':
           // a scene that opens somewhere new switches the sky while the page is white; otherwise it changes slowly
           if (b.snap && scene && scene.turn) setG('tau', scene.t0 + PT / 2, TIMES[b.value], 0.001); else setG('tau', s, TIMES[b.value], 4);
@@ -1324,6 +1341,8 @@
           if (b.value === here) { P.warnings.push(`Line ${b.line}: the story is already at the ${PLACES.PLACES[here].name}.`); break; }
           changes.push({ t0: s, t1: s + PT, from: here, to: b.value });
           leavePlace(s + PT / 2);
+          // each place has its own light (dark underground), switched while the page is white
+          if (G.light) setG('light', s + PT / 2, PLACES.PLACES[b.value].dark || 0, 0.001);
           sfx('pageTurn', s);
           here = b.value;
           dur = PT;
@@ -1546,7 +1565,7 @@
         return b.act === 'carry' ? dur + carryOn(b, s + dur, a, p) : dur;
       }
       if (b.act === 'carry') return carryOn(b, s, a, p);
-      if (mustHold()) return 0;
+      if (!/^(open|close|light|douse)$/.test(b.act) && mustHold()) return 0;
       if (b.act === 'up') {
         // held up high for everyone to see (a little sparkle), then back
         const was = a.holding.how, pa = a.holding.p.asset && ASSETS.ASSETS[a.holding.p.asset], up = (pa && pa.raise) || 2.5;
@@ -1591,6 +1610,21 @@
         o.out.exprs.push({ a: t + 0.5, b: t + 1.8, mood: 'happy' });
         sfx('twinkle', t + 0.6, { midi: 88, gain: 0.1 });
         return (t - s) + 1.4;
+      }
+      if (b.act === 'light' || b.act === 'douse') {
+        // lighting it (or putting it out): in the paw, a little lift and a look; on the ground, walk up and reach
+        let d = 0;
+        const on = b.act === 'light', was = p.glow.length ? p.glow[p.glow.length - 1].on : false;
+        if (heldBy.has(p) && heldBy.get(p) !== a.id) return fail(`${title(heldBy.get(p))} is holding ${what}, not ${Name}.`);
+        if (was === on) P.warnings.push(`Line ${b.line}: ${what} is already ${on ? 'lit' : 'out'}.`);
+        if (!(a.holding && a.holding.p === p)) {
+          const g = groundAt(p), side = Math.sign(g.x - a.x) || 1;
+          if (Math.abs(g.x - a.x) > 260) d = moveTo(a, s, g.x - side * 160, false, p);
+          set(a, 'facing', s + d, side * 0.6, 0.3); set(a, 'armR', s + d, 1.1, 0.35); set(a, 'armR', s + d + 0.8, restR(a), 0.4);
+        } else { set(a, 'armL', s, 0.9, 0.3); set(a, 'armL', s + 0.7, restL(a), 0.4); set(a, 'lookY', s, 0.4, 0.3); set(a, 'lookY', s + 0.9, 0, 0.4); }
+        p.glow.push({ t: s + d + 0.4, on });
+        if (on) sfx('twinkle', s + d + 0.45, { midi: 91, gain: 0.14 }); else sfx('rustle', s + d + 0.4, { dur: 0.3, gain: 0.25 });
+        return d + 1.0;
       }
       if (b.act === 'open' || b.act === 'close') {
         let d = 0;
@@ -1719,7 +1753,7 @@
       for (const k in A[id].ch) o.keys[k] = keysFrom(k in init ? init[k] : 0, A[id].ch[k]);
     });
     const tau0 = TIMES[meta.time];
-    const gInit = { tau: tau0, zoom: 1, bright: 0.9 }, keys = {};
+    const gInit = { tau: tau0, zoom: 1, bright: 0.9, light: meta.light ? LIGHT_LEVELS[meta.light] : place.dark || 0 }, keys = {};
     for (const k in G) keys[k] = keysFrom(gInit[k], G[k]);
     if (!changes.length && place.id === 'meadow') {
       // the meadow all story long: the breeze and birds, exactly as always

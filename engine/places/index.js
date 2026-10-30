@@ -7,6 +7,11 @@
 //   grade, tint    day/sunset/dusk/night colours: a multiply grade over the scene, and a tint over the characters
 //   draw(c, t, cam, tau, h)    the layered parallax background (h.cam(p) applies the camera at parallax p)
 //   front(...)     optional: things drawn in front of the characters (fireflies, ...)
+//   dark           optional: how dark the place is by itself, 0 to 1 (underground places; "light:" in a story wins)
+//   lights(t)      optional: the place's own lights at t, [{ x, y, r, col: 'r,g,b', a }] in world pixels (torches,
+//                  crystals): they light up the darkness around them
+//   drawLights(c, t, cam, tau, h)   optional: the bright parts of those lights (flames, glowing crystals), drawn after
+//                  the darkness so they stay bright
 //   trail          optional: a path leading into the picture, for "walks down the path" and "comes up the path":
 //                  its middle line from where the characters stand to the far end, as [x, y, scale] points
 (function (root) {

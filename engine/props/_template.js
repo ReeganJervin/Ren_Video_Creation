@@ -15,6 +15,8 @@
     // hangs: true,                      // optional, with grip: it hangs from the paw by that point (a lantern's handle)
     states: [],                          // e.g. ['closed', 'open'] or ['off', 'glowing']: the first is where it starts
     glow: false,                         // true if "the my prop glows" should work
+    // glowColor: '255,214,140',         // optional: the colour of its glow and of the light it gives in the dark
+    // reach: 440,                       // optional: how far its light reaches in the dark (world pixels)
     motion: 'none',                      // none | sway | bob | flicker | spin
     credit: 'Claude Code',
 

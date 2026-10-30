@@ -520,6 +520,78 @@
   }
   const toScreen = (cam, p) => ({ x: (p.x - cam.cx) * cam.z + W / 2, y: (p.y - cam.cy) * cam.z + H / 2 });
 
+  // ---------- light and darkness (F5) ----------
+  // Only for stories with a "light" channel ("light: dim", or a dark place): darkness is laid over the picture, with
+  // soft round holes where things give light (a lit lantern, the glowing sword, the orb, the star, a place's torches
+  // and crystals), the light's own colour added softly, and a thin rim of that colour on the side of the characters
+  // that faces it. Everything else draws exactly as before.
+  const DARK_COL = '8,10,26';
+  const lit = () => !!(P.keys && P.keys.light);
+  const darkAt = t => (lit() ? clamp(K_('light', t)) : 0);
+  // a prop's light: its glow colour and reach (in world pixels; small things light a smaller circle)
+  const reachOf = (p, asset) => (asset && asset.reach) || (p.size === 'big' ? 700 : p.size === 'medium' ? 520 : 440);
+  const flick = (t, seed) => 1 + 0.05 * Math.sin(t * 13 + seed) + 0.04 * Math.sin(t * 7.3 + seed * 2);
+  // every light on screen at t: { x, y, r, col, a } in screen pixels (held props: after their holder was drawn)
+  function lightsAt(t, cam, PN) {
+    const out = [];
+    if (P.props) P.props.forEach((p, i) => {
+      const L = propLook(p, t), A = L.asset; if (!(L.glowA > 0)) return;
+      const col = (A && A.glowColor) || '255,214,140', f = A && A.motion === 'flicker' ? flick(t, i) : 1, h = p.holds && holdOf(p, t);
+      if (h) {
+        if (!h.dev || h.dev.t !== t) return;
+        out.push({ x: h.dev.x, y: h.dev.y + (h.dev.dy - p.height * 0.55) * h.dev.s, r: reachOf(p, A) * h.dev.s * f, col, a: L.glowA });
+      } else {
+        if (t < p.t0 || (p.t1 !== null && t >= p.t1)) return;
+        const q = propPoint(i, t); if (!q) return;
+        const sp = toScreen(cam, q); out.push({ x: sp.x, y: sp.y, r: reachOf(p, A) * cam.z * f, col, a: L.glowA });
+      }
+    });
+    const S = starAt(t);
+    if (S) { const sp = toScreen(cam, S); out.push({ x: sp.x, y: sp.y, r: 480 * cam.z, col: '255,226,150', a: clamp(S.bright) }); }
+    if (PN.lights) PN.lights(t).forEach(L => { const sp = toScreen(cam, L); out.push({ x: sp.x, y: sp.y, r: L.r * cam.z, col: L.col, a: L.a === undefined ? 1 : L.a }); });
+    return out.filter(L => L.a > 0.01 && L.r > 1);
+  }
+  // the thin rim of light on the characters' edges that face a light (on the character layer, before it's drawn)
+  function rimLight(k, t, cam, Ks, lights, D) {
+    if (!lights.length || D <= 0) return;
+    const g = aux.getContext('2d');
+    for (const id of CAST) {
+      if (!onStage(id, t)) continue;
+      const K = Ks[id], hd = REG[id].height || 300, c0 = toScreen(cam, { x: K.x, y: K.y - K.h - hd * 0.45 * K.s / KS });
+      const w = 260 * K.s * cam.z, h = (hd * K.s / KS + 120) * cam.z, bx = c0.x - w, by = c0.y - h * 0.6, bw = w * 2, bh = h * 1.2;
+      for (const L of lights) {
+        const dx = L.x - c0.x, dy = L.y - c0.y, dist = Math.hypot(dx, dy) || 1, near = clamp(1.25 - dist / (L.r * 1.1));
+        const a = near * L.a * D * 0.95; if (a <= 0.02) continue;
+        const ux = dx / dist, uy = dy / dist, off = Math.max(2, 5 * K.s / KS * cam.z);
+        g.setTransform(1, 0, 0, 1, 0, 0); g.globalCompositeOperation = 'source-over'; g.globalAlpha = 1; g.clearRect(bx - 10, by - 10, bw + 20, bh + 20);
+        g.save(); g.beginPath(); g.rect(bx, by, bw, bh); g.clip();
+        g.drawImage(layer, 0, 0);
+        g.globalCompositeOperation = 'destination-out'; g.drawImage(layer, -ux * off, -uy * off);
+        g.globalCompositeOperation = 'source-in'; g.fillStyle = `rgba(${L.col},${a})`; g.fillRect(bx, by, bw, bh);
+        g.restore();
+        k.save(); k.setTransform(1, 0, 0, 1, 0, 0); k.globalCompositeOperation = 'lighter'; k.drawImage(aux, bx, by, bw, bh, bx, by, bw, bh); k.restore();
+      }
+    }
+    g.setTransform(1, 0, 0, 1, 0, 0); g.globalCompositeOperation = 'source-over'; g.clearRect(0, 0, W, H);
+  }
+  // the darkness over the picture, with soft holes at the lights, then each light's colour added softly
+  function drawDark(c, lights, D) {
+    if (D <= 0) return;
+    const g = darkCv.getContext('2d');
+    g.setTransform(1, 0, 0, 1, 0, 0); g.globalCompositeOperation = 'source-over'; g.clearRect(0, 0, W, H);
+    g.fillStyle = `rgba(${DARK_COL},${D})`; g.fillRect(0, 0, W, H);
+    g.globalCompositeOperation = 'destination-out';
+    for (const L of lights) {
+      const gr = g.createRadialGradient(L.x, L.y, 0, L.x, L.y, L.r);
+      gr.addColorStop(0, `rgba(0,0,0,${L.a})`); gr.addColorStop(0.35, `rgba(0,0,0,${0.85 * L.a})`); gr.addColorStop(0.7, `rgba(0,0,0,${0.35 * L.a})`); gr.addColorStop(1, 'rgba(0,0,0,0)');
+      g.fillStyle = gr; g.fillRect(L.x - L.r, L.y - L.r, L.r * 2, L.r * 2);
+    }
+    c.save(); c.setTransform(1, 0, 0, 1, 0, 0); c.globalAlpha = 1; c.globalCompositeOperation = 'source-over'; c.drawImage(darkCv, 0, 0);
+    c.globalCompositeOperation = 'lighter';
+    for (const L of lights) glow(c, L.x, L.y, L.r * 0.8, L.col, 0.2 * L.a * D);
+    c.restore();
+  }
+
   // ---------- props, set pieces and extras (asset kit) ----------
   // where a prop is (for looking at it), or null when it isn't on stage
   function propPoint(i, t) {
@@ -871,7 +943,7 @@
   }
 
   // ---------- frame ----------
-  let ctx, layer, aux, half;
+  let ctx, layer, aux, half, darkCv;
   // ---------- YouTube kit: the series intro and the end screen ----------
   // They have their own time in the story's timeline (story.js); while they play they are drawn over the story,
   // fading in and out. Ren and Yuki are posed here directly, since they aren't acting in the story then.
@@ -1175,7 +1247,9 @@
     PN.draw(c, t, cam, tau, HP);
     if (P.props && P.props.length) drawProps(c, t, tau, PN, 'base');
     c.setTransform(1, 0, 0, 1, 0, 0); c.globalCompositeOperation = 'multiply'; c.fillStyle = tod(tau, PN.grade); c.fillRect(0, 0, W, H); c.globalCompositeOperation = 'source-over';
-    if (P.props && P.props.length) drawProps(c, t, tau, PN, 'light');
+    const D = darkAt(t);
+    // (in the dark, the props' light is drawn after the darkness, so it stays bright)
+    if (P.props && P.props.length && D <= 0) drawProps(c, t, tau, PN, 'light');
     const Ks = {}; CAST.forEach(id => { Ks[id] = actorState(id, t); });
     const k = layer.getContext('2d');
     k.setTransform(1, 0, 0, 1, 0, 0); k.globalCompositeOperation = 'source-over'; k.clearRect(0, 0, W, H);
@@ -1183,7 +1257,14 @@
     k.setTransform(1, 0, 0, 1, 0, 0); k.globalCompositeOperation = 'source-atop';
     k.globalAlpha = tau < 1 ? 0.06 * tau : 0.06 + 0.08 * (tau - 1); k.fillStyle = tod(tau, PN.tint); k.fillRect(0, 0, W, H);
     k.globalAlpha = 1; k.globalCompositeOperation = 'source-over';
+    const lights = D > 0 ? lightsAt(t, cam, PN) : null;
+    if (D > 0) rimLight(k, t, cam, Ks, lights, D);
     c.drawImage(layer, 0, 0);
+    if (D > 0) {
+      drawDark(c, lights, D);
+      if (P.props && P.props.length) drawProps(c, t, Math.max(tau, 3 * D), PN, 'light');
+      if (PN.drawLights) { HP.cam(1); PN.drawLights(c, t, cam, tau, HP); c.setTransform(1, 0, 0, 1, 0, 0); }
+    }
     if (P.props && P.props.some(p => p.holds)) drawHeldLight(c, t);
 
     applyCam(c, cam, 1);
@@ -1277,6 +1358,7 @@
     ctx = canvas.getContext('2d');
     layer = document.createElement('canvas'); layer.width = W; layer.height = H;
     aux = document.createElement('canvas'); aux.width = W; aux.height = H;
+    darkCv = document.createElement('canvas'); darkCv.width = W; darkCv.height = H;
     half = document.createElement('canvas'); half.width = W / 2; half.height = H / 2;
     if (P.shots) buildRigs();
     buildSprings();
