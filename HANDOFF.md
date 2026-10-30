@@ -63,6 +63,8 @@ Approved on 2026-10-30: the **forest path** and the new lines `<name> walks down
 
 Then, after the owner's OK: **F4 Part D stop 2, third part**: `<name> uses the <prop> on the <prop>`, `<name> pulls the <prop>` (the lever's `up`/`down` states exist), `the map shows <text>`, extras landing on set pieces (perch points), `stories/demos-and-tests/treasure-demo.txt`, then Milestone 2.
 
-The owner's YouTube channel (for context): Episodes 1 and 2 and Shorts 1–4 (`shorts\standalone\1-` to `4-`) are uploaded. "The Compliment" got about 410 views, the others 3–10, so new Shorts follow its style (it opens mid-moment, Ren's pride meets Yuki's teasing, Yuki gets the last word so it loops). The owner decided **not** to add AI (no API keys) to the studio.
+**Uploaded folders (2026-10-30):** stories already on YouTube live in an `uploaded\` folder next to the others: `stories\episodes\uploaded\` (Episodes 1–3), `shorts\standalone\uploaded\` (Shorts 1–5) and `shorts\episode-shorts\uploaded\` (ep1-1, ep1-2). The owner doesn't want anything in them changed. Move a story there once it's on YouTube. Everything still works from there: episodes keep the series intro (the path still has `episodes\`) and episode Shorts still find their episode (any folder inside `stories\`).
+
+The owner's YouTube channel (for context): Episodes 1–3, Shorts 1–5 and the episode Shorts ep1-1 and ep1-2 are uploaded (all on 2026-10-27 to 29). "The Compliment" got about 410 views, the others 3–10, so new Shorts follow its style (it opens mid-moment, Ren's pride meets Yuki's teasing, Yuki gets the last word so it loops). The owner decided **not** to add AI (no API keys) to the studio.
 
 Not in git (on the owner's PC only): `build\`, `videos\`, the voice cache `cache\` and the Kokoro model `models\`. Video folders are named after the story file, so the renamed Shorts make new folders.

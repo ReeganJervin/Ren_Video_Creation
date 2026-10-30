@@ -86,7 +86,7 @@ There are example stories to try first:
 - `stories\demos-and-tests\test-camera.txt` shows every kind of shot and camera move.
 - `stories\demos-and-tests\camera-demo.txt` lets the camera edit by itself (`editing: auto`), with comic beats, slow motion and reveals.
 - `stories\demos-and-tests\feelings-demo.txt` shows every mood and way of talking (thinking, whispering, shouting), with mood voices.
-- `shorts\standalone\1-explorers-rules.txt` is an independent Short (vertical, about 25 s), and `shorts\episode-shorts\ep1-1-the-summit.txt` is a Short made from scene 1 of `beginning-of-a-friendship` (see "Shorts" in STORY-GUIDE.md).
+- `shorts\standalone\uploaded\1-explorers-rules.txt` is an independent Short (vertical, about 25 s), and `shorts\episode-shorts\uploaded\ep1-1-the-summit.txt` is a Short made from scene 1 of `beginning-of-a-friendship` (see "Shorts" in STORY-GUIDE.md).
 
 ## Every video is checked automatically
 
@@ -105,8 +105,8 @@ The results are in `videos\<name>\<name>-report.txt`. Each line starts with `PAS
 
 | Folder or file | What it is |
 |---|---|
-| `stories\` | Your stories. New ones (and the studio's **New story**) start here. Inside: `episodes\` (the series: Episode 1, 2, 3...), `early-stories\` (the first little films and drafts) and `demos-and-tests\` (demos, test stories and `_template.txt`, the starting point for a new story) |
-| `shorts\` | The Shorts: `standalone\` (little stories of their own) and `episode-shorts\` (a part of an episode, drawn standing up) |
+| `stories\` | Your stories. New ones (and the studio's **New story**) start here. Inside: `episodes\` (the series: Episode 1, 2, 3...; the ones already on YouTube are in `episodes\uploaded\`), `early-stories\` (the first little films and drafts) and `demos-and-tests\` (demos, test stories and `_template.txt`, the starting point for a new story) |
+| `shorts\` | The Shorts: `standalone\` (little stories of their own) and `episode-shorts\` (a part of an episode, drawn standing up). Each has an `uploaded\` folder for the Shorts already on YouTube |
 | `config\voices.json` | The voices: the narrator, Ren, Yuki, and the owl (a Kokoro voice or a blend of two, with speed and pitch, and optionally `gain` in dB to make one voice quieter or louder than the others) |
 | `engine\characters.js` | The list of characters: their names, how they move, their sounds and how each mood looks on them |
 | `engine\ren.js` | Ren's fixed design (shape, colours, face, scarf) |

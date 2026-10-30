@@ -605,7 +605,7 @@ What changes in a vertical video:
 
 A Short is a vertical video of 15 seconds to 3 minutes. **30 to 60 seconds works best** (The Compliment is about 41 s): short enough that people watch to the end and it loops. Put Shorts in the `shorts` folder. There are two kinds.
 
-**An independent Short** is a little story of its own. Write it like any story, with `type: short` at the top (an example: `shorts\standalone\1-explorers-rules.txt`):
+**An independent Short** is a little story of its own. Write it like any story, with `type: short` at the top (an example: `shorts\standalone\uploaded\1-explorers-rules.txt`):
 
 ```
 title: Ren's Three Explorer Rules
@@ -623,7 +623,7 @@ narrator: And that is how Ren's very first expedition began.
 ending: The full story is on the channel!
 ```
 
-**An episode Short** is a part of a longer story, drawn again standing up (never cut out of the wide video), with the voices you already made. It needs only a few lines (an example: `shorts\episode-shorts\ep1-1-the-summit.txt`):
+**An episode Short** is a part of a longer story, drawn again standing up (never cut out of the wide video), with the voices you already made. It needs only a few lines (an example: `shorts\episode-shorts\uploaded\ep1-1-the-summit.txt`):
 
 ```
 title: The Summit Is 40 Steps Away
