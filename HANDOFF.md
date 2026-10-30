@@ -49,3 +49,17 @@ Kitsu Studio turns a story written as a plain text file into a finished animated
 - **Stories written:** Season 1, Episodes 1–7, in `stories\episodes\` (the owner's arc; the plan, the decisions and the explorer's rules are in `stories\episodes\season-1-plan.md`): 1 The Beginning of a Friendship, 2 Into the Forest, 3 The Light in the Deep Forest, 4 The Great Tree, 5 The Hungry Road, 6 Ren, Wake Up!, 7 The Cave Nobody Enters (cliffhanger; Episode 8 starts inside the Dark Cave). Episodes 3–7 have every asset they need (the Great Tree, the full moon, the fruit tree and fruit, the grey owl and the Dark Cave were made in F4 Part D stop 2). The earlier drafts "The Old Lantern" and "The Star Who Waited" are in `stories\early-stories\`. Shorts in `shorts\episode-shorts\` (two per episode, `ep1-1-…` to `ep7-2-…`) and `shorts\standalone\` (21 Shorts, numbered in the order to post them: 1–4 are on YouTube already, The Compliment did best, so the next ones follow its style: Ren's pride and Yuki's last word).
 - **YouTube channel art:** `channel\` (made by `node tools\channel-art.js`).
 - `PRODUCTION-SYSTEM.md` (the three video formats, workflows and family-audience content guidelines) is in the project root.
+
+## Open items (where the last session stopped, 2026-10-30)
+
+Waiting for the owner's answer or review:
+- **Forest path** (`engine/places/forest-path.js`): a new place, waiting for approval. After approval, use it in Episode 5 (after Ren hands Yuki the map: the long path ahead), Episode 6's last scene, and maybe the end of Episode 4; then add it to the places table in `STORY-GUIDE.md`.
+- **The sword's name:** called **Starfang** for now (in `engine/props/sword.js` names and `STORY-GUIDE.md`); the owner may want another legendary name.
+- **The brown owl's faces:** offered to give `engine/extras/owl.js` its own worried, scared and thinking faces (like the grey owl's `moods`), so Episode 3's notes ("the owl has no worried face") go away. Not started; waiting for a yes.
+- Everything from F3 stop 3 round two, F3 stop 4 and F4 Part D stops 1–2 listed above as "waiting for the owner's review".
+
+Next work, after the owner's OK: **F4 Part D stop 2, third part**: `<name> uses the <prop> on the <prop>`, `<name> pulls the <prop>` (the lever's `up`/`down` states exist), `the map shows <text>`, extras landing on set pieces (perch points), `stories/demos-and-tests/treasure-demo.txt`, then Milestone 2.
+
+The owner's YouTube channel (for context): Episodes 1 and 2 and Shorts 1–4 (`shorts\standalone\1-` to `4-`) are uploaded. "The Compliment" got about 410 views, the others 3–10, so new Shorts follow its style (it opens mid-moment, Ren's pride meets Yuki's teasing, Yuki gets the last word so it loops). The owner decided **not** to add AI (no API keys) to the studio.
+
+Not in git (on the owner's PC only): `build\`, `videos\`, the voice cache `cache\` and the Kokoro model `models\`. Video folders are named after the story file, so the renamed Shorts make new folders.
