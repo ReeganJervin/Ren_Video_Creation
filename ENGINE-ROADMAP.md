@@ -4,6 +4,7 @@
 > **Read first:** `HANDOFF.md` (the current engine, status and way of working) and `PRODUCTION-SYSTEM.md` (the three video formats).
 > **Owner:** not a programmer, on Windows. They review every step from images and reports.
 > **Version 3 (2026-10-26):** adds section 0.6 (audience and tone: a **family** show for kids **and** adults), F11 YouTube kit, F12 Expression pack, F13 Storytelling tools (weather, dreams, sound library), F14 Library growth, rule R15, and a new build order and milestones. The owner manages their own computers and branches; this roadmap doesn't set that up.
+> **Version 3.2 (2026-10-30, owner):** F5 (step 13) moved up to come right after F4 Part D stop 2's assets, before the rest of F4 Part D and Milestone 2: the owner's Season 1 continues underground (Episode 8 starts inside the Dark Cave). Part B's places are the six the owner approved (see F5 Part B).
 > **Version 3.1 (2026-10-26, owner):** F7 (vertical 9:16 and Shorts) moved to right after F11 (step 7), before F12; steps and milestones renumbered.
 > **Version 2 (2026-10-25):** adds the big picture (section 0.5), the Asset Kit (F4, detailed in `ASSET-KIT.md`), the Studio App (F9, detailed in `STUDIO-APP.md`), the World system (F10), rules R12–R14 (including quick and full test levels), and a **build order** that no longer follows the F-numbers exactly.
 
@@ -138,7 +139,7 @@ Work through the steps **in this order**. The F-numbers are names, not the order
 | 10 | F4 Asset Kit, Part D: prop acting, Season 1 props, extras landing on set pieces (needs F3) | Stop 1 (prop acting, leaf/map/cookie, Episodes 3–4 upgraded) built, waiting for the owner's review; stop 2 under way: the Season 1 episode assets (Great Tree with a star hollow, `moon: full`, fruit tree, fruit, grey owl, Dark Cave) are built and waiting for the owner's review; the rest of the Season 1 props (sword, coin, chest, gold, book, orb, stone door, lever, pebble, umbrella, flower) are built and waiting for review too; uses/pulls, map text, extras landing and the treasure demo next | see git log |
 | 11 | **Milestone 2.** The owner then makes the real **Episode 1** | Not started | |
 | 12 | **F13 Storytelling tools** (weather, dreams and memories, sound library) | Not started | |
-| 13 | F5 Lighting and indoor places (cave kit, inside the cottage) | Not started | |
+| 13 | F5 Lighting and indoor places (cave kit, inside the cottage). **Moved up by the owner (version 3.2): do it now, before finishing step 10 and Milestone 2** | Part A in progress | |
 | 14 | F6 Magic and comedy effects | Not started | |
 | 15 | **Milestone 3** | Not started | |
 | 16 | F9 Studio App, Part B (voices, library, videos, Shorts screens) | Not started | |
@@ -408,16 +409,14 @@ It includes everything the old F4 promised: the prop registry, the Season 1 star
 **Commit message:** `F5A: lighting system`
 
 ### Part B: the cave kit and indoor places
-1. **Cave kit** in `engine/places/`. One base cave with **variants:**
-   - `cave entrance` (outdoor forest edge, with a dark opening beneath a giant ancient tree)
-   - `cave tunnel`
+1. **Cave kit** in `engine/places/`, the six places the owner approved (2026-10-30). One base cave with **variants:**
+   - `cave tunnel` (inside the Dark Cave, where Episode 8 starts; the cave mouth outside is the `dark cave` set piece)
+   - `dungeon hall` (old stone corridors, torches on the walls, carved doors)
    - `treasure chamber` (gold piles, chests, glittering coins)
-   - `hidden chamber` (runes, a pedestal for the sword)
+   - `sword chamber` (a hidden room with runes and a stone stand where Starfang waits)
    - `crystal cave` (glowing crystals that give light)
-   - `underground lake`
-2. **Ancient interiors:**
-   - `ancient ruins` (outdoor and indoor parts, carved symbols)
-   - `ancient library` (shelves, floating dust in the light, books)
+   - `underground lake` (still, dark water)
+2. **Later, when the stories need them** (owner, 2026-10-30): `ancient ruins`, `ancient library` and others.
 3. **Place features** that characters and props can use:
    - ledges (for `climbs up`)
    - things to hide behind

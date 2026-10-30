@@ -907,7 +907,8 @@
           const pl = PLACES.PLACES[here];
           if (!pl.trail) { errors.push(`Line ${b.line}: the ${pl.name} has no path that leads into the distance. Try the forest path.`); break; }
           if (who.some(a => a.def.fly)) { errors.push(`Line ${b.line}: only Ren, Yuki and walking animals can walk along the path.`); break; }
-          const T = PLACES.util.trailOf(pl.trail), x0 = pl.trail[0][0];
+          // (gone into the distance: parked well off stage, so no wide shot shows them at the edge)
+          const T = PLACES.util.trailOf(pl.trail), x0 = pl.trail[0][0], GONE = 3400;
           const c = b.to && spots()[b.to], ends = who.length === 2 ? [c - GAP / 2, c + GAP / 2] : [c];
           who.forEach((a, i) => {
             if (b.dir === 'toward' && onStage(a)) { errors.push(`Line ${b.line}: ${title(a.id)} is already here. Use "comes up the path" for someone who isn't on stage yet.`); return; }
@@ -916,14 +917,14 @@
             const speed = a.def.speed * (b.run ? 2.1 : 1) * STRIDE, d = Math.min(6, Math.max(3.5, T.len / speed)) * (b.run ? 0.6 : 1);
             const spotX = b.dir === 'away' ? a.x : ends[i], o = spotX - x0, t0 = s + 0.15 + (b.dir === 'away' ? 0.35 : 0);
             const n = a.def.moves === 'hop' ? Math.max(4, Math.round(d / 0.36)) : 0;
-            a.out.walks.push({ t0, t1: t0 + d, x0: b.dir === 'away' ? a.x : OFF.right, x1: b.dir === 'away' ? OFF.right : spotX, ...(n ? { hops: n } : {}),
+            a.out.walks.push({ t0, t1: t0 + d, x0: b.dir === 'away' ? a.x : GONE, x1: b.dir === 'away' ? GONE : spotX, ...(n ? { hops: n } : {}),
               ...(b.run ? { gait: 'run' } : {}), trip: { dir: b.dir, o } });
             if (n) for (let k = 0; k < n; k++) sfx('hopUp', t0 + k * d / n, { gain: 0.55 * (b.dir === 'away' ? 1 - k / n : (k + 1) / n) });
             else sfx('rustle', t0, { dur: d, gain: 0.4 });
             if (b.dir === 'away') {
               // turn round to face the path first, then go; once gone, they face the front again (off stage)
               a.ch.away = a.ch.away || []; a.ch.away.push({ t: s, v: 1, dur: 0.45 }, { t: t0 + d, v: 0, dur: 0.05 }); a.away = 0;
-              a.x = OFF.right;
+              a.x = GONE;
             } else { set(a, 'facing', s, 0, 0.05); a.x = spotX; }
             a.free = t0 + d; a.toYou = false;
             dur = Math.max(dur, t0 + d - s + (b.dir === 'away' ? 0.3 : 0.6));

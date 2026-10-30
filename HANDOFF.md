@@ -53,12 +53,15 @@ Kitsu Studio turns a story written as a plain text file into a finished animated
 ## Open items (where the last session stopped, 2026-10-30)
 
 Waiting for the owner's answer or review:
-- **Forest path** (`engine/places/forest-path.js`): a new place, waiting for approval. After approval, use it in Episode 5 (after Ren hands Yuki the map: the long path ahead), Episode 6's last scene, and maybe the end of Episode 4; then add it to the places table in `STORY-GUIDE.md`.
 - **The sword's name:** called **Starfang** for now (in `engine/props/sword.js` names and `STORY-GUIDE.md`); the owner may want another legendary name.
 - **The brown owl's faces:** offered to give `engine/extras/owl.js` its own worried, scared and thinking faces (like the grey owl's `moods`), so Episode 3's notes ("the owl has no worried face") go away. Not started; waiting for a yes.
 - Everything from F3 stop 3 round two, F3 stop 4 and F4 Part D stops 1–2 listed above as "waiting for the owner's review".
 
-Next work, after the owner's OK: **F4 Part D stop 2, third part**: `<name> uses the <prop> on the <prop>`, `<name> pulls the <prop>` (the lever's `up`/`down` states exist), `the map shows <text>`, extras landing on set pieces (perch points), `stories/demos-and-tests/treasure-demo.txt`, then Milestone 2.
+Approved on 2026-10-30: the **forest path** and the new lines `<name> walks down the path` / `<name> comes up the path` (Ren and Yuki walk into the distance along a place's `trail`; `engine/places/index.js` `trailOf`/`trailAt`). The path is used in Episode 5 (after Ren gives Yuki the map) and at the end of Episode 6.
+
+**The owner's decision (2026-10-30): F5 (dungeons and caves) comes next**, before the rest of F4 Part D and Milestone 2, so Episode 8 onwards can happen underground. F5 Part A (light and darkness) first, then Part B with the six places the owner approved: cave tunnel (inside the Dark Cave, where Episode 8 starts), dungeon hall (stone corridors, wall torches, carved doors), treasure chamber (gold piles, chests, coins), sword chamber (runes, a stone stand where Starfang waits), crystal cave (crystals that give light), underground lake (still dark water). Other places later, when the stories need them.
+
+Then, after the owner's OK: **F4 Part D stop 2, third part**: `<name> uses the <prop> on the <prop>`, `<name> pulls the <prop>` (the lever's `up`/`down` states exist), `the map shows <text>`, extras landing on set pieces (perch points), `stories/demos-and-tests/treasure-demo.txt`, then Milestone 2.
 
 The owner's YouTube channel (for context): Episodes 1 and 2 and Shorts 1–4 (`shorts\standalone\1-` to `4-`) are uploaded. "The Compliment" got about 410 views, the others 3–10, so new Shorts follow its style (it opens mid-moment, Ren's pride meets Yuki's teasing, Yuki gets the last word so it loops). The owner decided **not** to add AI (no API keys) to the studio.
 

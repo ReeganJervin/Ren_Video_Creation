@@ -57,8 +57,9 @@ ren closes the map
 ren gives the map to yuki
 yuki (playful): I'll carry the map. You can carry the being-lost.
 ren (determined): The river! Let's go!
-ren walks to right
-+ yuki walks to center
+place: forest path
+narrator: And so the two explorers set off down the long forest path, with the map safe in Yuki's paws.
++ ren and yuki walk down the path
 
 
 # ================= Scene 3 - The river =================
@@ -69,6 +70,7 @@ music: magical
 
 reveal: river
 narrator: By midmorning, they reached a wide, sparkling river. The water ran over the stones with a soft, bubbling song.
++ ren and yuki enter from left
 yuki (surprised): It's beautiful.
 ren (excited): And the map says we cross it!
 yuki feels worried

@@ -188,8 +188,8 @@ yuki (surprised): Snow?
 ren (excited): Snow! I've never seen snow!
 yuki (playful): Neither have I.
 ren (determined): Then that's where we're going.
-ren walks to right
-+ yuki walks to right
+place: forest path
 narrator: And with full tummies, and a promise to do the scary things together, the two explorers set off toward the far white hills.
++ ren and yuki walk down the path
 narrator: They had no idea who they would meet there. Or what was waiting at the end of the map.
 title card: SEE YOU SOON
