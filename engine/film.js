@@ -41,6 +41,7 @@
       if (t >= w.t1) x = w.x1;
       else if (t > w.t0) {
         const u = (t - w.t0) / (w.t1 - w.t0);
+        if (w.trip) return tripPos(w, u).x;
         if (!w.hops) return lerp(w.x0, w.x1, ease(u));
         const k = Math.min(w.hops - 1, Math.floor(u * w.hops)), v = u * w.hops - k;
         return lerp(w.x0, w.x1, (k + ease(clamp(v / 0.8))) / w.hops);
@@ -48,6 +49,27 @@
       else break;
     }
     return x;
+  }
+  // A walk along the place's path, into the picture (see "journey" in story.js): where the walker is after a fraction u
+  // of the walk's time, { x, y, s, f } (f: how far along the trail). It sets off gently and keeps an even pace; side by
+  // side walkers keep their gap (o), which shrinks with the distance like everything else.
+  const TRAILS = new Map();
+  function tripPos(w, u) {
+    const pl = placeAt(w.t0), tr = pl.trail;
+    if (!TRAILS.has(tr)) TRAILS.set(tr, StudioPlaces.util.trailOf(tr));
+    const T = TRAILS.get(tr), E = 0.12;
+    // speeding up over the first E of the time; coming toward us, also slowing down over the last E to stop on the spot
+    const both = w.trip.dir === 'toward';
+    let f = u < E ? u * u / (2 * E) : both && u > 1 - E ? 1 - E - (1 - u) * (1 - u) / (2 * E) : u - E / 2;
+    f = clamp(f / (both ? 1 - E : 1 - E / 2));
+    if (both) f = 1 - f;
+    const p = StudioPlaces.util.trailAt(T, f);
+    return { x: p.x + w.trip.o * p.s, y: p.y, s: p.s, f, len: T.len };
+  }
+  // the walk along a path a character is on at t, if any: { w, u }
+  function tripAt(id, t) {
+    for (const w of P.actors[id].walks) if (w.trip && t > w.t0 && t < w.t1) return { w, u: (t - w.t0) / (w.t1 - w.t0) };
+    return null;
   }
   // height and landing squash of a travel hop at t (null when not hopping along)
   function travelHop(id, t) {
@@ -68,7 +90,10 @@
   // Body: position, squash, facing, arms. Never depends on props (so props can follow it).
   function actorBody(id, t) {
     const a = P.actors[id], n = CAST.indexOf(id);
-    const x = actorX(id, t), v = (actorX(id, t + 0.02) - actorX(id, t - 0.02)) / 0.04;
+    const x = actorX(id, t), trip = tripAt(id, t), tp = trip && tripPos(trip.w, trip.u);
+    // (on a walk along the path, the speed and the stride come from the distance walked in the world)
+    const v = tp ? (tripPos(trip.w, Math.min(1, trip.u + 0.02 / (trip.w.t1 - trip.w.t0))).f - tripPos(trip.w, Math.max(0, trip.u - 0.02 / (trip.w.t1 - trip.w.t0))).f) * tp.len / 0.04
+      : (actorX(id, t + 0.02) - actorX(id, t - 0.02)) / 0.04;
     const walk = REG[id].moves === 'hop' ? 0 : clamp(Math.abs(v) / 140), run = runAt(id, t);
     let h = 0, sx = 1, sy = 1, hopping = false;
     for (const hp of a.hops) {
@@ -81,16 +106,16 @@
       if (t > hp.t1 && t < hp.t1 + 0.2) { const q = Math.sin((t - hp.t1) / 0.2 * Math.PI); sy *= 1 - 0.12 * q; sx *= 1 + 0.09 * q; }
     }
     const th = travelHop(id, t);
-    if (th) { h += th.h; sy *= 1 - 0.1 * th.land; sx *= 1 + 0.08 * th.land; }
+    if (th) { h += th.h * (tp ? tp.s : 1); sy *= 1 - 0.1 * th.land; sx *= 1 + 0.08 * th.land; }
     const crouch = A_(id, 'crouch', t), air = a.keys.air ? A_(id, 'air', t) : 1;   // air: 1 flying, 0 landed
     // breathing and idle sway, each character on its own phase
     sy *= crouch * (1 + 0.012 * Math.sin(t * 2.6 + n * 1.7)); sx *= 1 + (1 - crouch) * 0.45;
-    const phase = x / 160 * Math.PI * 2, swing = Math.sin(phase) * 0.35 * walk * (1 + 0.9 * run), idle = Math.sin(t * 2 + n * 2.1) * 0.04;
+    const phase = (tp ? tp.f * tp.len : x) / 160 * Math.PI * 2, swing = Math.sin(phase) * 0.35 * walk * (1 + 0.9 * run), idle = Math.sin(t * 2 + n * 2.1) * 0.04;
     // running: a bouncy stride (walkers; hoppers run in bigger hops instead)
-    if (run && walk) h += Math.abs(Math.sin(phase)) * 14 * run * walk;
+    if (run && walk) h += Math.abs(Math.sin(phase)) * 14 * run * walk * (tp ? tp.s : 1);
     let wave = 0; for (const w of a.waves) wave += Math.sin((t - w.a) * 9) * 0.35 * win(t, w.a, w.b, 0.2, 0.3);
     return {
-      id, t, x, y: placeAt(t).ground(x) - (REG[id].fly || 0) * air, air, h, sx, sy, s: KS, f: A_(id, 'facing', t), walk, phase, hopping, run,
+      id, t, x, y: tp ? tp.y : placeAt(t).ground(x) - (REG[id].fly || 0) * air, air, h, sx, sy, s: tp ? KS * tp.s : KS, f: A_(id, 'facing', t), walk, phase, hopping, run,
       armL: A_(id, 'armL', t) + swing + idle, armR: A_(id, 'armR', t) - swing + idle + wave,
       ...(a.keys.away ? { away: A_(id, 'away', t) } : {}),
     };
@@ -195,7 +220,10 @@
   // who is drawn first (furthest back): the cast in order, except that anyone hiding behind someone goes first
   const drawOrder = t => {
     const hid = id => (P.actors[id].behind || []).some(w => t >= w.a && t < w.b);
-    return CAST.some(hid) ? [...CAST.filter(hid), ...CAST.filter(id => !hid(id))] : CAST;
+    const order = CAST.some(hid) ? [...CAST.filter(hid), ...CAST.filter(id => !hid(id))] : CAST;
+    // walking along a path: whoever is further away is drawn first
+    const far = id => { const tr = tripAt(id, t); return tr ? tripPos(tr.w, tr.u).f : 0; };
+    return order.some(id => far(id) > 0) ? [...order].sort((p, q) => far(q) - far(p)) : order;
   };
 
   // ---------- clean turns ----------

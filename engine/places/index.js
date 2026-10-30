@@ -7,6 +7,8 @@
 //   grade, tint    day/sunset/dusk/night colours: a multiply grade over the scene, and a tint over the characters
 //   draw(c, t, cam, tau, h)    the layered parallax background (h.cam(p) applies the camera at parallax p)
 //   front(...)     optional: things drawn in front of the characters (fireflies, ...)
+//   trail          optional: a path leading into the picture, for "walks down the path" and "comes up the path":
+//                  its middle line from where the characters stand to the far end, as [x, y, scale] points
 (function (root) {
   const PLACES = {};
   const ASSETS = typeof module !== 'undefined' ? require('../assets.js') : root.StudioAssets;
@@ -117,7 +119,25 @@
     });
     c.restore();
   }
-  const util = { clamp, lerp, hash, hex, tod, toda, glow, sparkle, sky, sunYAt, fireflies, faces, clear, STARS, CLOUDS };
+  // ---------- walking along a place's trail ----------
+  // A walker keeps an even pace in the world, so far away it moves less on screen. The trail is followed until a
+  // character would be this small (it then disappears into the distance); `len` is its length in world pixels.
+  const TRAIL_END = 0.06;
+  function trailOf(trail) {
+    const pts = [], d = [0];
+    for (const p of trail) { pts.push(p); if (p[2] <= TRAIL_END) break; }
+    for (let i = 1; i < pts.length; i++) d.push(d[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]) / ((pts[i][2] + pts[i - 1][2]) / 2));
+    return { pts, d, len: d[d.length - 1] };
+  }
+  // where on the trail a walker is after a fraction f (0 to 1) of the way: { x, y, s }
+  function trailAt(T, f) {
+    const want = clamp(f) * T.len;
+    let i = 1; while (i < T.d.length - 1 && T.d[i] < want) i++;
+    const u = clamp((want - T.d[i - 1]) / ((T.d[i] - T.d[i - 1]) || 1)), a = T.pts[i - 1], b = T.pts[i];
+    return { x: lerp(a[0], b[0], u), y: lerp(a[1], b[1], u), s: lerp(a[2], b[2], u) };
+  }
+
+  const util = { clamp, lerp, hash, hex, tod, toda, glow, sparkle, sky, sunYAt, fireflies, faces, clear, STARS, CLOUDS, trailOf, trailAt };
 
   // A place a story names that doesn't exist yet: a plain grey-blue backdrop with a ground line and its name,
   // so the story can still be previewed. It has the usual stage spots and a flat ground.

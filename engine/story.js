@@ -37,7 +37,7 @@
     'narrator: <text>', '<name>: <text>', `<name> (${MOODS.slice(1).join('|')}): <text>`,
     '<name> (thinks|thinks silently|whispers|shouts): <text>', '<name> (shouts, <mood>): <text>', 'mood voices: on|off',
     '<name> enters [from left|right] [to left|center|right]', '<name> walks to left|center|right', '<name> walks to <other name>',
-    '<name> exits [to] left|right', '<name> hops [twice]', '<name> waves', '<name> looks up|down|left|right|around|at you|at the star|at the heart',
+    '<name> exits [to] left|right', '<name> walks down the path', '<name> comes up the path [to left|center|right]', '<name> hops [twice]', '<name> waves', '<name> looks up|down|left|right|around|at you|at the star|at the heart',
     '<name> looks at <other name>', '<name> turns to you', '<name> turns to <other name>', '<name> turns away', '<name> tilts its head',
     '<name> sits down', '<name> stands up', '<name> crouches', '<name> leans closer [to <other name>]', '<name> leans back', '<name> wobbles',
     '<name> counts on its paws', '<name> writes in the air', '<name> holds out its paw [to <other name>]', '<name> touches paws with <other name>',
@@ -84,6 +84,9 @@
     if ((k = a.match(/^(?:walks?|moves?|goes|go|hops?|runs?) to (?:the )?(left|center|centre|right)( slowly)?$/))) return { type: 'walk', to: spot(k[1]), slow: !!k[2] };
     if ((k = a.match(new RegExp(`^(?:walks?|moves?|goes|go|hops?|runs?) (?:over )?to (${NAME})( slowly)?$`)))) return { type: 'walkTo', target: k[1], slow: !!k[2] };
     if ((k = a.match(/^(?:exits?|leaves?)(?: to)?(?: the)? (left|right)$/))) return { type: 'exit', to: k[1] };
+    // a journey along a place's path, into the picture: away from us into the distance, or toward us from far away
+    if (/^(?:walks?|hops?|goes|go|runs?|sets? off) (?:away )?(?:down|along) the (?:path|road|trail)(?: into the distance)?$|^(?:walks?|hops?|goes|go) (?:away )?into the distance$/.test(a)) return { type: 'journey', dir: 'away', run: gait === 'run' };
+    if ((k = a.match(/^comes? (?:up|down|along) the (?:path|road|trail)(?: to (?:the )?(left|center|centre|right))?$/))) return { type: 'journey', dir: 'toward', to: spot(k[1] || 'center') };
     if ((k = a.match(/^hops?( twice)?$/))) return { type: 'hop', n: k[1] ? 2 : 1 };
     if (/^waves?( goodbye| hello)?$/.test(a)) return { type: 'wave' };
     if ((k = a.match(new RegExp(`^waves? (?:to|at) (${NAME})$`)))) return { type: 'wave', target: k[1] };
@@ -898,6 +901,35 @@
           break;
         }
         case 'exit': who.forEach(a => { if (a.ch.air) a.ch.air.push({ t: s, v: 1, dur: 0.6 }); dur = Math.max(dur, moveTo(a, s, OFF[b.to], b.slow || false)); }); break;
+        case 'journey': {
+          // along the place's path, into the picture: "away" walks off into the distance (seen from behind) until gone;
+          // "toward" comes from far away up to a stage spot. Side by side walkers keep their gap, shrinking with distance.
+          const pl = PLACES.PLACES[here];
+          if (!pl.trail) { errors.push(`Line ${b.line}: the ${pl.name} has no path that leads into the distance. Try the forest path.`); break; }
+          if (who.some(a => a.def.fly)) { errors.push(`Line ${b.line}: only Ren, Yuki and walking animals can walk along the path.`); break; }
+          const T = PLACES.util.trailOf(pl.trail), x0 = pl.trail[0][0];
+          const c = b.to && spots()[b.to], ends = who.length === 2 ? [c - GAP / 2, c + GAP / 2] : [c];
+          who.forEach((a, i) => {
+            if (b.dir === 'toward' && onStage(a)) { errors.push(`Line ${b.line}: ${title(a.id)} is already here. Use "comes up the path" for someone who isn't on stage yet.`); return; }
+            if (b.dir === 'away' && !onStage(a)) { errors.push(`Line ${b.line}: ${title(a.id)} isn't on stage, so can't walk down the path.`); return; }
+            if (a.hiding) { a.hiding.rec.b = s + 0.3; a.hiding = null; }
+            const speed = a.def.speed * (b.run ? 2.1 : 1) * STRIDE, d = Math.min(6, Math.max(3.5, T.len / speed)) * (b.run ? 0.6 : 1);
+            const spotX = b.dir === 'away' ? a.x : ends[i], o = spotX - x0, t0 = s + 0.15 + (b.dir === 'away' ? 0.35 : 0);
+            const n = a.def.moves === 'hop' ? Math.max(4, Math.round(d / 0.36)) : 0;
+            a.out.walks.push({ t0, t1: t0 + d, x0: b.dir === 'away' ? a.x : OFF.right, x1: b.dir === 'away' ? OFF.right : spotX, ...(n ? { hops: n } : {}),
+              ...(b.run ? { gait: 'run' } : {}), trip: { dir: b.dir, o } });
+            if (n) for (let k = 0; k < n; k++) sfx('hopUp', t0 + k * d / n, { gain: 0.55 * (b.dir === 'away' ? 1 - k / n : (k + 1) / n) });
+            else sfx('rustle', t0, { dur: d, gain: 0.4 });
+            if (b.dir === 'away') {
+              // turn round to face the path first, then go; once gone, they face the front again (off stage)
+              a.ch.away = a.ch.away || []; a.ch.away.push({ t: s, v: 1, dur: 0.45 }, { t: t0 + d, v: 0, dur: 0.05 }); a.away = 0;
+              a.x = OFF.right;
+            } else { set(a, 'facing', s, 0, 0.05); a.x = spotX; }
+            a.free = t0 + d; a.toYou = false;
+            dur = Math.max(dur, t0 + d - s + (b.dir === 'away' ? 0.3 : 0.6));
+          });
+          break;
+        }
         // a flying extra lands where it is (wings folded) or takes off again; only made when a story uses it
         case 'land': who.forEach(a => {
           if (!a.def.fly) { errors.push(`Line ${b.line}: only things that fly can ${b.down ? 'land' : 'take off'}.`); return; }

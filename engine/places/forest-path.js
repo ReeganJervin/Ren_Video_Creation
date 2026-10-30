@@ -77,6 +77,8 @@
     ambient: 'forest',
     pos: { left: 560, center: 960, right: 1360 },
     ground: () => G,
+    // for "walks down the path": the path's middle line from where the characters stand into the distance
+    trail: PATH.filter(p => p[1] <= G).map(([x, y, w]) => [x, y, w / 560]),
     grade: ['#ffffff', '#fff1e0', '#e4d4ec', '#a8b4e4'], tint: ['#f6ffe8', '#ffb070', '#9a80c0', '#33489e'],
     draw(c, t, cam, tau, h) {
       sky(c, t, h, tau, PAL, { cloudAlpha: 0.5 });

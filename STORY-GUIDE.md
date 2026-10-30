@@ -104,6 +104,8 @@ The amounts are in `config\voices.json` (`_moods` for moods, `_styles` for ways 
 | `<name> walks to left` | Goes to the `left`, `center` or `right` spot (Yuki hops there; `yuki hops to left` also works). Add `slowly` for a careful walk |
 | `<name> walks to <other name>` | Goes over and stops beside the other character, then looks at them |
 | `<name> exits to right` | Goes off screen (`left` or `right`) |
+| `<name> walks down the path` | Turns round and walks away along the path, into the distance, getting smaller until gone (Yuki hops). `ren and yuki walk down the path` go side by side. Also: `sets off down the path`, `runs down the path`, `walks into the distance`. Only in a place with a path into the distance: the `forest path` |
+| `<name> comes up the path` | The other way: appears far away and walks toward you, up to the centre. Also `comes up the path to left` (or `right`). `ren and yuki come up the path` come side by side |
 | `<name> hops` | One happy hop. `yuki hops twice` hops twice. Yuki hops higher, with a lighter boing |
 | `<name> waves` | Waves a paw. `yuki waves at ren` also looks at Ren |
 | `<name> looks up` | Looks `up`, `down`, `left`, `right`, `around`, `at you`, `at the star` or `at the heart`. Looking at the star or heart follows it as it moves |
