@@ -1,6 +1,9 @@
 # ============================================================
-#  Ren & Yuki Short - The Umbrella   (vertical)
-#  Ren is ready for a storm on a sunny day (uses the umbrella).
+#  Ren & Yuki Short - The Umbrella   (~30 s, vertical)
+#  Ren is ready for a storm on a very sunny day (uses the umbrella).
+#  Rewritten 2026-10-30 in The Compliment's style: the first line is
+#  the joke (no walking in), one joke that grows, and the last line
+#  points back to the start so it loops.
 #  Make it:  make-video.bat shorts\standalone\12-short-the-umbrella.txt
 # ============================================================
 
@@ -13,27 +16,22 @@ place: meadow
 time: day
 music: happy
 
-ren enters from left to left
-+ yuki enters from right to right
+shot: close on ren
 ren holds the umbrella
 ren opens the umbrella
-ren (proud): Don't worry, Yuki. I'm ready for the storm.
-yuki looks up
-yuki (thinking): Ren, there isn't a single cloud in the sky.
-ren (proud): That's what the storm wants you to think.
-yuki (playful): It's sunny. Very sunny.
-shot: close on ren
-ren (thinking): Then it's a sun umbrella. For shade. And for style.
-ren feels proud
++ ren (proud): Don't worry, Yuki. I'm ready for the storm.
 shot: medium on both
-yuki (laughing): Hehe! It does look very stylish.
-yuki walks to ren
-yuki (shy): Can I stand in the shade too?
-ren (surprised): In my very stylish shade?
-yuki (happy): Please?
-ren (happy): Explorer's rule: the shade is better with two.
-hearts float up
-shot: close on yuki
-yuki (playful): That's not a real rule.
+yuki looks up
+yuki (thinking): Ren. There isn't one cloud in the sky.
+ren (proud): That's exactly what the storm wants you to think.
+yuki (playful): It's sunny. Very, very sunny.
 shot: close on ren
-ren (proud): It is now.
+ren (thinking): ...Then it's a sun umbrella. For shade. And for style.
+shot: medium on both
+yuki walks to ren
+yuki (shy): Can I stand in the stylish shade too?
+ren (happy): Explorer's rule: shade is better with two.
+hearts float up
+beat
+shot: close on yuki
+yuki (proud): Don't worry, Ren. I'm ready for the storm.

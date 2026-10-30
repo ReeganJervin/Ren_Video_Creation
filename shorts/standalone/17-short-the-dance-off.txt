@@ -1,25 +1,28 @@
 # ============================================================
-#  Ren & Yuki Short - The Dance-Off   (~35 s, vertical)
-#  Save as: shorts\standalone\17-short-the-dance-off.txt
-#  Uses: meadow, Ren, Yuki, dance, jump, trip, fall, shout bubbles.
+#  Ren & Yuki Short - The Dance-Off   (~30 s, vertical)
+#  Loser carries the snacks. Ren has a secret move.
+#  Rewritten 2026-10-30 in The Compliment's style: the first line is
+#  the joke (no walking in), one joke that grows, and the last line
+#  points back to the start so it loops.
+#  Make it:  make-video.bat shorts\standalone\17-short-the-dance-off.txt
 # ============================================================
 
 title: The Dance-Off
 type: short
-hook: Dance-off! Who wins?
+hook: Dance-off! Loser carries the snacks
 thumbnail text: DANCE-OFF!
 mood voices: on
 place: meadow
 time: sunset
 music: adventure
 
-ren enters from left to left
-+ yuki enters from right to right
-ren (proud): I challenge you to a dance-off. The loser carries the snacks.
-yuki (determined): You're on!
+shot: close on ren
+ren (proud): Dance-off. Loser carries the snacks.
+shot: close on yuki
+yuki (determined): You're on.
 shot: medium on ren
 ren dances
-ren (excited): Ta-da! The legendary fox shuffle!
+ren (excited): The legendary fox shuffle!
 shot: medium on yuki
 yuki dances
 yuki jumps
@@ -33,11 +36,10 @@ ren trips
 ren falls down
 camera: shake
 beat
-ren (proud): That was the secret move.
+ren (proud): ...That was the secret move.
 shot: medium on both
-yuki (laughing): It's called the fox flop!
+yuki (laughing): The fox flop!
 ren gets up
 ren (pouty): I'll carry the snacks.
-yuki (playful): And you'll teach me the fox flop.
-ren dances
-+ yuki dances
+shot: close on yuki
+yuki (playful): Rematch? Loser carries the snacks.

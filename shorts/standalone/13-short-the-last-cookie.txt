@@ -1,7 +1,10 @@
 # ============================================================
-#  Ren & Yuki Short - The Last Cookie   (~40 s, vertical)
+#  Ren & Yuki Short - The Last Cookie   (~35 s, vertical)
 #  Two friends, one cookie, a very serious negotiation... and an owl.
-#  Uses: meadow, Ren, Yuki, the owl, the cookie, moods.
+#  Rewritten 2026-10-30 in The Compliment's style: the first line is
+#  the joke (no walking in), one joke that grows, and the last line
+#  points back to the start so it loops.
+#  Make it:  make-video.bat shorts\standalone\13-short-the-last-cookie.txt
 # ============================================================
 
 title: The Last Cookie
@@ -11,36 +14,31 @@ thumbnail text: The LAST Cookie
 mood voices: on
 place: meadow
 time: day
-music: happy
+music: tense
 
+# a stand-off: they walk in from both sides while Ren speaks
+cookie appears at center
 ren enters from left to left
 + yuki enters from right to right
-cookie appears at center
-ren and yuki look at the cookie
-shot: extreme close on ren
-ren (determined): The last cookie.
++ ren (determined): The last cookie.
 shot: extreme close on yuki
 yuki (determined): The last cookie.
 shot: medium on both
-ren (thinking): Let's be fair. I found it, so I get the big half.
+ren (thinking): I found it, so I get the big half.
 yuki (thinking): I saw it first, so I get the big half.
 ren (pouty): Cookies don't have a big half!
-yuki (playful): Then you won't mind if I take this half.
-music: tense
 ren and yuki look at each other
 beat
 owl flies in from right to right
-owl (happy): Hoo! Is that a cookie?
-ren jumps in fright
-+ yuki jumps in fright
-owl: Since you're both being so fair... I'll keep it safe for you.
+owl: Hoo! Since you can't decide... I'll keep it safe for you.
 the cookie disappears
 owl flies away
 camera: shake
 narrator: Nobody saw that cookie ever again.
 music: happy
-shot: medium on both
 ren (sad): We should have shared it.
 yuki (sad): Next time, we share it straight away.
+shot: close on ren
 ren (playful): Deal. But I get the big half.
+shot: close on yuki
 yuki (laughing): Ren!

@@ -1,41 +1,38 @@
 # ============================================================
-#  Ren & Yuki Short - The Portrait   (vertical)
+#  Ren & Yuki Short - The Portrait   (~30 s, vertical)
 #  Yuki draws Ren's heroic side. It looks like a potato.
+#  Rewritten 2026-10-30 in The Compliment's style: the first line is
+#  the joke (no walking in), one joke that grows, and the last line
+#  points back to the start so it loops.
 #  Make it:  make-video.bat shorts\standalone\14-short-the-portrait.txt
 # ============================================================
 
 title: The Portrait
 type: short
-hook: Yuki draws Ren's portrait...
+hook: She drew his HEROIC side...
 thumbnail text: The Portrait
 mood voices: on
 place: meadow
 time: sunset
 music: happy
 
-ren enters from left to left
-+ yuki enters from right to right
-yuki (happy): Hold still, Ren. I'm drawing your portrait.
-ren (proud): Make sure you get my heroic side.
-ren turns to you
-ren (proud): This is my heroic side.
-yuki (thinking): Hmm. Can you look more... legendary?
+shot: close on ren
 ren raises his paws
-ren (proud): Like this?
-yuki (playful): Less legendary. You're scaring the butterflies.
++ ren (proud): Make sure you get my heroic side.
+shot: close on yuki
+yuki (playful): Less heroic, please. You're scaring the butterflies.
 ren lowers his paws
-beat
-yuki (happy): Done! Do you want to see?
+yuki (happy): Done! Want to see?
+shot: medium on both
 ren walks to yuki
 ren looks down
+beat
 shot: close on ren
-ren (thinking): Yuki. Why do I look like a potato?
+ren (thinking): Yuki... why do I look like a potato?
 shot: close on yuki
 yuki (playful): That's your heroic side.
 shot: medium on both
-ren (pouty): The ears are very good, though.
-yuki (laughing): Hehe! Thank you.
-ren (proud): Now I'll draw you.
+ren (pouty): Fine. Now I'll draw you.
 narrator: Ren drew Yuki. It looked like a cloud with ears.
 shot: close on yuki
-yuki (playful): It's very accurate.
+yuki (playful): Wow. It's very accurate.

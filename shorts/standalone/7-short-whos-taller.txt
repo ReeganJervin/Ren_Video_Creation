@@ -1,34 +1,36 @@
 # ============================================================
-#  Ren & Yuki Short - Who's Taller?   (~35 s, vertical)
-#  Save as: shorts\standalone\7-short-whos-taller.txt
-#  Uses: meadow, Ren, Yuki, new moods, shout bubbles.
+#  Ren & Yuki Short - Who's Taller?   (~30 s, vertical)
+#  Ren and Yuki measure. Ears may or may not count.
+#  Rewritten 2026-10-30 in The Compliment's style: the first line is
+#  the joke (no walking in), one joke that grows, and the last line
+#  points back to the start so it loops.
+#  Make it:  make-video.bat shorts\standalone\7-short-whos-taller.txt
 # ============================================================
 
 title: Who's Taller?
 type: short
-hook: Who's taller? It's serious.
+hook: Do ears count?!
 thumbnail text: Who's Taller?
 mood voices: on
 place: meadow
 time: day
 music: happy
 
-ren enters from left to left
-+ yuki enters from right to right
-ren (proud): I'm taller than you.
-yuki (determined): Prove it.
-ren walks to yuki
+shot: close on ren
+ren (proud): I'm taller. Obviously.
+shot: close on yuki
+yuki (determined): Ears count.
+shot: close on ren
+ren (shouts, surprised): Ears do NOT count!
 shot: medium on both
-beat
-ren (shouts, surprised): Your ears don't count!
-yuki (pouty): Ears always count.
-ren raises its paws
-ren (excited): Then paws count too!
+yuki (pouty): Then tails don't count.
+ren (thinking): ...Tails count a little.
+ren raises his paws
+ren (excited): Paws up! Paws count!
 yuki hops
-yuki (excited): And hops count!
+yuki (excited): Hops count!
 ren hops twice
 yuki hops twice
-ren and yuki hop
 ren and yuki hop twice
 time: sunset
 narrator: They measured until sunset.
@@ -37,5 +39,7 @@ ren feels sleepy
 ren (sleepy): Tie?
 yuki (sleepy): Tie.
 beat
-ren (whispers): ...I was taller.
-yuki (shouts, pouty): I heard that!
+shot: close on ren
+ren (whispers): ...I'm taller.
+shot: close on yuki
+yuki (determined): Ears count.

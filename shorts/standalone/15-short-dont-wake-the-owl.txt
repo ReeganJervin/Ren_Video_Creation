@@ -1,7 +1,10 @@
 # ============================================================
-#  Ren & Yuki Short - Don't Wake the Owl   (~40 s, vertical)
+#  Ren & Yuki Short - Don't Wake the Owl   (~35 s, vertical)
 #  Sneaking past a sleeping owl at night. What could go wrong?
-#  Uses: forest at night, Ren, Yuki, the owl, sneak, trip, whispers.
+#  Rewritten 2026-10-30 in The Compliment's style: the first line is
+#  the joke (no walking in), one joke that grows, and the last line
+#  points back to the start so it loops.
+#  Make it:  make-video.bat shorts\standalone\15-short-dont-wake-the-owl.txt
 # ============================================================
 
 title: Don't Wake the Owl
@@ -13,13 +16,11 @@ place: forest
 time: night
 music: tense
 
-owl flies in from right to right
-owl lands
-owl feels sleepy
-ren and yuki enter from left to left
-yuki (whispers, worried): Shh. Mister Owl is sleeping.
-ren (whispers, determined): Leave it to me. I'm a master of sneaking.
-ren sneaks to center
+# the owl is already there, asleep (Ren in the middle, the owl on his right, Yuki on his left)
+ren (whispers, determined): Shh. Watch this. I'm a master of sneaking.
++ owl feels sleepy
+yuki (whispers, worried): Ren! Don't wake Mister Owl!
+ren sneaks to owl
 shot: close on ren
 ren (whispers, proud): Silent as a feather.
 ren trips
@@ -28,15 +29,16 @@ ren falls down
 beat
 shot: close on yuki
 yuki covers her eyes
-shot: medium on both
-ren (whispers, scared): Did I wake him?
+ren (whispers, scared): ...Did I wake him?
+shot: close on ren
 ren gets up
-ren (whispers, proud): Phew. Still asleep. Told you. Master of sneaking.
+ren (whispers, proud): Phew. Still asleep. Master of sneaking.
 owl feels normal
 owl: Hoo. I was never asleep.
 ren jumps in fright
 + yuki jumps in fright
 music: happy
-owl (playful): Owls sleep in the day. It's night, little fox.
+owl: Owls sleep in the day, little fox. It's night.
 ren (shy): ...I knew that.
-yuki (laughing): Master of sneaking!
+shot: close on yuki
+yuki (whispers, playful): Master of sneaking.

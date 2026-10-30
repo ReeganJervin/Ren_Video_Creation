@@ -1,41 +1,38 @@
 # ============================================================
-#  Ren & Yuki Short - The Fan Club   (vertical)
+#  Ren & Yuki Short - The Fan Club   (~30 s, vertical)
 #  Ren's fan club has one member. Then Yuki wants to be the president.
+#  Rewritten 2026-10-30 in The Compliment's style: the first line is
+#  the joke (no walking in), one joke that grows, and the last line
+#  points back to the start so it loops.
 #  Make it:  make-video.bat shorts\standalone\6-short-the-fan-club.txt
 # ============================================================
 
 title: The Fan Club
 type: short
-hook: Ren has a FAN CLUB?!
+hook: Ren's fan club has ONE member
 thumbnail text: Ren's Fan Club
 mood voices: on
 place: meadow
 time: day
 music: happy
 
-ren enters from left to left
-+ yuki enters from right to right
-ren (proud): Yuki, did you know I have a fan club?
-yuki (surprised): A fan club? Really?
-ren (proud): A very exclusive fan club. Very hard to get in.
-yuki (thinking): How many members?
-beat
 shot: close on ren
-ren (shy): Currently... one.
-yuki (playful): Who?
-ren turns to you
-ren (whispers, shy): Me.
+ren (proud): Welcome to the first meeting of the Ren Fan Club!
+ren raises his paws
+ren (proud): Members, please stand up.
+beat
+ren (shy): ...Thank you, member.
+yuki enters from right to right
+yuki (playful): Can I join?
 shot: medium on both
-yuki (laughing): Hehe!
-ren feels pouty
-ren (pouty): It's a very good fan club. We have meetings and everything.
-yuki walks to ren
-yuki (shy): Can I join?
-ren (surprised): You want to join?
-yuki (playful): I want to be the president.
-beat
-ren (thinking): That's... a very big promotion.
-yuki (happy): Two members, then.
-hearts float up
+ren (proud): Sorry. It's very exclusive. You have to be a very big fan of Ren.
+yuki (thinking): How many members are there?
 shot: close on ren
+ren (whispers, shy): ...One.
+shot: medium on both
+yuki (playful): Then I'll be the president.
+ren (surprised): President? That's a very big promotion!
+hearts float up
 ren (shy): ...Best fan club in the meadow.
+shot: close on yuki
+yuki (playful): Meeting over. Members, please stand up.

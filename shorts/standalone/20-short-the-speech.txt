@@ -1,39 +1,36 @@
 # ============================================================
-#  Ren & Yuki Short - The Speech   (vertical)
+#  Ren & Yuki Short - The Speech   (~35 s, vertical)
 #  Ren practises his famous-explorer thank-you speech. The tail comes first.
+#  Rewritten 2026-10-30 in The Compliment's style: the first line is
+#  the joke (no walking in), one joke that grows, and the last line
+#  points back to the start so it loops.
 #  Make it:  make-video.bat shorts\standalone\20-short-the-speech.txt
 # ============================================================
 
 title: The Speech
 type: short
-hook: Ren practises his famous-explorer speech
+hook: Ren thanks his biggest fan...
 thumbnail text: Thank You, Fans!
 mood voices: on
 place: meadow
 time: sunset
 music: calm
 
-ren enters from left to center
-ren turns to you
+shot: close on ren
 ren (proud): Thank you. Thank you, everyone. Please, sit down.
-ren (proud): When I became the most legendary explorer in the world, I never forgot the little meadow.
-ren (shy): And I'd like to thank... my very fluffy tail.
-beat
-ren (thinking): Who else? Who else...
+ren (shy): First, I'd like to thank... my very fluffy tail.
 yuki enters from right to right
++ ren (thinking): Who else? Who else...
 yuki (playful): What about your exploring partner?
 ren jumps in fright
 camera: shake
 ren (shouts, surprised): Yuki! How long have you been there?
+shot: medium on both
 yuki (playful): Since "my very fluffy tail".
-shot: close on ren
-ren (shy): I was just getting to you. You were next.
+ren (shy): You were next. Definitely next.
 yuki (thinking): After your tail?
 ren (shy): It's a very important tail.
-shot: medium on both
 yuki (laughing): Hehe!
-ren walks to yuki
-ren (happy): Okay. Second try.
 ren turns to you
 ren (proud): I'd like to thank Yuki. The best exploring partner in the world.
 hearts float up

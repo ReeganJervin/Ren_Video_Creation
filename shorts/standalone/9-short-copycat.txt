@@ -1,7 +1,10 @@
 # ============================================================
-#  Ren & Yuki Short - Copycat   (~35 s, vertical)
+#  Ren & Yuki Short - Copycat   (~25 s, vertical)
 #  Yuki copies everything Ren does. Ren tries to trick her.
-#  Uses: meadow, Ren, Yuki, hops, waves, stretches, dances.
+#  Rewritten 2026-10-30 in The Compliment's style: the first line is
+#  the joke (no walking in), one joke that grows, and the last line
+#  points back to the start so it loops.
+#  Make it:  make-video.bat shorts\standalone\9-short-copycat.txt
 # ============================================================
 
 title: Copycat
@@ -13,24 +16,21 @@ place: meadow
 time: sunset
 music: happy
 
-ren enters from left to left
-+ yuki enters from right to right
+shot: medium on both
 ren hops
 yuki hops
 ren (pouty): Stop copying me.
 yuki (pouty): Stop copying me.
 ren waves
 yuki waves
-ren stretches
-yuki stretches
+ren (shouts, pouty): Yuki!
+yuki (shouts, pouty): Yuki!
 shot: close on ren
-ren (thinking): Ha. I'll trick her. Something she would never say.
+ren (thinks silently): Ha. I'll say something she would never say.
 ren (proud): Yuki is the cleverest bunny in the whole meadow.
 beat
 shot: close on yuki
 yuki (playful): I know.
 shot: medium on both
 ren (surprised): That's not copying!
-yuki (laughing): Some things are just true.
-ren dances
-+ yuki dances
+yuki (playful): That's not copying!

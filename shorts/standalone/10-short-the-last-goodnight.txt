@@ -1,6 +1,9 @@
 # ============================================================
-#  Ren & Yuki Short - The Last Goodnight   (vertical)
+#  Ren & Yuki Short - The Last Goodnight   (~30 s, vertical)
 #  Who says the last goodnight? It loops back to the start.
+#  Rewritten 2026-10-30 in The Compliment's style: the first line is
+#  the joke (no walking in), one joke that grows, and the last line
+#  points back to the start so it loops.
 #  Make it:  make-video.bat shorts\standalone\10-short-the-last-goodnight.txt
 # ============================================================
 
@@ -13,28 +16,24 @@ place: meadow
 time: night
 music: bedtime
 
-ren enters from left to left
-+ yuki enters from right to right
-ren and yuki sit down
+shot: medium on both
 yuki (sleepy): Goodnight, Ren.
++ ren and yuki sit down
 ren (sleepy): Goodnight, Yuki.
-beat
 yuki (playful): Goodnight.
 ren (playful): Goodnight.
-yuki (playful): Goodnight!
 shot: close on ren
-ren (determined): Goodnight. Final goodnight. The last one.
+ren (determined): Goodnight. Final goodnight. The very last one.
+beat
 shot: close on yuki
 yuki (whispers, playful): Goodnight.
 shot: medium on both
-ren feels pouty
-ren (pouty): Yuki! I said it was the last one!
-yuki (laughing): Hehe!
+ren (pouty): Yuki! That was the last one!
 ren lies down
-ren (sleepy): Fine. You win. I'm going to sleep now.
+ren (sleepy): Fine. I'm asleep now. Very asleep.
 beat
 ren (whispers, playful): ...Goodnight.
-yuki (shouts, surprised): Ren!
-ren (laughing): Hahaha!
 shot: close on yuki
-yuki (whispers, playful): Goodnight.
+yuki (shouts, surprised): Ren!
+beat
+yuki (whispers, playful): Goodnight, Ren.

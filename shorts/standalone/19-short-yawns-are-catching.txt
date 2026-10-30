@@ -1,8 +1,10 @@
 # ============================================================
-#  Ren & Yuki Short - Yawns Are Catching   (~35 s, vertical)
-#  Save as: shorts\standalone\19-short-yawns-are-catching.txt
-#  Uses: meadow at night, Ren, Yuki, the owl, yawns, sitting down.
+#  Ren & Yuki Short - Yawns Are Catching   (~30 s, vertical)
 #  Try not to yawn while watching!
+#  Rewritten 2026-10-30 in The Compliment's style: the first line is
+#  the joke (no walking in), one joke that grows, and the last line
+#  points back to the start so it loops.
+#  Make it:  make-video.bat shorts\standalone\19-short-yawns-are-catching.txt
 # ============================================================
 
 title: Yawns Are Catching
@@ -14,26 +16,23 @@ place: meadow
 time: night
 music: bedtime
 
-ren enters from left to left
-+ yuki enters from right to right
-ren (determined): Tonight, we stay up and watch every single star.
-yuki (determined): Every single one.
+shot: close on yuki
 yuki yawns
 shot: close on ren
 ren (pouty): Yuki! No yawning! Yawns are catching!
 ren yawns
 shot: medium on both
 yuki (playful): You yawned!
-ren (sleepy): That wasn't a yawn. That was a... very big breath.
-owl flies in from right
+ren (sleepy): That wasn't a yawn. That was a very big breath.
+owl flies in from right to left
 owl: Hoo. What are you two doing up so late?
-ren (proud): Staying awake. We're professionals.
+ren (proud): Staying awake all night. We're professionals.
 owl (sleepy): Hoo... aaah.
 yuki yawns
 + ren yawns
 beat
-ren (sleepy): Mister Owl. You just made it worse.
+ren (sleepy): Mister Owl. You made it worse.
 ren and yuki sit down
 ren and yuki feel sleepy
-owl (sleepy): Goodnight, little professionals.
-narrator: They watched exactly three stars.
+narrator: They stayed awake for exactly three more seconds.
+narrator: Did you yawn too?

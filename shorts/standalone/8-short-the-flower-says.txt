@@ -1,41 +1,40 @@
 # ============================================================
-#  Ren & Yuki Short - The Flower Says   (vertical)
-#  Ren asks a flower whether Yuki thinks he's brave (uses the flower).
+#  Ren & Yuki Short - The Flower Says   (~35 s, vertical)
+#  Ren asks a flower if he's brave. The flower says no. Yuki says otherwise.
+#  Rewritten 2026-10-30 in The Compliment's style: the first line is
+#  the joke (no walking in), one joke that grows, and the last line
+#  points back to the start so it loops.
 #  Make it:  make-video.bat shorts\standalone\8-short-the-flower-says.txt
 # ============================================================
 
 title: The Flower Says
 type: short
-hook: The flower knows the answer...
+hook: The flower says... NOT brave?!
 thumbnail text: The Flower Says...
 mood voices: on
 place: meadow
 time: sunset
 music: calm
 
-ren enters from left to left
-ren holds the flower
-ren (whispers): Okay, flower. Tell me the truth.
-ren (whispers): Yuki thinks I'm brave.
-ren (whispers, worried): Yuki thinks I'm not brave.
-ren (whispers): Brave.
-ren (whispers, worried): Not brave.
-beat
 shot: close on ren
-ren (surprised): Wait. That was the last petal.
-ren (sad): The flower says not brave.
+ren holds the flower
++ ren (whispers): Brave.
+ren (whispers, worried): Not brave.
+ren (whispers): Brave.
+ren (whispers, worried): Not brave...
+beat
+ren (sad): Last petal. The flower says not brave.
 yuki enters from right to right
-yuki (playful): What does the flower say?
+yuki (playful): Who's not brave?
 ren jumps in fright
 camera: shake
-ren (shouts, scared): Nothing! The flower is very quiet! It's a quiet flower!
+ren (shouts, scared): Nobody! The flower! The flower is not brave!
 shot: medium on both
-yuki walks to ren
-yuki (thinking): Ren, you walked into the dark forest with me. Twice.
-ren (shy): It was a very small forest.
+yuki (thinking): Ren. You walked into the dark forest with me. Twice.
+ren (shy): Only because you were there.
 yuki (happy): You're the bravest fox I know.
 ren feels happy
 hearts float up
-ren (proud): See, flower? I told you.
+ren (proud): Hear that, flower?
 shot: close on yuki
 yuki (playful): Also the only fox I know.
