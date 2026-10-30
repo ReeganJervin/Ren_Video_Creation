@@ -567,7 +567,7 @@ Two lines choose the thumbnail. Put them anywhere in the story; they take no tim
 | `thumbnail: 12.5` | The moment 12.5 seconds in |
 | `thumbnail: scene 3` | The middle of scene 3 |
 | `thumbnail shot: medium` | How close the thumbnail is: `medium` (the characters fill about half the picture's height; this is what you get without the line), `close` (bigger faces) or `wide` (the whole scene, like the video) |
-| `thumbnail text: The Owl's Lantern` | Big, bold, rounded letters with a warm outline at the top, with the characters standing below them (60 characters at most; long titles go on two lines) |
+| `thumbnail text: The Owl's Lantern` | Big, bold, rounded letters with a warm outline at the top, with the characters standing below them (60 characters at most; long titles go on two lines). Without this line, an episode (or any video that isn't a Short) uses its own `title:`, and a Short uses its hook. `thumbnail text: none` means no words at all |
 
 ### The series intro and the end screen
 

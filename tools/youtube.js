@@ -75,6 +75,15 @@ function description(plan, credits) {
   ].join('\n');
 }
 
+// The thumbnail's words: "thumbnail text:" if the story has it ("none" for no words), else a Short's hook, else
+// (an episode or any other long video) the story's own title
+function thumbText(plan) {
+  const m = plan.meta;
+  if (m.thumbnailText !== undefined) return m.thumbnailText;
+  if (plan.hook && plan.hook.text) return plan.hook.text;
+  return /short/.test(m.type || '') ? '' : (m.title || '').trim();
+}
+
 // The thumbnail, drawn in the engine's page (opened with &export=1). Picks the moment, draws it, adds the text,
 // and returns { jpg (Buffer), t, how, warnings }.
 async function thumbnail(page, plan) {
@@ -177,7 +186,7 @@ async function thumbnail(page, plan) {
       do { url = cv.toDataURL('image/jpeg', q); q -= 0.08; } while (url.length * 0.75 > 1.9e6 && q > 0.4);
       return { url, t, how, warnings };
     } finally { StudioFilm.frame(null); }
-  }, { busy, mains, extras, want, duration: plan.duration, scenes: plan.scenes.map(c => ({ t0: c.t0, t1: c.t1 })), text: plan.meta.thumbnailText || plan.hook && plan.hook.text || '', shot, vertical, PW: plan.width });
+  }, { busy, mains, extras, want, duration: plan.duration, scenes: plan.scenes.map(c => ({ t0: c.t0, t1: c.t1 })), text: thumbText(plan), shot, vertical, PW: plan.width });
   return { jpg: Buffer.from(r.url.split(',')[1], 'base64'), t: r.t, how: `${r.how}, ${shot} shot`, warnings: r.warnings };
 }
 
