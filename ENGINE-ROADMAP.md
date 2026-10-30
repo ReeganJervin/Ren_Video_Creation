@@ -139,7 +139,7 @@ Work through the steps **in this order**. The F-numbers are names, not the order
 | 10 | F4 Asset Kit, Part D: prop acting, Season 1 props, extras landing on set pieces (needs F3) | Stop 1 (prop acting, leaf/map/cookie, Episodes 3–4 upgraded) built, waiting for the owner's review; stop 2 under way: the Season 1 episode assets (Great Tree with a star hollow, `moon: full`, fruit tree, fruit, grey owl, Dark Cave) are built and waiting for the owner's review; the rest of the Season 1 props (sword, coin, chest, gold, book, orb, stone door, lever, pebble, umbrella, flower) are built and waiting for review too; uses/pulls, map text, extras landing and the treasure demo next | see git log |
 | 11 | **Milestone 2.** The owner then makes the real **Episode 1** | Not started | |
 | 12 | **F13 Storytelling tools** (weather, dreams and memories, sound library) | Not started | |
-| 13 | F5 Lighting and indoor places (cave kit, inside the cottage). **Moved up by the owner (version 3.2): do it now, before finishing step 10 and Milestone 2** | Part A in progress | |
+| 13 | F5 Lighting and indoor places (cave kit, inside the cottage). **Moved up by the owner (version 3.2): do it now, before finishing step 10 and Milestone 2** | Part A (lighting) built, waiting for the owner's review. Demo: `stories/demos-and-tests/light-demo.txt` | F5A (see git log) |
 | 14 | F6 Magic and comedy effects | Not started | |
 | 15 | **Milestone 3** | Not started | |
 | 16 | F9 Studio App, Part B (voices, library, videos, Shorts screens) | Not started | |
@@ -405,6 +405,13 @@ It includes everything the old F4 promised: the prop registry, the Season 1 star
 3. **Outdoor places stay unchanged** (R1). Lighting only applies when a place or story asks for it.
 
 **Part A review:** Ren and Yuki in a dark test room with a lantern, a glowing sword and an orb, each light alone and together, plus a still where they walk from the dark into the light.
+
+**As built (Part A):**
+- `light: bright | dim | dark` (darkness 0, 0.55, 0.86), at the top or anywhere later (changes over 1.5 s). A place can be dark by itself (`dark` in the place file), and each change of place switches to that place's own light.
+- Light sources: glowing props in a paw or on the ground (colour `glowColor`, reach `reach` or by size), the star, and a place's own `lights(t)`; their bright parts are drawn after the darkness (`drawLights`, and the props' light pass).
+- A thin rim of each light's colour on the edge of Ren and Yuki that faces it (the two strongest lights per character).
+- `<name> lights the <prop>`, `<name> puts out / blows out the <prop>`, in the paw or on the ground.
+- Only stories with a light channel draw any of it (R1: every other story identical). Dark scenes render about 20–30% slower (the darkness and the rims are drawn over the whole picture every frame; the darkness is drawn at half size to keep this down).
 
 **Commit message:** `F5A: lighting system`
 

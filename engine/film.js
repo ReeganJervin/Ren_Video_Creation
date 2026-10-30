@@ -559,26 +559,31 @@
       if (!onStage(id, t)) continue;
       const K = Ks[id], hd = REG[id].height || 300, c0 = toScreen(cam, { x: K.x, y: K.y - K.h - hd * 0.45 * K.s / KS });
       const w = 260 * K.s * cam.z, h = (hd * K.s / KS + 120) * cam.z, bx = c0.x - w, by = c0.y - h * 0.6, bw = w * 2, bh = h * 1.2;
-      for (const L of lights) {
-        const dx = L.x - c0.x, dy = L.y - c0.y, dist = Math.hypot(dx, dy) || 1, near = clamp(1.25 - dist / (L.r * 1.1));
-        const a = near * L.a * D * 0.95; if (a <= 0.02) continue;
+      // the two strongest lights on this character
+      const strong = lights.map(L => { const dx = L.x - c0.x, dy = L.y - c0.y, dist = Math.hypot(dx, dy) || 1; return { L, dx, dy, dist, a: clamp(1.25 - dist / (L.r * 1.1)) * L.a * D * 0.95 }; })
+        .filter(q => q.a > 0.02).sort((p, q) => q.a - p.a).slice(0, 2);
+      for (const { L, dx, dy, dist, a } of strong) {
         const ux = dx / dist, uy = dy / dist, off = Math.max(2, 5 * K.s / KS * cam.z);
         g.setTransform(1, 0, 0, 1, 0, 0); g.globalCompositeOperation = 'source-over'; g.globalAlpha = 1; g.clearRect(bx - 10, by - 10, bw + 20, bh + 20);
         g.save(); g.beginPath(); g.rect(bx, by, bw, bh); g.clip();
-        g.drawImage(layer, 0, 0);
-        g.globalCompositeOperation = 'destination-out'; g.drawImage(layer, -ux * off, -uy * off);
+        // (only the part of the layer around this character: copying the whole picture each time is slow)
+        g.drawImage(layer, bx, by, bw, bh, bx, by, bw, bh);
+        // (the shifted copy reaches a little past the area, so its edges never show as lines)
+        const pd = off + 4;
+        g.globalCompositeOperation = 'destination-out'; g.drawImage(layer, bx - pd, by - pd, bw + 2 * pd, bh + 2 * pd, bx - pd - ux * off, by - pd - uy * off, bw + 2 * pd, bh + 2 * pd);
         g.globalCompositeOperation = 'source-in'; g.fillStyle = `rgba(${L.col},${a})`; g.fillRect(bx, by, bw, bh);
         g.restore();
         k.save(); k.setTransform(1, 0, 0, 1, 0, 0); k.globalCompositeOperation = 'lighter'; k.drawImage(aux, bx, by, bw, bh, bx, by, bw, bh); k.restore();
+        g.clearRect(bx - 10, by - 10, bw + 20, bh + 20);   // (aux is shared: leave it empty)
       }
     }
-    g.setTransform(1, 0, 0, 1, 0, 0); g.globalCompositeOperation = 'source-over'; g.clearRect(0, 0, W, H);
+    g.setTransform(1, 0, 0, 1, 0, 0); g.globalCompositeOperation = 'source-over';
   }
   // the darkness over the picture, with soft holes at the lights, then each light's colour added softly
   function drawDark(c, lights, D) {
     if (D <= 0) return;
     const g = darkCv.getContext('2d');
-    g.setTransform(1, 0, 0, 1, 0, 0); g.globalCompositeOperation = 'source-over'; g.clearRect(0, 0, W, H);
+    g.setTransform(0.5, 0, 0, 0.5, 0, 0); g.globalCompositeOperation = 'source-over'; g.clearRect(0, 0, W, H);
     g.fillStyle = `rgba(${DARK_COL},${D})`; g.fillRect(0, 0, W, H);
     g.globalCompositeOperation = 'destination-out';
     for (const L of lights) {
@@ -586,7 +591,7 @@
       gr.addColorStop(0, `rgba(0,0,0,${L.a})`); gr.addColorStop(0.35, `rgba(0,0,0,${0.85 * L.a})`); gr.addColorStop(0.7, `rgba(0,0,0,${0.35 * L.a})`); gr.addColorStop(1, 'rgba(0,0,0,0)');
       g.fillStyle = gr; g.fillRect(L.x - L.r, L.y - L.r, L.r * 2, L.r * 2);
     }
-    c.save(); c.setTransform(1, 0, 0, 1, 0, 0); c.globalAlpha = 1; c.globalCompositeOperation = 'source-over'; c.drawImage(darkCv, 0, 0);
+    c.save(); c.setTransform(1, 0, 0, 1, 0, 0); c.globalAlpha = 1; c.globalCompositeOperation = 'source-over'; c.drawImage(darkCv, 0, 0, W, H);
     c.globalCompositeOperation = 'lighter';
     for (const L of lights) glow(c, L.x, L.y, L.r * 0.8, L.col, 0.2 * L.a * D);
     c.restore();
@@ -1358,7 +1363,7 @@
     ctx = canvas.getContext('2d');
     layer = document.createElement('canvas'); layer.width = W; layer.height = H;
     aux = document.createElement('canvas'); aux.width = W; aux.height = H;
-    darkCv = document.createElement('canvas'); darkCv.width = W; darkCv.height = H;
+    darkCv = document.createElement('canvas'); darkCv.width = W / 2; darkCv.height = H / 2;   // (soft, so half size is enough)
     half = document.createElement('canvas'); half.width = W / 2; half.height = H / 2;
     if (P.shots) buildRigs();
     buildSprings();
