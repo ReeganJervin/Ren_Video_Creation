@@ -323,7 +323,7 @@
       if ((m = line.match(/^thumbnail\s+text\s*:\s*(.+)$/i))) {
         const v = m[1].trim();
         if (v.length > 60) return err('The thumbnail text must be 60 characters or fewer, so it stays big and readable.');
-        meta.thumbnailText = v;
+        meta.thumbnailText = /^none$/i.test(v) ? '' : v;   // "none": no text, not even the title
         return;
       }
       if ((m = line.match(/^thumbnail\s+shot\s*:\s*(.+)$/i))) {
