@@ -39,7 +39,7 @@
   const HELP = [
     'narrator: <text>', '<name>: <text>', `<name> (${MOODS.slice(1).join('|')}): <text>`,
     '<name> (thinks|thinks silently|whispers|shouts): <text>', '<name> (shouts, <mood>): <text>', 'mood voices: on|off',
-    '<name> enters [from left|right] [to left|center|right]', '<name> walks to left|center|right', '<name> walks to <other name>',
+    '<name> enters [from left|right] [to left|center|right]', '<name> walks to left|center|right', 'ren and yuki walk to left|center|right paw in paw', '<name> walks to <other name>',
     '<name> exits [to] left|right', '<name> walks down the path', '<name> walks down the stairs', '<name> comes up the path [to left|center|right]', '<name> hops [twice]', '<name> waves', '<name> looks up|down|left|right|around|at you|at the star|at the heart',
     '<name> looks at <other name>', '<name> turns to you', '<name> turns to <other name>', '<name> turns away', '<name> tilts its head',
     '<name> sits down', '<name> stands up', '<name> crouches', '<name> leans closer [to <other name>]', '<name> leans back', '<name> wobbles',
@@ -84,6 +84,8 @@
       return b;
     }
     if ((k = a.match(/^enters?(?: from (left|right))?(?: to (?:the )?(left|center|centre|right))?$/))) return { type: 'enter', from: k[1] || 'left', to: spot(k[2] || 'center') };
+    // two walking together, holding paws: "ren and yuki walk to right paw in paw" (also "hand in hand", "holding paws")
+    if (group && (k = a.match(/^(?:walk|go|hop|move)s? to (?:the )?(left|center|centre|right)( slowly)? (?:paw in paw|hand in hand|holding paws)$/))) return { type: 'walk', to: spot(k[1]), slow: !!k[2], paws: true };
     if ((k = a.match(/^(?:walks?|moves?|goes|go|hops?|runs?) to (?:the )?(left|center|centre|right)( slowly)?$/))) return { type: 'walk', to: spot(k[1]), slow: !!k[2] };
     if ((k = a.match(new RegExp(`^(?:walks?|moves?|goes|go|hops?|runs?) (?:over )?to (${NAME})( slowly)?$`)))) return { type: 'walkTo', target: k[1], slow: !!k[2] };
     if ((k = a.match(/^(?:exits?|leaves?)(?: to)?(?: the)? (left|right)$/))) return { type: 'exit', to: k[1] };
@@ -941,6 +943,26 @@
             const [p, q] = b.type === 'enter' ? who : [...who].sort((x, y) => x.x - y.x);
             const side = b.type === 'enter' ? (b.from === 'left' ? 1 : -1) : 1, k = b.type === 'enter' ? 0.25 : 0;
             if (thirds(who).some(o => Math.abs(o.x - c) < GAP + GAP / 2)) c = roomFor(who, c, GAP);
+            if (b.paws) {
+              // paw in paw: closer together, setting off together, only a little turned toward where they're going (so
+              // both faces show), the inner paws reaching out to meet between them for the whole walk
+              const [l, r] = [...who].sort((x, y) => x.x - y.x), dir = Math.sign(c - (l.x + r.x) / 2) || 1, PAWS = 225;
+              // first they step together (if they're apart) and take paws, then they walk on side by side
+              const near = Math.abs(r.x - l.x) <= PAWS + 30, d0 = near ? 0 : pairUp(r, l, s, (l.x + r.x) / 2, PAWS, false) - 0.45, s2 = s + d0;
+              const d = Math.max(moveTo(l, s2, c - PAWS / 2, b.slow), moveTo(r, s2, c + PAWS / 2, b.slow)), end = s2 + d - 0.45;
+              // (holding paws, they keep the same pace: both walks take as long as the slower one)
+              const wl = l.out.walks[l.out.walks.length - 1], wr = r.out.walks[r.out.walks.length - 1], t1 = Math.max(wl.t1, wr.t1);
+              wl.t1 = wr.t1 = t1; l.free = r.free = t1;
+              [[l, 'armR', 'rig.elbowR'], [r, 'armL', 'rig.elbowL']].forEach(([q, arm, elbow]) => {
+                const free = arm === 'armL' ? restL(q) === ARM_R : restR(q) === ARM_R;   // (a paw already holding something stays as it is)
+                set(q, 'facing', s2 + 0.2, (q === (dir > 0 ? r : l) ? 0 : 0.3) * dir, 0.3);   // (the one in front looks out at us, the one behind a little toward where they go) set(q, 'facing', end, 0, 0.45);
+                if (!free) return;
+                set(q, arm, s2 - 0.3, q === l ? 0.95 : 1.25, 0.3); pose(q, elbow, s2 - 0.3, 0.1, 0.3);   // (the left one's paw a little lower, so the two meet)
+                set(q, arm, end, arm === 'armL' ? restL(q) : restR(q), 0.4); pose(q, elbow, end, 0, 0.4);
+              });
+              dur = d0 + Math.max(d, makeWay(who, s2));
+              break;
+            }
             dur = Math.max(moveTo(p, s, c + side * GAP / 2, b.slow), moveTo(q, s + k, c - side * GAP / 2, b.slow) + k, makeWay(who, s));
           } else dur = goToSpot(who[0], s, c, b.slow);
           break;

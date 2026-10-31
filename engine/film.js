@@ -565,7 +565,9 @@
     for (const id of CAST) {
       if (!onStage(id, t)) continue;
       const K = Ks[id], hd = REG[id].height || 300, c0 = toScreen(cam, { x: K.x, y: K.y - K.h - hd * 0.45 * K.s / KS });
-      const w = 260 * K.s * cam.z, h = (hd * K.s / KS + 120) * cam.z, bx = c0.x - w, by = c0.y - h * 0.6, bw = w * 2, bh = h * 1.2;
+      // (the box is snapped to whole pixels: with a box edge in the middle of a pixel, the clip there only half-covers
+      // it, the shifted copy only half-removes it, and a faint straight line of light was left along each edge)
+      const w = 260 * K.s * cam.z, h = (hd * K.s / KS + 120) * cam.z, bx = Math.floor(c0.x - w), by = Math.floor(c0.y - h * 0.6), bw = Math.ceil(w * 2) + 1, bh = Math.ceil(h * 1.2) + 1;
       // the two strongest lights on this character
       const strong = lights.map(L => { const dx = L.x - c0.x, dy = L.y - c0.y, dist = Math.hypot(dx, dy) || 1; return { L, dx, dy, dist, a: clamp(1.25 - dist / (L.r * 1.1)) * L.a * D * 0.95 }; })
         .filter(q => q.a > 0.02).sort((p, q) => q.a - p.a).slice(0, 2);

@@ -101,15 +101,13 @@ ren (worried): Of course it did. Maps love bridges.
 ren holds out his paw to yuki
 yuki touches paws with ren
 ren (determined): Together. Slowly. And whatever you do, don't look down.
-ren walks to center slowly
-+ yuki walks to center slowly
+ren and yuki walk to center slowly paw in paw
 yuki (whispers): One step... two steps... three steps...
 ren looks down
 ren (whispers, scared): I looked down.
 yuki (whispers, playful): You told me not to look down.
 ren (whispers, scared): It was a very good rule. I should listen to myself more.
-ren walks to right slowly
-+ yuki walks to right slowly
+ren and yuki walk to right slowly paw in paw
 yuki (whispers): Twenty-one... twenty-two... and...
 narrator: And then, at last, their paws touched solid stone again.
 ren and yuki feel happy
