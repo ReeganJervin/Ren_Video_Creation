@@ -29,7 +29,7 @@ ren (surprised): Whoa! A little fallen star!
 | Line | What it does |
 |---|---|
 | `title: My Story Name` | The story's name, shown in the preview |
-| `place: meadow` | Where the story starts: `meadow`, `forest`, `forest path`, `river`, `snowy hill`, `beach` or `cottage garden` (see "Places" below) |
+| `place: meadow` | Where the story starts: `meadow`, `forest`, `forest path`, `river`, `snowy hill`, `beach`, `cottage garden` or `cave tunnel` (see "Places" below) |
 | `time: sunset` | How the sky starts: `day`, `sunset`, `dusk` or `night` |
 
 ## The characters
@@ -350,6 +350,7 @@ The check also warns about pictures that are very large (over 4000 pixels), plac
 | `meadow` | Rolling green hills, pine trees, a sunny knoll full of flowers; fireflies at night | A breeze, and birds in the day and at sunset |
 | `forest` | Tall rounded trees, a sandy path, ferns and mushrooms; sunbeams by day, a purple glow at dusk, fireflies at night | Birds and softly rustling leaves |
 | `forest path` | A long, winding path through an avenue of huge old mossy trees, seen looking along it into the distance, with warm light at the far end, a leafy canopy and fallen leaves; sunbeams by day, moonlight and fireflies at night. For the journey: `ren and yuki walk down the path` | Birds and softly rustling leaves |
+| `cave tunnel` | Inside the Dark Cave: soft rounded violet-grey rock walls, a low ceiling with stalactites, an uneven stone floor with pebbles and little puddles, and the tunnel winding on into the dark in the middle. Wet glints twinkle on the walls and water drips into the puddles. **Dark by itself:** with no light you see almost nothing, so bring the lantern (`ren lights the lantern`), or write `light: dim` to see a little. The time of day changes nothing down here | A low hollow hush, and drips plinking into puddles with a little echo |
 | `river` | A wide river with a wooden footbridge, reeds and stones; the sun and moon shine on the water | Flowing water |
 | `snowy hill` | Snowy hills and pine trees, a snowman, paw prints and sparkling snow | A soft wind |
 | `beach` | The sea, waves washing up on the sand, shells and a palm tree; a beautiful sunset over the water | Gentle waves |

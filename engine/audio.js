@@ -351,6 +351,20 @@
             layer([band('lowpass', 650)], 1); layer([band('highpass', 1800)], 0.35);
             shape(s => 0.025 + 0.06 * Math.pow(0.5 + 0.5 * Math.sin(s * 0.9 + 0.6), 2));
             break;
+          case 'cave': { // a low hollow hush, and drips plinking into puddles, each with a little echo
+            layer([band('lowpass', 260)], 1); shape(s => 0.035 + 0.01 * Math.sin(s * 0.3));
+            const dry = ctx.createGain(), dly = ctx.createDelay(1), fb = ctx.createGain(), wet = ctx.createGain();
+            dly.delayTime.value = 0.23; fb.gain.value = 0.38; wet.gain.value = 0.5;
+            dry.connect(out); dry.connect(dly); dly.connect(fb); fb.connect(dly); dly.connect(wet); wet.connect(out);
+            const rnd = n => { const x = Math.sin(n * 12.9898 + 78.233) * 43758.5453; return x - Math.floor(x); };
+            for (let s = t0 + 0.6, k = 0; s < t1 - 0.4; k++) {
+              const t = at(s), f = 1500 + 900 * rnd(k), o = ctx.createOscillator(), dg = ctx.createGain();
+              o.frequency.setValueAtTime(f, t); o.frequency.exponentialRampToValueAtTime(f * 0.55, t + 0.07);
+              o.connect(dg); dg.connect(dry); env(dg, t, 0.045 * (0.6 + 0.4 * rnd(k + 50)), 0.003, 0.09); o.start(t); o.stop(t + 0.15);
+              s += 0.9 + 2.2 * rnd(k + 100);
+            }
+            break;
+          }
         }
         out.gain.setValueAtTime(0, at(t0)); out.gain.linearRampToValueAtTime(1, at(t0 + c.fi));
         out.gain.setValueAtTime(1, at(Math.max(t0 + c.fi, t1 - c.fo))); out.gain.linearRampToValueAtTime(0, at(t1));
