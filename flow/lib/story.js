@@ -70,6 +70,9 @@ function parseFlowStory(text) {
       else meta[key] = v;
       return;
     }
+    // a setting below the frames would silently become part of a description: say so instead
+    if (cur && (m = line.match(/^([a-z ]+?)\s*:\s*(.+)$/i)) && SETTINGS[m[1].toLowerCase()] && !SAID.test(line))
+      return err(n, `"${m[1]}:" is a setting: move it to the top of the story, above "frame 1:".`);
     if (!cur) return err(n, `I don't know "${line.slice(0, 40)}". Settings go at the top (title:, project:, style:...), then "frame 1:" and "clip 1: frame 1 to frame 2".`);
     cur.text = (cur.text ? cur.text + ' ' : '') + line;
     if (cur.lines) {
