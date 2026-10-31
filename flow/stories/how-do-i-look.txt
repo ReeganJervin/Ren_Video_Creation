@@ -1,5 +1,8 @@
 # How Do I Look?  (hook: Yuki has a new look. Ren has to answer. Carefully.)
 #
+# Frames first (free), then clips from frame to frame. The film keeps Google Flow's own sound (its voices and music):
+# Kitsu's voices and music are not added; only the speech bubbles are.
+#
 #  Check it (free):              .\flow\flow-video.bat check flow\stories\how-do-i-look.txt
 #  1. Make the frames (free):    .\flow\flow-video.bat make flow\stories\how-do-i-look.txt --account 2
 #     Redo a frame (free):       .\flow\flow-video.bat make flow\stories\how-do-i-look.txt --account 2 --redo frame 3
@@ -7,7 +10,7 @@
 #     (same command again: about 60 credits for the 4 clips)
 #     Redo a clip (credits):     .\flow\flow-video.bat make flow\stories\how-do-i-look.txt --account 2 --redo clip 2
 #     Redo the film only (free): .\flow\flow-video.bat make flow\stories\how-do-i-look.txt --account 2 --redo film
-#  The film: flow\output\how-do-i-look\film.mp4
+#  The film: flow\output\how-do-i-look-flow\film.mp4
 #
 title: How Do I Look
 aspect: 9:16
@@ -16,8 +19,12 @@ model: Omni 1.1 Flash
 resolution: 720p
 duration: 10
 max credits: 15
+project: how-do-i-look-flow
+# Google Flow speaks the lines and makes the music; the film only gets the speech bubbles
+voices: flow
+music: none
+bubbles: on
 sides: Ren left, Yuki right
-music: happy
 
 style: Cute 2D chibi storybook cartoon, soft round shapes, warm dark-brown outlines, flat warm pastel colours, pink blush. Sweet and funny, never scary.
 place: A sunny meadow full of flowers in spring: soft green hills, daisies, tulips, butterflies and fluffy clouds.

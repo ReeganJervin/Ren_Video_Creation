@@ -1,5 +1,8 @@
 # The Mystery Egg  (hook: They found an egg. It is NOT a chicken egg.)
 #
+# Frames first (free), then clips from frame to frame. The film keeps Google Flow's own sound (its voices and music):
+# Kitsu's voices and music are not added; only the speech bubbles are.
+#
 #  Check it (free):              .\flow\flow-video.bat check flow\stories\mystery-egg.txt
 #  1. Make the frames (free):    .\flow\flow-video.bat make flow\stories\mystery-egg.txt --account 2
 #     Redo a frame (free):       .\flow\flow-video.bat make flow\stories\mystery-egg.txt --account 2 --redo frame 3
@@ -7,7 +10,7 @@
 #     (same command again: about 60 credits for the 4 clips)
 #     Redo a clip (credits):     .\flow\flow-video.bat make flow\stories\mystery-egg.txt --account 2 --redo clip 2
 #     Redo the film only (free): .\flow\flow-video.bat make flow\stories\mystery-egg.txt --account 2 --redo film
-#  The film: flow\output\the-mystery-egg\film.mp4
+#  The film: flow\output\the-mystery-egg-flow\film.mp4
 #
 title: The Mystery Egg
 aspect: 9:16
@@ -16,8 +19,12 @@ model: Omni 1.1 Flash
 resolution: 720p
 duration: 10
 max credits: 15
+project: the-mystery-egg-flow
+# Google Flow speaks the lines and makes the music; the film only gets the speech bubbles
+voices: flow
+music: none
+bubbles: on
 sides: Ren left, Yuki right
-music: mystery
 
 style: Cute 2D chibi storybook cartoon, soft round shapes, warm dark-brown outlines, flat warm pastel colours, pink blush. Wonder and funny, never scary.
 place: A soft mossy forest clearing: tall rounded trees, glowing mushrooms, ferns, sunbeams and a cozy nest of leaves on the ground.
@@ -35,13 +42,11 @@ Ren (proud, at 4s): "A chicken egg. Definitely a chicken."
 
 clip 2: frame 2 to frame 3
 The egg breaks open and a tiny baby dragon pops out with a piece of shell on its head like a hat.
-music: magical
 Yuki (excited): "Ren, that's not a chicken!"
 Ren (surprised): "Very fancy chicken."
 
 clip 3: frame 3 to frame 4
 The baby dragon toddles straight to Ren and hugs his leg tightly, nuzzling him.
-music: happy
 Yuki (laughing): "It thinks you're its mom!"
 Ren (nervous): "I'm not your mom. I'm a fox."
 

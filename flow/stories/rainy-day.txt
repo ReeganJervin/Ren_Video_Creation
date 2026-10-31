@@ -1,5 +1,8 @@
 # The Rainy Day  (hook: It's raining, and they only have ONE leaf.)
 #
+# Frames first (free), then clips from frame to frame. The film keeps Google Flow's own sound (its voices and music):
+# Kitsu's voices and music are not added; only the speech bubbles are.
+#
 #  Check it (free):              .\flow\flow-video.bat check flow\stories\rainy-day.txt
 #  1. Make the frames (free):    .\flow\flow-video.bat make flow\stories\rainy-day.txt --account 2
 #     Redo a frame (free):       .\flow\flow-video.bat make flow\stories\rainy-day.txt --account 2 --redo frame 3
@@ -7,7 +10,7 @@
 #     (same command again: about 60 credits for the 4 clips)
 #     Redo a clip (credits):     .\flow\flow-video.bat make flow\stories\rainy-day.txt --account 2 --redo clip 2
 #     Redo the film only (free): .\flow\flow-video.bat make flow\stories\rainy-day.txt --account 2 --redo film
-#  The film: flow\output\the-rainy-day\film.mp4
+#  The film: flow\output\the-rainy-day-flow\film.mp4
 #
 title: The Rainy Day
 aspect: 9:16
@@ -16,7 +19,11 @@ model: Omni 1.1 Flash
 resolution: 720p
 duration: 10
 max credits: 15
-music: calm
+project: the-rainy-day-flow
+# Google Flow speaks the lines and makes the music; the film only gets the speech bubbles
+voices: flow
+music: none
+bubbles: on
 sides: Ren left, Yuki right
 
 style: Cute 2D chibi storybook cartoon, soft round shapes, warm dark-brown outlines, flat warm pastel colours, pink blush. Cozy and cheerful, never scary.
@@ -40,12 +47,10 @@ Ren (shy): "I'm a very waterproof fox."
 
 clip 3: frame 3 to frame 4
 Yuki sees a big puddle and grins. They both run and jump into it together, splashing happily. The leaf blows away.
-music: happy
 Yuki (playful): "If we're wet anyway..."
 Ren (excited): "Puddle jump!"
 
 clip 4: frame 4 to frame 5
 The rain stops and a soft rainbow appears. Ren and Yuki sit in the puddle, muddy and happy, looking up.
-music: magical
 Ren (surprised): "Look, Yuki. A rainbow."
 Yuki (happy): "Best rainy day ever."

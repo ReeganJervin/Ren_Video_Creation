@@ -1,5 +1,8 @@
 # Learning to Whistle  (hook: Ren can't whistle. Ren will NOT give up.)
 #
+# Frames first (free), then clips from frame to frame. The film keeps Google Flow's own sound (its voices and music):
+# Kitsu's voices and music are not added; only the speech bubbles are.
+#
 #  Check it (free):              .\flow\flow-video.bat check flow\stories\whistle.txt
 #  1. Make the frames (free):    .\flow\flow-video.bat make flow\stories\whistle.txt --account 2
 #     Redo a frame (free):       .\flow\flow-video.bat make flow\stories\whistle.txt --account 2 --redo frame 3
@@ -7,7 +10,7 @@
 #     (same command again: about 60 credits for the 4 clips)
 #     Redo a clip (credits):     .\flow\flow-video.bat make flow\stories\whistle.txt --account 2 --redo clip 2
 #     Redo the film only (free): .\flow\flow-video.bat make flow\stories\whistle.txt --account 2 --redo film
-#  The film: flow\output\learning-to-whistle\film.mp4
+#  The film: flow\output\learning-to-whistle-flow\film.mp4
 #
 title: Learning to Whistle
 aspect: 9:16
@@ -16,8 +19,12 @@ model: Omni 1.1 Flash
 resolution: 720p
 duration: 10
 max credits: 15
+project: learning-to-whistle-flow
+# Google Flow speaks the lines and makes the music; the film only gets the speech bubbles
+voices: flow
+music: none
+bubbles: on
 sides: Ren left, Yuki right
-music: calm
 
 style: Cute 2D chibi storybook cartoon, soft round shapes, warm dark-brown outlines, flat warm pastel colours, pink blush. Gentle and funny, never scary.
 place: A sunny forest edge: tall rounded trees with birds on the branches, soft grass, small flowers and dappled sunlight.
@@ -40,7 +47,6 @@ Ren (determined): "I'm warming up."
 
 clip 3: frame 3 to frame 4
 Ren finally makes a tiny squeaky sound. A little mouse pops out of a hole and squeaks back at him.
-music: happy
 Ren (excited): "I did it! Someone answered!"
 Yuki (laughing): "A mouse answered."
 

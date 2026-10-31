@@ -1,5 +1,8 @@
 # The Kite Master  (hook: Ren says the wind obeys him.)
 #
+# Frames first (free), then clips from frame to frame. The film keeps Google Flow's own sound (its voices and music):
+# Kitsu's voices and music are not added; only the speech bubbles are.
+#
 #  Check it (free):              .\flow\flow-video.bat check flow\stories\kite.txt
 #  1. Make the frames (free):    .\flow\flow-video.bat make flow\stories\kite.txt --account 2
 #     Redo a frame (free):       .\flow\flow-video.bat make flow\stories\kite.txt --account 2 --redo frame 3
@@ -7,7 +10,7 @@
 #     (same command again: about 60 credits for the 4 clips)
 #     Redo a clip (credits):     .\flow\flow-video.bat make flow\stories\kite.txt --account 2 --redo clip 2
 #     Redo the film only (free): .\flow\flow-video.bat make flow\stories\kite.txt --account 2 --redo film
-#  The film: flow\output\the-kite-master\film.mp4
+#  The film: flow\output\the-kite-master-flow\film.mp4
 #
 title: The Kite Master
 aspect: 9:16
@@ -16,6 +19,11 @@ model: Omni 1.1 Flash
 resolution: 720p
 duration: 10
 max credits: 15
+project: the-kite-master-flow
+# Google Flow speaks the lines and makes the music; the film only gets the speech bubbles
+voices: flow
+music: none
+bubbles: on
 sides: Ren left, Yuki right
 
 style: Cute 2D chibi storybook cartoon, soft round shapes, warm dark-brown outlines, flat warm pastel colours, pink blush. Gentle and funny, never scary.

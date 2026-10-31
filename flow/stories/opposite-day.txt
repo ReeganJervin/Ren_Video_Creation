@@ -1,5 +1,8 @@
 # Opposite Day  (hook: Today everything means the opposite. Ren is not ready.)
 #
+# Frames first (free), then clips from frame to frame. The film keeps Google Flow's own sound (its voices and music):
+# Kitsu's voices and music are not added; only the speech bubbles are.
+#
 #  Check it (free):              .\flow\flow-video.bat check flow\stories\opposite-day.txt
 #  1. Make the frames (free):    .\flow\flow-video.bat make flow\stories\opposite-day.txt --account 2
 #     Redo a frame (free):       .\flow\flow-video.bat make flow\stories\opposite-day.txt --account 2 --redo frame 3
@@ -7,7 +10,7 @@
 #     (same command again: about 60 credits for the 4 clips)
 #     Redo a clip (credits):     .\flow\flow-video.bat make flow\stories\opposite-day.txt --account 2 --redo clip 2
 #     Redo the film only (free): .\flow\flow-video.bat make flow\stories\opposite-day.txt --account 2 --redo film
-#  The film: flow\output\opposite-day\film.mp4
+#  The film: flow\output\opposite-day-flow\film.mp4
 #
 title: Opposite Day
 aspect: 9:16
@@ -16,8 +19,12 @@ model: Omni 1.1 Flash
 resolution: 720p
 duration: 10
 max credits: 15
+project: opposite-day-flow
+# Google Flow speaks the lines and makes the music; the film only gets the speech bubbles
+voices: flow
+music: none
+bubbles: on
 sides: Ren left, Yuki right
-music: happy
 
 style: Cute 2D chibi storybook cartoon, soft round shapes, warm dark-brown outlines, flat warm pastel colours, pink blush. Sweet and funny, never scary.
 place: A cozy picnic on a sunny hill: a checkered blanket, a little basket, a plate of cookies, soft grass, flowers and fluffy clouds.
@@ -45,6 +52,5 @@ Ren (proud): "Okay. Yuki, you are NOT my best friend."
 
 clip 4: frame 4 to frame 5
 Yuki stops, smiles warmly and slides the plate of cookies back. They sit close and share them.
-music: heartfelt
 Yuki (shy): "I know."
 Ren (happy): "Opposite Day is the best day."

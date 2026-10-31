@@ -1,5 +1,8 @@
 # The Shooting Star  (hook: One shooting star. Two wishes.)
 #
+# Frames first (free), then clips from frame to frame. The film keeps Google Flow's own sound (its voices and music):
+# Kitsu's voices and music are not added; only the speech bubbles are.
+#
 #  Check it (free):              .\flow\flow-video.bat check flow\stories\stargazing.txt
 #  1. Make the frames (free):    .\flow\flow-video.bat make flow\stories\stargazing.txt --account 2
 #     Redo a frame (free):       .\flow\flow-video.bat make flow\stories\stargazing.txt --account 2 --redo frame 3
@@ -7,7 +10,7 @@
 #     (same command again: about 60 credits for the 4 clips)
 #     Redo a clip (credits):     .\flow\flow-video.bat make flow\stories\stargazing.txt --account 2 --redo clip 2
 #     Redo the film only (free): .\flow\flow-video.bat make flow\stories\stargazing.txt --account 2 --redo film
-#  The film: flow\output\the-shooting-star\film.mp4
+#  The film: flow\output\the-shooting-star-flow\film.mp4
 #
 title: The Shooting Star
 aspect: 9:16
@@ -16,7 +19,11 @@ model: Omni 1.1 Flash
 resolution: 720p
 duration: 10
 max credits: 15
-music: calm
+project: the-shooting-star-flow
+# Google Flow speaks the lines and makes the music; the film only gets the speech bubbles
+voices: flow
+music: none
+bubbles: on
 sides: Ren left, Yuki right
 
 style: Cute 2D chibi storybook cartoon, soft round shapes, warm dark-brown outlines, flat warm pastel colours, pink blush. Dreamy and sweet, never scary.
@@ -35,7 +42,6 @@ Yuki (teasing, at 5s): "Ren, every star looks like a cookie to you."
 
 clip 2: frame 2 to frame 3
 Suddenly a bright shooting star streaks across the sky. They both sit up with sparkling eyes.
-music: magical
 Yuki (excited): "A shooting star! Make a wish!"
 
 clip 3: frame 3 to frame 4
@@ -45,6 +51,5 @@ Yuki (whispering): "I won't."
 
 clip 4: frame 4 to frame 5
 They lie back down side by side, look at each other and smile, their paws touching on the grass.
-music: heartfelt
 Ren (shy): "Did yours come true?"
 Yuki (happy): "It's lying right next to me."
