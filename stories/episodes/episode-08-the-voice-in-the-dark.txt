@@ -90,6 +90,7 @@ beat
 ren (whispers, shy): Not this dark, though. This is a very advanced dark.
 yuki (whispers, laughing): Hehe.
 narrator: Drip. Drip. Somewhere far away, water was falling into the dark.
+sound: bump
 ren (whispers, surprised): Ow! That was my nose.
 yuki (whispers, surprised): Sorry! I thought it was the wall.
 ren (whispers, pouty): My nose is not a wall.
@@ -141,10 +142,11 @@ scene: The Thing on the Ground
 music: mystery
 
 ren and yuki walk to center slowly
+lantern appears quietly on the ground
+sound: clink
 yuki (surprised): Ow!
 ren (whispers, worried): Another bone?
 yuki (whispers, thinking): No... this one is different. It went clink.
-lantern appears on the ground
 yuki crouches
 narrator: Yuki got down on her paws and felt all around it.
 yuki (whispers, thinking): It's round. It has a handle. And it's cold.

@@ -1,0 +1,12 @@
+# ============================================================
+#  Episode Short: "The Voice Only Ren Hears" from Episode 8, The Voice in the Dark
+#  (in the pitch-black cave, a voice whispers a spell only Ren can hear; he says it back, and the magic lantern lights up)
+#  Make it:  make-video.bat shorts\episode-shorts\ep8-2-the-voice-only-ren-hears.txt
+# ============================================================
+
+title: The Voice Only Ren Hears
+type: episode short
+from: episode-08-the-voice-in-the-dark
+lines: 165-184
+hook: Only Ren can hear it...
+thumbnail text: Who said that?!

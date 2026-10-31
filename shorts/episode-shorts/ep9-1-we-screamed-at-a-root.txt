@@ -1,0 +1,12 @@
+# ============================================================
+#  Episode Short: "We Screamed at a Root" from Episode 9, The Map on the Wall
+#  (the terrible bone from Episode 8, seen in the lantern light at last)
+#  Make it:  make-video.bat shorts\episode-shorts\ep9-1-we-screamed-at-a-root.txt
+# ============================================================
+
+title: We Screamed at a Root
+type: episode short
+from: episode-09-the-map-on-the-wall
+lines: 32-45
+hook: It felt like a BONE...
+thumbnail text: It was a ROOT

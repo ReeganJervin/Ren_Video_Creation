@@ -83,10 +83,22 @@
     }
 
     // ---- voices + ducking (overlapping/near windows are merged so ramps stay ordered) ----
+    // In a cave, voices echo off the rock: a soft echo on every line, a big one on shouts (and screams)
+    const caves = T.sfx.filter(c => c.type === 'ambience' && c.kind === 'cave').map(c => [c.t, c.t1]);
+    let echo = null;
+    if (caves.length && stems.voice) {
+      echo = ctx.createGain(); const dly = ctx.createDelay(1), fb = ctx.createGain(), lp = ctx.createBiquadFilter();
+      dly.delayTime.value = 0.21; fb.gain.value = 0.42; lp.type = 'lowpass'; lp.frequency.value = 2400;
+      echo.connect(dly); dly.connect(lp); lp.connect(fb); fb.connect(dly); lp.connect(voice);
+    }
     const wins = [];
     for (const v of T.voice) {
       const buf = voices[v.id]; if (!buf) continue;
       const src = ctx.createBufferSource(); src.buffer = buf; src.start(at(v.t));
+      if (echo && caves.some(([a, b]) => v.t >= a && v.t < b)) {
+        const send = ctx.createGain(); send.gain.value = v.style === 'shout' ? 0.55 : v.style === 'whisper' ? 0.12 : 0.22;
+        src.connect(send); send.connect(echo);
+      }
       // a line that came in much louder than what played before it: its first second is softer (see make-video.js)
       if (v.calm) {
         const g = ctx.createGain(), k = Math.pow(10, -v.calm / 20);
@@ -404,6 +416,24 @@
       },
       chime(c) { chime(at(c.t), c.midi, c.gain || 0.2); },
       // the payoff of a Short: a quick, bright chord going up
+      // "sound: clink": a little metal thing knocked over on stone: two bright, slightly out-of-tune pings and a rattle
+      clink(c) {
+        const t = at(c.t);
+        [[2350, 0.09, 0], [3120, 0.06, 0.012], [1780, 0.05, 0.11], [2640, 0.035, 0.16]].forEach(([f, g, d]) => {
+          const o = ctx.createOscillator(), og = ctx.createGain(); o.type = 'triangle'; o.frequency.value = f;
+          o.connect(og); og.connect(sfx); env(og, t + d, g, 0.002, 0.28); o.start(t + d); o.stop(t + d + 0.35);
+        });
+        const n = noiseSrc(t, 0.08), hp = ctx.createBiquadFilter(), ng = ctx.createGain(); hp.type = 'highpass'; hp.frequency.value = 3500;
+        n.connect(hp); hp.connect(ng); ng.connect(sfx); env(ng, t, 0.05, 0.001, 0.05);
+      },
+      // "sound: bump": a soft, low knock (a paw bumping into something in the dark)
+      bump(c) {
+        const t = at(c.t), o = ctx.createOscillator(), g = ctx.createGain();
+        o.type = 'sine'; o.frequency.setValueAtTime(150, t); o.frequency.exponentialRampToValueAtTime(70, t + 0.12);
+        o.connect(g); g.connect(sfx); env(g, t, 0.22, 0.004, 0.16); o.start(t); o.stop(t + 0.22);
+        const n = noiseSrc(t, 0.06), lp = ctx.createBiquadFilter(), ng = ctx.createGain(); lp.type = 'lowpass'; lp.frequency.value = 900;
+        n.connect(lp); lp.connect(ng); ng.connect(sfx); env(ng, t, 0.06, 0.002, 0.05);
+      },
       sting(c) { [72, 76, 79, 84, 88].forEach((m, i) => chime(at(c.t + i * 0.055), m, 0.2 - i * 0.02, 1.1)); },
       // laughing: a soft little "hee-hee-hee" (Yuki's higher than Ren's), quiet, after the line
       giggle(c) {

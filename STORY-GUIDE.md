@@ -201,6 +201,7 @@ Besides Ren, Yuki and the star, a story can use **props** (small things like a l
 | Line | What happens |
 |---|---|
 | `lantern appears at left` | It appears at the `left`, `center` or `right` spot. Also `on the ground` (next to whoever acted or spoke last), `in the sky`, or `next to ren` |
+| `lantern appears quietly on the ground` | The same, without the little pop and sparkle sounds: for something found in the dark |
 | `the lantern disappears` | It fades away |
 | `the lantern glows` / `the lantern stops glowing` | A soft glow around it |
 | `the cottage opens` / `the cottage closes` | Opens or closes it (if it has a door or lid) |
@@ -680,7 +681,17 @@ You don't write sounds. They come from the actions:
 - Music-box music runs through the whole story (choose its mood with `music:`, see "Music" above). It's quieter while someone talks, comes up a little in the pauses between lines, and fades out at the end.
 - Hops make boings (Yuki's are lighter and higher), and walking rustles the grass.
 - Title letters chime, hearts pop, and star moments twinkle and sparkle.
-- Each place has its own sound: a breeze and birds in the meadow, birds and leaves in the forest, flowing water at the river, wind on the snowy hill and waves at the beach. These sounds get softer at night and when the music is `calm` or `bedtime`, so quiet scenes stay quiet.
+- Each place has its own sound: a breeze and birds in the meadow, birds and leaves in the forest, flowing water at the river, wind on the snowy hill and waves at the beach, and drips in the cave tunnel. These sounds get softer at night and when the music is `calm` or `bedtime`, so quiet scenes stay quiet.
+- **In the cave tunnel, voices echo off the rock:** a soft echo on every line, a big one on shouts (so a scream really rings through the cave).
+
+### Sounds you can ask for
+
+A few sounds don't come from an action, so you write them on their own line, right where they should be heard:
+
+| Line | The sound |
+|---|---|
+| `sound: clink` | Something small and metal knocked over on stone (the lantern in the dark, Episode 8) |
+| `sound: bump` | A soft, low knock, for an "Ow!" when someone bumps into something |
 
 ## Using your own voice recording for a line
 

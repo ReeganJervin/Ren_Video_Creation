@@ -1,0 +1,12 @@
+# ============================================================
+#  Episode Short: "Threeeee Floors" from Episode 9, The Map on the Wall
+#  (Ren wants to break the wall to take the map; Yuki already memorised it)
+#  Make it:  make-video.bat shorts\episode-shorts\ep9-2-threeeee-floors.txt
+# ============================================================
+
+title: Threeeee Floors
+type: episode short
+from: episode-09-the-map-on-the-wall
+lines: 127-143
+hook: He wants to break the WALL?!
+thumbnail text: Threeeee Floors!

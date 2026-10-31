@@ -1,0 +1,12 @@
+# ============================================================
+#  Episode Short: "Very Local Fear" from Episode 8, The Voice in the Dark
+#  (at the mouth of the Dark Cave, Ren finally admits what the 'wind' really is; like Very Local Wind, it opens on the joke)
+#  Make it:  make-video.bat shorts\episode-shorts\ep8-1-very-local-fear.txt
+# ============================================================
+
+title: Very Local Fear
+type: episode short
+from: episode-08-the-voice-in-the-dark
+lines: 57-69
+hook: Are his ears shaking AGAIN?
+thumbnail text: Very Local FEAR

@@ -23,6 +23,7 @@
   const POS = { left: 560, center: 960, right: 1360 };
   const OFF = { left: -280, right: 2200 };
   const TIMES = { day: 0, sunset: 1, dusk: 2, night: 3 };
+  const SOUNDS = ['clink', 'bump'];
   const MUSIC = ['happy', 'calm', 'magical', 'mystery', 'adventure', 'tense', 'sad', 'bedtime', 'epic', 'heartfelt', 'none'];
   // ways of talking, written with a mood or alone: "ren (shouts, excited): …", "yuki (thinks silently): …"
   const STYLES = { thinks: 'think', think: 'think', 'thinks silently': 'think', whispers: 'whisper', whisper: 'whisper', shouts: 'shout', shout: 'shout' };
@@ -56,7 +57,7 @@
     'hearts float up', 'heart floats down', 'sparkles [around <name>]', 'title card: <WORD>',
     `place: ${PLACES.names().join('|')}`, 'time: day|sunset|dusk|night', 'moon: full|crescent', 'camera: wide|close|closer', 'wait <seconds>',
     'scene: <name>', `music: ${MUSIC.join('|')}`, 'music: deep tense|deep sad', 'thumbnail: auto|<seconds>|scene <number>', 'thumbnail shot: wide|medium|close', 'thumbnail text: <text>',
-    'format: wide|vertical', 'type: short|episode short', 'captions: narrator|all|off', 'loop: on', 'sting', 'hook: <text>', 'framing: close|medium|wide',
+    'format: wide|vertical', 'type: short|episode short', 'captions: narrator|all|off', 'loop: on', 'sting', 'sound: clink|bump', 'hook: <text>', 'framing: close|medium|wide',
     'from: <story>', 'scenes: <number>|<number>-<number>', 'lines: <number>-<number>', 'ending: <text> (the end card of a Short)', 'intro: series|none|after scene <number>', 'ending: end screen|none', 'ending text: <text>',
     'shot: wide|medium|close|extreme close [on <name>|both|the star]', 'shot: over the shoulder of <name>',
     'camera: push in|pull out|pan to <name|the star|left|center|right>|follow <name>|shake|hold',
@@ -178,7 +179,7 @@
 
   // Extras: names in the story that enter, fly, swim, hop or talk but aren't characters. Known extras come from
   // the asset registry; unknown ones are missing extras, shown as placeholders. Typos of known names are errors.
-  const KEYS = /^(title|title card|place|time|moon|camera|shot|scene|music|editing|reveal|narrator|wait|pause|weather|light|format|type|thumbnail|thumbnail text|thumbnail shot|intro|ending|ending text|type|captions|loop|from|scenes|lines|hook|framing|sting|mood voices)$/;
+  const KEYS = /^(title|title card|place|time|moon|camera|shot|scene|music|editing|reveal|narrator|wait|pause|weather|light|format|type|thumbnail|thumbnail text|thumbnail shot|intro|ending|ending text|type|captions|loop|from|scenes|lines|hook|framing|sting|sound|mood voices)$/;
   function findExtras(lines, errors) {
     const found = {};
     lines.forEach((raw, i) => {
@@ -290,6 +291,12 @@
       if ((m = line.match(/^scenes?\s*:\s*(\d+)\s*(?:-\s*(\d+))?\s*$/i))) { meta.window = { scenes: [+m[1], +(m[2] || m[1])], line: lineNo }; return; }
       if ((m = line.match(/^lines\s*:\s*(\d+)\s*-\s*(\d+)\s*$/i))) { meta.window = { lines: [+m[1], +m[2]], line: lineNo }; return; }
       if (/^sting$/i.test(line)) return beat('sting', {});
+      // a one-off sound: "sound: clink" (something metal knocked in the dark), "sound: bump" (a soft knock, for an "Ow!")
+      if ((m = line.match(/^sound\s*:\s*([a-z]+)$/i))) {
+        const k = m[1].toLowerCase();
+        if (!SOUNDS.includes(k)) return err(`Unknown sound "${m[1]}". Use: ${SOUNDS.join(', ')}`);
+        return beat('sound', { kind: k });
+      }
       // the picture: wide (16:9, the usual) or vertical (9:16, for Shorts)
       if ((m = line.match(/^format\s*:\s*(.+)$/i))) {
         const v = m[1].trim().toLowerCase();
@@ -477,7 +484,10 @@
       if ((m = line.match(/^(?:the |a |little )*star\s+(appears|falls|glows|twinkles|rises|disappears)$/i))) return beat('star', { act: m[1].toLowerCase() });
       // any prop or set piece: "lantern appears at left", "the chest opens", "the lantern glows"
       if ((m = line.match(/^(?:the |a |an )?([a-z][a-z' -]{0,30}?)\s+(appears?|disappears?|vanishes|glows|stops glowing|opens|closes|overflows)(?:\s+(.+?))?[.!]*$/i)) && !NAMES.includes(ASSETS.norm(m[1]))) {
-        const name = ASSETS.norm(m[1]), verb = m[2].toLowerCase(), rest = (m[3] || '').toLowerCase();
+        const name = ASSETS.norm(m[1]), verb = m[2].toLowerCase();
+        // "appears quietly": without the pop and sparkle sounds (for a thing found in the dark)
+        let rest = (m[3] || '').toLowerCase(), quiet = false;
+        if (/^appear/.test(verb) && /^quietly\b/.test(rest)) { quiet = true; rest = rest.replace(/^quietly\s*/, ''); }
         const act = /^appear/.test(verb) ? 'appear' : /^(disappear|vanish)/.test(verb) ? 'disappear' : verb === 'glows' ? 'glow' : verb === 'stops glowing' ? 'unglow' : verb === 'opens' ? 'open' : verb === 'overflows' ? 'overflow' : 'close';
         let where = null, k;
         if (act === 'appear') {
@@ -495,7 +505,7 @@
         } else if ((act === 'glow' || act === 'unglow') && !asset.glow) return err(`The ${name} can't glow.`);
         else if ((act === 'open' || act === 'close') && !asset.states.includes('open')) return err(`The ${name} can't open or close.`);
         else if (act === 'overflow' && !asset.states.includes('overflowing')) return err(`The ${name} can't overflow.`);
-        return beat('prop', { name, asset: asset ? asset.id : null, act, where });
+        return beat('prop', { name, asset: asset ? asset.id : null, act, where, ...(quiet ? { quiet } : {}) });
       }
 
       if ((m = line.match(new RegExp(`^(${NAME})(?:\\s+and\\s+(${NAME}))?\\s+(.+)$`, 'i')))) {
@@ -918,6 +928,7 @@
         }
         case 'wait': dur = b.secs * PACE; break;
         case 'sting': sfx('sting', s); break;
+        case 'sound': sfx(b.kind, s); break;
         case 'enter': case 'walk': {
           if (b.type === 'enter') who.forEach(a => { a.x = OFF[b.from]; });
           let c = spots()[b.to];
