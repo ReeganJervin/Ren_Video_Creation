@@ -1,4 +1,14 @@
 # Who Ate the Cookie?  (hook: Ren definitely did not eat the cookie.)
+#
+#  Check it (free):              .\flow\flow-video.bat check flow\stories\cookie.txt
+#  1. Make the frames (free):    .\flow\flow-video.bat make flow\stories\cookie.txt --account 2
+#     Redo a frame (free):       .\flow\flow-video.bat make flow\stories\cookie.txt --account 2 --redo frame 3
+#  2. Make the clips and film:   .\flow\flow-video.bat make flow\stories\cookie.txt --account 2
+#     (same command again: about 60 credits for the 4 clips)
+#     Redo a clip (credits):     .\flow\flow-video.bat make flow\stories\cookie.txt --account 2 --redo clip 2
+#     Redo the film only (free): .\flow\flow-video.bat make flow\stories\cookie.txt --account 2 --redo film
+#  The film: flow\output\who-ate-the-cookie\film.mp4
+#
 title: Who Ate the Cookie
 aspect: 9:16
 characters: Ren, Yuki

@@ -1,4 +1,14 @@
 # The Biggest Snowman  (hook: Ren will build the biggest snowman EVER.)
+#
+#  Check it (free):              .\flow\flow-video.bat check flow\stories\snowman.txt
+#  1. Make the frames (free):    .\flow\flow-video.bat make flow\stories\snowman.txt --account 2
+#     Redo a frame (free):       .\flow\flow-video.bat make flow\stories\snowman.txt --account 2 --redo frame 3
+#  2. Make the clips and film:   .\flow\flow-video.bat make flow\stories\snowman.txt --account 2
+#     (same command again: about 60 credits for the 4 clips)
+#     Redo a clip (credits):     .\flow\flow-video.bat make flow\stories\snowman.txt --account 2 --redo clip 2
+#     Redo the film only (free): .\flow\flow-video.bat make flow\stories\snowman.txt --account 2 --redo film
+#  The film: flow\output\the-biggest-snowman\film.mp4
+#
 title: The Biggest Snowman
 aspect: 9:16
 characters: Ren, Yuki

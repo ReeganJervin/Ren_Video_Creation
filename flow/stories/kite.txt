@@ -1,4 +1,14 @@
 # The Kite Master  (hook: Ren says the wind obeys him.)
+#
+#  Check it (free):              .\flow\flow-video.bat check flow\stories\kite.txt
+#  1. Make the frames (free):    .\flow\flow-video.bat make flow\stories\kite.txt --account 2
+#     Redo a frame (free):       .\flow\flow-video.bat make flow\stories\kite.txt --account 2 --redo frame 3
+#  2. Make the clips and film:   .\flow\flow-video.bat make flow\stories\kite.txt --account 2
+#     (same command again: about 60 credits for the 4 clips)
+#     Redo a clip (credits):     .\flow\flow-video.bat make flow\stories\kite.txt --account 2 --redo clip 2
+#     Redo the film only (free): .\flow\flow-video.bat make flow\stories\kite.txt --account 2 --redo film
+#  The film: flow\output\the-kite-master\film.mp4
+#
 title: The Kite Master
 aspect: 9:16
 characters: Ren, Yuki
