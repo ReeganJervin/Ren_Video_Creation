@@ -1,0 +1,12 @@
+# ============================================================
+#  Episode Short: "Rich Fox" from Episode 10, The Crystal Floor
+#  (a cave full of glowing crystals: Ren wants to be rich, but he has no tools, so he carries them home with his eyes)
+#  Make it:  make-video.bat shorts\episode-shorts\ep10-1-rich-fox.txt
+# ============================================================
+
+title: Rich Fox
+type: episode short
+from: episode-10-the-crystal-floor
+lines: 70-84
+hook: He wants to be RICH...
+thumbnail text: Rich Fox!

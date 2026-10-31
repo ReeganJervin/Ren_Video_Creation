@@ -1,0 +1,12 @@
+# ============================================================
+#  Episode Short: "The Useless Bag" from Episode 10, The Crystal Floor
+#  (the treasure chest holds only a little bag that can't even fit a pebble; Yuki holds it and smiles, and won't say why)
+#  Make it:  make-video.bat shorts\episode-shorts\ep10-2-the-useless-bag.txt
+# ============================================================
+
+title: The Useless Bag
+type: episode short
+from: episode-10-the-crystal-floor
+lines: 151-172
+hook: The most useless treasure... or is it?
+thumbnail text: Useless Bag?
