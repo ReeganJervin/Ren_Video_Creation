@@ -232,6 +232,22 @@ Ren and Yuki can hold one small prop at a time, in the near paw (props marked "b
 - **Clear messages when something can't happen**, for example: *"Line 22: Ren isn't holding the lantern."*, *"Ren's paws are full: Ren is holding the map. Put it down first."*, *"Yuki is holding the lantern, not Ren."*, *"The cottage is too big to pick up."*
 - A thing that doesn't exist yet (like `sword`) is shown as a grey placeholder and goes on the missing list, as usual.
 
+### Things that talk
+
+A prop can talk, like the magic lantern's voice in Episode 8. Write it like a character line, with the thing's name:
+
+```
+ren holds the lantern
+the lantern (whispers): Light that sleeps, now wake for me.
+ren (whispers, surprised): Yuki? Did you say something?
+```
+
+- Its words come in a bubble whose tail points at the thing (in a paw or on the ground), and the thing **glows softly while it talks**, so you can tell who is speaking even in the dark.
+- It needs its own voice in `config\voices.json`, under the thing's name (the lantern's is there: old, soft and warm, with a little echo). Without one, the check lists the voice as missing.
+- `(whispers)` and `(shouts)` work, and a mood changes the voice when the story has `mood voices: on`. A thing can't think (it has no head).
+- The camera keeps its shot, and nobody turns to look: it's as if only the character holding it can hear.
+- The thing has to be there first (`lantern appears...`), or the check says so.
+
 ### Extras (animals and creatures)
 
 Extras can do the simple things characters do:

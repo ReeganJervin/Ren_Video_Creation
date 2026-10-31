@@ -419,8 +419,13 @@
         if (!z) return err(`Unknown camera "${m[1]}". Use: wide, close or closer`);
         return beat('camera', { zoom: z });
       }
-      if ((m = line.match(new RegExp(`^(narrator|${NAME})\\s*(?:\\(\\s*([a-z ,]+?)\\s*\\))?\\s*:\\s*(.+)$`, 'i')))) {
-        const who = m[1].toLowerCase(), say = m[3].trim();
+      // a thing that talks, like the lantern's voice: "the lantern (whispers): Light that sleeps..." Its own voice
+      // (config/voices.json, under the prop's id), and its words in a bubble pointing at it
+      let talker = null;
+      const pm = line.match(/^(?:the )?([a-z][a-z' ]{0,30}?)\s*(?:\(\s*([a-z ,]+?)\s*\))?\s*:\s*(.+)$/i);
+      if (pm && !new RegExp(`^(narrator|${NAME})$`, 'i').test(pm[1].trim())) { const pa = ASSETS.find(pm[1], 'prop'); if (pa) talker = { id: pa.id, thing: ASSETS.norm(pm[1]) }; }
+      if ((m = talker ? pm : line.match(new RegExp(`^(narrator|${NAME})\\s*(?:\\(\\s*([a-z ,]+?)\\s*\\))?\\s*:\\s*(.+)$`, 'i')))) {
+        const who = talker ? talker.id : m[1].toLowerCase(), say = m[3].trim();
         if (m[2] && who === 'narrator') return err('The narrator has no mood or way of talking. Remove the (…) part.');
         // the (…) part: a mood, a way of talking, or both ("shouts, excited")
         let mood = null, style = null, silent = false;
@@ -430,6 +435,10 @@
           else return err(`Unknown mood or way of talking "${w}". Moods: ${MOODS.join(', ')}. Ways of talking: thinks, thinks silently, whispers, shouts`);
         }
         if (say.length > 160) return err('This line is too long (max 160 characters). Split it into two lines.');
+        if (talker) {
+          if (silent || style === STYLES.thinks) return err(`The ${talker.thing} can't think: it has no head. Use whispers, shouts or just a colon.`);
+          return beat('say', { who, prop: talker.thing, mood, text: say, ...(style ? { style } : {}) });
+        }
         if (EXTRAS[toId(who)]) { const e = Object.values(found).find(f => f.id === toId(who)); if (!e.asset) needs('extra', e.name, 'speaks'); }
         return beat('say', { who, mood, text: say, ...(style ? { style } : {}), ...(silent ? { silent } : {}) });
       }
@@ -578,7 +587,7 @@
   }
 
   // characters a beat is about (speech by a character counts)
-  const whoOf = b => (b.type === 'say' ? (b.who === 'narrator' ? [] : [b.who]) : b.who || [b.target].filter(t => t && t !== 'each other'));
+  const whoOf = b => (b.type === 'say' ? (b.who === 'narrator' || b.prop ? [] : [b.who]) : b.who || [b.target].filter(t => t && t !== 'each other'));
 
   // ---------------- compiler ----------------
   function compileStory(parsed, lens = {}) {
@@ -865,6 +874,18 @@
             break;
           }
           const len = lens[P.voice.length] || estimate(b.text);
+          if (b.prop) {
+            // a thing that talks: its voice, and a bubble pointing at it (in a paw or on the ground)
+            const p = props[b.prop];
+            if (!p || p.t1 !== null && p.t1 <= s) { errors.push(`Line ${b.line}: there is no ${b.prop} here. Use "${b.prop} appears" first.`); break; }
+            const vt = s + 0.15, hold = (p.holds || []).filter(q => q.t0 <= s && (q.t1 === null || q.t1 > s)).pop(), px = hold && A[hold.who] ? A[hold.who].x : p.x;
+            if (voiceWins.some(([x, e]) => vt < e && vt + len > x)) errors.push(`Line ${b.line}: two voices would talk at the same time. Remove the "+" so this line waits its turn.`);
+            voiceWins.push([vt, vt + len]);
+            P.voice.push({ id: P.voice.length, who: b.who, text: b.text, t: vt, len, line: b.line, ...(b.style ? { style: b.style } : {}) });
+            P.bubbles.push({ who: b.who, prop: P.props.indexOf(p), text: b.text, t0: s, t1: Math.max(vt + len + 0.9, s + 2.8), side: px >= 960 ? 1 : -1, ...(b.style ? { style: b.style } : {}) });
+            dur = 0.15 + len + 0.55 * PACE;
+            break;
+          }
           const a = b.who === 'narrator' ? null : A[b.who];
           const vt = a ? s + 0.15 : s;
           if (voiceWins.some(([x, e]) => vt < e && vt + len > x)) errors.push(`Line ${b.line}: two voices would talk at the same time. Remove the "+" so this line waits its turn.`);
@@ -1821,6 +1842,7 @@
       };
       for (const { b, s, stage } of log) {
         if (b.type === 'say' && b.who === 'narrator') { cut(s, 'wide', { all: true }, { force: reaction }); convo = false; reaction = false; continue; }
+        if (b.type === 'say' && b.prop) continue;   // a thing talking: the shot stays as it is
         if (b.type === 'say') {
           const v = lineOf(b), others = stage.filter(id => id !== b.who && onStage(A[id]));
           if (!others.length) { if (speaker !== b.who) cut(s, 'medium', { actors: [b.who] }); }

@@ -153,7 +153,7 @@
     // the speaker glances at the listener
     if (CAST.length > 1 && onStage(id, t)) {
       for (const v of P.voice) {
-        if (v.who === 'narrator') continue;
+        if (v.who === 'narrator' || !CAST.includes(v.who)) continue;   // (the narrator and things that talk aren't looked at)
         const w = win(t, v.t - 0.25, v.t + v.len + 0.4, 0.35, 0.45); if (w <= 0) continue;
         const other = v.who === id ? CAST.find(o => o !== id && onStage(o, t)) : v.who;
         if (!other || other === id || !onStage(other, t)) continue;
@@ -237,7 +237,7 @@
     if (CAST.length > 1 && onStage(id, t)) {
       const x = actorX(id, t);
       for (const v of P.voice) {
-        if (v.who === 'narrator') continue;
+        if (v.who === 'narrator' || !CAST.includes(v.who)) continue;   // (the narrator and things that talk aren't looked at)
         const w = win(t, v.t - 0.25, v.t + v.len + 0.4, 0.35, 0.45); if (w <= 0) continue;
         const other = v.who === id ? CAST.find(o => o !== id && onStage(o, t)) : v.who;
         if (!other || other === id || !onStage(other, t)) continue;
@@ -773,8 +773,10 @@
         const lh = size * 1.18, w = Math.max(...lines.map(l => c.measureText(l).width)) + 84 * size / 52, h = lines.length * lh + 56 * size / 52;
         const into = (x, y) => [clamp(x, 40 + w / 2, W - 40 - w / 2), clamp(y, 40 + h / 2, H - 40 - h / 2)];
         const sides = [b.side, -b.side];
+        // (a thing that talks: first right beside it, at its own height)
+        const own = b.prop === undefined ? [] : [126, 260, 400].flatMap(o => sides.map(s => into(head.x + s * (o + w / 2), head.y)));
         const cands = near
-          ? sides.map(s => into(s > 0 ? me.x1 + 36 + w / 2 : me.x0 - 36 - w / 2, me.y0 + h / 2)).concat(
+          ? own.concat(sides.map(s => into(s > 0 ? me.x1 + 36 + w / 2 : me.x0 - 36 - w / 2, me.y0 + h / 2))).concat(
             [into(head.x, me.y0 - 20 - h / 2)], sides.map(s => into(head.x + s * w / 2, me.y0 - 20 - h / 2)))
           : sides.map(s => into(s > 0 ? W : 0, 0)).concat(sides.map(s => into(s > 0 ? W : 0, H)));
         const ok = cands.find(([x, y]) => fits(x, y, w, h));
@@ -869,6 +871,8 @@
     }
     drawn.push({ kind: 'bubble', x0: bx - w * k / 2 - pad, x1: bx + w * k / 2 + pad, y0: by - h * k / 2 - pad, y1: by + h * k / 2 + pad });
     const ang = Math.atan2(head.y - by, head.x - bx), dx = Math.cos(ang), dy = Math.sin(ang), px = -dy, py = dx;
+    // (a thing that talks: the tail reaches all the way to it)
+    if (b.prop !== undefined) L = clamp(Math.hypot(head.x - bx, head.y - by) - Math.min(w / 2 / Math.max(1e-6, Math.abs(dx)), h / 2 / Math.max(1e-6, Math.abs(dy))) - 40, 24, 480);
     const ex = dx * (w / 2 - 34), ey = dy * (h / 2 - 16), tx = ex + dx * L, ty = ey + dy * L, bw = st === 'whisper' ? 16 : 24;
     c.globalAlpha = a; c.translate(bx, by); c.scale(sc * k, sc * k);
     if (st === 'shout') c.rotate(-0.025);
@@ -1328,7 +1332,25 @@
     if (!clean) P.titles.forEach(T => drawTitle(c, T, t));
     if (!P.wordCaps && !clean) P.captions.forEach(cap => drawCaption(c, cap, t));   // (a Short shows the narrator as big word captions instead)
     const F = cam.framed ? faceBoxes(cam, Ks, heads) : null;
-    if (!clean) P.bubbles.forEach(b => drawBubble(c, b, t, toScreen(cam, heads[b.who]), cam, F));
+    // a thing that talks (the lantern's voice): a soft warm glow pulses on it while its words are up, so you can
+    // tell who is speaking even in the dark, and its bubble points at it
+    // (in a paw: where its drawing was put this frame; on the ground: its middle)
+    const talkAt = b => {
+      if (b.prop === undefined) return toScreen(cam, heads[b.who]);
+      const p = P.props[b.prop], h = p.holds && holdOf(p, t);
+      if (h && h.dev && h.dev.t === t) return { x: h.dev.x, y: h.dev.y + h.dev.s * (h.dev.dy - p.height * 0.55) };
+      const q = propPoint(b.prop, t);
+      return q && toScreen(cam, q);
+    };
+    P.bubbles.forEach(b => {
+      if (b.prop === undefined || t < b.t0 || t > b.t1) return;
+      const s = talkAt(b); if (!s) return;
+      const a = clamp((t - b.t0) / 0.4) * clamp((b.t1 - t) / 0.4) * (0.75 + 0.25 * Math.sin(t * 5));
+      c.save(); c.setTransform(1, 0, 0, 1, 0, 0); c.globalCompositeOperation = 'lighter';
+      glow(c, s.x, s.y, 150 * cam.z, '255,200,120', 0.45 * a); glow(c, s.x, s.y, 45 * cam.z, '255,235,190', 0.7 * a);
+      c.restore();
+    });
+    if (!clean) P.bubbles.forEach(b => { const q = talkAt(b); if (q) drawBubble(c, b, t, q, cam, F); });
     if (P.youtube) drawYouTube(c, t);
     if ((P.wordCaps || P.hook || P.card) && !clean) drawShort(c, local, t);
     c.setTransform(1, 0, 0, 1, 0, 0);

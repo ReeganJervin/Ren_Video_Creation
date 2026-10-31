@@ -160,10 +160,10 @@ ren holds the lantern
 music: magical
 narrator: The moment Ren held it, the cave went very, very quiet.
 beat
-lantern voice (whispers): Light that sleeps, now wake for me...
+the lantern (whispers): Light that sleeps, now wake for me...
 ren (whispers, surprised): Yuki? Did you say something?
 yuki (whispers, surprised): No. I didn't say anything.
-lantern voice (whispers): Light that sleeps, now wake for me. Show the path that none can see.
+the lantern (whispers): Light that sleeps, now wake for me. Show the path that none can see.
 ren (whispers, scared): There it is again. A voice. The voice I heard outside.
 yuki (whispers, worried): Ren, I don't hear anything.
 ren (whispers, thinking): It's saying words. Like a spell.

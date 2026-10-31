@@ -27,6 +27,12 @@
     "pitch": 0.97,
     "gain": -2
   },
+  "lantern": {
+    "voice": "bf_emma:0.6+bf_isabella:0.4",
+    "speed": 0.84,
+    "pitch": 0.92,
+    "echo": true
+  },
   "_styles": {
     "_about": "Ways of talking: speed and pitch multiply the voice, gain is in dB, echo and breath are effects (0..1).",
     "think": {
