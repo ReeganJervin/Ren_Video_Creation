@@ -249,9 +249,18 @@ async function openSettings(page) {
   }
   if (!(await probe.isVisible().catch(() => false))) throw new Error("Couldn't open Flow's settings (image or video, size, model).");
 }
-async function pickRadio(page, name) {
+// A choice in the settings panel. Closing a menu inside the panel (the model menu) can close the whole panel, so a
+// hidden choice reopens it first. An optional choice that Flow doesn't offer is simply left alone.
+async function pickRadio(page, name, optional = false) {
   const radio = page.getByRole('radio', { name, exact: typeof name === 'string' }).first();
-  if (!(await radio.isVisible().catch(() => false))) throw new Error(`Flow has no "${name}" choice here.`);
+  if (!(await radio.isVisible().catch(() => false))) {
+    await openSettings(page);
+    await radio.waitFor({ state: 'visible', timeout: 2000 }).catch(() => {});
+  }
+  if (!(await radio.isVisible().catch(() => false))) {
+    if (optional) return;
+    throw new Error(`Flow has no "${name}" choice here.`);
+  }
   if (!(await radio.isChecked())) { await radio.click(); await pause(page, 500); }
 }
 // the newest Nano Banana for images (the highest version that isn't a Lite one), read from Flow's own menu
@@ -291,7 +300,9 @@ async function applySettings(page, s) {
   else if (s.model) await pickModel(page, s.model);
   if (s.type === 'video' && s.resolution) await pickRadio(page, new RegExp(`^${s.resolution}`));
   if (s.type === 'video' && s.duration) await pickRadio(page, `${s.duration}s`);
-  await pickRadio(page, 'x1');
+  // one result each time (Flow doesn't always offer the choice)
+  await pickRadio(page, 'x1', true);
+  await openSettings(page);
   await pause(page, 600);
   // the price: only the link that shows a number ("0 credits", "20 credits"), never "Add AI credits"
   const costText = await page.getByRole('link', { name: /^\s*\d[\d,]*\s*credits?\s*$/i }).first().innerText();
