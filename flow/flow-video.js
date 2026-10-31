@@ -136,6 +136,7 @@ async function makeFilm(story, m) {
   const { items, warnings } = bubbleTimes(story.clips.map((c, i) => ({ duration: info[i].duration, lines: lines[i] })));
   warnings.forEach(w => say(`  note: ${w}`));
   const voiced = items.filter(b => b.wav).length;
+  if (items.length && story.meta.voices !== 'kitsu') say(`  no Ren and Yuki voices: this story says "voices: ${story.meta.voices}". Delete that line (or write voices: kitsu) to hear them.`);
   if (items.length && (story.meta.bubbles || voiced)) say(`  adding ${story.meta.bubbles ? `${items.length} speech bubble(s)` : ''}${story.meta.bubbles && voiced ? ' and ' : ''}${voiced ? `${voiced} voice line(s)` : ''}...`);
   await burnBubbles(clean, film, items, info[0].w, info[0].h, { bubbles: story.meta.bubbles });
   m.film = film;
