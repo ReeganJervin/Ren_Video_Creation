@@ -4,3 +4,7 @@ models/
 cache/
 build/
 videos/
+
+# Kitsu Flow: the videos it makes and each computer's own settings
+flow/output/
+flow/settings.json
