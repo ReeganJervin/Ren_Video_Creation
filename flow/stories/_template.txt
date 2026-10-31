@@ -16,9 +16,8 @@ characters: Ren, Yuki
 # a clip is skipped (nothing spent) if Flow asks more than this
 max credits: 25
 # optional: model: Veo 3.1 - Fast   (without it, Flow's current choice is used)
-# voices: kitsu = Kitsu Studio's own Ren and Yuki voices say the lines (Flow makes no voices; it changes them every clip)
-# (none = speech bubbles only; flow = Flow's voices)
-voices: kitsu
+# the lines are always spoken by the same Ren and Yuki voices as Kitsu Studio's episodes (Flow makes no voices).
+# Only if you want otherwise: voices: none (bubbles only) or voices: flow (Flow's voices)
 # where each one usually stands, for the bubble's tail
 sides: Ren left, Yuki right
 

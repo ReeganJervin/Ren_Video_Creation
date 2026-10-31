@@ -16,9 +16,10 @@
 // A frame or clip goes on until the next "frame" or "clip" line; its lines are joined with spaces.
 // Lines starting with # are notes.
 //
-// In a clip, a line like  Ren (proud): "I'm a snow expert."  is something said. With "voices: none" (the default),
-// Flow is asked for no voices (it makes up a new voice for every clip), and what is said is shown in speech bubbles
-// on the film instead ("bubbles: on", the default). "voices: kitsu" also speaks them with Kitsu Studio's own voices.
+// In a clip, a line like  Ren (proud): "I'm a snow expert."  is something said. Flow is asked for no voices (it makes
+// up a new voice for every clip); the line is spoken by Kitsu Studio's own voices, the same Ren and Yuki as in the
+// episodes ("voices: kitsu", the default and the owner's rule), and shown in a speech bubble ("bubbles: on", the
+// default). "voices: none" leaves only the bubbles; "voices: flow" lets Flow make the voices.
 // "(left)" or "(right)" in the brackets says which side the speaker is on, for the bubble's tail ("sides: Ren left,
 // Yuki right" says it once for the whole story), and "(at 2s)" when the line starts in its clip.
 
@@ -32,7 +33,7 @@ const SAID = /^([A-Z][\w' -]{0,30}?)\s*(?:\(([^)]*)\))?\s*:\s*["“](.+?)["”]\
 const ASPECTS = ['16:9', '9:16'];
 
 function parseFlowStory(text) {
-  const meta = { aspect: '9:16', characters: [], maxCredits: 25, quality: 'original', voices: 'none', bubbles: true, sides: {} }, frames = [], clips = [], errors = [];
+  const meta = { aspect: '9:16', characters: [], maxCredits: 25, quality: 'original', voices: 'kitsu', bubbles: true, sides: {} }, frames = [], clips = [], errors = [];
   let cur = null;
   const err = (n, msg) => errors.push(`Line ${n}: ${msg}`);
   text.split(/\r?\n/).forEach((raw, i) => {
@@ -57,7 +58,7 @@ function parseFlowStory(text) {
       else if (key === 'maxCredits') { if (!/^\d+$/.test(v)) return err(n, 'max credits must be a number, like 25.'); meta.maxCredits = +v; }
       else if (key === 'duration') { if (!/^(4|6|8|10)$/.test(v)) return err(n, 'duration must be 4, 6, 8 or 10 (seconds). Veo clips are always 8.'); meta.duration = +v; }
       else if (key === 'resolution') { if (!/^(360p|720p)$/.test(v)) return err(n, 'resolution must be 360p or 720p.'); meta.resolution = v; }
-      else if (key === 'voices') { if (!/^(none|flow|kitsu)$/i.test(v)) return err(n, "voices must be kitsu (Kitsu Studio's own Ren and Yuki voices), none (bubbles only, the default) or flow (Flow makes the voices)."); meta.voices = v.toLowerCase(); }
+      else if (key === 'voices') { if (!/^(none|flow|kitsu)$/i.test(v)) return err(n, "voices must be kitsu (Kitsu Studio's own Ren and Yuki voices, the default), none (bubbles only) or flow (Flow makes the voices)."); meta.voices = v.toLowerCase(); }
       else if (key === 'bubbles') { if (!/^(on|off)$/i.test(v)) return err(n, 'bubbles must be on or off.'); meta.bubbles = /^on$/i.test(v); }
       else if (key === 'sides') {
         for (const part of v.split(/\s*,\s*/)) {

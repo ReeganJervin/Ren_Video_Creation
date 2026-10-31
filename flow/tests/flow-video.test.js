@@ -34,7 +34,11 @@ class FlowAccount {
 }
 module.exports = { FlowAccount };`);
 
-const env = { ...process.env, KITSU_FLOW_ENGINE: engine, KITSU_FLOW_SETTINGS: path.join(tmp, 'settings.json'), KITSU_FLOW_OUTPUT: path.join(tmp, 'output'), KITSU_FLOW_HOME: path.join(tmp, 'accounts') };
+// a pretend voice tool (Kitsu voices are the default): a tone as long as the words
+fs.writeFileSync(path.join(tmp, 'fake-tts.js'), `const fs = require('fs'), { execFileSync } = require('child_process');
+for (const j of JSON.parse(fs.readFileSync(process.argv[3], 'utf8')))
+  execFileSync(${JSON.stringify(require('../lib/join').FFMPEG)}, ['-loglevel', 'error', '-y', '-f', 'lavfi', '-i', 'sine=f=440:r=24000:d=' + (0.3 + j.text.length * 0.05), j.out]);`);
+const env = { ...process.env, KITSU_FLOW_TTS: path.join(tmp, 'fake-tts.js'), KITSU_FLOW_ENGINE: engine, KITSU_FLOW_SETTINGS: path.join(tmp, 'settings.json'), KITSU_FLOW_OUTPUT: path.join(tmp, 'output'), KITSU_FLOW_HOME: path.join(tmp, 'accounts') };
 const run = (...args) => { const r = spawnSync(process.execPath, [CLI, ...args], { env, encoding: 'utf8', cwd: tmp }); return { code: r.status, out: r.stdout + r.stderr }; };
 const bank = (n, v) => { const d = path.join(tmp, 'accounts', `account-${n}`); fs.mkdirSync(d, { recursive: true }); if (v !== undefined) fs.writeFileSync(path.join(d, 'credits'), String(v)); return Number(fs.readFileSync(path.join(d, 'credits'), 'utf8')); };
 const calls = n => { try { return fs.readFileSync(path.join(tmp, 'accounts', `account-${n}`, 'calls.log'), 'utf8').trim().split('\n').filter(Boolean).map(JSON.parse); } catch (_) { return []; } };
@@ -112,7 +116,7 @@ test('make again: clips from frame to frame, switching account when one runs low
   if (onFrames) { assert.match(onFrames.first_frame, /^asset:the-test-fox-frame-0\d-t\d+$/); }
   assert.match(onOther.first_frame, /frame-0\d\.png$/);
   const clip = [...v1, ...v2][0];
-  // voices: none (the default): the words stay out of Flow's prompt, which asks for no voices
+  // the words stay out of Flow's prompt, which asks for no voices (Kitsu's voices say them)
   assert.doesNotMatch(clip.prompt, /Look!/);
   assert.match(clip.prompt, /Ren points up\. Ren reacts \(excited\)/);
   assert.match(clip.prompt, /Nobody speaks/);
@@ -124,7 +128,7 @@ test('make again: clips from frame to frame, switching account when one runs low
   assert.ok(Math.abs(info.duration - 2) < 0.25, `film is ${info.duration} s`);
   assert.ok(info.audio);
   // the speech bubble ("Look!") is on the film, not on the clean copy
-  assert.match(r.out, /adding 1 speech bubble/);
+  assert.match(r.out, /adding 1 speech bubble\(s\) and 1 voice line/);
   assert.ok(fs.existsSync(path.join(tmp, 'output', 'the-test-fox', 'film-clean.mp4')));
   assert.match(r.out, /clips cost 40 credits/);
 });
@@ -202,17 +206,13 @@ test('voices: kitsu: Kitsu Studio voices for each line, mood and whisper, mixed 
   assert.deepStrictEqual(voiceFor('Ren', 'proud, left', table), { voice: 'am_puck', speed: 0.95, pitch: 1.1424, gain: 0, echo: false });
   assert.strictEqual(voiceFor('Ren', 'whispering', table).gain, -5);
   assert.strictEqual(voiceFor('Nobody', '', table), null);
-  // a pretend voice tool: a tone as long as the words
   const tts = path.join(tmp, 'fake-tts.js');
-  fs.writeFileSync(tts, `const fs = require('fs'), { execFileSync } = require('child_process');
-for (const j of JSON.parse(fs.readFileSync(process.argv[3], 'utf8')))
-  execFileSync(${JSON.stringify(require('../lib/join').FFMPEG)}, ['-loglevel', 'error', '-y', '-f', 'lavfi', '-i', 'sine=f=440:r=24000:d=' + (0.3 + j.text.length * 0.05), j.out]);`);
   const story = path.join(tmp, 'voiced.txt');
   fs.writeFileSync(story, fs.readFileSync(STORY, 'utf8').replace('title: The Test Fox', 'title: The Voiced Fox\nvoices: kitsu').replace('Ren (excited): "Look!"', 'Ren (excited, at 0.2s): "Look!"'));
   bank(1, 100); bank(2, 100);
   const r = spawnSync(process.execPath, [CLI, 'make', story, '--all', '--account', '1'], { env: { ...env, KITSU_FLOW_TTS: tts }, encoding: 'utf8', cwd: tmp });
   assert.strictEqual(r.status, 0, r.stdout + r.stderr);
-  assert.match(r.stdout, /making 1 voice line/);
+  // ("Look!" in Ren's voice was already made by an earlier test, so it is reused from the voice cache)
   assert.match(r.stdout, /adding 1 speech bubble\(s\) and 1 voice line\(s\)/);
   const film = path.join(tmp, 'output', 'the-voiced-fox', 'film.mp4');
   assert.ok(Math.abs(probe(film).duration - 2) < 0.25);

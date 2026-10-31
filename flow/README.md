@@ -71,7 +71,7 @@ Yuki (soft, curious): "Ren... did you hear that?"
 | `max credits:` | A clip is skipped, with nothing spent, if Flow asks for more than this (default 25) |
 | `model:` | Optional, e.g. `Veo 3.1 - Fast`. Without it, Flow's current choice is used |
 | `quality:` | `original`, or `upscaled` (1080p: free, but slower to download) |
-| `voices:` | `kitsu`: Flow makes the clips without voices, and **Kitsu Studio's own Ren and Yuki voices** speak the words (the same voices as the episodes, in every clip), with the bubbles. `none` (the default): no voices, bubbles only. `flow`: Flow makes the voices (they change from clip to clip) |
+| `voices:` | `kitsu` (**the default, always used unless you say otherwise**): Flow makes the clips without voices, and **the same Ren and Yuki voices as Kitsu Studio's episodes** (from `config\voices.json`) speak the words, with the bubbles. `none`: no voices, bubbles only. `flow`: Flow makes the voices (they change from clip to clip) |
 | `bubbles:` | `on` (the default): what the characters say is shown in Kitsu-style speech bubbles on the film. `off`: no bubbles |
 | `sides:` | Where each character usually stands, for the bubble's tail: `sides: Ren left, Yuki right`. One line can say otherwise: `Ren (proud, right): "..."` |
 | `frame N:` | A still. Each frame also uses the frame before it as a reference, so the drawing stays consistent |
