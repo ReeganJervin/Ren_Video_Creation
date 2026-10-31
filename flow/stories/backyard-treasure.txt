@@ -1,0 +1,49 @@
+# The Backyard Treasure  (hook: Ren found an X. Ren MUST dig.)
+#
+#  Check it (free):              .\flow\flow-video.bat check flow\stories\backyard-treasure.txt
+#  1. Make the frames (free):    .\flow\flow-video.bat make flow\stories\backyard-treasure.txt --account 2
+#     Redo a frame (free):       .\flow\flow-video.bat make flow\stories\backyard-treasure.txt --account 2 --redo frame 3
+#  2. Make the clips and film:   .\flow\flow-video.bat make flow\stories\backyard-treasure.txt --account 2
+#     (same command again: about 60 credits for the 4 clips)
+#     Redo a clip (credits):     .\flow\flow-video.bat make flow\stories\backyard-treasure.txt --account 2 --redo clip 2
+#     Redo the film only (free): .\flow\flow-video.bat make flow\stories\backyard-treasure.txt --account 2 --redo film
+#  The film: flow\output\the-backyard-treasure\film.mp4
+#
+title: The Backyard Treasure
+aspect: 9:16
+characters: Ren, Yuki
+model: Omni 1.1 Flash
+resolution: 720p
+duration: 10
+max credits: 15
+sides: Ren left, Yuki right
+music: adventure
+
+style: Cute 2D chibi storybook cartoon, soft round shapes, warm dark-brown outlines, flat warm pastel colours, pink blush. Fun and adventurous, never scary.
+place: A cozy cottage garden: a white picket fence, vegetable patches with leafy plants, flower beds, an apple tree and a little garden shovel.
+
+frame 1: Ren on the left pointing dramatically at a big X drawn in the dirt of the garden, holding a small shovel like a sword. Yuki on the right looking at the X, curious. Medium shot.
+frame 2: Same place and framing. Ren on the left digging very fast, dirt flying everywhere behind him. Yuki on the right stepping back, covering her face from the flying dirt.
+frame 3: Same place and framing. Ren on the left in a little hole, holding up a big round purple turnip with leaves on top, eyes sparkling as if it were gold. Yuki on the right with a flat look.
+frame 4: Same place. Yuki on the right holding a little sign that says "veggies" pointing at the row where Ren dug, with an amused face. Ren on the left looking at it, surprised. Medium shot.
+frame 5: Same place. Ren on the left proudly wearing the turnip leaves like a crown, holding the turnip up high like a trophy. Yuki on the right laughing. Medium shot.
+
+clip 1: frame 1 to frame 2
+Ren points at a big X in the dirt and raises his shovel. Then he starts digging like crazy, dirt flying everywhere.
+Ren (excited, at 0.5s): "X marks the spot! Treasure!"
+Yuki (curious, at 5s): "Ren, wait..."
+
+clip 2: frame 2 to frame 3
+Ren digs and digs, then pulls something round out of the hole and holds it up, eyes sparkling.
+Ren (proud): "The legendary purple treasure!"
+Yuki (flat): "That's a turnip."
+
+clip 3: frame 3 to frame 4
+Yuki holds up a little garden sign. Ren looks at it and realises he dug up the vegetable patch.
+music: happy
+Yuki (amused): "And the X means I planted it here."
+
+clip 4: frame 4 to frame 5
+Ren wears the turnip leaves like a crown and raises the turnip like a trophy. Yuki laughs.
+Ren (proud): "Then it's a legendary turnip."
+Yuki (teasing): "It's dinner."
