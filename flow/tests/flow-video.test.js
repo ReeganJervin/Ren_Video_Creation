@@ -177,13 +177,47 @@ test('the Flow driver: newest image model, file kinds, the price link', () => {
   assert.match(fs.readFileSync(path.join(__dirname, '..', 'lib', 'flow-web.js'), 'utf8'), /name: \/\^\\s\*\\d\[\\d,\]\*\\s\*credits\?\\s\*\$\/i/);
 });
 
-test('bubbles: the lines of a clip share its time; the bubble pictures are drawn', async () => {
+test('bubbles: timing from reading time, "at", and voice lengths; the bubble pictures are drawn', async () => {
   const { bubbleTimes, drawBubbles } = require('../lib/bubbles');
-  const t = bubbleTimes([{ duration: 8, lines: [{ text: 'a', side: 'left' }, { text: 'b', side: 'right' }] }, { duration: 8, lines: [] }, { duration: 8, lines: [{ text: 'c' }] }]);
-  assert.deepStrictEqual(t.map(b => b.text), ['a', 'b', 'c']);
+  const { items: t } = bubbleTimes([{ duration: 8, lines: [{ text: 'a', side: 'left', at: null }, { text: 'a much longer line to read', side: 'right', at: null }] }, { duration: 8, lines: [] }, { duration: 8, lines: [{ text: 'c', at: null }] }]);
+  assert.deepStrictEqual(t.map(b => b.text), ['a', 'a much longer line to read', 'c']);
   assert.ok(t[0].t0 > 0 && t[0].t1 < t[1].t0 && t[1].t1 <= 8 && t[2].t0 >= 16 && t[2].t1 <= 24);
+  assert.ok(t[1].t1 - t[1].t0 > t[0].t1 - t[0].t0, 'the longer line shows longer');
+  // "at": the counting starts at once, and the next line follows it
+  const { items: a } = bubbleTimes([{ duration: 10, lines: [{ text: 'One... two... three...', at: 0 }, { text: 'Found you.', at: 6 }] }]);
+  assert.strictEqual(a[0].t0, 0); assert.strictEqual(a[1].t0, 6); assert.ok(a[0].t1 <= 5.95);
+  // voices: a bubble lasts its line and a moment; a line too long for its clip is reported
+  const { items: v, warnings } = bubbleTimes([{ duration: 4, lines: [{ text: 'x', at: null, len: 2, wav: 'x.wav' }, { text: 'y', at: null, len: 3, wav: 'y.wav' }] }]);
+  assert.ok(Math.abs(v[0].t1 - (v[0].t0 + 2.5)) < 0.3 && v[1].t0 > v[0].t0 + 2);
+  assert.ok(warnings.some(w => /past the end/.test(w)));
   const [png] = await drawBubbles([{ text: "Don't worry, Yuki. I'm a snow expert.", side: 'left' }], 720, 1280);
   fs.writeFileSync(path.join(tmp, 'bubble.png'), Buffer.from(png, 'base64'));
   if (process.env.KEEP_BUBBLE) fs.copyFileSync(path.join(tmp, 'bubble.png'), process.env.KEEP_BUBBLE);
   assert.ok(png.length > 2000);
+});
+
+test('voices: kitsu: Kitsu Studio voices for each line, mood and whisper, mixed into the film', () => {
+  const { voiceFor } = require('../lib/voices');
+  const table = { ren: { voice: 'am_puck', speed: 1, pitch: 1.12 }, _moods: { proud: { speed: 0.95, pitch: 1.02 } }, _styles: { whisper: { gain: -5, speed: 0.95 } } };
+  assert.deepStrictEqual(voiceFor('Ren', 'proud, left', table), { voice: 'am_puck', speed: 0.95, pitch: 1.1424, gain: 0, echo: false });
+  assert.strictEqual(voiceFor('Ren', 'whispering', table).gain, -5);
+  assert.strictEqual(voiceFor('Nobody', '', table), null);
+  // a pretend voice tool: a tone as long as the words
+  const tts = path.join(tmp, 'fake-tts.js');
+  fs.writeFileSync(tts, `const fs = require('fs'), { execFileSync } = require('child_process');
+for (const j of JSON.parse(fs.readFileSync(process.argv[3], 'utf8')))
+  execFileSync(${JSON.stringify(require('../lib/join').FFMPEG)}, ['-loglevel', 'error', '-y', '-f', 'lavfi', '-i', 'sine=f=440:r=24000:d=' + (0.3 + j.text.length * 0.05), j.out]);`);
+  const story = path.join(tmp, 'voiced.txt');
+  fs.writeFileSync(story, fs.readFileSync(STORY, 'utf8').replace('title: The Test Fox', 'title: The Voiced Fox\nvoices: kitsu').replace('Ren (excited): "Look!"', 'Ren (excited, at 0.2s): "Look!"'));
+  bank(1, 100); bank(2, 100);
+  const r = spawnSync(process.execPath, [CLI, 'make', story, '--all', '--account', '1'], { env: { ...env, KITSU_FLOW_TTS: tts }, encoding: 'utf8', cwd: tmp });
+  assert.strictEqual(r.status, 0, r.stdout + r.stderr);
+  assert.match(r.stdout, /making 1 voice line/);
+  assert.match(r.stdout, /adding 1 speech bubble\(s\) and 1 voice line\(s\)/);
+  const film = path.join(tmp, 'output', 'the-voiced-fox', 'film.mp4');
+  assert.ok(Math.abs(probe(film).duration - 2) < 0.25);
+  // the voice is kept: making the film again needs no new voice
+  const again = spawnSync(process.execPath, [CLI, 'make', story, '--redo', 'film', '--account', '1'], { env: { ...env, KITSU_FLOW_TTS: tts }, encoding: 'utf8', cwd: tmp });
+  assert.strictEqual(again.status, 0, again.stdout + again.stderr);
+  assert.doesNotMatch(again.stdout, /making \d+ voice/);
 });

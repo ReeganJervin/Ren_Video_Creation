@@ -17,6 +17,7 @@ const fs = require('fs'), path = require('path'), os = require('os');
 const { parseFlowStory, framePrompt, clipPrompt, castOf } = require('./lib/story');
 const { joinClips, probe } = require('./lib/join');
 const { bubbleTimes, burnBubbles } = require('./lib/bubbles');
+const { makeVoices } = require('./lib/voices');
 
 const HERE = __dirname;
 const SETTINGS_FILE = process.env.KITSU_FLOW_SETTINGS || path.join(HERE, 'settings.json');
@@ -125,13 +126,21 @@ async function makeFilm(story, m) {
   say('\nJoining the clips into the film...');
   const clips = story.clips.map(c => path.resolve(m.clips[c.n]));
   const clean = path.join(outDir(story), 'film-clean.mp4'), film = path.join(outDir(story), 'film.mp4');
-  const r = joinClips(clips, clean), info = clips.map(probe);
-  const said = story.meta.bubbles ? bubbleTimes(story.clips.map((c, i) => ({ duration: info[i].duration, lines: c.lines }))) : [];
-  if (said.length) say(`  adding ${said.length} speech bubble(s)...`);
-  await burnBubbles(clean, film, said, info[0].w, info[0].h);
+  const r = joinClips(clips, clean), info = clips.map(c => probe(c));
+  // Kitsu Studio's voices for the words ("voices: kitsu"), made once and kept
+  let lines = story.clips.map(c => c.lines);
+  if (story.meta.voices === 'kitsu' && lines.some(x => x.length)) {
+    const all = makeVoices(lines.flat(), path.join(OUTPUT, '_voices'), say);
+    let k = 0; lines = lines.map(x => x.map(() => all[k++]));
+  }
+  const { items, warnings } = bubbleTimes(story.clips.map((c, i) => ({ duration: info[i].duration, lines: lines[i] })));
+  warnings.forEach(w => say(`  note: ${w}`));
+  const voiced = items.filter(b => b.wav).length;
+  if (items.length && (story.meta.bubbles || voiced)) say(`  adding ${story.meta.bubbles ? `${items.length} speech bubble(s)` : ''}${story.meta.bubbles && voiced ? ' and ' : ''}${voiced ? `${voiced} voice line(s)` : ''}...`);
+  await burnBubbles(clean, film, items, info[0].w, info[0].h, { bubbles: story.meta.bubbles });
   m.film = film;
   saveMade(story, m);
-  say(`  ${path.relative(process.cwd(), m.film)} (${Math.round(r.duration)} s)${said.length ? `; without bubbles: ${path.basename(clean)}` : ''}`);
+  say(`  ${path.relative(process.cwd(), m.film)} (${Math.round(r.duration)} s)${items.length ? `; without bubbles or voices: ${path.basename(clean)}` : ''}`);
 }
 
 async function make(file, opts) {
@@ -179,9 +188,13 @@ function check(file) {
   say('\nClips:');
   story.clips.forEach(c => {
     say(`  ${have(m.clips[c.n]) ? 'made ' : '     '} clip ${c.n}: frame ${c.from} to frame ${c.to}: ${c.action.slice(0, 70)}${c.action.length > 70 ? '...' : ''}`);
-    c.lines.forEach(l => say(`          ${story.meta.bubbles ? 'bubble' : 'says  '} (${l.who}${l.side ? `, ${l.side}` : ''}): "${l.text}"`));
+    c.lines.forEach(l => say(`          ${story.meta.bubbles ? 'bubble' : 'says  '} (${l.who}${l.side ? `, ${l.side}` : ''}${l.at !== null ? `, at ${l.at}s` : ''}): "${l.text}"`));
   });
-  say(`\nVoices: ${story.meta.voices === 'none' ? 'none from Flow (the words go in speech bubbles)' : 'made by Flow'}. Bubbles: ${story.meta.bubbles ? 'on' : 'off'}.`);
+  say(`\nVoices: ${{ none: 'none (the words go in speech bubbles)', kitsu: "Kitsu Studio's own voices, added to the film (none from Flow)", flow: 'made by Flow' }[story.meta.voices]}. Bubbles: ${story.meta.bubbles ? 'on' : 'off'}.`);
+  if (story.meta.voices === 'kitsu') {
+    const { voiceFor } = require('./lib/voices'), missing = [...new Set(story.clips.flatMap(c => c.lines).filter(l => !voiceFor(l.who, l.notes)).map(l => l.who))];
+    if (missing.length) say(`Note: no Kitsu voice for ${missing.join(', ')} (see config\\voices.json): those lines would stop the film.`);
+  }
   const left = story.clips.filter(c => !have(m.clips[c.n])).length;
   say(`\n${left} clip(s) still to make: at most ${left * story.meta.maxCredits} credits. Nothing has been spent by this check.`);
 }

@@ -18,8 +18,9 @@
 //
 // In a clip, a line like  Ren (proud): "I'm a snow expert."  is something said. With "voices: none" (the default),
 // Flow is asked for no voices (it makes up a new voice for every clip), and what is said is shown in speech bubbles
-// on the film instead ("bubbles: on", the default). "(left)" or "(right)" in the brackets says which side the speaker
-// is on, for the bubble's tail; "sides: Ren left, Yuki right" says it once for the whole story.
+// on the film instead ("bubbles: on", the default). "voices: kitsu" also speaks them with Kitsu Studio's own voices.
+// "(left)" or "(right)" in the brackets says which side the speaker is on, for the bubble's tail ("sides: Ren left,
+// Yuki right" says it once for the whole story), and "(at 2s)" when the line starts in its clip.
 
 const SETTINGS = {
   title: 'title', project: 'project', aspect: 'aspect', 'aspect ratio': 'aspect', characters: 'characters', style: 'style',
@@ -56,7 +57,7 @@ function parseFlowStory(text) {
       else if (key === 'maxCredits') { if (!/^\d+$/.test(v)) return err(n, 'max credits must be a number, like 25.'); meta.maxCredits = +v; }
       else if (key === 'duration') { if (!/^(4|6|8|10)$/.test(v)) return err(n, 'duration must be 4, 6, 8 or 10 (seconds). Veo clips are always 8.'); meta.duration = +v; }
       else if (key === 'resolution') { if (!/^(360p|720p)$/.test(v)) return err(n, 'resolution must be 360p or 720p.'); meta.resolution = v; }
-      else if (key === 'voices') { if (!/^(none|flow)$/i.test(v)) return err(n, 'voices must be none (speech bubbles instead, the default) or flow (Flow makes the voices).'); meta.voices = v.toLowerCase(); }
+      else if (key === 'voices') { if (!/^(none|flow|kitsu)$/i.test(v)) return err(n, "voices must be kitsu (Kitsu Studio's own Ren and Yuki voices), none (bubbles only, the default) or flow (Flow makes the voices)."); meta.voices = v.toLowerCase(); }
       else if (key === 'bubbles') { if (!/^(on|off)$/i.test(v)) return err(n, 'bubbles must be on or off.'); meta.bubbles = /^on$/i.test(v); }
       else if (key === 'sides') {
         for (const part of v.split(/\s*,\s*/)) {
@@ -75,7 +76,10 @@ function parseFlowStory(text) {
       const said = line.match(SAID);
       if (said) {
         const notes = (said[2] || '').split(/\s*,\s*/).filter(Boolean), side = notes.find(x => /^(left|right|middle)$/i.test(x));
-        cur.lines.push({ who: said[1].trim(), notes: notes.filter(x => x !== side).join(', '), text: said[3].trim(), side: side && side.toLowerCase(), line: n });
+        // "at 2s": when the line starts in its clip
+        const at = notes.find(x => /^at\s+\d+(\.\d+)?\s*s?$/i.test(x));
+        cur.lines.push({ who: said[1].trim(), notes: notes.filter(x => x !== side && x !== at).join(', '), text: said[3].trim(), side: side && side.toLowerCase(),
+          at: at ? parseFloat(at.replace(/[^\d.]/g, '')) : null, line: n });
       } else cur.action = (cur.action ? cur.action + ' ' : '') + line;
     }
   });
@@ -85,7 +89,8 @@ function parseFlowStory(text) {
   clips.forEach(c => {
     c.action = (c.action || '').trim();
     c.lines.forEach(l => { l.side = l.side || meta.sides[l.who.toLowerCase()] || null; if (l.text.length > 90) err(l.line, `that line is long for a bubble (${l.text.length} letters). Keep it under 90, or split it in two.`); });
-    if (meta.voices === 'none' && !c.action) err(c.line, `clip ${c.n} only has words. Add a line saying what happens (with voices: none, Flow only gets the action).`);
+    if (meta.voices !== 'flow' && !c.action) err(c.line, `clip ${c.n} only has words. Add a line saying what happens (Flow only gets the action, not the words).`);
+    if (meta.duration) c.lines.forEach(l => { if (l.at !== null && l.at >= meta.duration) err(l.line, `"at ${l.at}s" is after the end of the clip (${meta.duration} s).`); });
   });
   clips.forEach(c => [c.from, c.to].forEach(f => { if (!frames.some(x => x.n === f)) err(c.line, `clip ${c.n} uses frame ${f}, but there is no "frame ${f}:".`); }));
   if (!frames.length) errors.push('The story has no frames ("frame 1: ...").');

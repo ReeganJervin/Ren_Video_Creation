@@ -6,8 +6,10 @@ const tool = (env, pkg, pick) => process.env[env] || (() => { try { return pick(
 const FFMPEG = tool('KITSU_FLOW_FFMPEG', 'ffmpeg-static', m => m);
 const FFPROBE = tool('KITSU_FLOW_FFPROBE', 'ffprobe-static', m => m.path);
 
-function probe(file) {
+// a clip's size, length and whether it has sound (audioOnly: a voice line, which has no picture)
+function probe(file, audioOnly = false) {
   const out = JSON.parse(execFileSync(FFPROBE, ['-v', 'error', '-show_entries', 'stream=codec_type,width,height', '-show_entries', 'format=duration', '-of', 'json', file], { encoding: 'utf8' }));
+  if (audioOnly) return { duration: Number(out.format.duration) };
   const v = out.streams.find(s => s.codec_type === 'video');
   if (!v) throw new Error(`${path.basename(file)} has no picture in it.`);
   return { w: v.width, h: v.height, audio: out.streams.some(s => s.codec_type === 'audio'), duration: Number(out.format.duration) };
@@ -15,7 +17,7 @@ function probe(file) {
 
 function joinClips(clips, out) {
   if (!clips.length) throw new Error('There are no clips to join.');
-  const info = clips.map(probe), { w, h } = info[0];
+  const info = clips.map(c => probe(c)), { w, h } = info[0];
   const parts = info.map((c, i) => `[${i}:v]scale=${w}:${h}:force_original_aspect_ratio=decrease,pad=${w}:${h}:(ow-iw)/2:(oh-ih)/2,setsar=1,fps=30,format=yuv420p[v${i}];` +
     (c.audio ? `[${i}:a]aformat=sample_rates=48000:channel_layouts=stereo[a${i}];` : `anullsrc=r=48000:cl=stereo,atrim=duration=${c.duration.toFixed(3)}[a${i}];`));
   const graph = parts.join('') + info.map((_, i) => `[v${i}][a${i}]`).join('') + `concat=n=${info.length}:v=1:a=1[v][a]`;
