@@ -15,7 +15,8 @@
 // Already-made frames and clips are kept, so a run that stops (no credits left, Chrome closed) carries on where it was.
 const fs = require('fs'), path = require('path'), os = require('os');
 const { parseFlowStory, framePrompt, clipPrompt, castOf } = require('./lib/story');
-const { joinClips } = require('./lib/join');
+const { joinClips, probe } = require('./lib/join');
+const { bubbleTimes, burnBubbles } = require('./lib/bubbles');
 
 const HERE = __dirname;
 const SETTINGS_FILE = process.env.KITSU_FLOW_SETTINGS || path.join(HERE, 'settings.json');
@@ -50,7 +51,13 @@ function showState(a, s) {
 // ---------- the story's files ----------
 const outDir = story => path.join(OUTPUT, story.meta.project);
 const stateFile = story => path.join(outDir(story), 'made.json');
-function made(story) { try { return JSON.parse(fs.readFileSync(stateFile(story), 'utf8')); } catch (_) { return { frames: {}, clips: {}, credits: {} }; } }
+function made(story) {
+  let m = {}; try { m = JSON.parse(fs.readFileSync(stateFile(story), 'utf8')); } catch (_) { /* nothing made yet */ }
+  // inFlow: where each frame already is in Flow ({ account, title }), so a clip on that account picks it there
+  return { frames: {}, clips: {}, credits: {}, inFlow: {}, ...m };
+}
+// a frame for a clip or as a reference: picked in Flow when it's already in this account's project, else uploaded
+function frameFor(m, n, a) { const f = m.inFlow[n]; return f && f.account === a.n && f.title ? `asset:${f.title}` : path.resolve(m.frames[n]); }
 function saveMade(story, m) { fs.mkdirSync(outDir(story), { recursive: true }); fs.writeFileSync(stateFile(story), JSON.stringify(m, null, 2)); }
 const have = f => f && fs.existsSync(f);
 const num = n => String(n).padStart(2, '0');
@@ -69,13 +76,14 @@ async function makeFrames(story, a, m, todo) {
   say(`\nFrames (free): ${todo.map(f => f.n).join(', ')} on ${a.name}`);
   for (const f of todo) {
     const prev = story.frames[story.frames.indexOf(f) - 1], prevFile = prev && m.frames[prev.n];
-    const refs = [...(have(prevFile) ? [path.resolve(prevFile)] : []), ...castOf(story.meta, f.text).map(c => `asset:${c}`)].slice(0, 3);
+    const refs = [...(have(prevFile) ? [frameFor(m, prev.n, a)] : []), ...castOf(story.meta, f.text).map(c => `asset:${c}`)].slice(0, 3);
     const scene = { type: 'image', prompt: framePrompt(story.meta, f) + (have(prevFile) ? ' Match the previous image exactly for the characters, colours, light and drawing style; this is the same scene a moment later.' : ''),
       aspect_ratio: story.meta.aspect, max_credits: 0, ...(refs.length ? { reference_images: refs } : {}), ...(story.meta.frameModel ? { model: story.meta.frameModel } : {}), download_quality: story.meta.quality };
     let r;
-    try { r = await a.generate(scene, path.join(outDir(story), 'frames', `frame-${num(f.n)}`), progress(`frame ${f.n}`)); }
+    try { r = await a.generate(scene, path.join(outDir(story), 'frames', `frame-${num(f.n)}`), progress(`frame ${f.n}`), `${story.meta.project}-frame-${num(f.n)}`); }
     catch (e) { stop(`Frame ${f.n} wasn't made: ${e.message}\nRun the same command again to try once more.`); }
     m.frames[f.n] = r.files[0];
+    m.inFlow[f.n] = { account: a.n, title: r.title };
     saveMade(story, m);
     say(`    frame ${f.n}: ${path.relative(process.cwd(), m.frames[f.n])}`);
   }
@@ -99,11 +107,11 @@ async function makeClips(story, accts, pinned, m) {
     if (a && best.a !== a) say(`  ${a.name} is low on credits: switching to ${best.a.name} (${best.s.credits} credits).`);
     a = best.a;
     const scene = { type: 'video', prompt: clipPrompt(story.meta, c), aspect_ratio: story.meta.aspect, max_credits: need,
-      first_frame: path.resolve(m.frames[c.from]), last_frame: path.resolve(m.frames[c.to]), download_quality: story.meta.quality,
+      first_frame: frameFor(m, c.from, a), last_frame: frameFor(m, c.to, a), download_quality: story.meta.quality,
       ...(story.meta.model ? { model: story.meta.model } : {}), ...(story.meta.duration ? { duration: story.meta.duration } : {}), ...(story.meta.resolution ? { resolution: story.meta.resolution } : {}) };
     say(`  clip ${c.n} (frame ${c.from} to frame ${c.to}) on ${a.name}${best.s.credits !== null ? `, ${best.s.credits} credits left` : ''}`);
     let r;
-    try { r = await a.generate(scene, path.join(outDir(story), 'clips', `clip-${num(c.n)}`), progress(`clip ${c.n}`)); }
+    try { r = await a.generate(scene, path.join(outDir(story), 'clips', `clip-${num(c.n)}`), progress(`clip ${c.n}`), `${story.meta.project}-clip-${num(c.n)}`); }
     catch (e) { stop(`Clip ${c.n} wasn't made: ${e.message}\nThe clips made so far are kept: run the same command again to carry on.`); }
     m.clips[c.n] = r.files[0];
     m.credits[c.n] = { account: a.n, credits: r.credits ?? null };
@@ -112,12 +120,18 @@ async function makeClips(story, accts, pinned, m) {
   }
 }
 
-function makeFilm(story, m) {
+// the clips joined (film-clean.mp4), then the speech bubbles on top (film.mp4)
+async function makeFilm(story, m) {
   say('\nJoining the clips into the film...');
-  const r = joinClips(story.clips.map(c => path.resolve(m.clips[c.n])), path.join(outDir(story), 'film.mp4'));
-  m.film = r.file;
+  const clips = story.clips.map(c => path.resolve(m.clips[c.n]));
+  const clean = path.join(outDir(story), 'film-clean.mp4'), film = path.join(outDir(story), 'film.mp4');
+  const r = joinClips(clips, clean), info = clips.map(probe);
+  const said = story.meta.bubbles ? bubbleTimes(story.clips.map((c, i) => ({ duration: info[i].duration, lines: c.lines }))) : [];
+  if (said.length) say(`  adding ${said.length} speech bubble(s)...`);
+  await burnBubbles(clean, film, said, info[0].w, info[0].h);
+  m.film = film;
   saveMade(story, m);
-  say(`  ${path.relative(process.cwd(), m.film)} (${Math.round(r.duration)} s)`);
+  say(`  ${path.relative(process.cwd(), m.film)} (${Math.round(r.duration)} s)${said.length ? `; without bubbles: ${path.basename(clean)}` : ''}`);
 }
 
 async function make(file, opts) {
@@ -125,7 +139,7 @@ async function make(file, opts) {
   const m = made(story);
   if (opts.redo) {
     const [kind, n] = opts.redo;
-    if (kind === 'frame') delete m.frames[n]; else if (kind === 'clip') delete m.clips[n];
+    if (kind === 'frame') { delete m.frames[n]; delete m.inFlow[n]; } else if (kind === 'clip') delete m.clips[n];
     // a new frame changes the clips that start or end on it
     if (kind === 'frame') story.clips.filter(c => c.from === +n || c.to === +n).forEach(c => { if (m.clips[c.n]) { delete m.clips[c.n]; say(`(clip ${c.n} uses frame ${n}, so it will be made again too)`); } });
     delete m.film;
@@ -151,7 +165,7 @@ async function make(file, opts) {
   } else say('\nFrames: all made.');
 
   if (story.clips.some(c => !have(m.clips[c.n]))) await makeClips(story, accts, pinned, m); else say('Clips: all made.');
-  if (!have(m.film) && story.clips.length) makeFilm(story, m);
+  if (!have(m.film) && story.clips.length) await makeFilm(story, m);
   const spent = Object.values(m.credits).reduce((s, x) => s + (x.credits || 0), 0);
   say(`\nDone: ${path.relative(process.cwd(), m.film || outDir(story))}${spent ? ` (clips cost ${spent} credits in all)` : ''}`);
 }
@@ -163,7 +177,11 @@ function check(file) {
   say('\nFrames (free):');
   story.frames.forEach(f => say(`  ${have(m.frames[f.n]) ? 'made ' : '     '} frame ${f.n}${castOf(story.meta, f.text).length ? ` [${castOf(story.meta, f.text).join(', ')}]` : ''}: ${f.text.slice(0, 80)}${f.text.length > 80 ? '...' : ''}`));
   say('\nClips:');
-  story.clips.forEach(c => say(`  ${have(m.clips[c.n]) ? 'made ' : '     '} clip ${c.n}: frame ${c.from} to frame ${c.to}: ${c.text.slice(0, 70)}${c.text.length > 70 ? '...' : ''}`));
+  story.clips.forEach(c => {
+    say(`  ${have(m.clips[c.n]) ? 'made ' : '     '} clip ${c.n}: frame ${c.from} to frame ${c.to}: ${c.action.slice(0, 70)}${c.action.length > 70 ? '...' : ''}`);
+    c.lines.forEach(l => say(`          ${story.meta.bubbles ? 'bubble' : 'says  '} (${l.who}${l.side ? `, ${l.side}` : ''}): "${l.text}"`));
+  });
+  say(`\nVoices: ${story.meta.voices === 'none' ? 'none from Flow (the words go in speech bubbles)' : 'made by Flow'}. Bubbles: ${story.meta.bubbles ? 'on' : 'off'}.`);
   const left = story.clips.filter(c => !have(m.clips[c.n])).length;
   say(`\n${left} clip(s) still to make: at most ${left * story.meta.maxCredits} credits. Nothing has been spent by this check.`);
 }

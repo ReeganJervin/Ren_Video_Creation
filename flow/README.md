@@ -71,8 +71,16 @@ Yuki (soft, curious): "Ren... did you hear that?"
 | `max credits:` | A clip is skipped, with nothing spent, if Flow asks for more than this (default 25) |
 | `model:` | Optional, e.g. `Veo 3.1 - Fast`. Without it, Flow's current choice is used |
 | `quality:` | `original`, or `upscaled` (1080p: free, but slower to download) |
+| `voices:` | `none` (the default): Flow makes the clips **without voices**, because it invents a different voice for every clip, and the words go in speech bubbles instead. `flow`: Flow makes the voices |
+| `bubbles:` | `on` (the default): what the characters say is shown in Kitsu-style speech bubbles on the film. `off`: no bubbles |
+| `sides:` | Where each character usually stands, for the bubble's tail: `sides: Ren left, Yuki right`. One line can say otherwise: `Ren (proud, right): "..."` |
 | `frame N:` | A still. Each frame also uses the frame before it as a reference, so the drawing stays consistent |
 | `clip N: frame A to frame B` | A video starting on frame A and ending on frame B. The lines below it say what happens and who says what |
+| `Ren (proud): "I'm a snow expert."` | In a clip: something said. With `voices: none` it becomes a speech bubble, and Flow gets only how Ren feels ("proud"). A clip's lines share its time, one bubble after another |
+
+**The film comes in two versions:** `film.mp4` with the speech bubbles, and `film-clean.mp4` without them. To change a bubble, fix the words in the story and run `make ... --redo film`. That's free: only the joining is done again.
+
+**One Flow project for all your stories:** keep using the project that has Ren and Yuki in it, on each account. Every frame and clip is named after its story in Flow (like `the-snow-expert-frame-01-...`), so the stories never mix up. A clip on the same account picks its frames there directly. Only a clip made on the *other* account uploads them.
 
 ## Good to know
 

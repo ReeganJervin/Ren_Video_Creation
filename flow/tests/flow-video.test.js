@@ -17,7 +17,7 @@ class FlowAccount {
   file(f) { return path.join(this.home, f); }
   credits() { return Number(fs.readFileSync(this.file('credits'), 'utf8')); }
   async state() { return { ok: true, credits: this.credits(), plan: 'PRO' }; }
-  async generate(s, stem, progress) {
+  async generate(s, stem, progress, name) {
     fs.appendFileSync(this.file('calls.log'), JSON.stringify(s) + '\\n');
     const cost = s.type === 'video' ? 20 : 0;
     if (cost > s.max_credits) throw new Error('too dear');
@@ -29,7 +29,7 @@ class FlowAccount {
     if (s.type === 'video') require('child_process').execFileSync(require(${JSON.stringify(require.resolve(path.join(__dirname, '..', 'lib', 'join.js')))}).FFMPEG,
       ['-loglevel', 'error', '-y', '-f', 'lavfi', '-i', 'color=c=orange:s=180x320:d=1', ...(fs.existsSync(this.file('mute')) ? [] : ['-f', 'lavfi', '-i', 'sine=d=1']), '-shortest', out]);
     else fs.writeFileSync(out, s.prompt);
-    return { files: [out], credits: cost };
+    return { files: [out], credits: cost, title: name + '-t' + Date.now() };
   }
 }
 module.exports = { FlowAccount };`);
@@ -42,6 +42,7 @@ const calls = n => { try { return fs.readFileSync(path.join(tmp, 'accounts', `ac
 const STORY = path.join(tmp, 'story.txt');
 fs.writeFileSync(STORY, `title: The Test Fox
 aspect: 9:16
+sides: Ren left, Yuki right
 characters: Ren, Yuki
 max credits: 25
 style: Cute chibi cartoon
@@ -65,6 +66,8 @@ test('the story file: settings, frames, clips, prompts and characters', () => {
   assert.deepStrictEqual(s.frames.map(f => f.n), [1, 2, 3]);
   assert.deepStrictEqual(s.clips.map(c => [c.from, c.to]), [[1, 2], [2, 3]]);
   assert.strictEqual(s.clips[0].text, 'Ren points up. Ren (excited): "Look!"');
+  assert.strictEqual(s.clips[0].action, 'Ren points up.');
+  assert.deepStrictEqual(s.clips[0].lines.map(l => [l.who, l.notes, l.text, l.side]), [['Ren', 'excited', 'Look!', 'left']]);
   assert.strictEqual(framePrompt(s.meta, s.frames[0]), 'Cute chibi cartoon. A meadow. Ren and Yuki stand together.');
   assert.deepStrictEqual(castOf(s.meta, s.frames[2].text), []);
   const bad = parseFlowStory('aspect: 4:3\nframe 1: x\nclip 1: frame 1 to frame 9\ny\nclip 2 frame 1\n');
@@ -90,7 +93,8 @@ test('make: frames first (free), with the previous frame and the characters as r
   const imgs = calls(2).filter(c => c.type === 'image');
   assert.strictEqual(imgs.length, 3);
   assert.deepStrictEqual(imgs[0].reference_images, ['asset:Ren', 'asset:Yuki']);
-  assert.match(imgs[1].reference_images[0], /frame-01\.png$/);
+  // the frame before, picked in Flow where it already is (not uploaded again)
+  assert.match(imgs[1].reference_images[0], /^asset:the-test-fox-frame-01-t\d+$/);
   assert.match(imgs[1].prompt, /Match the previous image/);
   assert.strictEqual(calls(1).length, 0);
   assert.ok(fs.existsSync(path.join(tmp, 'output', 'the-test-fox', 'frames', 'frame-03.png')));
@@ -103,8 +107,15 @@ test('make again: clips from frame to frame, switching account when one runs low
   const v1 = calls(1).filter(c => c.type === 'video'), v2 = calls(2).filter(c => c.type === 'video');
   assert.strictEqual(v1.length + v2.length, 2);
   assert.match(r.out, /switching to/);
+  // a clip on the account that made the frames picks them in Flow; on the other account they are uploaded
+  const onFrames = v2.length ? v2[0] : null, onOther = v1[0];
+  if (onFrames) { assert.match(onFrames.first_frame, /^asset:the-test-fox-frame-0\d-t\d+$/); }
+  assert.match(onOther.first_frame, /frame-0\d\.png$/);
   const clip = [...v1, ...v2][0];
-  assert.match(clip.first_frame, /frame-01\.png$/); assert.match(clip.last_frame, /frame-02\.png$/);
+  // voices: none (the default): the words stay out of Flow's prompt, which asks for no voices
+  assert.doesNotMatch(clip.prompt, /Look!/);
+  assert.match(clip.prompt, /Ren points up\. Ren reacts \(excited\)/);
+  assert.match(clip.prompt, /Nobody speaks/);
   assert.strictEqual(clip.aspect_ratio, '9:16'); assert.strictEqual(clip.max_credits, 25);
   const film = path.join(tmp, 'output', 'the-test-fox', 'film.mp4');
   assert.ok(fs.existsSync(film));
@@ -112,6 +123,9 @@ test('make again: clips from frame to frame, switching account when one runs low
   const info = probe(film);
   assert.ok(Math.abs(info.duration - 2) < 0.25, `film is ${info.duration} s`);
   assert.ok(info.audio);
+  // the speech bubble ("Look!") is on the film, not on the clean copy
+  assert.match(r.out, /adding 1 speech bubble/);
+  assert.ok(fs.existsSync(path.join(tmp, 'output', 'the-test-fox', 'film-clean.mp4')));
   assert.match(r.out, /clips cost 40 credits/);
 });
 
@@ -161,4 +175,15 @@ test('the Flow driver: newest image model, file kinds, the price link', () => {
   assert.ok(price.test('0 credits') && price.test('20 credits') && price.test('1,000 credits'));
   assert.ok(!price.test('Add AI credits'));
   assert.match(fs.readFileSync(path.join(__dirname, '..', 'lib', 'flow-web.js'), 'utf8'), /name: \/\^\\s\*\\d\[\\d,\]\*\\s\*credits\?\\s\*\$\/i/);
+});
+
+test('bubbles: the lines of a clip share its time; the bubble pictures are drawn', async () => {
+  const { bubbleTimes, drawBubbles } = require('../lib/bubbles');
+  const t = bubbleTimes([{ duration: 8, lines: [{ text: 'a', side: 'left' }, { text: 'b', side: 'right' }] }, { duration: 8, lines: [] }, { duration: 8, lines: [{ text: 'c' }] }]);
+  assert.deepStrictEqual(t.map(b => b.text), ['a', 'b', 'c']);
+  assert.ok(t[0].t0 > 0 && t[0].t1 < t[1].t0 && t[1].t1 <= 8 && t[2].t0 >= 16 && t[2].t1 <= 24);
+  const [png] = await drawBubbles([{ text: "Don't worry, Yuki. I'm a snow expert.", side: 'left' }], 720, 1280);
+  fs.writeFileSync(path.join(tmp, 'bubble.png'), Buffer.from(png, 'base64'));
+  if (process.env.KEEP_BUBBLE) fs.copyFileSync(path.join(tmp, 'bubble.png'), process.env.KEEP_BUBBLE);
+  assert.ok(png.length > 2000);
 });

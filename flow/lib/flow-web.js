@@ -80,8 +80,10 @@ class FlowAccount {
   // ---------- one generation ----------
   // scene: { type: 'image'|'video', prompt, aspect_ratio, model?, duration?, resolution?, max_credits, first_frame?,
   // last_frame?, reference_images? (paths or 'asset:<name>'), download_quality? }. Saves the result as <stem>.<ext>.
-  // Returns { files, credits }. Flow is driven at a person's pace: 25 to 70 s between two generations.
-  async generate(scene, stem, onProgress = () => {}) {
+  // The result is renamed in Flow to "<name>-<tag>" (unique), so later clips can pick it there as 'asset:<title>'.
+  // Returns { files, credits, title } (title: null if the rename didn't work). Flow is driven at a person's pace: 25
+  // to 70 s between two generations.
+  async generate(scene, stem, onProgress = () => {}, name = path.basename(stem)) {
     const gap = 25000 + Math.random() * 45000, wait = this.lastStart + gap - Date.now();
     if (this.lastStart && wait > 0) { onProgress(`waiting ${Math.round(wait / 1000)} s before the next one, like a person would`); await sleep(wait); }
     const state = await this.state(false);
@@ -117,13 +119,13 @@ class FlowAccount {
 
     const [id] = await waitForNewMedia(page, before, scene.type === 'image' ? IMAGE_TIMEOUT_MS : VIDEO_TIMEOUT_MS, scene.type, onProgress);
     // Flow reuses titles, so the finished tile gets our own name before it is downloaded
-    const title = `${path.basename(path.dirname(stem))}-${path.basename(stem)}-${tag}`;
+    const title = `${name}-${tag}`;
     const renamed = await renameTile(page, mediaTile(page, id), title).catch(() => false);
     await pause(page, 800);
     const handle = renamed && id.startsWith('title:') ? `title:${title}` : id;
     onProgress('downloading');
     const files = await downloadMedia(page, handle, stem, scene.download_quality || 'original', this.downloads);
-    return { files, credits };
+    return { files, credits, title: renamed ? title : null };
   }
 }
 
