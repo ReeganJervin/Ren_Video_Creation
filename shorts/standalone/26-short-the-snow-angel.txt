@@ -1,0 +1,33 @@
+# ============================================================
+#  Ren & Yuki Short - The Snow Angel   (~30 s, vertical)
+#  The most beautiful snow angel in history. Almost.
+#  In The Compliment's and Very Local Wind's style: the first line is the
+#  joke (no walking in), one joke that grows, a last line that loops.
+#  Make it:  make-video.bat shorts\standalone\26-short-the-snow-angel.txt
+# ============================================================
+
+title: The Snow Angel
+type: short
+hook: The best snow angel EVER
+thumbnail text: Snow Angel!
+mood voices: on
+place: snowy hill
+time: day
+music: happy
+
+shot: close on ren
+ren (proud): Watch this. The most beautiful snow angel in history.
+ren lies down
+ren (happy): Wings... wings... wings...
+shot: medium on both
+yuki (thinking): Ren, you're just lying there.
+ren (proud): The wings are in my mind.
+beat
+ren (worried): Yuki. I can't feel my tail.
+yuki (playful): That's because you're lying in the snow.
+ren (sad): Then I live here now.
+yuki lies down
+yuki (happy): Then I live here too.
+ren (happy): Two snow angels.
+shot: close on yuki
+yuki (playful): One snow angel. And one snow potato.

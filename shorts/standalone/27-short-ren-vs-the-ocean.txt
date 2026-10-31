@@ -1,0 +1,31 @@
+# ============================================================
+#  Ren & Yuki Short - Ren vs the Ocean   (~30 s, vertical)
+#  Ren is not afraid of the ocean. The ocean has other ideas.
+#  In The Compliment's and Very Local Wind's style: the first line is the
+#  joke (no walking in), one joke that grows, a last line that loops.
+#  Make it:  make-video.bat shorts\standalone\27-short-ren-vs-the-ocean.txt
+# ============================================================
+
+title: Ren vs the Ocean
+type: short
+hook: Ren challenges the OCEAN
+thumbnail text: Ren vs OCEAN
+mood voices: on
+place: beach
+time: day
+music: adventure
+
+shot: close on ren
+ren (determined): Ocean! I am not afraid of you!
+ren runs to left
++ ren (shouts, scared): It touched my paw!
+shot: medium on both
+yuki (laughing): It's just a little wave.
+ren walks to center
+ren (determined): Round two. Ocean, I am the bravest fox in the...
+ren runs to left
++ ren (shouts, surprised): It did it again!
+yuki (playful): Ren. It's the ocean. It always wins.
+ren (pouty): Best of three.
+shot: close on yuki
+yuki (playful): The ocean says best of a million.

@@ -1,0 +1,37 @@
+# ============================================================
+#  Ren & Yuki Short - The Cookie Alibi   (~30 s, vertical)
+#  Did Ren eat Yuki's cookie? Every excuse is worse than the last.
+#  In The Compliment's and Very Local Wind's style: the first line is the
+#  joke (no walking in), one joke that grows, a last line that loops.
+#  Make it:  make-video.bat shorts\standalone\22-short-the-cookie-alibi.txt
+# ============================================================
+
+title: The Cookie Alibi
+type: short
+hook: Did Ren eat her cookie?
+thumbnail text: Not Me!
+mood voices: on
+place: meadow
+time: day
+music: happy
+
+shot: close on yuki
+yuki (pouty): Ren. Did you eat my cookie?
+shot: close on ren
+ren holds the cookie
++ ren (proud): No.
+shot: medium on both
+yuki (thinking): You're holding it.
+ren (shy): This is a different cookie.
+yuki (playful): It has a bite out of it.
+ren (thinking): It came like that. Cookies are born that way.
+yuki (playful): You have crumbs on your nose.
+ren (whispers, shy): ...Those are my freckles.
+beat
+yuki (pouty): Ren.
+ren (sad): Okay. I ate half.
+ren gives the cookie to yuki
+ren (shy): But I saved you the big half.
+hearts float up
+shot: close on yuki
+yuki (playful): It's the small half.

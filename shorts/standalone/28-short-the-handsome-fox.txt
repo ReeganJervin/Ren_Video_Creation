@@ -1,0 +1,34 @@
+# ============================================================
+#  Ren & Yuki Short - The Handsome Fox   (~30 s, vertical)
+#  Ren sees a very handsome fox in the river.
+#  In The Compliment's and Very Local Wind's style: the first line is the
+#  joke (no walking in), one joke that grows, a last line that loops.
+#  Make it:  make-video.bat shorts\standalone\28-short-the-handsome-fox.txt
+# ============================================================
+
+title: The Handsome Fox
+type: short
+hook: Who's that in the river?
+thumbnail text: Who's THAT?
+mood voices: on
+place: river
+time: day
+music: happy
+
+shot: close on ren
+ren looks down
++ ren (surprised): Yuki! There's a very handsome fox in the river!
+shot: medium on both
+yuki (thinking): Ren. That's you.
+ren (proud): I knew it.
+ren (shy): Hello, handsome.
+yuki looks down
+yuki (happy): Look, he has a friend. A beautiful bunny.
+ren (thinking): The bunny is okay.
+yuki (pouty): Okay?
+shot: close on ren
+ren (shouts, scared): The most beautiful bunny in the whole river!
+shot: close on yuki
+yuki (playful): I'm the only bunny in the river.
+shot: close on ren
+ren (proud): Still counts.

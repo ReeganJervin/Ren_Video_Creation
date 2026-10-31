@@ -1,0 +1,33 @@
+# ============================================================
+#  Ren & Yuki Short - The Brave Song   (~30 s, vertical)
+#  When Ren is scared, he sings his brave song. The owl is listening.
+#  In The Compliment's and Very Local Wind's style: the first line is the
+#  joke (no walking in), one joke that grows, a last line that loops.
+#  Make it:  make-video.bat shorts\standalone\29-short-the-brave-song.txt
+# ============================================================
+
+title: The Brave Song
+type: short
+hook: Ren's song for scary nights
+thumbnail text: Brave Song!
+mood voices: on
+place: forest
+time: night
+music: mystery
+
+shot: close on ren
+ren (determined): When I'm scared, I sing my brave song.
+ren (happy): Brave fox, brave fox, not afraid of anything...
+owl flies in from right to left
++ owl: Hoo.
+ren (shouts, scared): Brave fox, brave fox! VERY brave fox!
+owl lands
+owl: Nice song. Sing the scream part again.
+ren jumps in fright
+ren hides behind yuki
+shot: medium on both
+yuki (laughing): Brave fox?
+ren peeks out
+ren (whispers, shy): Brave fox... medium fox.
+shot: close on yuki
+yuki (playful): Small fox.

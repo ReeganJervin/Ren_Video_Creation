@@ -1,0 +1,38 @@
+# ============================================================
+#  Ren & Yuki Short - The Rhyme Champion   (~30 s, vertical)
+#  Ren can rhyme any word. Any word at all.
+#  In The Compliment's and Very Local Wind's style: the first line is the
+#  joke (no walking in), one joke that grows, a last line that loops.
+#  Make it:  make-video.bat shorts\standalone\23-short-the-rhyme-champion.txt
+# ============================================================
+
+title: The Rhyme Champion
+type: short
+hook: He can rhyme ANY word...
+thumbnail text: Rhyme Champion
+mood voices: on
+place: meadow
+time: sunset
+music: happy
+
+shot: close on ren
+ren (proud): I can rhyme any word. Any word at all.
+shot: close on yuki
+yuki (playful): Cat.
+shot: close on ren
+ren (proud): Hat. Too easy.
+yuki (playful): Moon.
+ren (proud): Spoon. Next.
+shot: close on yuki
+yuki (thinking): Orange.
+beat
+shot: close on ren
+ren (thinking): ...Door hinge.
+shot: medium on both
+yuki (laughing): That's not a rhyme!
+ren (pouty): It's a very advanced rhyme.
+yuki (playful): Purple.
+beat
+ren (shy): I can rhyme any word. Except purple.
+shot: close on yuki
+yuki (playful): And orange.

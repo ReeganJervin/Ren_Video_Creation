@@ -1,0 +1,36 @@
+# ============================================================
+#  Ren & Yuki Short - The Fortune Orb   (~30 s, vertical)
+#  Yuki reads Ren's future in a glowing orb. The orb is never wrong.
+#  In The Compliment's and Very Local Wind's style: the first line is the
+#  joke (no walking in), one joke that grows, a last line that loops.
+#  Make it:  make-video.bat shorts\standalone\24-short-the-fortune-orb.txt
+# ============================================================
+
+title: The Fortune Orb
+type: short
+hook: The orb sees Ren's future...
+thumbnail text: Your Future...
+mood voices: on
+place: cottage garden
+time: dusk
+music: magical
+
+# Yuki holds the orb like a fortune teller
+yuki holds the orb
++ yuki (whispers): Ren... I can see your future.
+the orb glows
+shot: close on ren
+ren (excited): Is it legendary? Tell me it's legendary.
+shot: close on yuki
+yuki (whispers): I see a fox...
+ren (excited): Yes!
+yuki (whispers): ...a very brave fox...
+ren (proud): Obviously.
+yuki (whispers, playful): ...who forgot the snacks.
+beat
+shot: medium on both
+ren (pouty): That's not the future. That's today.
+yuki (playful): The orb is never wrong.
+ren (thinking): Ask it who's the bravest fox in the meadow.
+shot: close on yuki
+yuki (whispers, playful): It says... second bravest.

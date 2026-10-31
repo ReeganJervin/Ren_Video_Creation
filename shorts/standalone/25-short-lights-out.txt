@@ -1,0 +1,37 @@
+# ============================================================
+#  Ren & Yuki Short - Lights Out   (~30 s, vertical)
+#  In the cave, with his lantern, nothing scares Ren. Then he blows it out.
+#  In The Compliment's and Very Local Wind's style: the first line is the
+#  joke (no walking in), one joke that grows, a last line that loops.
+#  Make it:  make-video.bat shorts\standalone\25-short-lights-out.txt
+# ============================================================
+
+title: Lights Out
+type: short
+hook: Nothing in this cave is scary...
+thumbnail text: Lights OUT!
+mood voices: on
+place: cave tunnel
+music: mystery
+
+ren holds the lantern
++ the lantern glows
++ ren (proud): With my lantern, nothing in this cave is scary.
+yuki (thinking): What about that drippy noise?
+ren (proud): Not scary.
+yuki (thinking): And the dark?
+shot: close on ren
+ren (proud): Pfff. I'm not even scared of the dark. Watch.
+ren blows out the lantern
+beat
+ren (whispers, scared): ...Yuki?
+yuki (whispers, playful): Yes?
+ren (shouts, scared): Where did the cave go?!
+yuki (laughing): Light it again, brave fox.
+ren lights the lantern
+shot: medium on both
+ren (proud): See? Not scary at all.
+shot: close on yuki
+yuki (playful): Your ears are shaking.
+shot: close on ren
+ren (shy): Very local cave wind.
