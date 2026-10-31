@@ -1,0 +1,30 @@
+// Joins clips into one film with the FFmpeg that Kitsu Studio already has (ffmpeg-static, ffprobe-static).
+// Every clip is scaled to the first clip's size; a clip without sound gets silence, so the sound stays in step.
+const fs = require('fs'), path = require('path'), { execFileSync } = require('child_process');
+const ROOT = path.resolve(__dirname, '..', '..');
+const tool = (env, pkg, pick) => process.env[env] || (() => { try { return pick(require(path.join(ROOT, 'node_modules', pkg))); } catch (_) { return pkg.split('-')[0]; } })();
+const FFMPEG = tool('KITSU_FLOW_FFMPEG', 'ffmpeg-static', m => m);
+const FFPROBE = tool('KITSU_FLOW_FFPROBE', 'ffprobe-static', m => m.path);
+
+function probe(file) {
+  const out = JSON.parse(execFileSync(FFPROBE, ['-v', 'error', '-show_entries', 'stream=codec_type,width,height', '-show_entries', 'format=duration', '-of', 'json', file], { encoding: 'utf8' }));
+  const v = out.streams.find(s => s.codec_type === 'video');
+  if (!v) throw new Error(`${path.basename(file)} has no picture in it.`);
+  return { w: v.width, h: v.height, audio: out.streams.some(s => s.codec_type === 'audio'), duration: Number(out.format.duration) };
+}
+
+function joinClips(clips, out) {
+  if (!clips.length) throw new Error('There are no clips to join.');
+  const info = clips.map(probe), { w, h } = info[0];
+  const parts = info.map((c, i) => `[${i}:v]scale=${w}:${h}:force_original_aspect_ratio=decrease,pad=${w}:${h}:(ow-iw)/2:(oh-ih)/2,setsar=1,fps=30,format=yuv420p[v${i}];` +
+    (c.audio ? `[${i}:a]aformat=sample_rates=48000:channel_layouts=stereo[a${i}];` : `anullsrc=r=48000:cl=stereo,atrim=duration=${c.duration.toFixed(3)}[a${i}];`));
+  const graph = parts.join('') + info.map((_, i) => `[v${i}][a${i}]`).join('') + `concat=n=${info.length}:v=1:a=1[v][a]`;
+  fs.mkdirSync(path.dirname(out), { recursive: true });
+  try {
+    execFileSync(FFMPEG, ['-hide_banner', '-loglevel', 'error', '-y', ...clips.flatMap(c => ['-i', c]), '-filter_complex', graph, '-map', '[v]', '-map', '[a]',
+      '-c:v', 'libx264', '-crf', '18', '-preset', 'medium', '-c:a', 'aac', '-b:a', '192k', '-movflags', '+faststart', out], { stdio: ['ignore', 'ignore', 'pipe'] });
+  } catch (e) { throw new Error(`FFmpeg couldn't join the clips: ${String(e.stderr || e.message).slice(-400)}`); }
+  return { file: out, duration: info.reduce((s, c) => s + c.duration, 0) };
+}
+
+module.exports = { joinClips, probe, FFMPEG };

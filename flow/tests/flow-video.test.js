@@ -1,65 +1,40 @@
 // Tests Kitsu Flow against a pretend flow-mcp (same local API, no Chrome, no Google, no credits).
 //   node --test flow/tests/
 const test = require('node:test'), assert = require('node:assert'), fs = require('fs'), path = require('path'), os = require('os');
-const { execFileSync, spawnSync } = require('child_process');
+const { spawnSync } = require('child_process');
 const { parseFlowStory, framePrompt, castOf } = require('../lib/story');
+const { probe } = require('../lib/join');
 
 const CLI = path.join(__dirname, '..', 'flow-video.js');
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'kitsu-flow-'));
 
-// the pretend flow-mcp: dist/core.js, dist/server.js and dist/login.js, like the real one after "npm run build"
-const fake = path.join(tmp, 'flow-mcp'), dist = path.join(fake, 'dist');
-fs.mkdirSync(dist, { recursive: true });
-fs.writeFileSync(path.join(fake, 'package.json'), '{"name":"flow-mcp"}');
-fs.writeFileSync(path.join(dist, 'login.js'), 'console.log("login", process.env.FLOW_MCP_HOME);');
-fs.writeFileSync(path.join(dist, 'core.js'), `
-import { mkdirSync, writeFileSync, readFileSync, existsSync, appendFileSync } from 'node:fs';
-import { join } from 'node:path';
-const HOME = process.env.FLOW_MCP_HOME, OUT = process.env.FLOW_MCP_OUTPUT;
-const bank = join(HOME, 'credits'), log = join(HOME, 'calls.log');
-const credits = () => Number(readFileSync(bank, 'utf8'));
-export class LocalCore {
-  jobs = {}; n = 0;
-  async status() { return { flow: { signedIn: true, inProject: true, plan: 'Pro', credits_remaining: credits() } }; }
-  async generate({ project, scenes }) {
-    const dir = join(OUT, project); mkdirSync(dir, { recursive: true });
-    return { jobs: scenes.map(s => {
-      appendFileSync(log, JSON.stringify(s) + '\\n');
-      const id = 'j' + (++this.n), file = join(dir, 'scene-' + this.n + (s.type === 'image' ? '.png' : '.mp4'));
-      if (s.type === 'video') {
-        if (credits() < 20) return (this.jobs[id] = { id, status: 'failed', files: [], error: 'Not enough credits' });
-        writeFileSync(bank, String(credits() - 20));
-      }
-      writeFileSync(file, s.prompt);
-      return (this.jobs[id] = { id, status: 'done', files: [file], credits: s.type === 'video' ? 20 : 0 });
-    }) };
+// a pretend Flow (no Chrome, no Google, no credits): an engine with the same methods as lib/flow-web.js
+const engine = path.join(tmp, 'fake-flow.js');
+fs.writeFileSync(engine, `
+const fs = require('fs'), path = require('path');
+class FlowAccount {
+  constructor(o) { Object.assign(this, o); fs.mkdirSync(o.home, { recursive: true }); }
+  file(f) { return path.join(this.home, f); }
+  credits() { return Number(fs.readFileSync(this.file('credits'), 'utf8')); }
+  async state() { return { ok: true, credits: this.credits(), plan: 'PRO' }; }
+  async generate(s, stem, progress) {
+    fs.appendFileSync(this.file('calls.log'), JSON.stringify(s) + '\\n');
+    const cost = s.type === 'video' ? 20 : 0;
+    if (cost > s.max_credits) throw new Error('too dear');
+    if (this.credits() < cost) throw new Error('Not enough credits');
+    fs.writeFileSync(this.file('credits'), String(this.credits() - cost));
+    progress('started');
+    fs.mkdirSync(path.dirname(stem), { recursive: true });
+    const out = stem + (s.type === 'image' ? '.png' : '.mp4');
+    if (s.type === 'video') require('child_process').execFileSync(require(${JSON.stringify(require.resolve(path.join(__dirname, '..', 'lib', 'join.js')))}).FFMPEG,
+      ['-loglevel', 'error', '-y', '-f', 'lavfi', '-i', 'color=c=orange:s=180x320:d=1', ...(fs.existsSync(this.file('mute')) ? [] : ['-f', 'lavfi', '-i', 'sine=d=1']), '-shortest', out]);
+    else fs.writeFileSync(out, s.prompt);
+    return { files: [out], credits: cost };
   }
-  async wait({ job_ids }) { return { finished: true, jobs: job_ids.map(id => this.jobs[id]) }; }
-  async assemble({ project, clips, output_name }) {
-    const dir = join(OUT, project); mkdirSync(dir, { recursive: true });
-    const output = join(dir, output_name + '.mp4'); writeFileSync(output, clips.map(c => readFileSync(c, 'utf8')).join('\\n---\\n'));
-    return { output, clips };
-  }
-}`);
-fs.writeFileSync(path.join(dist, 'server.js'), `
-import { createServer } from 'node:http';
-import { writeFileSync, mkdirSync } from 'node:fs';
-import { join } from 'node:path';
-export const PORT = Number(process.env.FLOW_MCP_PORT);
-export async function startServer(core) {
-  const token = 'tok' + PORT;
-  createServer(async (req, res) => {
-    const send = (c, d) => { res.writeHead(c, { 'content-type': 'application/json' }); res.end(JSON.stringify(d)); };
-    if (req.url === '/api/health') return send(200, { name: 'flow-mcp' });
-    if (req.headers['x-flow-token'] !== token) return send(401, { error: 'token' });
-    let body = ''; for await (const c of req) body += c;
-    try { send(200, await core[req.url.split('/').pop()](JSON.parse(body || '{}'))); } catch (e) { send(400, { error: e.message }); }
-  }).listen(PORT, '127.0.0.1');
-  mkdirSync(process.env.FLOW_MCP_HOME, { recursive: true }); writeFileSync(join(process.env.FLOW_MCP_HOME, 'token'), token);
-  return 'owner';
-}`);
+}
+module.exports = { FlowAccount };`);
 
-const env = { ...process.env, KITSU_FLOW_SETTINGS: path.join(tmp, 'settings.json'), KITSU_FLOW_OUTPUT: path.join(tmp, 'output'), KITSU_FLOW_HOME: path.join(tmp, 'accounts') };
+const env = { ...process.env, KITSU_FLOW_ENGINE: engine, KITSU_FLOW_SETTINGS: path.join(tmp, 'settings.json'), KITSU_FLOW_OUTPUT: path.join(tmp, 'output'), KITSU_FLOW_HOME: path.join(tmp, 'accounts') };
 const run = (...args) => { const r = spawnSync(process.execPath, [CLI, ...args], { env, encoding: 'utf8', cwd: tmp }); return { code: r.status, out: r.stdout + r.stderr }; };
 const bank = (n, v) => { const d = path.join(tmp, 'accounts', `account-${n}`); fs.mkdirSync(d, { recursive: true }); if (v !== undefined) fs.writeFileSync(path.join(d, 'credits'), String(v)); return Number(fs.readFileSync(path.join(d, 'credits'), 'utf8')); };
 const calls = n => { try { return fs.readFileSync(path.join(tmp, 'accounts', `account-${n}`, 'calls.log'), 'utf8').trim().split('\n').filter(Boolean).map(JSON.parse); } catch (_) { return []; } };
@@ -99,8 +74,7 @@ test('the story file: settings, frames, clips, prompts and characters', () => {
   assert.ok(bad.errors.some(e => /clip 1: frame 1 to frame 2/.test(e)));
 });
 
-test('setup, then check spends nothing', () => {
-  assert.match(run('setup', fake).out, /Saved/);
+test('check spends nothing', () => {
   const c = run('check', STORY);
   assert.strictEqual(c.code, 0, c.out);
   assert.match(c.out, /frame 1 \[Ren, Yuki\]/);
@@ -123,7 +97,7 @@ test('make: frames first (free), with the previous frame and the characters as r
 });
 
 test('make again: clips from frame to frame, switching account when one runs low, then the film', () => {
-  bank(1, 30); bank(2, 30);
+  bank(1, 30); bank(2, 30); fs.writeFileSync(path.join(tmp, 'accounts', 'account-2', 'mute'), '');
   const r = run('make', STORY);
   assert.strictEqual(r.code, 0, r.out);
   const v1 = calls(1).filter(c => c.type === 'video'), v2 = calls(2).filter(c => c.type === 'video');
@@ -134,7 +108,10 @@ test('make again: clips from frame to frame, switching account when one runs low
   assert.strictEqual(clip.aspect_ratio, '9:16'); assert.strictEqual(clip.max_credits, 25);
   const film = path.join(tmp, 'output', 'the-test-fox', 'film.mp4');
   assert.ok(fs.existsSync(film));
-  assert.strictEqual(fs.readFileSync(film, 'utf8').split('---').length, 2);
+  // a real film: both 1-second clips joined, with sound (account 2's clips have none, and get silence)
+  const info = probe(film);
+  assert.ok(Math.abs(info.duration - 2) < 0.25, `film is ${info.duration} s`);
+  assert.ok(info.audio);
   assert.match(r.out, /clips cost 40 credits/);
 });
 
@@ -167,4 +144,21 @@ test('--account pins one account', () => {
   assert.strictEqual(calls(2).length, before);
 });
 
-test.after(() => { spawnSync(process.platform === 'win32' ? 'cmd' : 'true'); fs.rmSync(tmp, { recursive: true, force: true }); });
+test.after(() => fs.rmSync(tmp, { recursive: true, force: true }));
+
+test('the Flow driver: newest image model, file kinds, the price link', () => {
+  const { newestNanoBanana, extensionOf, inEnglish } = require('../lib/flow-web');
+  assert.strictEqual(newestNanoBanana(['Nano Banana Pro', 'Nano Banana 2 Lite', 'Nano Banana 2.1', 'Veo 3.1 - Fast']), 2);
+  assert.strictEqual(newestNanoBanana(['Nano Banana 2', 'Nano Banana 10']), 1);
+  assert.strictEqual(newestNanoBanana(['Veo 3.1 - Fast']), -1);
+  const f = path.join(tmp, 'kind');
+  fs.writeFileSync(f, Buffer.from([0x89, 0x50, 0x4e, 0x47, 0, 0, 0, 0, 0, 0, 0, 0])); assert.strictEqual(extensionOf(f), '.png');
+  fs.writeFileSync(f, Buffer.from([0xff, 0xd8, 0xff, 0, 0, 0, 0, 0, 0, 0, 0, 0])); assert.strictEqual(extensionOf(f), '.jpg');
+  fs.writeFileSync(f, Buffer.concat([Buffer.from([0, 0, 0, 0x20]), Buffer.from('ftypisom')])); assert.strictEqual(extensionOf(f), '.mp4');
+  assert.strictEqual(inEnglish('https://flow.google.com/project/x?hl=es'), 'https://flow.google.com/project/x?hl=en');
+  // the price is the link with a number in it, never Flow's "Add AI credits" banner (the bug of 2026-10-31)
+  const price = /^\s*\d[\d,]*\s*credits?\s*$/i;
+  assert.ok(price.test('0 credits') && price.test('20 credits') && price.test('1,000 credits'));
+  assert.ok(!price.test('Add AI credits'));
+  assert.match(fs.readFileSync(path.join(__dirname, '..', 'lib', 'flow-web.js'), 'utf8'), /name: \/\^\\s\*\\d\[\\d,\]\*\\s\*credits\?\\s\*\$\/i/);
+});

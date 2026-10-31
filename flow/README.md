@@ -4,27 +4,19 @@ This folder is separate from Kitsu Studio. It doesn't use the story engine, and 
 
 You write a story file with **frames** (free stills) and **clips** (short videos that go from one frame to the next). Then one command makes everything in Google Flow by itself: the frames, the clips, and the finished film with the clips joined.
 
-**It runs without Claude**, so it uses none of your Claude usage. It clicks Flow for you using [flow-mcp](https://github.com/GTAI-1/flow-mcp), which you install once in its own folder.
+**It runs without Claude**, so it uses none of your Claude usage. Everything it needs is in this repo: it opens a Chrome window for each Google account and clicks Flow's own buttons (`flow\lib\flow-web.js`, adapted from [flow-mcp](https://github.com/GTAI-1/flow-mcp); see `NOTICE.md`). It joins the clips with Kitsu Studio's own FFmpeg, so there's nothing else to install.
 
 ## Setting up (once)
 
-1. **Install flow-mcp** in a folder outside OneDrive (for example `C:\Users\you\flow-mcp`):
-   ```
-   git clone https://github.com/GTAI-1/flow-mcp.git C:\Users\you\flow-mcp
-   cd C:\Users\you\flow-mcp
-   npm install
-   npm run build
-   ```
-2. **Tell Kitsu Flow where it is** (from the Ren_Video_Creation folder):
-   ```
-   flow\flow-video.bat setup C:\Users\you\flow-mcp
-   ```
-3. **Sign in to each Google account once.** Each account gets its own Chrome window and stays signed in:
-   ```
-   flow\flow-video.bat login 1
-   flow\flow-video.bat login 2
-   ```
-   In each window: sign in, open (or create) a Flow project, and **leave the window open**. You can give the accounts names in `flow\settings.json`.
+Sign in to each Google account once. Each account gets its own Chrome window and stays signed in:
+```
+flow\flow-video.bat login 1
+flow\flow-video.bat login 2
+```
+In each window: sign in, open (or create) a Flow project, and **leave the window open**. If your Ren and Yuki characters are in that project, frames can use them. You can give the accounts names in `flow\settings.json`:
+```
+{ "accounts": { "1": "Main account", "2": "Second account" } }
+```
 
 ## Making a video
 
@@ -85,8 +77,9 @@ Yuki (soft, curious): "Ren... did you hear that?"
 ## Good to know
 
 - **Each account's Chrome window must stay open, with a Flow project open.** Don't use that window while a video is being made.
-- flow-mcp waits 25–70 seconds between generations, like a person would, so a 6-clip video takes a while. You can leave it running.
+- Kitsu Flow waits 25–70 seconds between generations, like a person would, so a 6-clip video takes a while. You can leave it running.
 - Your files go in `flow\output\` and are never put in git.
-- Google changes Flow from time to time. If something stops working, update flow-mcp: in its folder run `git pull`, `npm install` and `npm run build`.
-- flow-mcp's own README warns that automated use of Flow may be against Google's terms. Use it on your own accounts, at your own risk.
+- Google changes Flow from time to time. If something stops working, send the message to Claude Code: the fix goes into `flow\lib\flow-web.js`, and a `git pull` brings it to you.
+- Automated use of Flow may be against Google's terms (flow-mcp's author warns about this too). Use it on your own accounts, at your own risk.
+- Characters (`characters:`) live in one Flow project. A frame that uses them must be made on the account whose open project has them: use `--account` for the frames if only one account has them. Clips don't need the characters (they start from your frames), so they can use either account.
 - Tests (no Google needed): `node --test flow/tests/flow-video.test.js`
