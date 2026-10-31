@@ -27,12 +27,12 @@ music: mystery
 
 ren and yuki enter from left to center
 ren holds the lantern
++ the lantern glows
 + narrator: The magic lantern glowed in Ren's paw. And for the first time, they could see the Dark Cave.
 yuki (thinking): Ren... can we go back and look at the bone?
 ren (worried): Do we have to?
 yuki (determined): I want to know what I touched.
-ren and yuki walk to left slowly
-root appears at left
+root appears next to ren
 ren and yuki look at the root
 beat
 shot: close on ren
