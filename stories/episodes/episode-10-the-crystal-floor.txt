@@ -121,7 +121,7 @@ yuki (happy): We made it!
 scene: The Treasure Chest
 music: adventure
 
-treasure chest appears at center
+treasure chest appears next to ren
 ren and yuki look at the treasure chest
 narrator: And there, on the other side of the bridge, was something they had dreamed about for a very long time.
 ren (excited): Yuki. Yuki, Yuki, Yuki. It's a treasure chest. A real one!
@@ -135,7 +135,7 @@ yuki (playful): Forget about the legendary sword. Just open it.
 ren puts down the lantern
 ren walks to the treasure chest
 music: none
-ren opens the treasure chest
+the treasure chest opens empty
 beat
 narrator: Inside, there was no gold. No jewels. No legendary sword.
 bag appears next to ren

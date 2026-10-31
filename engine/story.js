@@ -489,15 +489,17 @@
         let rest = (m[3] || '').toLowerCase(), quiet = false;
         if (/^appear/.test(verb) && /^quietly\b/.test(rest)) { quiet = true; rest = rest.replace(/^quietly\s*/, ''); }
         const act = /^appear/.test(verb) ? 'appear' : /^(disappear|vanish)/.test(verb) ? 'disappear' : verb === 'glows' ? 'glow' : verb === 'stops glowing' ? 'unglow' : verb === 'opens' ? 'open' : verb === 'overflows' ? 'overflow' : 'close';
-        let where = null, k;
+        let where = null, k, empty = false;
         if (act === 'appear') {
           if (!rest || rest === 'on the ground') where = { ground: true };
           else if ((k = rest.match(/^at (?:the )?(left|center|centre|right)$/))) where = { at: spot(k[1]) };
           else if (rest === 'in the sky') where = { sky: true };
           else if ((k = rest.match(new RegExp(`^next to (${NAME})$`)))) where = { next: toId(k[1]) };
           else return err(`Where should the ${name} appear? Use "at left", "at center", "at right", "on the ground", "in the sky" or "next to <name>".`);
-        } else if (rest) return err(`I don't know "${m[2]} ${rest}". Write just "the ${name} ${verb}".`);
+        } else if (act === 'open' && rest === 'empty') empty = true;   // "the treasure chest opens empty": nothing inside
+        else if (rest) return err(`I don't know "${m[2]} ${rest}". Write just "the ${name} ${verb}".`);
         const asset = ASSETS.find(name, 'prop');
+        if (empty && asset && !asset.states.includes('empty')) return err(`The ${name} can't open empty. Write just "the ${name} opens".`);
         if (!asset) {
           const s = ASSETS.suggest(name, ASSETS.all('prop').flatMap(a => a.names));
           if (s) return err(`I don't know "${name}". Did you mean "${s}"?`);
@@ -505,7 +507,7 @@
         } else if ((act === 'glow' || act === 'unglow') && !asset.glow) return err(`The ${name} can't glow.`);
         else if ((act === 'open' || act === 'close') && !asset.states.includes('open')) return err(`The ${name} can't open or close.`);
         else if (act === 'overflow' && !asset.states.includes('overflowing')) return err(`The ${name} can't overflow.`);
-        return beat('prop', { name, asset: asset ? asset.id : null, act, where, ...(quiet ? { quiet } : {}) });
+        return beat('prop', { name, asset: asset ? asset.id : null, act, where, ...(quiet ? { quiet } : {}), ...(empty ? { empty } : {}) });
       }
 
       if ((m = line.match(new RegExp(`^(${NAME})(?:\\s+and\\s+(${NAME}))?\\s+(.+)$`, 'i')))) {
@@ -1491,7 +1493,7 @@
           const g = groundAt(cur); [0.15, 0.45, 0.8].forEach((o, i) => { P.sparkles.push({ t: s + o, at: { x: g.x + (i - 1) * 40, y: g.y - cur.height * 0.8 }, small: true }); sfx('twinkle', s + o, { midi: [88, 91, 96][i], gain: 0.12 }); });
           return 1.2;
         }
-        cur.states.push({ t: s, state: b.act === 'open' ? 'open' : 'closed' }); sfx('pop', s + 0.1, { gain: 0.3 });
+        cur.states.push({ t: s, state: b.act === 'open' ? (b.empty ? 'empty' : 'open') : 'closed' }); sfx('pop', s + 0.1, { gain: 0.3 });
         return 0.8;
       }
       if (cur) { P.warnings.push(`Line ${b.line}: the ${b.name} is already here.`); return 0; }

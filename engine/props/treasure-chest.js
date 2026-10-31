@@ -1,7 +1,8 @@
 // The treasure chest (prop): a sturdy wooden chest with a round lid, golden bands and corners and a golden lock
 // plate with a star-shaped keyhole. "the treasure chest opens": the lid swings back on its red velvet lining and
 // gold glints inside; "the treasure chest overflows": coins and gems heap up over the rim and spill down the front.
-// The gold inside gives a warm light (drawLight), brightest at night.
+// The gold inside gives a warm light (drawLight), brightest at night. "the treasure chest opens empty": the lid opens
+// on the bare red velvet, with nothing inside and no light (Episode 10: only a little bag was in it).
 (function (root) {
   const { register } = typeof module !== 'undefined' ? require('../assets.js') : root.StudioAssets;
   const LINE = '#4a2616';
@@ -44,13 +45,18 @@
 
   register({
     id: 'treasure-chest', kind: 'prop', names: ['treasure chest', 'chest', 'treasure box', 'old chest'], size: 'medium', height: 190, hold: 'both paws',
-    states: ['closed', 'open', 'overflowing'], glow: true, glowColor: '255,215,120', motion: 'none', credit: 'Claude Code',
+    states: ['closed', 'open', 'overflowing', 'empty'], glow: true, glowColor: '255,215,120', motion: 'none', credit: 'Claude Code',
     draw(c, t, state) {
       c.save(); c.scale(SC, SC); c.lineJoin = 'round'; c.lineCap = 'round';
       const open = state !== 'closed';
       c.fillStyle = 'rgba(60,40,28,0.25)'; c.beginPath(); c.ellipse(0, 2, 100, 10, 0, 0, Math.PI * 2); c.fill();
       if (open) lid(c, true);
       if (state === 'open') heap(c, 16, 9, 3);
+      if (state === 'empty') {
+        // nothing inside: just the shadowy velvet bottom
+        c.beginPath(); c.moveTo(-78, -92); c.quadraticCurveTo(0, -100, 78, -92); c.closePath();
+        c.fillStyle = '#6a2430'; c.fill(); c.lineWidth = 3; c.strokeStyle = LINE; c.stroke();
+      }
       if (state === 'overflowing') {
         heap(c, 52, 22, 7);
         gem(c, -24, -128, 9, '#ff6b8a'); gem(c, 30, -122, 8, '#5ab0ff'); gem(c, 4, -146, 7, '#7be08a');
@@ -71,7 +77,7 @@
     },
     // the gold gives a warm light when the chest is open, and little glints twinkle on it
     drawLight(c, t, state, light) {
-      if (state === 'closed') return;
+      if (state === 'closed' || state === 'empty') return;
       const k = state === 'overflowing' ? 1 : 0.7, pulse = 0.85 + 0.15 * Math.sin(t * 2.2);
       c.save(); c.scale(SC, SC); c.globalCompositeOperation = 'lighter';
       const g = c.createRadialGradient(0, -110, 10, 0, -110, 150); g.addColorStop(0, `rgba(255,220,130,${0.35 * k * pulse})`); g.addColorStop(1, 'rgba(255,220,130,0)');
