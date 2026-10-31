@@ -224,3 +224,22 @@ test('voices: kitsu: Kitsu Studio voices for each line, mood and whisper, mixed 
   assert.strictEqual(again.status, 0, again.stdout + again.stderr);
   assert.doesNotMatch(again.stdout, /making \d+ voice/);
 });
+
+test('a clip with no frames is made from the characters, with Flow voices and Flow sound', () => {
+  const story = path.join(tmp, 'charclips.txt');
+  fs.writeFileSync(story, `title: Char Clips\ncharacters: Ren, Yuki\nvoices: flow\nmusic: none\nbubbles: off\nmax credits: 25\nstyle: Cute.\nplace: A garden.\n\nclip 1:\nRen waves at Yuki.\nRen (happy): "Hello!"\n\nclip 2:\nYuki hops.\n`);
+  const { parseFlowStory } = require('../lib/story');
+  assert.deepStrictEqual(parseFlowStory(fs.readFileSync(story, 'utf8')).errors, []);
+  assert.match(parseFlowStory('title: x\ncharacters: Ren\nclip 1:\nA cloud floats by.\n').errors.join(), /doesn't name any/);
+  bank(1, 100); bank(2, 0);
+  const before = calls(1).length;
+  const r = run('make', story, '--account', '1');
+  assert.strictEqual(r.code, 0, r.out);
+  const made = calls(1).slice(before);
+  assert.deepStrictEqual(made.map(c => c.type), ['video', 'video']);
+  assert.deepStrictEqual(made[0].reference_images, ['asset:Ren', 'asset:Yuki']);
+  assert.deepStrictEqual(made[1].reference_images, ['asset:Yuki']);
+  assert.ok(!made[0].first_frame && !made[0].last_frame);
+  assert.match(made[0].prompt, /A garden\. Ren waves at Yuki\. Ren \(happy\): "Hello!" Each character speaks their lines in their own voice\./);
+  assert.ok(fs.existsSync(path.join(tmp, 'output', 'char-clips', 'film.mp4')));
+});

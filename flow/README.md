@@ -78,6 +78,7 @@ Yuki (soft, curious): "Ren... did you hear that?"
 | `sides:` | Where each character usually stands, for the bubble's tail: `sides: Ren left, Yuki right`. One line can say otherwise: `Ren (proud, right): "..."` |
 | `frame N:` | A still. Each frame also uses the frame before it as a reference, so the drawing stays consistent |
 | `clip N: frame A to frame B` | A video starting on frame A and ending on frame B. The lines below it say what happens and who says what |
+| `clip 1:` (no frames) | The clip is made from the Flow characters named in it, with **their own looks and the voices you gave them in Flow**, and no frames. Flow can't use frames and characters in the same clip, so this trades the frames' exact picture for the characters' voices. Use it with `voices: flow` and `music: none` to hear Flow's own voices and music (see `flow\stories\test-flow-voices.txt`) |
 | `Ren (proud): "I'm a snow expert."` | In a clip: something said. It becomes a speech bubble (and, with `voices: kitsu`, Ren says it), and Flow gets only how Ren feels ("proud"). The feeling also changes the voice a little, as in Kitsu Studio (proud, teasing, pouting, whispering, shouting...) |
 | `Yuki (counting, at 0s): "One... two..."` | `at 0s` says when the line starts in its clip (seconds from the start of the clip). Lines without it follow one another; without voices they spread over the clip, longer lines getting more time |
 

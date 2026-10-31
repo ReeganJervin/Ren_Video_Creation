@@ -54,7 +54,13 @@ function parseFlowStory(text) {
       if (clips.some(c => c.n === num)) return err(n, `there are two clips called "clip ${num}".`);
       cur = { n: num, line: n, from: +m[2], to: +m[3], text: m[4], action: m[4], lines: [] }; clips.push(cur); return;
     }
-    if (/^clip\s+\d+/i.test(line)) return err(n, 'write a clip like this: "clip 1: frame 1 to frame 2", then what happens on the next lines.');
+    // "clip 1:" alone: made from the Flow characters named in it (with their own looks and Flow voices), no frames
+    if ((m = line.match(/^clip\s+(\d+)\s*:\s*(?:(?:from|with)\s+(?:the\s+)?characters?)?\s*$/i))) {
+      const num = +m[1];
+      if (clips.some(c => c.n === num)) return err(n, `there are two clips called "clip ${num}".`);
+      cur = { n: num, line: n, from: null, to: null, text: '', action: '', lines: [] }; clips.push(cur); return;
+    }
+    if (/^clip\s+\d+/i.test(line)) return err(n, 'write a clip like this: "clip 1: frame 1 to frame 2" (or just "clip 1:" to make it from the characters), then what happens on the next lines.');
     if (!cur && (m = line.match(/^([a-z ]+?)\s*:\s*(.+)$/i)) && SETTINGS[m[1].toLowerCase()]) {
       const key = SETTINGS[m[1].toLowerCase()], v = m[2].trim();
       if (key === 'characters') meta.characters = v.split(/\s*,\s*|\s+and\s+/i).filter(Boolean);
@@ -110,8 +116,9 @@ function parseFlowStory(text) {
     if (meta.voices !== 'flow' && !c.action) err(c.line, `clip ${c.n} only has words. Add a line saying what happens (Flow only gets the action, not the words).`);
     if (meta.duration) c.lines.forEach(l => { if (l.at !== null && l.at >= meta.duration) err(l.line, `"at ${l.at}s" is after the end of the clip (${meta.duration} s).`); });
   });
-  clips.forEach(c => [c.from, c.to].forEach(f => { if (!frames.some(x => x.n === f)) err(c.line, `clip ${c.n} uses frame ${f}, but there is no "frame ${f}:".`); }));
-  if (!frames.length) errors.push('The story has no frames ("frame 1: ...").');
+  clips.forEach(c => c.from !== null && [c.from, c.to].forEach(f => { if (!frames.some(x => x.n === f)) err(c.line, `clip ${c.n} uses frame ${f}, but there is no "frame ${f}:".`); }));
+  clips.forEach(c => { if (c.from === null && !castOf(meta, c.text).length) err(c.line, `clip ${c.n} has no frames, so it's made from the characters, but it doesn't name any (${meta.characters.join(', ') || 'add a "characters:" line'}).`); });
+  if (!frames.length && !clips.some(c => c.from === null)) errors.push('The story has no frames ("frame 1: ...").');
   frames.sort((a, b) => a.n - b.n); clips.sort((a, b) => a.n - b.n);
   return { meta, frames, clips, errors };
 }
@@ -123,7 +130,8 @@ function framePrompt(meta, f) { return [sentence(meta.style), sentence(meta.plac
 // With "voices: none" the words stay out of the prompt (they go in bubbles): Flow gets the action and how each speaker
 // feels, and is asked for no voices at all, so the voices can't change from clip to clip.
 function clipPrompt(meta, c) {
-  if (meta.voices === 'flow') return [sentence(meta.style), c.text].filter(Boolean).join(' ');
+  if (meta.voices === 'flow') return [sentence(meta.style), sentence(meta.place && c.from === null ? meta.place : ''), c.text,
+    c.lines.length ? 'Each character speaks their lines in their own voice.' : ''].filter(Boolean).join(' ');
   const acting = c.lines.map(l => `${l.who} ${l.notes ? `reacts (${l.notes})` : 'reacts'} with a clear expression and body language.`);
   return [sentence(meta.style), sentence(c.action), ...acting,
     'Nobody speaks: no dialogue, no voices, no narration, no singing, and no text or speech bubbles on screen. Only soft natural sounds and gentle music.'].filter(Boolean).join(' ');

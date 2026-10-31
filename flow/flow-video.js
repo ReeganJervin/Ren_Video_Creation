@@ -108,10 +108,11 @@ async function makeClips(story, accts, pinned, m) {
     }
     if (a && best.a !== a) say(`  ${a.name} is low on credits: switching to ${best.a.name} (${best.s.credits} credits).`);
     a = best.a;
-    const scene = { type: 'video', prompt: clipPrompt(story.meta, c), aspect_ratio: story.meta.aspect, max_credits: need,
-      first_frame: frameFor(m, c.from, a), last_frame: frameFor(m, c.to, a), download_quality: story.meta.quality,
+    // from its two frames, or (a clip with no frames) from the Flow characters named in it, with their own voices
+    const look = c.from !== null ? { first_frame: frameFor(m, c.from, a), last_frame: frameFor(m, c.to, a) } : { reference_images: castOf(story.meta, c.text).slice(0, 3).map(n => `asset:${n}`) };
+    const scene = { type: 'video', prompt: clipPrompt(story.meta, c), aspect_ratio: story.meta.aspect, max_credits: need, ...look, download_quality: story.meta.quality,
       ...(story.meta.model ? { model: story.meta.model } : {}), ...(story.meta.duration ? { duration: story.meta.duration } : {}), ...(story.meta.resolution ? { resolution: story.meta.resolution } : {}) };
-    say(`  clip ${c.n} (frame ${c.from} to frame ${c.to}) on ${a.name}${best.s.credits !== null ? `, ${best.s.credits} credits left` : ''}`);
+    say(`  clip ${c.n} (${c.from !== null ? `frame ${c.from} to frame ${c.to}` : `from the characters ${castOf(story.meta, c.text).join(', ')}`}) on ${a.name}${best.s.credits !== null ? `, ${best.s.credits} credits left` : ''}`);
     let r;
     try { r = await a.generate(scene, path.join(outDir(story), 'clips', `clip-${num(c.n)}`), progress(`clip ${c.n}`), `${story.meta.project}-clip-${num(c.n)}`); }
     catch (e) { stop(`Clip ${c.n} wasn't made: ${e.message}\nThe clips made so far are kept: run the same command again to carry on.`); }
@@ -183,7 +184,7 @@ async function make(file, opts) {
       say(`  Then make the clips: flow-video make ${file}`);
       return;
     }
-  } else say('\nFrames: all made.');
+  } else if (story.frames.length) say('\nFrames: all made.');
 
   if (story.clips.some(c => !have(m.clips[c.n]))) await makeClips(story, accts, pinned, m); else say('Clips: all made.');
   if (!have(m.film) && story.clips.length) await makeFilm(story, m);
@@ -195,16 +196,17 @@ function check(file) {
   const story = readStory(file), m = made(story);
   say(`${story.meta.title}  (project "${story.meta.project}", ${story.meta.aspect}${story.meta.model ? `, ${story.meta.model}` : ''}, at most ${story.meta.maxCredits} credits a clip)`);
   if (story.meta.characters.length) say(`Flow characters: ${story.meta.characters.join(', ')}`);
-  say('\nFrames (free):');
+  if (story.frames.length) say('\nFrames (free):');
   story.frames.forEach(f => say(`  ${have(m.frames[f.n]) ? 'made ' : '     '} frame ${f.n}${castOf(story.meta, f.text).length ? ` [${castOf(story.meta, f.text).join(', ')}]` : ''}: ${f.text.slice(0, 80)}${f.text.length > 80 ? '...' : ''}`));
   say('\nClips:');
   story.clips.forEach(c => {
-    say(`  ${have(m.clips[c.n]) ? 'made ' : '     '} clip ${c.n}: frame ${c.from} to frame ${c.to}: ${c.action.slice(0, 70)}${c.action.length > 70 ? '...' : ''}`);
+    say(`  ${have(m.clips[c.n]) ? 'made ' : '     '} clip ${c.n}: ${c.from !== null ? `frame ${c.from} to frame ${c.to}` : `from the characters (${castOf(story.meta, c.text).join(', ')})`}: ${c.action.slice(0, 70)}${c.action.length > 70 ? '...' : ''}`);
     c.lines.forEach(l => say(`          ${story.meta.bubbles ? 'bubble' : 'says  '} (${l.who}${l.side ? `, ${l.side}` : ''}${l.at !== null ? `, at ${l.at}s` : ''}): "${l.text}"`));
   });
   say(`\nVoices: ${{ none: 'none (the words go in speech bubbles)', kitsu: "Kitsu Studio's own voices, added to the film (none from Flow)", flow: 'made by Flow' }[story.meta.voices]}. Bubbles: ${story.meta.bubbles ? 'on' : 'off'}.`);
   const clipMusic = story.clips.filter(c => c.music).map(c => `clip ${c.n}: ${c.music}`);
-  say(`Music: Kitsu Studio's "${story.meta.music}"${clipMusic.length ? ` (then ${clipMusic.join(', ')})` : ''}. Google Flow's own sound: ${story.meta.flowSound ? 'kept, under the music' : 'left out'}.`);
+  const kitsuMusic = story.meta.music !== 'none' || clipMusic.length;
+  say(`Music: ${kitsuMusic ? `Kitsu Studio's "${story.meta.music}"${clipMusic.length ? ` (then ${clipMusic.join(', ')})` : ''}` : 'none from Kitsu Studio'}. Google Flow's own sound: ${story.meta.flowSound ? (kitsuMusic ? 'kept, under the music' : 'kept (its music, sounds and voices)') : 'left out'}.`);
   if (story.meta.voices === 'kitsu') {
     const { voiceFor } = require('./lib/voices'), missing = [...new Set(story.clips.flatMap(c => c.lines).filter(l => !voiceFor(l.who, l.notes)).map(l => l.who))];
     if (missing.length) say(`Note: no Kitsu voice for ${missing.join(', ')} (see config\\voices.json): those lines would stop the film.`);
