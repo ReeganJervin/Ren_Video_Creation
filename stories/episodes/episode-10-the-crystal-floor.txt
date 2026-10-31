@@ -186,7 +186,6 @@ yuki (whispers): Just like the map said.
 ren holds out his paw to yuki
 yuki touches paws with ren
 music: epic
-ren walks to the stairs slowly
-+ yuki walks to the stairs slowly
+ren and yuki walk down the stairs
 narrator: Down, down, down they went. And somewhere below, the second floor was waiting.
 title card: FLOOR TWO

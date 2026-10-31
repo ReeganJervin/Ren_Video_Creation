@@ -173,7 +173,6 @@ ren (happy): And a fox with a lantern.
 ren holds out his paw to yuki
 yuki touches paws with ren
 music: epic
-ren walks to the stairs slowly
-+ yuki walks to the stairs slowly
+ren and yuki walk down the stairs
 narrator: Below them, the first floor of the dungeon was waiting. It had been waiting for a very, very long time.
 title card: FLOOR ONE

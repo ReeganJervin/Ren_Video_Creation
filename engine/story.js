@@ -40,7 +40,7 @@
     'narrator: <text>', '<name>: <text>', `<name> (${MOODS.slice(1).join('|')}): <text>`,
     '<name> (thinks|thinks silently|whispers|shouts): <text>', '<name> (shouts, <mood>): <text>', 'mood voices: on|off',
     '<name> enters [from left|right] [to left|center|right]', '<name> walks to left|center|right', '<name> walks to <other name>',
-    '<name> exits [to] left|right', '<name> walks down the path', '<name> comes up the path [to left|center|right]', '<name> hops [twice]', '<name> waves', '<name> looks up|down|left|right|around|at you|at the star|at the heart',
+    '<name> exits [to] left|right', '<name> walks down the path', '<name> walks down the stairs', '<name> comes up the path [to left|center|right]', '<name> hops [twice]', '<name> waves', '<name> looks up|down|left|right|around|at you|at the star|at the heart',
     '<name> looks at <other name>', '<name> turns to you', '<name> turns to <other name>', '<name> turns away', '<name> tilts its head',
     '<name> sits down', '<name> stands up', '<name> crouches', '<name> leans closer [to <other name>]', '<name> leans back', '<name> wobbles',
     '<name> counts on its paws', '<name> writes in the air', '<name> holds out its paw [to <other name>]', '<name> touches paws with <other name>',
@@ -90,6 +90,8 @@
     // a journey along a place's path, into the picture: away from us into the distance, or toward us from far away
     if (/^(?:walks?|hops?|goes|go|runs?|sets? off) (?:away )?(?:down|along) the (?:path|road|trail)(?: into the distance)?$|^(?:walks?|hops?|goes|go) (?:away )?into the distance$/.test(a)) return { type: 'journey', dir: 'away', run: gait === 'run' };
     if ((k = a.match(/^comes? (?:up|down|along) the (?:path|road|trail)(?: to (?:the )?(left|center|centre|right))?$/))) return { type: 'journey', dir: 'toward', to: spot(k[1] || 'center') };
+    // down the stairs (the stairs set piece): up to the archway, then in and down, getting smaller and fading into the dark
+    if (/^(?:walks?|hops?|goes|go|runs?|climbs?) down the (?:stairs|steps|staircase|stairway)$/.test(a)) return { type: 'downStairs' };
     if ((k = a.match(/^hops?( twice)?$/))) return { type: 'hop', n: k[1] ? 2 : 1 };
     if (/^waves?( goodbye| hello)?$/.test(a)) return { type: 'wave' };
     if ((k = a.match(new RegExp(`^waves? (?:to|at) (${NAME})$`)))) return { type: 'wave', target: k[1] };
@@ -978,6 +980,33 @@
             } else { set(a, 'facing', s, 0, 0.05); a.x = spotX; }
             a.free = t0 + d; a.toYou = false;
             dur = Math.max(dur, t0 + d - s + (b.dir === 'away' ? 0.3 : 0.6));
+          });
+          break;
+        }
+        case 'downStairs': {
+          // walks up to the stairs' archway, turns away from us and goes down the steps: they sink step by step behind
+          // the top step (everything below it is hidden: trip.clipY), getting a little smaller and fading into the dark
+          // (trip.dark). Two go side by side.
+          const p = Object.values(props).find(q => q.asset === 'stairs');
+          if (!p) { errors.push(`Line ${b.line}: there are no stairs here. Use "stairs appear at right" first.`); break; }
+          if (who.some(a => a.def.fly)) { errors.push(`Line ${b.line}: only Ren, Yuki and walking animals can walk down the stairs.`); break; }
+          const gy = feetY(p.x), GONE = 3400;
+          const TR = [[p.x, gy, 1], [p.x, gy + 50, 0.93], [p.x, gy + 110, 0.86], [p.x, gy + 180, 0.8], [p.x, gy + 260, 0.75], [p.x, gy + 340, 0.7]];
+          const T = PLACES.util.trailOf(TR);
+          const xs = who.map(a => a.x);   // (who is on which side, before anyone moves)
+          who.forEach((a, i) => {
+            if (!onStage(a)) { errors.push(`Line ${b.line}: ${title(a.id)} isn't on stage, so can't walk down the stairs.`); return; }
+            const o = who.length === 2 ? (xs[i] <= xs[1 - i] ? -55 : 55) : 0, s1 = s + i * 0.2;
+            const d1 = moveTo(a, s1, p.x + o, false, p) - 0.6;
+            const t0 = s1 + 0.15 + Math.max(0, d1) + 0.45, d = Math.min(4, Math.max(2.4, T.len / (a.def.speed * STRIDE)));
+            const n = a.def.moves === 'hop' ? Math.max(4, Math.round(d / 0.4)) : 0;
+            a.out.walks.push({ t0, t1: t0 + d, x0: p.x + o, x1: GONE, ...(n ? { hops: n } : {}), trip: { dir: 'away', o, trail: TR, dark: true, clipY: gy } });
+            if (n) for (let k = 0; k < n; k++) sfx('hopUp', t0 + k * d / n, { gain: 0.45 * (1 - k / n) });
+            else sfx('rustle', t0, { dur: d, gain: 0.3 });
+            // turn round to face the stairs first, then go; once gone, they face the front again (off stage)
+            a.ch.away = a.ch.away || []; a.ch.away.push({ t: t0 - 0.45, v: 1, dur: 0.45 }, { t: t0 + d, v: 0, dur: 0.05 }); a.away = 0;
+            a.x = GONE; a.free = t0 + d; a.toYou = false;
+            dur = Math.max(dur, t0 + d - s + 0.3);
           });
           break;
         }

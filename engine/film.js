@@ -55,7 +55,7 @@
   // side walkers keep their gap (o), which shrinks with the distance like everything else.
   const TRAILS = new Map();
   function tripPos(w, u) {
-    const pl = placeAt(w.t0), tr = pl.trail;
+    const tr = w.trip.trail || placeAt(w.t0).trail;   // (down the stairs: the stairs' own little trail)
     if (!TRAILS.has(tr)) TRAILS.set(tr, StudioPlaces.util.trailOf(tr));
     const T = TRAILS.get(tr), E = 0.12;
     // speeding up over the first E of the time; coming toward us, also slowing down over the last E to stop on the spot
@@ -70,6 +70,12 @@
   function tripAt(id, t) {
     for (const w of P.actors[id].walks) if (w.trip && t > w.t0 && t < w.t1) return { w, u: (t - w.t0) / (w.t1 - w.t0) };
     return null;
+  }
+  // going down the stairs (a walk with trip.dark): where they're cut off (the top step) and how faded they are, or null
+  function sinkOf(id, t) {
+    const tr = tripAt(id, t);
+    if (!tr || !tr.w.trip.dark) return null;
+    return { clipY: tr.w.trip.clipY, alpha: 1 - clamp((tripPos(tr.w, tr.u).f - 0.45) / 0.5) };
   }
   // height and landing squash of a travel hop at t (null when not hopping along)
   function travelHop(id, t) {
@@ -539,7 +545,8 @@
       const col = (A && A.glowColor) || '255,214,140', f = A && A.motion === 'flicker' ? flick(t, i) : 1, h = p.holds && holdOf(p, t);
       if (h) {
         if (!h.dev || h.dev.t !== t) return;
-        out.push({ x: h.dev.x, y: h.dev.y + (h.dev.dy - p.height * 0.55) * h.dev.s, r: reachOf(p, A) * h.dev.s * f, col, a: L.glowA });
+        const sk = sinkOf(h.who, t);   // (going down the stairs: the light goes down and fades with them)
+        out.push({ x: h.dev.x, y: h.dev.y + (h.dev.dy - p.height * 0.55) * h.dev.s, r: reachOf(p, A) * h.dev.s * f, col, a: L.glowA * (sk ? sk.alpha * sk.alpha : 1) });
       } else {
         if (t < p.t0 || (p.t1 !== null && t >= p.t1)) return;
         const q = propPoint(i, t); if (!q) return;
@@ -660,6 +667,9 @@
       if (!h || !h.dev || h.dev.t !== t) continue;
       const L = propLook(p, t);
       if (!(L.glowA > 0 || (L.asset && (L.asset.emissive || L.asset.drawLight)))) continue;
+      // (in the paw of someone going down the stairs: cut off at the top step and fading with them)
+      const sk = sinkOf(h.who, t);
+      if (sk) { c.save(); c.setTransform(1, 0, 0, 1, 0, 0); c.beginPath(); c.rect(0, 0, W, toScreen(curCam, { x: 0, y: sk.clipY }).y); c.clip(); c.globalAlpha = sk.alpha; }
       c.save(); c.setTransform(h.dev.s, 0, 0, h.dev.s, h.dev.x, h.dev.y); c.rotate(h.dev.lean || 0); c.translate(0, h.dev.dy);
       if (L.glowA > 0 && !(L.asset && L.asset.halo === false)) { c.save(); c.globalCompositeOperation = 'lighter'; glow(c, 0, -p.height * 0.55, p.height * 1.3, (L.asset && L.asset.glowColor) || '255,222,140', 0.45 * L.glowA); c.restore(); }
       // (someone hiding behind another: only the soft glow shows, not the lit lantern in front of them)
@@ -667,6 +677,7 @@
       if (!hiding && L.asset && L.asset.emissive) L.asset.draw(c, t, L.state, { held: true });
       else if (!hiding && L.asset && L.asset.drawLight) L.asset.drawLight(c, t, L.state, { held: true });
       c.restore();
+      if (sk) c.restore();
     }
   }
   const lastAt = (list, t) => { let v = null; for (const e of list) if (e.t <= t) v = e; return v; };
@@ -1262,7 +1273,14 @@
     const Ks = {}; CAST.forEach(id => { Ks[id] = actorState(id, t); });
     const k = layer.getContext('2d');
     k.setTransform(1, 0, 0, 1, 0, 0); k.globalCompositeOperation = 'source-over'; k.clearRect(0, 0, W, H);
-    if (cam.ots) drawOts(k, cam, Ks); else { applyCam(k, cam, 1); drawOrder(t).forEach(id => DRAW[id](k, Ks[id])); }
+    // (going down the stairs: the walker sinks behind the top step, so whatever is below it is hidden, and fades into
+    // the dark as they go)
+    const drawOne = id => {
+      const sk = sinkOf(id, t); if (!sk) return DRAW[id](k, Ks[id]);
+      k.save(); k.beginPath(); k.rect(-6000, -6000, 14000, sk.clipY + 6000); k.clip();
+      k.globalAlpha = sk.alpha; DRAW[id](k, Ks[id]); k.restore();
+    };
+    if (cam.ots) drawOts(k, cam, Ks); else { applyCam(k, cam, 1); drawOrder(t).forEach(drawOne); }
     k.setTransform(1, 0, 0, 1, 0, 0); k.globalCompositeOperation = 'source-atop';
     k.globalAlpha = tau < 1 ? 0.06 * tau : 0.06 + 0.08 * (tau - 1); k.fillStyle = tod(tau, PN.tint); k.fillRect(0, 0, W, H);
     k.globalAlpha = 1; k.globalCompositeOperation = 'source-over';
