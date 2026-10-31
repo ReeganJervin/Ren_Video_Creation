@@ -146,7 +146,7 @@
           const col = COL[k.c], cy = k.y - k.up * 70 * k.s;
           glow(c, k.x, cy, 130 * k.s, col[3], 0.22 + 0.08 * Math.sin(t * 0.9 + i));
           const w = twinkle(t, i);
-          if (w > 0.05) sparkle(c, k.x + 10 * k.s, cy - k.up * 50 * k.s, 14 * k.s * (0.5 + w), w, '255,255,255');
+          if (w > 0.05 && k.s >= 0.6) sparkle(c, k.x + 10 * k.s, cy - k.up * 50 * k.s, 14 * k.s * (0.5 + w), w, '255,255,255');
         });
         if (L === 1) SHARDS.forEach((s, i) => glow(c, s.x, s.y - 6, 22, COL[s.c][3], 0.25 + 0.35 * twinkle(t, i + 100)));
       });

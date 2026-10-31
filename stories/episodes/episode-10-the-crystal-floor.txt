@@ -92,9 +92,9 @@ ren (happy): That's the best way to make rules.
 scene: The Old Bridge
 music: tense
 
+bridge appears quietly at center
 ren and yuki walk to left
 narrator: Further on, the floor came to an end. Below them, a deep, deep chasm glowed far, far down.
-bridge appears at center
 narrator: And across it was the only way to the other side: an old, old bridge.
 yuki (worried): Ren... the map said we have to cross it to reach the next floor.
 ren (worried): Of course it did. Maps love bridges.
