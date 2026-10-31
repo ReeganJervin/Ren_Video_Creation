@@ -1,0 +1,192 @@
+# ============================================================
+#  Ren & Yuki - Episode 10: The Crystal Floor   (~7-8 min)
+#
+#  The owner's story (2026-10-31): down the stairs (Yuki slips, Ren
+#  catches her), the first floor full of glowing crystals, the old
+#  bridge over the chasm, and a treasure chest with only a small,
+#  useless-looking bag in it... that Yuki decides to keep.
+#  (Later in the season the bag turns out to be magic: it fits
+#  anything, so Ren and Yuki can carry their treasure home.)
+#
+#  New in this episode: the crystal cave (F5 Part B), the bridge, the
+#  little bag. The treasure chest opens with no gold inside.
+#  Callbacks: rule twelve (never let go), the lantern that only
+#  works for Ren, the map Yuki memorised, "a legendary sword".
+#  This episode adds explorer's rule number fourteen (Yuki's).
+# ============================================================
+
+title: The Crystal Floor
+editing: auto
+mood voices: on
+
+
+# ================= Scene 1 - The hook: the stairs =================
+scene: Down the Stairs
+place: cave tunnel
+light: dark
+music: mystery
+
+stairs appear at center
+ren holds the lantern
++ the lantern glows
++ narrator: Down, down, down went the old stone stairs. And down, down, down went two little explorers.
+yuki (whispers): Ren... these steps are very slippery.
+ren (whispers, proud): Don't worry. I'm an expert at stairs.
+yuki trips
+camera: shake
+yuki (shouts, scared): Ren!
+ren holds out his paw to yuki
+yuki touches paws with ren
+ren (determined): Got you.
+beat
+yuki (shy): ...Thank you, Ren.
+ren (shy): Rule twelve. In the dark, never let go.
+yuki (playful): And on slippery stairs?
+ren (proud): Especially on slippery stairs.
+title card: REN AND YUKI
+
+
+# ================= Scene 2 - The first floor =================
+scene: The First Floor
+place: crystal cave
+music: magical
+
+narrator: At the bottom of the stairs, the dark began to sparkle.
+ren and yuki look around
+narrator: Crystals. Hundreds of them. Glowing blue and pink and gold, in the walls, on the ceiling, all over the floor.
+yuki (surprised): Ren... it's so beautiful.
+ren (surprised): It's like the stars came down to sleep here.
+ren puts out the lantern
+ren (proud): We don't even need my lantern down here.
+yuki (playful): Your lantern is jealous.
+ren (whispers): Shh. It can hear you.
+
+
+# ================= Scene 3 - Rich foxes =================
+scene: Rich Foxes
+music: happy
+
+ren (excited): Yuki! Look at all these crystals!
+ren (excited): We should take them home. We could sell them and be rich!
+yuki (thinking): Rich?
+ren (proud): Rich fox. Rich bunny. Very rich snacks. Every day.
+yuki (playful): Ren. Do you have any tools to dig them out?
+beat
+shot: close on ren
+ren (shy): ...No.
+shot: close on yuki
+yuki (happy): Then take them home with your eyes. And keep them in your mind.
+shot: medium on both
+ren (determined): Okay. Taking them home with my eyes.
+narrator: Ren stared at the crystals. He stared very, very hard.
+yuki (laughing): Ren, you're not blinking.
+ren (determined): I'm carrying them. It's heavy.
+yuki (laughing): Hehe!
+yuki (happy): Explorer's rule number fourteen. Some treasures you carry home with your eyes.
+ren (surprised): That's a real rule?
+yuki (proud): It's my rule. I made it up just now. Like you do.
+ren (happy): That's the best way to make rules.
+
+
+# ================= Scene 4 - The old bridge =================
+scene: The Old Bridge
+music: tense
+
+ren and yuki walk to left
+narrator: Further on, the floor came to an end. Below them, a deep, deep chasm glowed far, far down.
+bridge appears at center
+narrator: And across it was the only way to the other side: an old, old bridge.
+yuki (worried): Ren... the map said we have to cross it to reach the next floor.
+ren (worried): Of course it did. Maps love bridges.
+ren holds out his paw to yuki
+yuki touches paws with ren
+ren (determined): Together. Slowly. And whatever you do, don't look down.
+ren walks to center slowly
++ yuki walks to center slowly
+yuki (whispers): One step... two steps... three steps...
+ren looks down
+ren (whispers, scared): I looked down.
+yuki (whispers, playful): You told me not to look down.
+ren (whispers, scared): It was a very good rule. I should listen to myself more.
+ren walks to right slowly
++ yuki walks to right slowly
+yuki (whispers): Twenty-one... twenty-two... and...
+narrator: And then, at last, their paws touched solid stone again.
+ren and yuki feel happy
+ren (happy): We made it!
+yuki (happy): We made it!
+
+
+# ================= Scene 5 - The treasure chest =================
+scene: The Treasure Chest
+music: adventure
+
+treasure chest appears at center
+ren and yuki look at the treasure chest
+narrator: And there, on the other side of the bridge, was something they had dreamed about for a very long time.
+ren (excited): Yuki. Yuki, Yuki, Yuki. It's a treasure chest. A real one!
+yuki (excited): Ren, we found it! Real treasure!
+ren and yuki hop
+ren (proud): Okay. I'll open it. And whatever's inside belongs to me.
+yuki (pouty): How can it be yours? Whatever's inside is for both of us.
+ren (thinking): But what if it's a legendary sword? A legendary sword can't be for both of us. It's very hard to share a sword.
+yuki (playful): With your luck, you won't even find a rusty one.
+yuki (playful): Forget about the legendary sword. Just open it.
+ren puts down the lantern
+ren walks to the treasure chest
+music: none
+ren opens the treasure chest
+beat
+narrator: Inside, there was no gold. No jewels. No legendary sword.
+bag appears next to ren
+ren picks up the bag
+narrator: Just one small, plain little bag.
+
+
+# ================= Scene 6 - The useless bag =================
+scene: The Useless Bag
+music: happy
+
+shot: close on ren
+ren (pouty): A bag?
+ren (pouty): Why would anybody put a bag in a treasure chest? What a waste of time!
+shot: medium on both
+ren (thinking): It's so small. Even my lantern wouldn't fit in it.
+yuki (thinking): Maybe it's for something small.
+ren (determined): Let's see. A little stone.
+narrator: Ren tried to put a pebble in the bag. Then a smaller pebble. Then the smallest pebble in the whole cave.
+ren (pouty): Not even a pebble! This is the most useless bag in the world.
+yuki (thinking): Let me see.
+ren gives the bag to yuki
+music: magical
+narrator: Yuki held the little bag for a moment.
+beat
+shot: close on yuki
+yuki feels happy
+narrator: And for just a second, she smiled.
+yuki (happy): Let's go.
+shot: medium on both
+ren (surprised): Wait. Why did you smile?
+yuki (playful): Nothing.
+yuki (proud): I'm keeping this bag.
+ren (playful): Sure. You can have that useless bag.
+yuki (whispers, happy): Thank you.
+
+
+# ================= Ending - The way down =================
+scene: The Way Down
+music: mystery
+
+ren picks up the lantern
+stairs appear at right
+ren and yuki look at the stairs
+narrator: And so, with a lantern that only listened to Ren, and a little bag that only Yuki smiled at, two little explorers found the next stairs.
+ren (whispers): The second floor.
+yuki (whispers): Just like the map said.
+ren holds out his paw to yuki
+yuki touches paws with ren
+music: epic
+ren walks to the stairs slowly
++ yuki walks to the stairs slowly
+narrator: Down, down, down they went. And somewhere below, the second floor was waiting.
+title card: FLOOR TWO

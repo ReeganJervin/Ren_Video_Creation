@@ -1,8 +1,8 @@
-# Ren & Yuki – Season 1 plan (Episodes 1–9)
+# Ren & Yuki – Season 1 plan (Episodes 1–10)
 
 The owner's story, developed into seven episodes. Episodes 3–7 are written (see "The files" below), following "The owner's decisions".
 
-**The big arc:** two lonely explorers meet (Ep 1) → the forest and its secret light (Ep 2) → the fallen star (Ep 3) → the Great Tree and the map (Ep 4) → the long road, hunger and sacrifice (Ep 5–6) → the Dark Cave nobody enters (Ep 7) → into the dark and the magic lantern (Ep 8) → the dungeon map and the way down (Ep 9, cliffhanger into the first floor).
+**The big arc:** two lonely explorers meet (Ep 1) → the forest and its secret light (Ep 2) → the fallen star (Ep 3) → the Great Tree and the map (Ep 4) → the long road, hunger and sacrifice (Ep 5–6) → the Dark Cave nobody enters (Ep 7) → into the dark and the magic lantern (Ep 8) → the dungeon map and the way down (Ep 9) → the crystal floor, the bridge and the little bag (Ep 10, on to the second floor).
 
 **Running threads that pay off:** the explorer's rules (one new rule per episode), "the big half" (cookies), Ren's "very local wind" (when he's scared), Yuki's condition "sometimes I choose where we go", the owl's grumbling.
 
@@ -80,7 +80,19 @@ Lost in the forest, the owl, "a light that has never gone out". Rules 5–6. End
 4. **The map on the wall:** a dungeon with three floors underground. Ren wants to break the wall to take it; *"threeeeee floors!"*; Yuki has already memorised it; *"How did you even become an explorer?" / "You just look around some places."* / *"You silly fox."*
 5. **The way down:** *"What did you see on the map?" / "…Some lines." / "I don't even want to talk about that."* Old stone stairs go down. **Rule 13.** Title card: **FLOOR ONE**.
 
-Next (not written): one floor per episode (Episode 10 is the first floor).
+## Episode 10 – The Crystal Floor *(written from the owner's story, 2026-10-31)*
+**New:** the crystal cave (first floor), the old bridge, the little bag. The treasure chest opens with no gold inside.
+1. **Hook (the stairs):** Yuki slips; Ren catches her paw, the lantern in his other paw. *"Got you."* Rule 12 again.
+2. **The first floor:** hundreds of glowing crystals. Ren puts out the lantern (*"Your lantern is jealous."*).
+3. **Rich foxes:** Ren wants to take the crystals home and be rich; no tools. Yuki: *"Then take them home with your eyes."* **Rule 14** (Yuki's).
+4. **The old bridge** over a glowing chasm, crossed carefully, paw in paw. Ren looks down.
+5. **The treasure chest:** *"Whatever's inside belongs to me!" / "It's for both of us."* Ren hopes for a legendary sword (Starfang, later). Inside: only a small plain bag.
+6. **The useless bag:** not even a pebble fits. Yuki holds it and smiles for a second, and keeps it. *"Why did you smile?" / "Nothing."*
+7. **The way down** to the second floor. Title card: **FLOOR TWO**.
+
+**The owner's plan for the bag (later):** it's a magic bag that fits anything, so Ren and Yuki can carry their treasure home. It "chose" Yuki, as the lantern chose Ren.
+
+Next (not written): the second and third floors.
 
 ---
 
@@ -101,9 +113,10 @@ Next (not written): one floor per episode (Episode 10 is the first floor).
 11. When it's cold, sit closer. (Ep 7)
 12. In the dark, never let go. (Ep 8)
 13. Always bring a bunny who can read maps. (Ep 9)
+14. Some treasures you carry home with your eyes. (Ep 10, Yuki's)
 
 ## The files
-`stories/episodes/uploaded/` (on YouTube): `episode-01-the-beginning-of-a-friendship.txt`, `episode-02-into-the-forest.txt`, `episode-03-the-light-in-the-deep-forest.txt`, `episode-04-the-great-tree.txt`. `stories/episodes/` (not uploaded yet): `episode-05-the-hungry-road.txt`, `episode-06-ren-wake-up.txt`, `episode-07-the-cave-nobody-enters.txt`, `episode-08-the-voice-in-the-dark.txt`, `episode-09-the-map-on-the-wall.txt`.
+`stories/episodes/uploaded/` (on YouTube): `episode-01-the-beginning-of-a-friendship.txt`, `episode-02-into-the-forest.txt`, `episode-03-the-light-in-the-deep-forest.txt`, `episode-04-the-great-tree.txt`. `stories/episodes/` (not uploaded yet): `episode-05-the-hungry-road.txt`, `episode-06-ren-wake-up.txt`, `episode-07-the-cave-nobody-enters.txt`, `episode-08-the-voice-in-the-dark.txt`, `episode-09-the-map-on-the-wall.txt`, `episode-10-the-crystal-floor.txt`.
 Episode Shorts (`shorts/episode-shorts/`), two per episode (`ep1-1-the-summit`, `ep1-2-whos-talking` and `ep2-1-very-local-wind` are on YouTube, in `shorts/episode-shorts/uploaded/`): `ep1-1-the-summit`, `ep1-2-whos-talking`, `ep2-1-very-local-wind`, `ep2-2-the-tree-has-wings`, `ep3-1-a-very-dangerous-leaf`, `ep3-2-a-very-organised-firefly`, `ep4-1-youd-drop-it`, `ep4-2-a-map`, `ep5-1-the-big-half`, `ep5-2-the-upside-down-map`, `ep6-1-wake-up-silly-fox`, `ep6-2-rule-number-ten`, `ep7-1-you-guys-are-dumb`, `ep7-2-dumber-than-the-bunny`, `ep8-1-very-local-fear`, `ep8-2-the-voice-only-ren-hears`, `ep9-1-we-screamed-at-a-root`, `ep9-2-threeeee-floors`.
 
 ## New things the episodes need (made in F4 Part D stop 2, waiting for the owner's review)
