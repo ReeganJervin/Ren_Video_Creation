@@ -52,7 +52,7 @@ function makeVoices(lines, cacheDir, say = () => {}) {
   const out = lines.map(l => {
     const v = voiceFor(l.who, l.notes, table);
     if (!v) throw new Error(`${l.who} has no voice in config\\voices.json (Kitsu Studio's voices). Use one of: ${Object.keys(table).filter(k => !k.startsWith('_')).join(', ')}.`);
-    const key = crypto.createHash('sha1').update(JSON.stringify([l.text, v])).digest('hex').slice(0, 16);
+    const key = crypto.createHash('sha1').update(JSON.stringify([l.text, v, 'lufs-22'])).digest('hex').slice(0, 16);
     return { ...l, v, wav: path.join(cacheDir, `${key}.wav`) };
   });
   const todo = [...new Map(out.filter(l => !fs.existsSync(l.wav)).map(l => [l.wav, l])).values()];
