@@ -84,7 +84,7 @@
 
     // ---- voices + ducking (overlapping/near windows are merged so ramps stay ordered) ----
     // In a cave, voices echo off the rock: a soft echo on every line, a big one on shouts (and screams)
-    const caves = T.sfx.filter(c => c.type === 'ambience' && c.kind === 'cave').map(c => [c.t, c.t1]);
+    const caves = T.sfx.filter(c => c.type === 'ambience' && (c.kind === 'cave' || c.kind === 'crystal')).map(c => [c.t, c.t1]);
     let echo = null;
     if (caves.length && stems.voice) {
       echo = ctx.createGain(); const dly = ctx.createDelay(1), fb = ctx.createGain(), lp = ctx.createBiquadFilter();
@@ -363,6 +363,7 @@
             layer([band('lowpass', 650)], 1); layer([band('highpass', 1800)], 0.35);
             shape(s => 0.025 + 0.06 * Math.pow(0.5 + 0.5 * Math.sin(s * 0.9 + 0.6), 2));
             break;
+          case 'crystal': // the crystal cave: the same hush and drips, with soft glassy chimes now and then
           case 'cave': { // a low hollow hush, and drips plinking into puddles, each with a little echo
             layer([band('lowpass', 260)], 1); shape(s => 0.035 + 0.01 * Math.sin(s * 0.3));
             const dry = ctx.createGain(), dly = ctx.createDelay(1), fb = ctx.createGain(), wet = ctx.createGain();
@@ -374,6 +375,12 @@
               o.frequency.setValueAtTime(f, t); o.frequency.exponentialRampToValueAtTime(f * 0.55, t + 0.07);
               o.connect(dg); dg.connect(dry); env(dg, t, 0.045 * (0.6 + 0.4 * rnd(k + 50)), 0.003, 0.09); o.start(t); o.stop(t + 0.15);
               s += 0.9 + 2.2 * rnd(k + 100);
+            }
+            if (c.kind === 'crystal') for (let s = t0 + 1.4, k = 0; s < t1 - 1; k++) {
+              // a high, soft, glassy chime (a pentatonic note), as if a crystal were humming
+              const m = [84, 86, 88, 91, 93, 96][Math.floor(rnd(k + 300) * 6)], t = at(s), o = ctx.createOscillator(), og = ctx.createGain();
+              o.type = 'sine'; o.frequency.value = mtof(m); o.connect(og); og.connect(dry); env(og, t, 0.018, 0.08, 2.2); o.start(t); o.stop(t + 2.5);
+              s += 2.5 + 3.5 * rnd(k + 400);
             }
             break;
           }
