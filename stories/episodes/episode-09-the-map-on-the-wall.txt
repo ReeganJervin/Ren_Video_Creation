@@ -153,10 +153,13 @@ ren (thinking): Go where? There's no path here.
 yuki (thinking): Ren. What did you see on the map?
 beat
 shot: close on ren
+# (they've walked on a little: the wall is out of sight from here)
++ the wall map disappears
 ren (shy): ...Some lines.
 shot: close on yuki
 yuki (pouty): I don't even want to talk about that.
 shot: wide
+yuki walks to center
 yuki looks right
 yuki (surprised): There. Look.
 stairs appear at right
