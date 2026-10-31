@@ -1,7 +1,7 @@
 // Speech bubbles on the finished film, in Kitsu Studio's style: a soft white rounded bubble, a warm dark-brown
 // outline, Fredoka letters and a little tail toward whoever is speaking (left, right, or the middle when unknown).
 // One bubble at a time, near the top of the picture where faces rarely are. With voices, each bubble shows while its
-// line is spoken, and the clips' own sound is turned down a little under the voices. The bubbles are drawn in a hidden
+// line is spoken; the sound itself (Kitsu Studio's music and voices) comes from soundtrack.js. The bubbles are drawn in a hidden
 // browser page (Playwright, which Kitsu Studio already has) and laid over the film with FFmpeg.
 const fs = require('fs'), path = require('path'), os = require('os'), { execFileSync } = require('child_process');
 const { chromium } = require('playwright');
@@ -86,10 +86,11 @@ async function drawBubbles(items, W, H) {
   } finally { await browser.close(); }
 }
 
-// lays the bubbles over the film and mixes in the voice lines: film -> out
-async function burnBubbles(film, out, items, W, H, { bubbles = true } = {}) {
-  const shown = bubbles ? items : [], spoken = items.filter(b => b.wav);
-  if (!shown.length && !spoken.length) { fs.copyFileSync(film, out); return 0; }
+// lays the bubbles over the film and puts in its sound: film -> out. soundtrack: Kitsu Studio's music and voices (a
+// WAV, or null); flowSound: keep the clips' own sound from Google Flow (mixed under the soundtrack when there is one).
+async function burnBubbles(film, out, items, W, H, { bubbles = true, soundtrack = null, flowSound = false } = {}) {
+  const shown = bubbles ? items : [];
+  if (!shown.length && !soundtrack && flowSound) { fs.copyFileSync(film, out); return 0; }
   const pngs = shown.length ? await drawBubbles(shown, W, H) : [];
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'kitsu-bubbles-'));
   const files = pngs.map((b64, i) => { const f = path.join(dir, `bubble-${i}.png`); fs.writeFileSync(f, Buffer.from(b64, 'base64')); return f; });
@@ -97,18 +98,17 @@ async function burnBubbles(film, out, items, W, H, { bubbles = true } = {}) {
   let graph = shown.length ? shown.map((b, i) => `[${i + 1}:v]format=rgba,fade=t=in:st=${b.t0.toFixed(3)}:d=0.15:alpha=1,fade=t=out:st=${Math.max(b.t0, b.t1 - 0.2).toFixed(3)}:d=0.2:alpha=1[b${i}];`).join('')
     + shown.map((b, i) => `${i ? `[o${i - 1}]` : '[0:v]'}[b${i}]overlay=0:0:enable='between(t,${b.t0.toFixed(3)},${b.t1.toFixed(3)})'${i === shown.length - 1 ? '[v]' : `[o${i}]`}`).join(';')
     : '[0:v]null[v]';
-  // the voices, each at its moment; the clips' own sound (music, little noises) ducks a little under them
+  // the sound: Kitsu Studio's soundtrack, with Flow's own sound quietly under it if asked for, or Flow's sound alone,
+  // or silence
   const audioIn = 1 + files.length;
-  if (spoken.length) {
-    graph += ';' + spoken.map((b, i) => `[${audioIn + i}:a]aformat=sample_rates=48000:channel_layouts=stereo,adelay=${Math.round(b.t0 * 1000)}:all=1[s${i}]`).join(';')
-      + `;${spoken.map((_, i) => `[s${i}]`).join('')}amix=inputs=${spoken.length}:normalize=0:duration=longest,asplit=2[vo1][vo2]`
-      + ';[0:a]aformat=sample_rates=48000:channel_layouts=stereo,volume=0.8[m];[m][vo1]sidechaincompress=threshold=0.02:ratio=6:attack=20:release=400[md]'
-      + ';[md][vo2]amix=inputs=2:normalize=0:duration=first[a]';
-  }
+  if (soundtrack && flowSound) graph += `;[0:a]aformat=sample_rates=48000:channel_layouts=stereo,volume=0.35[f];[${audioIn}:a]aformat=sample_rates=48000:channel_layouts=stereo[k];[k][f]amix=inputs=2:normalize=0:duration=first[a]`;
+  else if (soundtrack) graph += `;[${audioIn}:a]aformat=sample_rates=48000:channel_layouts=stereo[a]`;
+  else if (!flowSound) graph += ';anullsrc=r=48000:cl=stereo[a]';
+  const sound = soundtrack || !flowSound ? '[a]' : '0:a?';
   try {
-    execFileSync(FFMPEG, ['-hide_banner', '-loglevel', 'error', '-y', '-i', film, ...files.flatMap(f => ['-loop', '1', '-i', f]), ...spoken.flatMap(b => ['-i', b.wav]), '-filter_complex', graph,
-      '-map', '[v]', '-map', spoken.length ? '[a]' : '0:a?', '-t', String(require('./join').probe(film).duration), '-c:v', 'libx264', '-crf', '18', '-preset', 'medium', '-pix_fmt', 'yuv420p',
-      ...(spoken.length ? ['-c:a', 'aac', '-b:a', '192k'] : ['-c:a', 'copy']), '-movflags', '+faststart', out], { stdio: ['ignore', 'ignore', 'pipe'] });
+    execFileSync(FFMPEG, ['-hide_banner', '-loglevel', 'error', '-y', '-i', film, ...files.flatMap(f => ['-loop', '1', '-i', f]), ...(soundtrack ? ['-i', soundtrack] : []), '-filter_complex', graph,
+      '-map', '[v]', '-map', sound, '-t', String(require('./join').probe(film).duration), '-c:v', 'libx264', '-crf', '18', '-preset', 'medium', '-pix_fmt', 'yuv420p',
+      ...(sound === '[a]' ? ['-c:a', 'aac', '-b:a', '192k'] : ['-c:a', 'copy']), '-movflags', '+faststart', out], { stdio: ['ignore', 'ignore', 'pipe'] });
   } catch (e) { throw new Error(`FFmpeg couldn't add the speech bubbles and voices: ${String(e.stderr || e.message).slice(-400)}`); }
   finally { fs.rmSync(dir, { recursive: true, force: true }); }
   return items.length;

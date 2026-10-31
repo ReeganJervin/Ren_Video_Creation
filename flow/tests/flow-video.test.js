@@ -128,7 +128,8 @@ test('make again: clips from frame to frame, switching account when one runs low
   assert.ok(Math.abs(info.duration - 2) < 0.25, `film is ${info.duration} s`);
   assert.ok(info.audio);
   // the speech bubble ("Look!") is on the film, not on the clean copy
-  assert.match(r.out, /adding 1 speech bubble\(s\) and 1 voice line/);
+  assert.match(r.out, /adding 1 speech bubble\(s\)/);
+  assert.match(r.out, /making the sound: Kitsu Studio's music \(happy\) and 1 voice line\(s\)/);
   assert.ok(fs.existsSync(path.join(tmp, 'output', 'the-test-fox', 'film-clean.mp4')));
   assert.match(r.out, /clips cost 40 credits/);
 });
@@ -208,14 +209,16 @@ test('voices: kitsu: Kitsu Studio voices for each line, mood and whisper, mixed 
   assert.strictEqual(voiceFor('Nobody', '', table), null);
   const tts = path.join(tmp, 'fake-tts.js');
   const story = path.join(tmp, 'voiced.txt');
-  fs.writeFileSync(story, fs.readFileSync(STORY, 'utf8').replace('title: The Test Fox', 'title: The Voiced Fox\nvoices: kitsu').replace('Ren (excited): "Look!"', 'Ren (excited, at 0.2s): "Look!"'));
+  fs.writeFileSync(story, fs.readFileSync(STORY, 'utf8').replace('title: The Test Fox', 'title: The Voiced Fox\nvoices: kitsu\nmusic: mystery').replace('clip 2: frame 2 to frame 3', 'clip 2: frame 2 to frame 3\nmusic: magical').replace('Ren (excited): "Look!"', 'Ren (excited, at 0.2s): "Look!"'));
   bank(1, 100); bank(2, 100);
   const r = spawnSync(process.execPath, [CLI, 'make', story, '--all', '--account', '1'], { env: { ...env, KITSU_FLOW_TTS: tts }, encoding: 'utf8', cwd: tmp });
   assert.strictEqual(r.status, 0, r.stdout + r.stderr);
   // ("Look!" in Ren's voice was already made by an earlier test, so it is reused from the voice cache)
-  assert.match(r.stdout, /adding 1 speech bubble\(s\) and 1 voice line\(s\)/);
+  assert.match(r.stdout, /making the sound: Kitsu Studio's music \(mystery, magical\) and 1 voice line\(s\)/);
   const film = path.join(tmp, 'output', 'the-voiced-fox', 'film.mp4');
   assert.ok(Math.abs(probe(film).duration - 2) < 0.25);
+  // Google Flow's own sound is left out: the film's sound is Kitsu Studio's soundtrack (made once and kept)
+  assert.ok(fs.readdirSync(path.join(tmp, 'output', '_sound')).some(f => f.endsWith('.wav')));
   // the voice is kept: making the film again needs no new voice
   const again = spawnSync(process.execPath, [CLI, 'make', story, '--redo', 'film', '--account', '1'], { env: { ...env, KITSU_FLOW_TTS: tts }, encoding: 'utf8', cwd: tmp });
   assert.strictEqual(again.status, 0, again.stdout + again.stderr);

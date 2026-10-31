@@ -18,6 +18,9 @@ max credits: 25
 # optional: model: Veo 3.1 - Fast   (without it, Flow's current choice is used)
 # the lines are always spoken by the same Ren and Yuki voices as Kitsu Studio's episodes (Flow makes no voices).
 # Only if you want otherwise: voices: none (bubbles only) or voices: flow (Flow's voices)
+# the film's music: Kitsu Studio's own (happy, calm, magical, mystery, adventure, tense, sad, bedtime, epic, heartfelt, none).
+# A clip can change it with a line "music: mystery". Google Flow's own sound is left out.
+music: happy
 # where each one usually stands, for the bubble's tail
 sides: Ren left, Yuki right
 

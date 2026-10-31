@@ -72,12 +72,16 @@ Yuki (soft, curious): "Ren... did you hear that?"
 | `model:` | Optional, e.g. `Veo 3.1 - Fast`. Without it, Flow's current choice is used |
 | `quality:` | `original`, or `upscaled` (1080p: free, but slower to download) |
 | `voices:` | `kitsu` (**the default, always used unless you say otherwise**): Flow makes the clips without voices, and **the same Ren and Yuki voices as Kitsu Studio's episodes** (from `config\voices.json`) speak the words, with the bubbles. `none`: no voices, bubbles only. `flow`: Flow makes the voices (they change from clip to clip) |
+| `music:` | **Kitsu Studio's own music** for the film, one of its moods: `happy` (the default), `calm`, `magical`, `mystery`, `adventure`, `tense`, `sad`, `bedtime`, `epic`, `heartfelt` or `none`. Inside a clip, a line `music: mystery` changes the music from that clip on. Kitsu Studio's mixer puts the voices on top: the music dips while someone speaks and fills the pauses, as in the episodes |
+| `flow sound:` | `off` (the default): Google Flow's own sound (its music and little noises) is left out completely. `on`: keep it quietly under Kitsu's music |
 | `bubbles:` | `on` (the default): what the characters say is shown in Kitsu-style speech bubbles on the film. `off`: no bubbles |
 | `sides:` | Where each character usually stands, for the bubble's tail: `sides: Ren left, Yuki right`. One line can say otherwise: `Ren (proud, right): "..."` |
 | `frame N:` | A still. Each frame also uses the frame before it as a reference, so the drawing stays consistent |
 | `clip N: frame A to frame B` | A video starting on frame A and ending on frame B. The lines below it say what happens and who says what |
 | `Ren (proud): "I'm a snow expert."` | In a clip: something said. It becomes a speech bubble (and, with `voices: kitsu`, Ren says it), and Flow gets only how Ren feels ("proud"). The feeling also changes the voice a little, as in Kitsu Studio (proud, teasing, pouting, whispering, shouting...) |
 | `Yuki (counting, at 0s): "One... two..."` | `at 0s` says when the line starts in its clip (seconds from the start of the clip). Lines without it follow one another; without voices they spread over the clip, longer lines getting more time |
+
+**The sound:** the film's sound is made by Kitsu Studio, its music with Ren and Yuki's voices, at the same loudness as Kitsu Studio's videos. Google Flow's sound isn't used.
 
 **The film comes in two versions:** `film.mp4` with the speech bubbles and voices, and `film-clean.mp4` without them. To change a bubble, a voice or its timing, fix the story and run `make ... --redo film`. That's free: only the joining is done again, and the clips stay as they are. With voices, the background sound of the clips gets a little quieter while someone speaks.
 

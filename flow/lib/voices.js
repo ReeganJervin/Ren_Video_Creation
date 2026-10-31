@@ -75,7 +75,7 @@ function makeVoices(lines, cacheDir, say = () => {}) {
       const raw = l.wav + '.raw.wav', sr = 24000, chain = [];
       if (l.v.pitch !== 1) chain.push(`asetrate=${Math.round(sr * l.v.pitch)},aresample=${sr},atempo=${(1 / l.v.pitch).toFixed(5)}`);
       if (l.v.echo) chain.push('aecho=0.8:0.55:70|140:0.22|0.12');
-      chain.push(`loudnorm=I=${-16 + l.v.gain}:TP=-1.5:LRA=11`, 'aresample=48000');
+      chain.push(`loudnorm=I=${-22 + l.v.gain}:TP=-2:LRA=11`, 'aresample=48000');
       execFileSync(FFMPEG, ['-hide_banner', '-loglevel', 'error', '-y', '-i', raw, '-af', chain.join(','), '-ac', '2', '-c:a', 'pcm_s16le', l.wav]);
       fs.rmSync(raw, { force: true });
     }

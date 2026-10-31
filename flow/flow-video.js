@@ -18,6 +18,7 @@ const { parseFlowStory, framePrompt, clipPrompt, castOf } = require('./lib/story
 const { joinClips, probe } = require('./lib/join');
 const { bubbleTimes, burnBubbles } = require('./lib/bubbles');
 const { makeVoices } = require('./lib/voices');
+const { kitsuSoundtrack } = require('./lib/soundtrack');
 
 const HERE = __dirname;
 const SETTINGS_FILE = process.env.KITSU_FLOW_SETTINGS || path.join(HERE, 'settings.json');
@@ -136,9 +137,19 @@ async function makeFilm(story, m) {
   const { items, warnings } = bubbleTimes(story.clips.map((c, i) => ({ duration: info[i].duration, lines: lines[i] })));
   warnings.forEach(w => say(`  note: ${w}`));
   const voiced = items.filter(b => b.wav).length;
+  // the sound: Kitsu Studio's music (the story's mood, changed by a clip's own "music:" line) and the voice lines,
+  // mixed by Kitsu Studio's mixer; Google Flow's own sound is left out unless the story says "flow sound: on"
+  const starts = info.reduce((a, c, i) => [...a, i ? a[i - 1] + info[i - 1].duration : 0], []);
+  const music = [{ t: 0, mood: story.meta.music }, ...story.clips.map((c, i) => (c.music ? { t: starts[i], mood: c.music } : null)).filter(Boolean)];
+  const playing = music.some(x => x.mood !== 'none');
+  let soundtrack = null;
+  if (playing || voiced) {
+    say(`  making the sound: ${playing ? `Kitsu Studio's music (${[...new Set(music.map(x => x.mood))].join(', ')})` : 'no music'}${voiced ? ` and ${voiced} voice line(s)` : ''}${story.meta.flowSound ? ", with Flow's own sound under it" : ''}...`);
+    soundtrack = await kitsuSoundtrack({ duration: r.duration, music, voices: items.filter(b => b.wav).map(b => ({ t: b.t0, wav: b.wav })) }, path.join(OUTPUT, '_sound'));
+  }
   if (items.length && story.meta.voices !== 'kitsu') say(`  no Ren and Yuki voices: this story says "voices: ${story.meta.voices}". Delete that line (or write voices: kitsu) to hear them.`);
-  if (items.length && (story.meta.bubbles || voiced)) say(`  adding ${story.meta.bubbles ? `${items.length} speech bubble(s)` : ''}${story.meta.bubbles && voiced ? ' and ' : ''}${voiced ? `${voiced} voice line(s)` : ''}...`);
-  await burnBubbles(clean, film, items, info[0].w, info[0].h, { bubbles: story.meta.bubbles });
+  if (items.length && story.meta.bubbles) say(`  adding ${items.length} speech bubble(s)...`);
+  await burnBubbles(clean, film, items, info[0].w, info[0].h, { bubbles: story.meta.bubbles, soundtrack, flowSound: story.meta.flowSound });
   m.film = film;
   saveMade(story, m);
   say(`  ${path.relative(process.cwd(), m.film)} (${Math.round(r.duration)} s)${items.length ? `; without bubbles or voices: ${path.basename(clean)}` : ''}`);
@@ -192,6 +203,8 @@ function check(file) {
     c.lines.forEach(l => say(`          ${story.meta.bubbles ? 'bubble' : 'says  '} (${l.who}${l.side ? `, ${l.side}` : ''}${l.at !== null ? `, at ${l.at}s` : ''}): "${l.text}"`));
   });
   say(`\nVoices: ${{ none: 'none (the words go in speech bubbles)', kitsu: "Kitsu Studio's own voices, added to the film (none from Flow)", flow: 'made by Flow' }[story.meta.voices]}. Bubbles: ${story.meta.bubbles ? 'on' : 'off'}.`);
+  const clipMusic = story.clips.filter(c => c.music).map(c => `clip ${c.n}: ${c.music}`);
+  say(`Music: Kitsu Studio's "${story.meta.music}"${clipMusic.length ? ` (then ${clipMusic.join(', ')})` : ''}. Google Flow's own sound: ${story.meta.flowSound ? 'kept, under the music' : 'left out'}.`);
   if (story.meta.voices === 'kitsu') {
     const { voiceFor } = require('./lib/voices'), missing = [...new Set(story.clips.flatMap(c => c.lines).filter(l => !voiceFor(l.who, l.notes)).map(l => l.who))];
     if (missing.length) say(`Note: no Kitsu voice for ${missing.join(', ')} (see config\\voices.json): those lines would stop the film.`);
