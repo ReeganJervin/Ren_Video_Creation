@@ -162,7 +162,7 @@ Each video can also produce:
 2. Create `episodes/<ep>/shorts/sNN-name.txt` with `from:`, `scenes:` or `lines:`, a `hook:`, and an `ending:`.
 3. Run `check-story.bat`. It confirms the length (15 s to 3 min; aim for 30–60 s) and that the chosen scenes or lines exist.
 4. Run `make-video.bat`, then review the safe area, the framing and the start and end.
-5. **Upload:** link the full episode in the Short (YouTube lets you link a "related video").
+5. **Upload:** link the full episode with the Short's **"Related video"** setting (YouTube Studio > Content > Shorts > Details). Links typed in a Short's description are not clickable.
 
 **Checks added for Shorts:**
 - **Length** is 15 s to 3 min (aim for 30–60 s).

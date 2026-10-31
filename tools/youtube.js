@@ -65,12 +65,21 @@ function description(plan, credits) {
   const ch = chapters(plan);
   const tag = s => '#' + s.replace(/(^|\s)(\w)/g, (_, a, c) => c.toUpperCase()).replace(/[^\w]/g, '');
   const tags = ['#RenAndYuki', '#Animation', '#FamilyAnimation', '#Storytime', tag(place)];
+  // YouTube does not make links clickable in a Short's description; the "Related video" setting is the clickable way
+  const isShort = /short/.test(plan.meta.type || '');
+  const from = (plan.meta.from || '').trim();
+  const shortNote = !isShort ? [] : [
+    "SHORTS LINK: Links typed in a Short's description are NOT clickable (YouTube blocks them).",
+    `To link ${from ? `the full episode (${from})` : 'a full episode'}: YouTube Studio > Content > Shorts > this Short > Details >`,
+    "'Related video', then pick the episode. It shows as a tappable link above the title in the Shorts player.", '',
+  ];
   return [
     'TITLE (draft, under 70 characters)', full.length <= 70 ? full : title.slice(0, 70), '',
     'SUMMARY (draft)', summary.join(' '), '',
     ...(ch.text ? ['CHAPTERS', ch.text.trim(), ''] : []),
     'CREDITS', credits.trim(), '',
     'HASHTAGS', tags.join(' '), '',
+    ...shortNote,
     "Reminder: Check YouTube's 'altered or synthetic content' and 'Made for Kids' settings before publishing.", '',
   ].join('\n');
 }
