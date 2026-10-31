@@ -44,6 +44,7 @@ ren (laughing): We screamed at a root!
 yuki (laughing): You screamed louder!
 ren (pouty): I screamed more confidently.
 title card: REN AND YUKI
+the root disappears
 
 
 # ================= Scene 2 - Only for Ren =================
@@ -110,12 +111,15 @@ music: mystery
 
 narrator: At the very end of the cave, the path stopped at a great stone wall.
 wall map appears at center
+ren walks to left
++ yuki walks to right
+shot: wide
 ren holds up the lantern
 music: magical
 narrator: And in the lantern's light, they saw that something had been carved into the stone, a very long time ago.
 yuki (surprised): Ren... it's a map.
 ren (surprised): A map of what?
-yuki walks to the wall map
+ren and yuki look at the wall map
 yuki (thinking): Look. Here is the cave. And here... stairs. Going down.
 yuki (thinking): One floor. Two floors. Three floors. All under the ground.
 ren (surprised): A dungeon. A real dungeon. With three whole floors.
