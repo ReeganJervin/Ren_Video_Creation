@@ -1,0 +1,172 @@
+# ============================================================
+#  Ren & Yuki - Episode 9: The Map on the Wall   (~7 min)
+#
+#  The owner's story (2026-10-31), second half: the magic lantern
+#  only works for Ren, the walk with the light, the dungeon map
+#  carved in the wall (three floors underground), Yuki memorises
+#  it, and the stairs down to the first floor.
+#
+#  New in this episode: the carved wall map and the stairs going down
+#  (both set pieces still to make), the root that looked like a bone.
+#  Callbacks: the "bone" and the lantern from Episode 8, the grey
+#  owl's warning ("a fire goes out the moment you step inside"),
+#  the map from the Great Tree, rule twelve.
+#  This episode adds explorer's rule number thirteen.
+# ============================================================
+
+title: The Map on the Wall
+editing: auto
+mood voices: on
+
+
+# ================= Scene 1 - The hook: the "bone" =================
+scene: The Terrible Bone
+place: cave tunnel
+light: dim
+music: mystery
+
+ren and yuki enter from left to center
+ren holds the lantern
++ narrator: The magic lantern glowed in Ren's paw. And for the first time, they could see the Dark Cave.
+yuki (thinking): Ren... can we go back and look at the bone?
+ren (worried): Do we have to?
+yuki (determined): I want to know what I touched.
+ren and yuki walk to left slowly
+root appears at left
+ren and yuki look at the root
+beat
+shot: close on ren
+ren (surprised): Yuki. That's a root.
+shot: close on yuki
+yuki (shy): A very bony root.
+shot: wide
+ren (laughing): We screamed at a root!
+yuki (laughing): You screamed louder!
+ren (pouty): I screamed more confidently.
+title card: REN AND YUKI
+
+
+# ================= Scene 2 - Only for Ren =================
+scene: Only for Ren
+music: magical
+
+ren and yuki walk to center
+yuki (thinking): Ren. How did it start to glow when you held it?
+ren (thinking): I told you. I heard a voice. It said the words, and I said them back.
+yuki (thinking): Let me try.
+ren gives the lantern to yuki
+the lantern stops glowing
+light: dark
+yuki (whispers, scared): Ren! It went out!
+ren (whispers, surprised): Do you hear anything?
+yuki (whispers, worried): Nothing. Not one word. Give it back! Give it back!
+yuki gives the lantern to ren
+the lantern glows
+light: dim
+ren (laughing): Hehe! It's okay. It's okay.
+yuki (pouty): It doesn't like me.
+ren (shy): Maybe it just likes legendary explorers.
+yuki (playful): Or silly foxes.
+beat
+yuki (thinking): Ren... the grey owl said a fire goes out the moment you step inside.
+ren looks at the lantern
+ren (thinking): Then this isn't fire. It's something else.
+yuki (worried): And it only talks to you.
+ren (shy): I don't know why either.
+narrator: Neither of them knew why the lantern had chosen Ren. Not yet.
+
+
+# ================= Scene 3 - The path in the light =================
+scene: The Path in the Light
+music: adventure
+
+narrator: With the magic lantern, the scary dark wasn't so scary any more.
+ren walks to right
+yuki hops to right
+ren (proud): Behold! Ren the Remarkable, Lantern-Bearer of the Dark Cave!
+yuki (playful): Lantern-Bearer?
+ren (proud): It's a very important job. You hold the lantern. And you look brave.
+yuki (playful): That's two jobs.
+ren (proud): I'm very good at both.
+narrator: The walls sparkled where the light touched them. Little drops of water shone like stars.
+yuki looks around
+yuki (happy): Ren, it's beautiful in here.
+ren (surprised): Beautiful? This morning it was the scariest place in the world.
+yuki (happy): It still is. But now it's beautiful too.
+ren walks to left
+yuki (surprised): Ren! Rule twelve!
+ren (shy): Oh. Right. Sorry.
+ren walks to yuki
+ren holds out his paw to yuki
+yuki touches paws with ren
+ren (happy): In the dark, never let go.
+yuki (happy): Even when you have a lantern.
+ren (proud): Especially when you have a lantern.
+
+
+# ================= Scene 4 - The map on the wall =================
+scene: The Map on the Wall
+music: mystery
+
+narrator: At the very end of the cave, the path stopped at a great stone wall.
+wall map appears at center
+ren holds up the lantern
+music: magical
+narrator: And in the lantern's light, they saw that something had been carved into the stone, a very long time ago.
+yuki (surprised): Ren... it's a map.
+ren (surprised): A map of what?
+yuki walks to the wall map
+yuki (thinking): Look. Here is the cave. And here... stairs. Going down.
+yuki (thinking): One floor. Two floors. Three floors. All under the ground.
+ren (surprised): A dungeon. A real dungeon. With three whole floors.
+beat
+ren (determined): Yuki. We need to break this wall.
+yuki (surprised): Why?
+ren (determined): To take the map with us!
+yuki (pouty): Ren. It's a wall.
+ren (proud): It's a very portable wall. Probably.
+yuki (pouty): You silly fox. Just remember it.
+ren (surprised): Remember it? It's threeeeee floors!
+ren (shy): How can anybody remember threeeeee floors?
+yuki (playful): Okay. I already memorised it.
+ren (surprised): Already?
+yuki (proud): Already.
+beat
+yuki (thinking): Ren... how did you even become an explorer?
+ren (proud): It's very easy. You just look around some places. And then you're an explorer.
+yuki (pouty): You silly, silly fox.
+ren (happy): Thank you.
+yuki (laughing): That wasn't a compliment!
+
+
+# ================= Scene 5 - The way down =================
+scene: The Way Down
+music: tense
+
+yuki (determined): Okay. Let's go.
+ren looks around
+ren (thinking): Go where? There's no path here.
+yuki (thinking): Ren. What did you see on the map?
+beat
+shot: close on ren
+ren (shy): ...Some lines.
+shot: close on yuki
+yuki (pouty): I don't even want to talk about that.
+shot: wide
+yuki looks right
+yuki (surprised): There. Look.
+stairs appear at right
+ren and yuki look at the stairs
+narrator: In the lantern's light, old stone stairs went down, down, down into the dark.
+ren (whispers, surprised): The first floor.
+yuki (whispers): Just like the map said.
+ren (proud): Explorer's rule number thirteen: always bring a bunny who can read maps.
+yuki (playful): And a fox with a lantern.
+ren (happy): And a fox with a lantern.
+ren holds out his paw to yuki
+yuki touches paws with ren
+music: epic
+ren walks to the stairs slowly
++ yuki walks to the stairs slowly
+narrator: Below them, the first floor of the dungeon was waiting. It had been waiting for a very, very long time.
+title card: FLOOR ONE

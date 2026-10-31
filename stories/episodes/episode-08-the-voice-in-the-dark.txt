@@ -1,0 +1,189 @@
+# ============================================================
+#  Ren & Yuki - Episode 8: The Voice in the Dark   (~7 min)
+#
+#  The owner's story (2026-10-31), first half: into the Dark Cave,
+#  pitch black, the "bone", and the magic lantern that wakes up in
+#  Ren's paw when he repeats the words only he can hear.
+#  Episode 9 starts the moment the lantern lights up.
+#
+#  New in this episode: the inside of the Dark Cave (cave tunnel,
+#  F5 Part B), the lantern's voice (only Ren hears it).
+#  Callbacks: the grey owl's warning and the voice Ren heard at the
+#  end of Episode 7, the promise under the fruit tree (scary things
+#  together), rule five, "very local wind".
+#  This episode adds explorer's rule number twelve.
+# ============================================================
+
+title: The Voice in the Dark
+editing: auto
+mood voices: on
+
+
+# ================= Scene 1 - The hook (pitch black) =================
+scene: Something in the Dark
+place: cave tunnel
+light: dark
+music: mystery
+
+# Nothing to see: only their voices in the dark.
+yuki (whispers, scared): Ren... something is touching my leg.
+ren (whispers, scared): Is it me?
+yuki (whispers, scared): No. You're holding my paw.
+beat
+ren (whispers, scared): ...Then what is touching your leg?
+title card: REN AND YUKI
+narrator: A few minutes earlier, at the mouth of the Dark Cave...
+
+
+# ================= Scene 2 - The cave mouth =================
+scene: The Cave Mouth
+place: snowy hill
+time: dusk
+light: bright
+music: tense
+
+dark cave appears at right
+ren and yuki enter from left to left
+ren and yuki look at the dark cave
+narrator: The grey owl had flown away. The sun was going down. And the Dark Cave was waiting.
+ren (worried): So. That's the cave.
+yuki (worried): That's the cave.
+ren (shy): It's very... cave-shaped.
+beat
+ren (playful): We could come back tomorrow. Or next week. Or when we're older. Much older.
+yuki (thinking): Ren. We followed a star, a map, and a whole hungry road to get here.
+ren (sad): I know. I just wish the X was on a nice sunny beach.
+yuki looks at ren
+yuki (playful): Your ears are shaking.
+ren (shy): Very local wind.
+yuki (playful): Really?
+ren (shy): No. Very local fear.
+yuki walks to ren
+yuki (shy): Mine are shaking too.
+ren (determined): Then we keep our promise. Scary things, we do together.
+ren holds out his paw to yuki
+yuki touches paws with ren
+yuki (determined): Together. And we don't let go.
+ren (proud): Explorer's rule number one: always look confident.
+yuki (playful): You look terrified.
+ren (proud): Confidently terrified.
+music: mystery
+ren walks to the dark cave slowly
++ yuki walks to the dark cave slowly
+narrator: And holding paws, two little explorers stepped into the dark.
+
+
+# ================= Scene 3 - Pitch black =================
+scene: Darker Than the Darkest Night
+place: cave tunnel
+light: dark
+music: mystery
+
+narrator: Inside, the dark was so thick that they couldn't see their own paws.
+yuki (whispers, scared): Ren? Are you still there?
+ren (whispers): I'm right here. I'm the one holding your paw.
+yuki (whispers, worried): Keep talking. So I know where you are.
+ren (whispers, playful): What should I talk about?
+yuki (whispers): Anything.
+ren (whispers, proud): Okay. Fun fact: foxes can see very well in the dark.
+beat
+ren (whispers, shy): Not this dark, though. This is a very advanced dark.
+yuki (whispers, laughing): Hehe.
+narrator: Drip. Drip. Somewhere far away, water was falling into the dark.
+ren (whispers, surprised): Ow! That was my nose.
+yuki (whispers, surprised): Sorry! I thought it was the wall.
+ren (whispers, pouty): My nose is not a wall.
+yuki (whispers, playful): It's a very pointy wall.
+beat
+narrator: They walked a little further. Then Yuki stopped.
+yuki (whispers, scared): Ren... something is touching my leg.
+ren (whispers, scared): Is it me?
+yuki (whispers, scared): No. You're holding my paw.
+ren (whispers, scared): ...Then what is touching your leg?
+yuki (whispers, worried): Wait. I'll check.
+yuki crouches
+narrator: Yuki reached down into the dark, very slowly.
+yuki (whispers, thinking): It's long. And hard. And bumpy at the ends.
+beat
+yuki (whispers, scared): Ren... it feels like a bone.
+camera: shake
+ren (shouts, scared): Aaaah!
+yuki (shouts, scared): Aaaah!
+music: tense
+ren and yuki run to right
+narrator: They ran. They didn't know where. But they never let go of each other's paws.
+
+
+# ================= Scene 4 - In the dark, together =================
+scene: Never Let Go
+music: heartfelt
+
+ren (whispers, worried): Yuki? Are you okay?
+yuki (whispers, scared): I'm okay. Are you okay?
+ren (whispers, shy): My legs are okay. My heart is running a little faster than my legs.
+ren and yuki sit down
+yuki (sad): Ren... what if the owl was right? What if the animals who came in here never came out?
+ren (sad): I thought about that too.
+beat
+ren (shy): Can I tell you a secret? I'm scared of the dark. And the bone. And the drippy noises.
+ren (shy): But I'm much more scared of you being in here all alone.
+yuki (shy): You silly fox.
+yuki (happy): Rule number five. Being scared is less scary together.
+ren (happy): Then I have a new one. Explorer's rule number twelve: in the dark, never let go.
+yuki (playful): You're making that up.
+ren (proud): All the best rules are made up in the dark.
+ren and yuki stand up
+narrator: So they stood up, and kept walking. One paw in front of the other. Never letting go.
+
+
+# ================= Scene 5 - The thing on the ground =================
+scene: The Thing on the Ground
+music: mystery
+
+ren and yuki walk to center slowly
+yuki (surprised): Ow!
+ren (whispers, worried): Another bone?
+yuki (whispers, thinking): No... this one is different. It went clink.
+lantern appears on the ground
+yuki crouches
+narrator: Yuki got down on her paws and felt all around it.
+yuki (whispers, thinking): It's round. It has a handle. And it's cold.
+ren (whispers, thinking): A bucket?
+yuki (whispers, thinking): Too small.
+ren (whispers, playful): A very small helmet?
+yuki (whispers, pouty): For a very small head? Ren, I can't tell what it is.
+ren (whispers, determined): Let me try.
+yuki picks up the lantern
+yuki stands up
+yuki gives the lantern to ren
+ren holds the lantern
+music: magical
+narrator: The moment Ren held it, the cave went very, very quiet.
+beat
+lantern voice (whispers): Light that sleeps, now wake for me...
+ren (whispers, surprised): Yuki? Did you say something?
+yuki (whispers, surprised): No. I didn't say anything.
+lantern voice (whispers): Light that sleeps, now wake for me. Show the path that none can see.
+ren (whispers, scared): There it is again. A voice. The voice I heard outside.
+yuki (whispers, worried): Ren, I don't hear anything.
+ren (whispers, thinking): It's saying words. Like a spell.
+yuki (whispers, scared): What do we do?
+ren (determined): I think... I think it wants me to say them.
+beat
+ren (whispers): Light that sleeps, now wake for me.
+ren (determined): Show the path that none can see.
+slow motion 3
+the lantern glows
+light: dim
+camera: push in
+music: epic
+narrator: And deep in the Dark Cave, where no fire could ever burn, a little light began to shine.
+yuki (surprised): Ren... I can see you!
+ren (surprised): I can see you too!
+ren and yuki look at the lantern
+yuki (surprised): It's a lantern.
+ren (excited): Not just a lantern. A magic lantern.
+beat
+ren (thinking): But Yuki... who said those words?
+narrator: In the warm golden light, two little explorers looked at each other. And deeper in the cave, something was waiting to be found.
+title card: SEE YOU SOON

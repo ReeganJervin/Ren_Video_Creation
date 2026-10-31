@@ -1,8 +1,8 @@
-# Ren & Yuki – Season 1 plan (Episodes 1–7)
+# Ren & Yuki – Season 1 plan (Episodes 1–9)
 
 The owner's story, developed into seven episodes. Episodes 3–7 are written (see "The files" below), following "The owner's decisions".
 
-**The big arc:** two lonely explorers meet (Ep 1) → the forest and its secret light (Ep 2) → the fallen star (Ep 3) → the Great Tree and the map (Ep 4) → the long road, hunger and sacrifice (Ep 5–6) → the Dark Cave nobody enters (Ep 7, cliffhanger into Season 2 / Episode 8).
+**The big arc:** two lonely explorers meet (Ep 1) → the forest and its secret light (Ep 2) → the fallen star (Ep 3) → the Great Tree and the map (Ep 4) → the long road, hunger and sacrifice (Ep 5–6) → the Dark Cave nobody enters (Ep 7) → into the dark and the magic lantern (Ep 8) → the dungeon map and the way down (Ep 9, cliffhanger into the first floor).
 
 **Running threads that pay off:** the explorer's rules (one new rule per episode), "the big half" (cookies), Ren's "very local wind" (when he's scared), Yuki's condition "sometimes I choose where we go", the owl's grumbling.
 
@@ -64,6 +64,24 @@ Lost in the forest, the owl, "a light that has never gone out". Rules 5–6. End
 5. **The owl:** *"You guys really are dumb. And you, little fox, you're even dumber than the bunny."* Leaving: *"One more thing. Sometimes animals go in to shelter from the rain or the sun… and nobody has seen them come out."*
 6. **Cliffhanger:** they reach the cave mouth at dusk, paw in paw. From deep inside, Ren thinks he hears… a voice. **THE DARK CAVE.**
 
+## Episode 8 – The Voice in the Dark *(written from the owner's story, 2026-10-31)*
+**New:** the inside of the Dark Cave (`cave tunnel`), the lantern's voice.
+1. **Hook (pitch black):** only voices. *"Ren… something is touching my leg." / "Is it me?" / "No. You're holding my paw."* Title card. *"A few minutes earlier…"*
+2. **The cave mouth:** both scared. *"Very local wind." / "No. Very local fear."* The promise: scary things together. Paw in paw, they walk in.
+3. **Pitch black:** comedy in the dark (*"My nose is not a wall."*). The "bone": both scream and run, never letting go.
+4. **Never let go:** a heart talk sitting in the dark. Ren is more scared of Yuki being alone than of the dark. **Rule 12.**
+5. **The thing on the ground:** round, cold, with a handle. Yuki can't tell what it is. Ren holds it and hears a voice only he can hear: *"Light that sleeps, now wake for me. Show the path that none can see."* He repeats it and the **magic lantern** glows. Ends: *"But Yuki… who said those words?"*
+
+## Episode 9 – The Map on the Wall *(written from the owner's story, 2026-10-31)*
+**New:** the carved dungeon map on the wall, the stairs going down, the root.
+1. **Hook:** they go back to look at the "bone". It's a root. *"We screamed at a root!" / "You screamed louder!"*
+2. **Only for Ren:** Yuki holds the lantern; it goes out and she hears nothing (*"Give it back!"*). It isn't fire, so the grey owl's warning doesn't apply. Why it chose Ren stays a mystery.
+3. **The path in the light:** *"Ren the Remarkable, Lantern-Bearer!"* The cave becomes beautiful. Rule 12 again.
+4. **The map on the wall:** a dungeon with three floors underground. Ren wants to break the wall to take it; *"threeeeee floors!"*; Yuki has already memorised it; *"How did you even become an explorer?" / "You just look around some places."* / *"You silly fox."*
+5. **The way down:** *"What did you see on the map?" / "…Some lines." / "I don't even want to talk about that."* Old stone stairs go down. **Rule 13.** Title card: **FLOOR ONE**.
+
+Next (not written): one floor per episode (Episode 10 is the first floor).
+
 ---
 
 ## The owner's decisions (2026-10-28)
@@ -81,9 +99,11 @@ Lost in the forest, the owl, "a light that has never gone out". Rules 5–6. End
 8. A map is a promise: you have to see where it leads. 9. Next time, bring more snacks (Yuki's). (Ep 4)
 10. Always eat and drink before being brave. (Ep 6)
 11. When it's cold, sit closer. (Ep 7)
+12. In the dark, never let go. (Ep 8)
+13. Always bring a bunny who can read maps. (Ep 9)
 
 ## The files
-`stories/episodes/uploaded/` (on YouTube): `episode-01-the-beginning-of-a-friendship.txt`, `episode-02-into-the-forest.txt`, `episode-03-the-light-in-the-deep-forest.txt`, `episode-04-the-great-tree.txt`. `stories/episodes/` (not uploaded yet): `episode-05-the-hungry-road.txt`, `episode-06-ren-wake-up.txt`, `episode-07-the-cave-nobody-enters.txt`.
+`stories/episodes/uploaded/` (on YouTube): `episode-01-the-beginning-of-a-friendship.txt`, `episode-02-into-the-forest.txt`, `episode-03-the-light-in-the-deep-forest.txt`, `episode-04-the-great-tree.txt`. `stories/episodes/` (not uploaded yet): `episode-05-the-hungry-road.txt`, `episode-06-ren-wake-up.txt`, `episode-07-the-cave-nobody-enters.txt`, `episode-08-the-voice-in-the-dark.txt`, `episode-09-the-map-on-the-wall.txt`.
 Episode Shorts (`shorts/episode-shorts/`), two per episode (`ep1-1-the-summit`, `ep1-2-whos-talking` and `ep2-1-very-local-wind` are on YouTube, in `shorts/episode-shorts/uploaded/`): `ep1-1-the-summit`, `ep1-2-whos-talking`, `ep2-1-very-local-wind`, `ep2-2-the-tree-has-wings`, `ep3-1-a-very-dangerous-leaf`, `ep3-2-a-very-organised-firefly`, `ep4-1-youd-drop-it`, `ep4-2-a-map`, `ep5-1-the-big-half`, `ep5-2-the-upside-down-map`, `ep6-1-wake-up-silly-fox`, `ep6-2-rule-number-ten`, `ep7-1-you-guys-are-dumb`, `ep7-2-dumber-than-the-bunny`.
 
 ## New things the episodes need (made in F4 Part D stop 2, waiting for the owner's review)
