@@ -1,0 +1,86 @@
+# Whispers of the World Tree — the world introduction (pages 1 to 8)
+# Where Wings, Magic, and Destiny Meet.
+#
+# A journey with no characters yet: an ancient forest, a waterfall, a hidden cave, the floating world, the World Tree
+# and its four worlds, the Lower World, and the title. 9 frames (free) and 8 clips of 10 s: about 80 seconds, wide.
+# The narrator's words appear in storybook caption boxes and are read by Kitsu Studio's narrator voice; Google Flow
+# makes the music and the sounds (water, wind, birds).
+#
+#  Check it (free):              .\flow\flow-video.bat check flow\stories\world-tree\01-world-intro.txt
+#  1. Make the frames (free):    .\flow\flow-video.bat make flow\stories\world-tree\01-world-intro.txt --account 2
+#     Redo a frame (free):       .\flow\flow-video.bat make flow\stories\world-tree\01-world-intro.txt --account 2 --redo frame 3
+#  2. Make the clips and film:   .\flow\flow-video.bat make flow\stories\world-tree\01-world-intro.txt --account 2
+#     (same command again: at most 120 credits for the 8 clips)
+#     Redo a clip (credits):     .\flow\flow-video.bat make flow\stories\world-tree\01-world-intro.txt --account 2 --redo clip 2
+#     Redo the film only (free): .\flow\flow-video.bat make flow\stories\world-tree\01-world-intro.txt --account 2 --redo film
+#  The film: flow\output\whispers-of-the-world-tree-intro\film.mp4
+#
+title: Whispers of the World Tree
+project: whispers-of-the-world-tree-intro
+aspect: 16:9
+model: Omni 1.1 Flash
+resolution: 720p
+duration: 10
+max credits: 15
+# the narrator: Kitsu Studio's narrator voice, the same in every clip; Flow makes the music and sounds under it
+voices: kitsu
+music: none
+flow sound: on
+bubbles: on
+# optional: up to 2 of your own pictures, so Flow draws in the same style (put them next to this file), e.g.
+# style pictures: refs/page-1.png, refs/page-5.png
+
+style: Breathtaking Japanese fantasy anime background art in the style of a high-budget anime film: highly detailed, painterly, lush green moss and ancient trees, soft volumetric sunlight, clear blue sky with big white clouds, drifting mist, glowing blue flowers and tiny light motes, vivid but natural colours, cinematic composition, no text, no captions, no speech bubbles. Sweeping, gentle orchestral fantasy music with flutes and strings, and natural sounds.
+place: The world of the World Tree: an ancient forest beyond the lands known to ordinary travelers, waterfalls, hidden caves, and a world of floating islands among the clouds.
+
+# ---------- frames (free stills): each clip goes from one frame to the next ----------
+frame 1: An ancient forest seen from a mossy rise: enormous old trees with huge roots, a clear stream flowing between mossy stones, pink and blue wildflowers, glowing blue light motes, sunbeams through the canopy, distant misty mountains and waterfalls on the horizon. Wide shot.
+frame 2: Deeper in the ancient forest: a narrow stone path between gigantic mossy trunks, sunbeams, ferns and glowing blue flowers, and at the end of the path a magnificent tall waterfall falling between the trees. Wide shot.
+frame 3: Close to the magnificent waterfall: a curtain of white falling water with a small rainbow in the mist, and behind it the dark mouth of a hidden cave, with a mossy stone path leading into it. Wide shot.
+frame 4: Inside the hidden cave behind the waterfall: an underground stream flowing between rocks, hanging roots and moss, glowing blue flowers and crystals on the stone walls, and a warm golden light far ahead at the end of the tunnel. Wide shot.
+frame 5: The cave opening onto a high cliff: a breathtaking view of an endless forest below, misty mountains, waterfalls, and huge floating islands with trees and waterfalls rising above the white clouds under a bright blue sky. Wide shot.
+frame 6: The heart of the floating world: the colossal World Tree, its trunk as big as a mountain, its branches carrying forests, rivers, waterfalls and elegant wooden towns on different levels, floating islands and wooden bridges all around it among the clouds. Very wide shot.
+frame 7: The Lower World among the giant branches: a dense living forest with deer drinking from a stream, rabbits in the grass and birds flying between the trees, and in the distance small winged elves with delicate translucent wings walking along a forest path. Wide shot.
+frame 8: A Lower World town in the ancient trees: cozy wooden houses on the huge branches, wooden bridges and walkways between the trees, warm lanterns, a small market, waterfalls, and winged elves going about their day. Wide shot.
+frame 9: The camera far back: the whole colossal World Tree rising above the clouds, the floating islands around it, the bright High World at the top, and far below the dark misty forest of the Shrouded Wilds fading into shadow. Very wide, epic shot.
+
+# ---------- clips (cost credits) ----------
+clip 1: frame 1 to frame 2
+The camera glides slowly through the ancient forest along the stream, between the giant mossy trees, light motes drifting in the sunbeams.
+Narrator (at 0.5s): "Beyond the lands known to ordinary travelers, there lies a forest older than memory."
+Narrator: "Few ever venture deep enough to find its secrets."
+
+clip 2: frame 2 to frame 3
+The camera moves along the stone path toward the roaring waterfall; the mist rises and a small rainbow appears in the spray.
+Narrator (at 0.5s): "The deeper one travels, the louder the voice of the water grows."
+Narrator: "And behind its veil, a forgotten path waits."
+
+clip 3: frame 3 to frame 4
+The camera passes slowly behind the falling water into the hidden cave, following the underground stream between glowing flowers and crystals.
+Narrator (at 0.5s): "Beyond the waterfall, the forest gives way to stone."
+Narrator: "Yet even here, the ancient forest still breathes."
+
+clip 4: frame 4 to frame 5
+The camera travels toward the golden light at the end of the tunnel and comes out onto the high cliff, revealing the vast view and the floating islands above the clouds.
+Narrator (at 0.5s): "After the darkness, the world opened beneath the sky."
+Narrator: "Another world floated among the clouds."
+
+clip 5: frame 5 to frame 6
+The camera flies out over the clouds and between the floating islands toward the colossal World Tree, its towns and waterfalls coming into view.
+Narrator (at 0.5s): "At the heart of the floating world stood the World Tree."
+Narrator: "Four worlds. One ancient tree."
+
+clip 6: frame 6 to frame 7
+The camera descends along the giant trunk, past the bright High World and the busy Middle World, down into the dense forest of the Lower World, where deer drink from a stream and birds fly.
+Narrator (at 0.5s): "Deep among the branches lay the Lower World."
+Narrator: "Beautiful, and wild, and full of life."
+
+clip 7: frame 7 to frame 8
+The camera follows the forest path past the deer and the winged elves into a cozy town of wooden houses and bridges on the huge branches.
+Narrator (at 0.5s): "Here, ordinary families built their homes among the trees."
+Narrator: "It was not a wilderness. It was home."
+
+clip 8: frame 8 to frame 9
+The camera pulls far back from the town until the whole World Tree fills the screen, the dark Shrouded Wilds far below disappearing into mist.
+Narrator (at 0.5s): "But beneath it all, a forest where the sunlight disappeared."
+Narrator: "And beyond the darkness, no one knows."

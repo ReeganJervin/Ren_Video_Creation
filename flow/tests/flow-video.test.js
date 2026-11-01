@@ -243,3 +243,15 @@ test('a clip with no frames is made from the characters, with Flow voices and Fl
   assert.match(made[0].prompt, /A garden\. Ren waves at Yuki\. Ren \(happy\): "Hello!" Each character speaks their lines in their own voice\./);
   assert.ok(fs.existsSync(path.join(tmp, 'output', 'char-clips', 'film.mp4')));
 });
+
+test('a narrator: never acted by Flow, read by the Kitsu narrator voice, shown in a caption box', async () => {
+  const { parseFlowStory, clipPrompt } = require('../lib/story');
+  const st = parseFlowStory('title: T\naspect: 16:9\nmusic: none\nflow sound: on\nframe 1: a forest\nframe 2: a waterfall\nclip 1: frame 1 to frame 2\nThe camera glides on.\nNarrator (at 0.5s): "Beyond the lands known to ordinary travelers."\n');
+  assert.deepStrictEqual(st.errors, []);
+  const p = clipPrompt(st.meta, st.clips[0]);
+  assert.doesNotMatch(p, /Narrator reacts/); assert.doesNotMatch(p, /Beyond the lands/); assert.match(p, /Nobody speaks/);
+  assert.ok(require('../lib/voices').voiceFor('Narrator', '', { narrator: { voice: 'am_onyx', speed: 0.86, pitch: 0.94, echo: true } }).echo);
+  const { drawBubbles } = require('../lib/bubbles');
+  const [cap] = await drawBubbles([{ text: 'Four worlds. One ancient tree.', who: 'Narrator' }], 1280, 720);
+  assert.ok(cap.length > 2000);
+});

@@ -67,6 +67,10 @@ function readStory(file) {
   if (!file) stop('Which story? For example:  flow-video make flow\\stories\\my-story.txt');
   if (!fs.existsSync(file)) stop(`I can't find ${file}.`);
   const story = parseFlowStory(fs.readFileSync(file, 'utf8'));
+  // style pictures are found next to the story file
+  story.stylePictures = (story.meta.stylePictures || []).map(p => path.resolve(path.dirname(file), p));
+  const lost = story.stylePictures.filter(p => !fs.existsSync(p));
+  if (lost.length) story.errors.push(`style pictures: I can't find ${lost.map(p => path.relative(process.cwd(), p)).join(', ')}.`);
   if (story.errors.length) stop(`Please fix these lines in ${path.basename(file)}:\n  ${story.errors.join('\n  ')}`);
   return story;
 }
@@ -78,7 +82,8 @@ async function makeFrames(story, a, m, todo) {
   say(`\nFrames (free): ${todo.map(f => f.n).join(', ')} on ${a.name}`);
   for (const f of todo) {
     const prev = story.frames[story.frames.indexOf(f) - 1], prevFile = prev && m.frames[prev.n];
-    const refs = [...(have(prevFile) ? [frameFor(m, prev.n, a)] : []), ...castOf(story.meta, f.text).map(c => `asset:${c}`)].slice(0, 3);
+    // references: the frame before (same look), the story's style pictures, the characters in this frame (3 at most)
+    const refs = [...(have(prevFile) ? [frameFor(m, prev.n, a)] : []), ...story.stylePictures, ...castOf(story.meta, f.text).map(c => `asset:${c}`)].slice(0, 3);
     const scene = { type: 'image', prompt: framePrompt(story.meta, f) + (have(prevFile) ? ' Match the previous image exactly for the characters, colours, light and drawing style; this is the same scene a moment later.' : ''),
       aspect_ratio: story.meta.aspect, max_credits: 0, ...(refs.length ? { reference_images: refs } : {}), ...(story.meta.frameModel ? { model: story.meta.frameModel } : {}), download_quality: story.meta.quality };
     let r;
@@ -150,7 +155,8 @@ async function makeFilm(story, m) {
   }
   if (items.length && story.meta.voices !== 'kitsu') say(`  no Ren and Yuki voices: this story says "voices: ${story.meta.voices}". Delete that line (or write voices: kitsu) to hear them.`);
   if (items.length && story.meta.bubbles) say(`  adding ${items.length} speech bubble(s)...`);
-  await burnBubbles(clean, film, items, info[0].w, info[0].h, { bubbles: story.meta.bubbles, soundtrack, flowSound: story.meta.flowSound });
+  // (Flow's own sound under Kitsu's music is kept quiet; with no Kitsu music it is the film's music, so it stays up)
+  await burnBubbles(clean, film, items, info[0].w, info[0].h, { bubbles: story.meta.bubbles, soundtrack, flowSound: story.meta.flowSound, flowVolume: playing ? 0.35 : 0.85 });
   m.film = film;
   saveMade(story, m);
   say(`  ${path.relative(process.cwd(), m.film)} (${Math.round(r.duration)} s)${items.length ? `; without bubbles or voices: ${path.basename(clean)}` : ''}`);
@@ -206,7 +212,7 @@ function check(file) {
   say(`\nVoices: ${{ none: 'none (the words go in speech bubbles)', kitsu: "Kitsu Studio's own voices, added to the film (none from Flow)", flow: 'made by Flow' }[story.meta.voices]}. Bubbles: ${story.meta.bubbles ? 'on' : 'off'}.`);
   const clipMusic = story.clips.filter(c => c.music).map(c => `clip ${c.n}: ${c.music}`);
   const kitsuMusic = story.meta.music !== 'none' || clipMusic.length;
-  say(`Music: ${kitsuMusic ? `Kitsu Studio's "${story.meta.music}"${clipMusic.length ? ` (then ${clipMusic.join(', ')})` : ''}` : 'none from Kitsu Studio'}. Google Flow's own sound: ${story.meta.flowSound ? (kitsuMusic ? 'kept, under the music' : 'kept (its music, sounds and voices)') : 'left out'}.`);
+  say(`Music: ${kitsuMusic ? `Kitsu Studio's "${story.meta.music}"${clipMusic.length ? ` (then ${clipMusic.join(', ')})` : ''}` : 'none from Kitsu Studio'}. Google Flow's own sound: ${story.meta.flowSound ? (kitsuMusic ? 'kept, under the music' : story.meta.voices === 'flow' ? 'kept (its music, sounds and voices)' : 'kept (its music and sounds)') : 'left out'}.`);
   if (story.meta.voices === 'kitsu') {
     const { voiceFor } = require('./lib/voices'), missing = [...new Set(story.clips.flatMap(c => c.lines).filter(l => !voiceFor(l.who, l.notes)).map(l => l.who))];
     if (missing.length) say(`Note: no Kitsu voice for ${missing.join(', ')} (see config\\voices.json): those lines would stop the film.`);

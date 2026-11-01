@@ -8,6 +8,8 @@ const { chromium } = require('playwright');
 const { FFMPEG } = require('./join');
 
 const FONT = path.join(__dirname, '..', 'fonts', 'fredoka-700.woff2');
+// the narrator's caption box: a storybook parchment box with Lora italic letters (Kitsu Studio's caption font)
+const CAPTION_FONT = path.join(__dirname, '..', 'fonts', 'lora-500-italic.woff2');
 const LINE = '#4a2616', FILL = '#fffaf2', TEXT = '#3a2414';
 
 // how long a line takes to read (or say) when there is no voice to measure
@@ -34,7 +36,7 @@ function bubbleTimes(clips) {
       const t1 = Math.min(next - 0.05, c.duration - 0.05, t0 + len[i] * scale + (voiced ? 0.5 : 0));
       if (t0 + len[i] > c.duration + 0.05) warnings.push(`clip ${ci + 1}: "${l.text.slice(0, 40)}" goes on past the end of the clip. Shorten it, or start it earlier ("at").`);
       if (i && t0 < starts[i - 1] + len[i - 1] - 0.05 && voiced) warnings.push(`clip ${ci + 1}: "${l.text.slice(0, 40)}" starts before the line before it has finished.`);
-      out.push({ text: l.text, side: l.side, wav: l.wav, t0: at + t0, t1: at + Math.max(t0 + 0.8, t1) });
+      out.push({ text: l.text, side: l.side, who: l.who, wav: l.wav, t0: at + t0, t1: at + Math.max(t0 + 0.8, t1) });
     });
     at += c.duration;
   });
@@ -46,14 +48,17 @@ async function drawBubbles(items, W, H) {
   const browser = await chromium.launch();
   try {
     const page = await browser.newPage();
-    const font = `data:font/woff2;base64,${fs.readFileSync(FONT).toString('base64')}`;
-    return await page.evaluate(async ({ items, W, H, font, LINE, FILL, TEXT }) => {
+    const font = `data:font/woff2;base64,${fs.readFileSync(FONT).toString('base64')}`, cap = `data:font/woff2;base64,${fs.readFileSync(CAPTION_FONT).toString('base64')}`;
+    return await page.evaluate(async ({ items, W, H, font, cap, LINE, FILL, TEXT }) => {
       const face = new FontFace('Fredoka', `url(${font})`, { weight: '700' });
       await face.load(); document.fonts.add(face);
+      const lora = new FontFace('Lora', `url(${cap})`, { weight: '500', style: 'italic' });
+      await lora.load(); document.fonts.add(lora);
       const tall = H > W, size = Math.round((tall ? W * 0.062 : H * 0.055)), maxW = W * (tall ? 0.8 : 0.6), lw = Math.max(3, size * 0.12);
-      return items.map(({ text, side }) => {
+      return items.map(({ text, side, who }) => {
         const cv = Object.assign(document.createElement('canvas'), { width: W, height: H }), g = cv.getContext('2d');
-        g.font = `700 ${size}px Fredoka`;
+        const narrator = /^narrator$/i.test(String(who || '').trim());
+        g.font = narrator ? `italic 500 ${Math.round(size * (tall ? 0.85 : 0.72))}px Lora` : `700 ${size}px Fredoka`;
         // words into lines that fit, then as even as possible (no single word left alone on the last line)
         const wrap = width => {
           const out = [];
@@ -63,8 +68,21 @@ async function drawBubbles(items, W, H) {
           }
           return out;
         };
-        let width = maxW - size * 1.4, lines = wrap(width);
+        let width = (narrator ? Math.min(maxW, W * (tall ? 0.8 : 0.5)) : maxW) - size * 1.4, lines = wrap(width);
         for (let w = width * 0.95; w > size * 3; w *= 0.95) { const t = wrap(w); if (t.length > lines.length) break; lines = t; }
+        if (narrator) {
+          // a parchment caption box at the top left (or right, with "(right)"), like a storybook or comic page
+          const lh = size * 1.2, bw = Math.max(...lines.map(l => g.measureText(l).width)) + size * 1.6, bh = lines.length * lh + size * 1.0;
+          const x = side === 'right' ? W - bw - W * 0.04 : W * 0.04, y = H * (tall ? 0.07 : 0.06);
+          g.shadowColor = 'rgba(40,20,5,0.35)'; g.shadowBlur = size * 0.5; g.shadowOffsetY = size * 0.15;
+          const grad = g.createLinearGradient(0, y, 0, y + bh); grad.addColorStop(0, '#fbf1d9'); grad.addColorStop(1, '#efdfb8');
+          g.fillStyle = grad; g.fillRect(x, y, bw, bh); g.shadowColor = 'transparent';
+          g.strokeStyle = '#6b4a26'; g.lineWidth = Math.max(2, size * 0.07); g.strokeRect(x, y, bw, bh);
+          g.strokeStyle = 'rgba(107,74,38,0.35)'; g.lineWidth = 1; g.strokeRect(x + size * 0.18, y + size * 0.18, bw - size * 0.36, bh - size * 0.36);
+          g.fillStyle = '#3b2a17'; g.textAlign = 'left'; g.textBaseline = 'middle';
+          lines.forEach((l, i) => g.fillText(l, x + size * 0.8, y + size * 0.5 + lh * (i + 0.5)));
+          return cv.toDataURL('image/png').slice(22);
+        }
         const lh = size * 1.18, bw = Math.max(...lines.map(l => g.measureText(l).width)) + size * 1.4, bh = lines.length * lh + size * 0.9;
         const cx = side === 'left' ? Math.max(bw / 2 + W * 0.04, W * 0.38) : side === 'right' ? Math.min(W - bw / 2 - W * 0.04, W * 0.62) : W / 2;
         const x = cx - bw / 2, y = H * (tall ? 0.07 : 0.06), r = Math.min(bh / 2, size * 0.9);
@@ -82,13 +100,13 @@ async function drawBubbles(items, W, H) {
         lines.forEach((l, i) => g.fillText(l, cx, y + size * 0.45 + lh * (i + 0.5)));
         return cv.toDataURL('image/png').slice(22);
       });
-    }, { items, W, H, font, LINE, FILL, TEXT });
+    }, { items, W, H, font, cap, LINE, FILL, TEXT });
   } finally { await browser.close(); }
 }
 
 // lays the bubbles over the film and puts in its sound: film -> out. soundtrack: Kitsu Studio's music and voices (a
 // WAV, or null); flowSound: keep the clips' own sound from Google Flow (mixed under the soundtrack when there is one).
-async function burnBubbles(film, out, items, W, H, { bubbles = true, soundtrack = null, flowSound = false } = {}) {
+async function burnBubbles(film, out, items, W, H, { bubbles = true, soundtrack = null, flowSound = false, flowVolume = 0.35 } = {}) {
   const shown = bubbles ? items : [];
   if (!shown.length && !soundtrack && flowSound) { fs.copyFileSync(film, out); return 0; }
   const pngs = shown.length ? await drawBubbles(shown, W, H) : [];
@@ -101,7 +119,7 @@ async function burnBubbles(film, out, items, W, H, { bubbles = true, soundtrack 
   // the sound: Kitsu Studio's soundtrack, with Flow's own sound quietly under it if asked for, or Flow's sound alone,
   // or silence
   const audioIn = 1 + files.length;
-  if (soundtrack && flowSound) graph += `;[0:a]aformat=sample_rates=48000:channel_layouts=stereo,volume=0.35[f];[${audioIn}:a]aformat=sample_rates=48000:channel_layouts=stereo[k];[k][f]amix=inputs=2:normalize=0:duration=first[a]`;
+  if (soundtrack && flowSound) graph += `;[0:a]aformat=sample_rates=48000:channel_layouts=stereo,volume=${flowVolume}[f];[${audioIn}:a]aformat=sample_rates=48000:channel_layouts=stereo[k];[k][f]amix=inputs=2:normalize=0:duration=first[a]`;
   else if (soundtrack) graph += `;[${audioIn}:a]aformat=sample_rates=48000:channel_layouts=stereo[a]`;
   else if (!flowSound) graph += ';anullsrc=r=48000:cl=stereo[a]';
   const sound = soundtrack || !flowSound ? '[a]' : '0:a?';

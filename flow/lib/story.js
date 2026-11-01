@@ -29,6 +29,7 @@ const SETTINGS = {
   title: 'title', project: 'project', aspect: 'aspect', 'aspect ratio': 'aspect', characters: 'characters', style: 'style',
   place: 'place', model: 'model', 'frame model': 'frameModel', duration: 'duration', resolution: 'resolution',
   'max credits': 'maxCredits', quality: 'quality', voices: 'voices', bubbles: 'bubbles', sides: 'sides', music: 'music', 'flow sound': 'flowSound',
+  'style pictures': 'stylePictures', 'style picture': 'stylePictures',
 };
 // Kitsu Studio's music moods (the same list as engine/story.js)
 const MUSIC = ['happy', 'calm', 'magical', 'mystery', 'adventure', 'tense', 'sad', 'bedtime', 'epic', 'heartfelt', 'none'];
@@ -69,6 +70,7 @@ function parseFlowStory(text) {
       else if (key === 'duration') { if (!/^(4|6|8|10)$/.test(v)) return err(n, 'duration must be 4, 6, 8 or 10 (seconds). Veo clips are always 8.'); meta.duration = +v; }
       else if (key === 'resolution') { if (!/^(360p|720p)$/.test(v)) return err(n, 'resolution must be 360p or 720p.'); meta.resolution = v; }
       else if (key === 'voices') { if (!/^(none|flow|kitsu)$/i.test(v)) return err(n, "voices must be kitsu (Kitsu Studio's own Ren and Yuki voices, the default), none (bubbles only) or flow (Flow makes the voices)."); meta.voices = v.toLowerCase(); }
+      else if (key === 'stylePictures') meta.stylePictures = v.split(/\s*,\s*/).filter(Boolean);
       else if (key === 'music') { if (!MUSIC.includes(v.toLowerCase())) return err(n, `music must be one of Kitsu Studio's moods: ${MUSIC.join(', ')}.`); meta.music = v.toLowerCase(); }
       else if (key === 'flowSound') { if (!/^(on|off)$/i.test(v)) return err(n, 'flow sound must be on or off.'); meta.flowSound = /^on$/i.test(v); }
       else if (key === 'bubbles') { if (!/^(on|off)$/i.test(v)) return err(n, 'bubbles must be on or off.'); meta.bubbles = /^on$/i.test(v); }
@@ -117,6 +119,7 @@ function parseFlowStory(text) {
     if (meta.duration) c.lines.forEach(l => { if (l.at !== null && l.at >= meta.duration) err(l.line, `"at ${l.at}s" is after the end of the clip (${meta.duration} s).`); });
   });
   clips.forEach(c => c.from !== null && [c.from, c.to].forEach(f => { if (!frames.some(x => x.n === f)) err(c.line, `clip ${c.n} uses frame ${f}, but there is no "frame ${f}:".`); }));
+  if ((meta.stylePictures || []).length > 2) errors.push('style pictures: at most 2 (Flow takes 3 references for a frame, and one is the frame before).');
   clips.forEach(c => { if (c.from === null && !castOf(meta, c.text).length) err(c.line, `clip ${c.n} has no frames, so it's made from the characters, but it doesn't name any (${meta.characters.join(', ') || 'add a "characters:" line'}).`); });
   if (!frames.length && !clips.some(c => c.from === null)) errors.push('The story has no frames ("frame 1: ...").');
   frames.sort((a, b) => a.n - b.n); clips.sort((a, b) => a.n - b.n);
@@ -132,11 +135,14 @@ function framePrompt(meta, f) { return [sentence(meta.style), sentence(meta.plac
 function clipPrompt(meta, c) {
   if (meta.voices === 'flow') return [sentence(meta.style), sentence(meta.place && c.from === null ? meta.place : ''), c.text,
     c.lines.length ? 'Each character speaks their lines in their own voice.' : ''].filter(Boolean).join(' ');
-  const acting = c.lines.map(l => `${l.who} ${l.notes ? `reacts (${l.notes})` : 'reacts'} with a clear expression and body language.`);
+  // (the narrator isn't on screen, so only the characters get acting notes)
+  const acting = c.lines.filter(l => !isNarrator(l.who)).map(l => `${l.who} ${l.notes ? `reacts (${l.notes})` : 'reacts'} with a clear expression and body language.`);
   return [sentence(meta.style), sentence(c.action), ...acting,
     'Nobody speaks: no dialogue, no voices, no narration, no singing, and no text or speech bubbles on screen. Only soft natural sounds and gentle music.'].filter(Boolean).join(' ');
 }
+// the storyteller: shown in a caption box, not a speech bubble, and never on screen
+const isNarrator = who => /^narrator$/i.test(String(who).trim());
 // the characters a frame mentions by name (Flow takes up to 3 references, one of them may be the previous frame)
 function castOf(meta, text) { return meta.characters.filter(name => new RegExp(`\\b${name.replace(/[^\w ]/g, '')}\\b`, 'i').test(text)); }
 
-module.exports = { parseFlowStory, framePrompt, clipPrompt, castOf, MUSIC };
+module.exports = { parseFlowStory, framePrompt, clipPrompt, castOf, MUSIC, isNarrator };
