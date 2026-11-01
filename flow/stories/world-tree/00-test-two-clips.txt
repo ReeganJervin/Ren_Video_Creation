@@ -33,11 +33,11 @@ frame 2: The same forest, a little further along the stream: three winged elves 
 frame 3: A Lower World town on the giant branches: cozy wooden houses with lanterns and flower boxes, a lively market with fruit stalls and colourful awnings, wooden bridges and walkways between the trees, waterfalls, and winged elves (human-sized, pointed ears, delicate translucent iridescent wings like a dragonfly's or butterfly's growing from their backs, simple earthy forest clothes) shopping, carrying baskets and talking, the hunters arriving along the path. Warm late-afternoon light. Wide shot.
 
 clip 1: frame 1 to frame 2
-The camera glides slowly along the stream past the drinking deer and the rabbits, birds fluttering up, then finds the winged-elf hunters moving quietly along the forest path, their translucent wings folded.
+The camera stays still, with a slow gentle push in. The deer and fawn lift their heads, then calmly wander off into the trees with the boar and the rabbits; the birds flutter away. Three winged-elf hunters step quietly out of the forest onto the mossy path, their translucent wings shimmering, and the one in the green cloak crouches to read the tracks.
 Narrator (at 0.5s): "Below the great branches, life moved beneath the ancient trees."
 Narrator: "The forest was both home and provider."
 
 clip 2: frame 2 to frame 3
-The camera follows the winged-elf hunters along the path as the trees open up, revealing the town on the branches, its lanterns glowing, the market busy, people crossing the wooden bridges.
+The camera stays still, with a slow gentle push in. The hunter in the green cloak stands up and the three winged elves walk on along the path toward the town. The market comes alive: stalls with colourful awnings, small winged elves shopping and flying between the treehouses, lanterns glowing, people crossing the rope bridges.
 Narrator (at 0.5s): "Following the paths beneath the ancient trees..."
 Narrator: "...the forest slowly became home."
