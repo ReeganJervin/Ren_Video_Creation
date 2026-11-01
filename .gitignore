@@ -5,6 +5,6 @@ cache/
 build/
 videos/
 
-# Kitsu Flow: the videos it makes and each computer's own settings
+# the old Kitsu Flow folder (now Flow Studio, its own project): its videos and settings, if still on this computer
 flow/output/
 flow/settings.json

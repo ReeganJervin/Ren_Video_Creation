@@ -107,7 +107,6 @@ The results are in `videos\<name>\<name>-report.txt`. Each line starts with `PAS
 |---|---|
 | `stories\` | Your stories. New ones (and the studio's **New story**) start here. Inside: `episodes\` (the series: Episode 1, 2, 3...; the ones already on YouTube are in `episodes\uploaded\`), `early-stories\` (the first little films and drafts) and `demos-and-tests\` (demos, test stories and `_template.txt`, the starting point for a new story) |
 | `shorts\` | The Shorts: `standalone\` (little stories of their own) and `episode-shorts\` (a part of an episode, drawn standing up). Each has an `uploaded\` folder for the Shorts already on YouTube |
-| `flow\` | **Kitsu Flow**, separate from Kitsu Studio: makes Ren & Yuki videos in Google Flow from a frames-and-clips story file, with no Claude needed. See `flow\README.md` |
 | `config\voices.json` | The voices: the narrator, Ren, Yuki, and the owl (a Kokoro voice or a blend of two, with speed and pitch, and optionally `gain` in dB to make one voice quieter or louder than the others) |
 | `engine\characters.js` | The list of characters: their names, how they move, their sounds and how each mood looks on them |
 | `engine\ren.js` | Ren's fixed design (shape, colours, face, scarf) |
@@ -139,3 +138,7 @@ A new prop, set piece or extra (an animal) is one file in `engine/props/` or `en
 A new place is one drawing file in `engine/places/` (found automatically) and a sound in `engine/audio.js`. A new character needs only a drawing file in `engine/` (like `engine/yuki.js`), one entry in `engine/characters.js` and a voice in `config/voices.json`. Every story line then works for the new name.
 
 Existing stories keep working unchanged.
+
+## Flow Studio (Google Flow videos)
+
+The tool that makes Ren & Yuki videos in Google Flow is its own project now: [Flow-Studio](https://github.com/ReeganJervin/Flow-Studio). It uses Kitsu Studio's voices and music from this folder, so keep both on the same computer.
