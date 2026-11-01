@@ -135,6 +135,7 @@ The amounts are in `config\voices.json` (`_moods` for moods, `_styles` for ways 
 | `<name> trips` | Stumbles forward, arms windmilling, and catches itself (also `stumbles`) |
 | `<name> falls down` | Tips back and plops down on its bottom with a soft bump (a comic fall, never hurt). It stays sitting until `<name> gets up` |
 | `<name> lies down` | Lies down on its side, head toward the middle of the stage, until `<name> gets up` (add `ren feels sleepy` for closed eyes) |
+| `<name> is lying fainted at right` | Simply there, already lying on the side at that spot (`left`, `center` or `right`): no walking in, no falling. Off stage until this line, so they don't show before it. `fainted` (or `asleep`) keeps the eyes closed until `wakes up`; without it, `ren is lying at right` lies with the eyes open. Tip: do it while the camera is on someone else (`shot: close on yuki`), so it's a surprise when they're found |
 | `<name> faints` | Wobbles, the eyes close, and slumps onto its side, limp (anything in its paws falls). It stays fainted, eyes shut, until `<name> wakes up` (the eyes open, still lying there) and `<name> gets up`. Also `passes out`, `collapses` |
 | `<name> hides behind <other name>` | Sneaks to just behind the other and crouches there (drawn behind them) until it moves again. Works best for Yuki behind Ren, who is bigger |
 | `<name> peeks out` | Leans out sideways from where it hides and looks at you, then tucks back in |

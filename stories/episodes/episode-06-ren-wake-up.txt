@@ -60,13 +60,14 @@ music: tense
 yuki enters from left to left
 shot: close on yuki
 yuki (shouts, worried): Ren! Ren, where are you?
-fruit tree appears at right
-ren enters from right to right
-ren faints
 yuki looks around
 yuki (shouts, scared): Ren! Can you hear me?
 narrator: The forest didn't answer. Only the wind, and the leaves, and her own little footsteps.
+shot: close on yuki
 yuki (sad): Please be okay. Please, please be okay.
+# (while the camera is on Yuki: Ren has been lying under the fruit tree all along, out of sight)
+fruit tree appears quietly at right
+ren is lying fainted at right
 yuki looks right
 beat
 yuki (surprised): Wait... what's that? Under that tree?

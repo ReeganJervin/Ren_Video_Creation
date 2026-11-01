@@ -48,7 +48,7 @@
     `<name> feels ${MOODS.join('|')}`, '<name> hugs <other name>', '<name> picks up the star', '<name> lets go of the star',
     '<name> raises its paws', '<name> lowers its paws', '<name> blinks', '<name> and <name> hop | wave | look at each other | feel <mood>',
     '<name> runs to left|center|right|<other name>', '<name> runs off to the left|right', '<name> sneaks to left|center|right', '<name> crawls to left|center|right',
-    '<name> jumps', '<name> jumps in fright', '<name> trips', '<name> falls down', '<name> gets up', '<name> lies down', '<name> faints', '<name> wakes up',
+    '<name> jumps', '<name> jumps in fright', '<name> trips', '<name> falls down', '<name> gets up', '<name> lies down', '<name> is lying [fainted] at left|center|right', '<name> faints', '<name> wakes up',
     '<name> hides behind <other name>', '<name> peeks out', '<name> shrugs', '<name> covers its eyes', '<name> stretches', '<name> yawns', '<name> sighs', '<name> dances',
     '<name> finds the <prop>', '<name> picks up the <prop>', '<name> holds the <prop>', '<name> holds up the <prop>',
     '<name> carries the <prop> [to left|center|right|<other name>|the <prop>]', '<name> puts down the <prop>', '<name> drops the <prop>',
@@ -110,6 +110,8 @@
     if (/^(?:trips?(?: over)?|stumbles?)$/.test(a)) return { type: 'trip' };
     if (/^(?:falls?(?: down| over)?|tumbles?(?: down| over)?)$/.test(a)) return { type: 'fall' };
     if (/^gets? (?:back )?up$/.test(a)) return { type: 'stand' };
+    // already lying somewhere when the scene begins (no walking in, no falling): "ren is lying fainted at right"
+    if ((k = a.match(/^is lying(?: (fainted|asleep))? (?:at|on) (?:the )?(left|center|centre|right)$/))) return { type: 'lieAt', to: spot(k[2]), fainted: !!k[1], from: k[2] === 'left' ? 'left' : 'right' };
     if (/^(?:lies|lie|lays?|lying) down$/.test(a)) return { type: 'lie' };
     if (/^(?:faints?|passes out|pass out|collapses?)$/.test(a)) return { type: 'faint' };
     if (/^wakes? up$/.test(a)) return { type: 'wake' };
@@ -665,7 +667,7 @@
     let startSlot = 0;
     cast.forEach(id => {
       const first = beats.find(b => whoOf(b).includes(id) || b.target === id);
-      const enters = first && first.type === 'enter' && first.who && first.who.includes(id);
+      const enters = first && (first.type === 'enter' || first.type === 'lieAt') && first.who && first.who.includes(id);
       // characters already on stage start at the centre, then beside each other
       const x = enters ? OFF[first.from] : [POS.center, POS.center + GAP, POS.center - GAP][startSlot++ % 3];
       A[id] = {
@@ -1256,6 +1258,16 @@
           pose(a, 'roll', s, dir * 1.4, 0.7); sfx('softLand', s + 0.6, { gain: 0.5 });
           set(a, 'armL', s, 0.35, 0.5); set(a, 'armR', s, holder === a.id ? -1.2 : 0.35, 0.5);
         }); dur = 1.2; break;
+        case 'lieAt': who.forEach(a => {
+          // simply there, already lying on the side at the spot (from off stage, or from wherever they were): no walk,
+          // no fall. Fainted: the eyes closed and limp, until "wakes up"
+          const x = spots()[b.to], dir = x >= 960 ? -1 : 1;
+          a.out.walks.push({ t0: s, t1: s + 0.001, x0: a.x, x1: x }); a.x = x; a.free = s;
+          set(a, 'facing', s, 0, 0.001); pose(a, 'sit', s, 0, 0.001); pose(a, 'roll', s, dir * (b.fainted ? 1.45 : 1.4), 0.001);
+          set(a, 'armL', s, b.fainted ? 0.3 : 0.35, 0.001); set(a, 'armR', s, holder === a.id ? -1.2 : b.fainted ? 0.3 : 0.35, 0.001);
+          if (b.fainted) { set(a, 'lookY', s, 0.3, 0.001); a.faint = { a: s, b: 1e9, mood: 'fainted' }; a.out.exprs.push(a.faint); }
+          a.toYou = false;
+        }); dur = 0.05; break;
         case 'faint': who.forEach(a => {
           // a little wobble, the eyes close, and down onto the side, limp (until "wakes up" and "gets up");
           // anything in the paws falls
