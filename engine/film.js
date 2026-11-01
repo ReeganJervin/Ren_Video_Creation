@@ -1238,10 +1238,30 @@
       }
     }
     cam = wholeFaces(cam, t, framed || ids);
-    if (shake) { cam.cx += Math.sin(t * 47) * 10 * shake / cam.z; cam.cy += Math.cos(t * 39) * 8 * shake / cam.z; }
+    cam.shake = shake;
     return cam;
   }
-  const camFor = t => (framing ? camFramed(t) : VERT ? camVertical(t) : P.shots ? camShot(t) : camAt(t));
+  // The vertical camera follows the characters' faces, and faces are never still: they bob with every step, bounce
+  // with every hop and shake a little when laughing. Followed frame by frame, the whole picture shook with them (worst
+  // in close-ups). So it follows where they've been over the last 0.6 s instead, like the wide camera's aimSmooth:
+  // never back across a cut (a cut stays a cut), and the deliberate "camera: shake" is added afterwards.
+  const V_SMOOTH = 0.6, V_N = 9;
+  function camVerticalSmooth(t) {
+    let since = 0;
+    for (const x of P.shots || []) { if (x.t > t) break; if (x.op === 'cut' || x.op === 'ots') since = x.t; }
+    // (always the whole window: before the cut, the frame at the cut counts instead, so the camera eases off from a
+    // cut and never slides back while the window fills up)
+    const now = camVertical(t), acc = { z: 0, cx: 0, cy: 0 }, memo = new Map();
+    for (let k = 0; k < V_N; k++) {
+      const tk = Math.max(since, 0, t - k * V_SMOOTH / (V_N - 1));
+      const c = tk === t ? now : memo.get(tk) || memo.set(tk, camVertical(tk)).get(tk);
+      acc.z += Math.log(c.z); acc.cx += c.cx; acc.cy += c.cy;
+    }
+    const cam = { ...now, z: Math.exp(acc.z / V_N), cx: acc.cx / V_N, cy: acc.cy / V_N };
+    if (now.shake) { cam.cx += Math.sin(t * 47) * 10 * now.shake / cam.z; cam.cy += Math.cos(t * 39) * 8 * now.shake / cam.z; }
+    return cam;
+  }
+  const camFor = t => (framing ? camFramed(t) : VERT ? camVerticalSmooth(t) : P.shots ? camShot(t) : camAt(t));
   let drawn = [];   // bubbles and captions drawn in the last frame: { kind, x0, x1, y0, y1 } on screen
   // An episode Short plays a window of a longer story: its time 0 is the window's start (P.window, in the story's time).
   const storyTime = t => (P.window ? P.window.t0 + Math.min(t, P.window.t1 - P.window.t0) : t);
@@ -1440,7 +1460,8 @@
   // the safe-area check: faces, bubbles and captions of the frame just drawn
   // (the helpers take a Short's own time, like render)
   const layout = t => ({ faces: faces(storyTime(t)).map(q => ({ kind: 'face ' + q.id, ...q.box })), boxes: drawn });
-  window.StudioFilm = { init, render, faces: t => faces(storyTime(t)), pose: (id, t) => pose(id, storyTime(t)), mood: (id, t) => mood(id, storyTime(t)), frame, END_LAYOUT, layout, character,
+  // (cam: where the camera is at t, for checking how smoothly it moves)
+  window.StudioFilm = { init, render, cam: t => { const c = camFor(storyTime(t)); return { z: c.z, cx: c.cx, cy: c.cy }; }, faces: t => faces(storyTime(t)), pose: (id, t) => pose(id, storyTime(t)), mood: (id, t) => mood(id, storyTime(t)), frame, END_LAYOUT, layout, character,
     // the meadow backdrop and the logo, for the channel art (tools/channel-art.js)
     art: { backdrop, logo: drawLogo, bigText } };
 })();
