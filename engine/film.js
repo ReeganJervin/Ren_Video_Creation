@@ -1177,7 +1177,8 @@
   // whole, inside the safe area, standing as low as before. Walking or flying in or out across the edge is left
   // alone (they have to cross it).
   function wholeFaces(cam, t, framed) {
-    const half = 90 * KS, ears = 0.7 * half, L = W * 0.04, R = W * 0.85;
+    // (R: a few pixels inside the safe area, so the smoothed camera never drifts a fraction of a pixel over it)
+    const half = 90 * KS, ears = 0.7 * half, L = W * 0.04, R = W * 0.85 - 4;
     const fx = id => { const K = actorBody(id, t); return toWorld(K, K.f * 6, REG[id].head).x; };
     const sx = (x, c) => (x - c.cx) * c.z + W / 2;
     const clampX = c => ({ ...c, cx: clamp(c.cx, -400 + W / 2 / c.z, 2320 - W / 2 / c.z) });
