@@ -16,12 +16,13 @@ place: meadow
 time: night
 music: bedtime
 
+shot: close on ren
+ren (determined): Yuki. Whoever says the last goodnight... wins.
 shot: medium on both
-yuki (sleepy): Goodnight, Ren.
-+ ren and yuki sit down
-ren (sleepy): Goodnight, Yuki.
 yuki (playful): Goodnight.
++ ren and yuki sit down
 ren (playful): Goodnight.
+yuki (playful): Goodnight.
 shot: close on ren
 ren (determined): Goodnight. Final goodnight. The very last one.
 beat

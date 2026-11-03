@@ -7,6 +7,6 @@
 title: Rule Number Ten
 type: episode short
 from: episode-06-ren-wake-up
-lines: 136-150
+lines: 138-150
 hook: The biggest feast of their lives
 thumbnail text: Rule Number Ten

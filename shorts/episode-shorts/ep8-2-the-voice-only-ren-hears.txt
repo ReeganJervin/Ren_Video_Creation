@@ -7,6 +7,6 @@
 title: The Voice Only Ren Hears
 type: episode short
 from: episode-08-the-voice-in-the-dark
-lines: 165-184
+lines: 165-176
 hook: Only Ren can hear it...
 thumbnail text: Who said that?!

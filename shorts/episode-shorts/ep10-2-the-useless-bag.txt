@@ -7,6 +7,6 @@
 title: The Useless Bag
 type: episode short
 from: episode-10-the-crystal-floor
-lines: 151-172
+lines: 150-169
 hook: The most useless treasure... or is it?
 thumbnail text: Useless Bag?

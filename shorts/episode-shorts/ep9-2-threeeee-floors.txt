@@ -7,6 +7,6 @@
 title: Threeeee Floors
 type: episode short
 from: episode-09-the-map-on-the-wall
-lines: 127-143
+lines: 127-137
 hook: He wants to break the WALL?!
 thumbnail text: Threeeee Floors!

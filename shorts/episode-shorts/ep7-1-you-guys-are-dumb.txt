@@ -7,6 +7,6 @@
 title: You Guys Are Dumb
 type: episode short
 from: episode-07-the-cave-nobody-enters
-lines: 102-112
+lines: 105-112
 hook: Is there treasure around here?
 thumbnail text: Treasure? HERE?
