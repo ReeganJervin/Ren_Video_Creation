@@ -1,6 +1,10 @@
 # Upload schedule
 
-Shorts: two a day, about 6 hours apart (morning and evening).
+Uploads happen at night. Each night: upload two videos.
+- the **evening** video: publish it **now** (Visibility: Public)
+- the **next morning's** video: Visibility: **Schedule**, tomorrow morning (for example 8:00 AM)
+
+So the channel still gets a video every morning and every evening.
 Episodes: about two a week. Each episode's Shorts go out after the episode.
 
 Before posting: `git pull origin Improvment`, make the video with `make-video.bat`,
@@ -8,15 +12,18 @@ and after posting move the story file into its `uploaded` folder.
 
 ## Week of Monday 2 November 2026
 
-| Day | Morning | Evening | Done |
+| Night | Publish now (evening) | Schedule for next morning | Done |
 |---|---|---|---|
-| Mon 2 | ep4-1 You'd Drop It | (laptop battery ran out) | ep4-1 ✅ |
-| Tue 3 | ep4-2 A MAP?! | **Episode 7**, The Cave Nobody Enters | |
-| Wed 4 | ep5-1 The Big Half | 27 Ren vs the Ocean | |
-| Thu 5 | ep7-1 You Guys Are Dumb | 11 Nothing Scares Ren | |
-| Fri 6 | **Episode 8**, The Voice in the Dark | ep5-2 The Upside-Down Map | |
-| Sat 7 | ep7-2 Dumber Than the Bunny | ep6-1 Wake Up, Silly Fox | |
-| Sun 8 | ep8-2 The Voice Only Ren Hears | 16 The Shiny Pebble | |
+| Mon 2 | ep4-1 You'd Drop It | — (laptop battery ran out) | ep4-1 ✅ |
+| Tue 3 | **Episode 7**, The Cave Nobody Enters | ep4-2 A MAP?! → Wed morning | |
+| Wed 4 | ep5-1 The Big Half | 27 Ren vs the Ocean → Thu morning | |
+| Thu 5 | ep7-1 You Guys Are Dumb | 11 Nothing Scares Ren → Fri morning | |
+| Fri 6 | **Episode 8**, The Voice in the Dark | ep5-2 The Upside-Down Map → Sat morning | |
+| Sat 7 | ep7-2 Dumber Than the Bunny | ep6-1 Wake Up, Silly Fox → Sun morning | |
+| Sun 8 | ep8-2 The Voice Only Ren Hears | 16 The Shiny Pebble → Mon morning | |
+
+How to schedule on YouTube: upload as usual; on the last page (Visibility) choose
+**Schedule**, pick the date and time, then click **Schedule**.
 
 Files:
 - Episodes: `stories/episodes/episode-07-the-cave-nobody-enters.txt`, `stories/episodes/episode-08-the-voice-in-the-dark.txt`
