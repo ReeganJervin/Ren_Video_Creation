@@ -1,35 +1,35 @@
 {
   "narrator": {
     "voice": "am_onyx:0.7+jm_kumo:0.3",
-    "speed": 0.86,
+    "speed": 0.76,
     "pitch": 0.94,
     "echo": true
   },
   "ren": {
     "voice": "am_puck",
-    "speed": 1,
+    "speed": 0.75,
     "pitch": 1.12
   },
   "yuki": {
     "voice": "af_bella:0.6+af_nicole:0.4",
-    "speed": 1,
+    "speed": 0.88,
     "pitch": 1.18
   },
   "owl": {
     "voice": "bm_fable:0.7+bm_george:0.3",
-    "speed": 0.92,
+    "speed": 0.78,
     "pitch": 1.08,
     "gain": -2
   },
   "grey-owl": {
     "voice": "bm_george:0.7+bm_lewis:0.3",
-    "speed": 0.88,
+    "speed": 0.76,
     "pitch": 0.97,
     "gain": -2
   },
   "lantern": {
     "voice": "bf_emma:0.6+bf_isabella:0.4",
-    "speed": 0.84,
+    "speed": 0.76,
     "pitch": 0.92,
     "echo": true
   },
@@ -47,18 +47,18 @@
     },
     "shout": {
       "gain": 2.5,
-      "speed": 1.08,
+      "speed": 1.03,
       "pitch": 1.03
     }
   },
   "_moods": {
     "_about": "Mood voices (stories with \"mood voices: on\"): the same kinds of numbers. A voice can change them for itself with its own \"moods\".",
     "happy": {
-      "speed": 1.04,
+      "speed": 1.02,
       "pitch": 1.02
     },
     "surprised": {
-      "speed": 1.06,
+      "speed": 1.03,
       "pitch": 1.05
     },
     "shy": {
@@ -75,14 +75,14 @@
       "pitch": 0.97
     },
     "playful": {
-      "speed": 1.05,
+      "speed": 1.02,
       "pitch": 1.03
     },
     "pouty": {
       "speed": 0.95
     },
     "excited": {
-      "speed": 1.1,
+      "speed": 1.04,
       "pitch": 1.04
     },
     "proud": {
@@ -97,7 +97,7 @@
       "pitch": 1.01
     },
     "scared": {
-      "speed": 1.08,
+      "speed": 1.04,
       "pitch": 1.02,
       "breath": 0.3
     },
@@ -106,7 +106,7 @@
       "pitch": 0.96
     },
     "laughing": {
-      "speed": 1.06,
+      "speed": 1.03,
       "pitch": 1.04
     },
     "crying": {

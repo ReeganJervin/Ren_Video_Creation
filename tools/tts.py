@@ -8,6 +8,7 @@ import json, os, sys
 import numpy as np
 import soundfile as sf
 from kokoro_onnx import Kokoro
+from sound_words import speech_phonemes
 
 models, jobs_path = sys.argv[1], sys.argv[2]
 k = Kokoro(os.path.join(models, "kokoro.onnx"), os.path.join(models, "voices.bin"))
@@ -30,6 +31,11 @@ for i, job in enumerate(jobs, 1):
     voice = job["voice"]
     # British voices (bf_/bm_, or a blend that starts with one) read with British pronunciation
     lang = "en-gb" if voice.strip().startswith("b") else "en-us"
-    samples, sr = k.create(job["text"], voice=voice_style(voice), speed=job["speed"], lang=lang)
+    # a line with a sound-word (Hm, Shh, Hoo-hoo) is read from its sounds, so the word isn't spelled out
+    ph = speech_phonemes(job["text"], lang, k.tokenizer.phonemize)
+    if ph:
+        samples, sr = k.create(ph, voice=voice_style(voice), speed=job["speed"], lang=lang, is_phonemes=True)
+    else:
+        samples, sr = k.create(job["text"], voice=voice_style(voice), speed=job["speed"], lang=lang)
     sf.write(job["out"], samples, sr)
     print(f"  voice {i}/{len(jobs)}: {job['text'][:60]}", flush=True)

@@ -96,6 +96,14 @@ With `mood voices: on` at the top of a story, each mood also changes the voice a
 
 The amounts are in `config\voices.json` (`_moods` for moods, `_styles` for ways of talking); a voice can change them for itself with its own `moods`. To hear them: `node tools\voice-sample.js ren --moods` makes `build\_voice-sample\ren-moods.wav`, one line in every mood and way of talking, each named by the narrator first. A line that changes is made again; the others come from the cache.
 
+### Clear voices
+
+Every voice speaks at about 170–180 words a minute (the narrator a little slower), so the words are easy to follow without earphones. Moods and shouting only change the speed a little. The mix is made for phone and laptop speakers: the voices get a lift where the consonants are, the music and the place's sounds step back while someone speaks, and echoes stay soft.
+
+### Sound-words (Hm, Shh, Hoo-hoo)
+
+The voice tool doesn't know words like "Hm" or "Shh" and would spell them out letter by letter (H-M, S-H-H). The ones in `config\sound-words.json` are said as sounds instead: Hm, Hmm, Mm, Mm-hm, Hmph, Shh, Psst, Tsk, Zzz, Brr, Grr, Ow, Hoo, Hehe, Haha, Hee, Ugh, Eek, Eep, Pfff and a long Aaaah (a scream or a yawn), with any number of repeated letters ("Hmmm", "SHHH"). Joined with hyphens ("Hoo-hoo-hoo!") each piece gets a small break. Other words without a vowel get a note in the check, so you can add them to the list or write them another way.
+
 ## What a character can do
 
 | Line | What happens |

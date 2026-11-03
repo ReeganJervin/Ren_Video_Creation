@@ -43,7 +43,9 @@
     // ---- buses ----
     const music = ctx.createGain(); music.gain.value = 0.42 * stems.music;
     const duck = ctx.createGain(), section = ctx.createGain(), mfade = ctx.createGain();
-    music.connect(duck); duck.connect(section); section.connect(mfade); mfade.connect(master);
+    // the music leaves room where the voices' consonants are, so it never covers the words
+    const mRoom = ctx.createBiquadFilter(); mRoom.type = 'peaking'; mRoom.frequency.value = 3200; mRoom.Q.value = 0.8; mRoom.gain.value = -3;
+    music.connect(mRoom); mRoom.connect(duck); duck.connect(section); section.connect(mfade); mfade.connect(master);
     const mSend = ctx.createGain(); mSend.gain.value = 0.35; mfade.connect(mSend); mSend.connect(reverb);
     mfade.gain.setValueAtTime(0, at(0)); mfade.gain.linearRampToValueAtTime(1, at(T.musicFadeIn));
     // the ending fades on a curve that is nearly silent for its last moments
@@ -54,11 +56,18 @@
     const sfxComp = ctx.createDynamicsCompressor();
     sfxComp.threshold.value = -20; sfxComp.knee.value = 8; sfxComp.ratio.value = 5; sfxComp.attack.value = 0.003; sfxComp.release.value = 0.2;
     const sfx = ctx.createGain(); sfx.gain.value = 0.8 * stems.sfx;
-    sfx.connect(sfxComp); sfxComp.connect(master);
+    // the place's sounds and effects step back a little while someone speaks (sfxDuck, set with the music's ducking)
+    const sfxDuck = ctx.createGain();
+    sfx.connect(sfxDuck); sfxDuck.connect(sfxComp); sfxComp.connect(master);
     const sSend = ctx.createGain(); sSend.gain.value = 0.3; sfxComp.connect(sSend); sSend.connect(reverb);
 
-    const voice = ctx.createGain(); voice.gain.value = 1.0 * stems.voice; voice.connect(master);
-    const vSend = ctx.createGain(); vSend.gain.value = 0.12; voice.connect(vSend); vSend.connect(reverb);
+    // Voices are made clear for phone and laptop speakers: no low rumble (those speakers can't play it, it only
+    // muddies), a lift where the consonants are (2-5 kHz, what makes words understood), and only a touch of room.
+    const voice = ctx.createGain(); voice.gain.value = 1.0 * stems.voice;
+    const vLow = ctx.createBiquadFilter(); vLow.type = 'highpass'; vLow.frequency.value = 110; vLow.Q.value = 0.7;
+    const vPresence = ctx.createBiquadFilter(); vPresence.type = 'peaking'; vPresence.frequency.value = 3200; vPresence.Q.value = 0.8; vPresence.gain.value = 3;
+    voice.connect(vLow); vLow.connect(vPresence); vPresence.connect(master);
+    const vSend = ctx.createGain(); vSend.gain.value = 0.05; vPresence.connect(vSend); vSend.connect(reverb);
 
     // ---- YouTube kit: the series intro ----
     // The theme jingle is made like the music (music box and soft pads), the same in every video, a little softer than
@@ -88,7 +97,7 @@
     let echo = null;
     if (caves.length && stems.voice) {
       echo = ctx.createGain(); const dly = ctx.createDelay(1), fb = ctx.createGain(), lp = ctx.createBiquadFilter();
-      dly.delayTime.value = 0.21; fb.gain.value = 0.42; lp.type = 'lowpass'; lp.frequency.value = 2400;
+      dly.delayTime.value = 0.21; fb.gain.value = 0.35; lp.type = 'lowpass'; lp.frequency.value = 2400;
       echo.connect(dly); dly.connect(lp); lp.connect(fb); fb.connect(dly); lp.connect(voice);
     }
     const wins = [];
@@ -96,7 +105,7 @@
       const buf = voices[v.id]; if (!buf) continue;
       const src = ctx.createBufferSource(); src.buffer = buf; src.start(at(v.t));
       if (echo && caves.some(([a, b]) => v.t >= a && v.t < b)) {
-        const send = ctx.createGain(); send.gain.value = v.style === 'shout' ? 0.55 : v.style === 'whisper' ? 0.12 : 0.22;
+        const send = ctx.createGain(); send.gain.value = v.style === 'shout' ? 0.5 : v.style === 'whisper' ? 0.08 : 0.15;   // (soft enough that words stay clear)
         src.connect(send); send.connect(echo);
       }
       // a line that came in much louder than what played before it: its first second is softer (see make-video.js)
@@ -111,11 +120,14 @@
     }
     // Under speech the music sits at UNDER; in the pauses between lines it fills in at FILL, so a voice
     // starting after a pause is not a sudden jump. It comes back up slowly after a line ends.
-    const FILL = 1.5, UNDER = 0.55;
-    duck.gain.setValueAtTime(FILL, at(0));
+    // The place's sounds dip to SFX_UNDER the same way.
+    const FILL = 1.5, UNDER = 0.38, SFX_UNDER = 0.62;
+    duck.gain.setValueAtTime(FILL, at(0)); sfxDuck.gain.setValueAtTime(1, at(0));
     for (const [s, e] of wins) {
       duck.gain.setValueAtTime(FILL, at(Math.max(0, s - 0.3))); duck.gain.linearRampToValueAtTime(UNDER, at(s));
       duck.gain.setValueAtTime(UNDER, at(e)); duck.gain.linearRampToValueAtTime(FILL, at(e + 1.2));
+      sfxDuck.gain.setValueAtTime(1, at(Math.max(0, s - 0.3))); sfxDuck.gain.linearRampToValueAtTime(SFX_UNDER, at(s));
+      sfxDuck.gain.setValueAtTime(SFX_UNDER, at(e)); sfxDuck.gain.linearRampToValueAtTime(1, at(e + 1.2));
     }
 
     // ---- instruments ----

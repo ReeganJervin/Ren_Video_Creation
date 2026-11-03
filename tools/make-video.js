@@ -21,7 +21,7 @@ const { readWav } = require('./wav');
 const LIPSYNC = require('../engine/lipsync.js');
 const { validate } = require('./validate');
 const { clock, hasScenes, chapters, sceneChecks } = require('./scenes');
-const { readVoices, storyName, videoDir, videoRel, tidyOldVideos, addMissingVoices, lineVoice, cachedVoice, levelledVoice, overrideFile, VOICE_LUFS, folderDefaults } = require('./story-check');
+const { readVoices, storyName, videoDir, videoRel, tidyOldVideos, addMissingVoices, lineVoice, cachedVoice, levelledVoice, overrideFile, VOICE_LUFS, folderDefaults, speechTag, soundWordNotes } = require('./story-check');
 const { youtubeFiles } = require('./youtube');
 const { episodeSource, applyWindow, sliceWav, shortLength } = require('./shorts');
 
@@ -67,7 +67,7 @@ async function main() {
     const plan = shortView(full);
     say(`\n"${plan.meta.title}" looks good! Estimated length: ${plan.duration.toFixed(1)} s (exact length is known after voices are made).\n`);
     plan.voice.forEach(v => say(`  ${v.t.toFixed(1).padStart(6)} s  ${v.who.padEnd(8)} ${v.text}`));
-    plan.warnings.forEach(w => say('  note: ' + w));
+    [...plan.warnings, ...soundWordNotes(speech)].forEach(w => say('  note: ' + w));
     if (hasScenes(plan)) {
       say(`\nScenes (estimated):`);
       plan.scenes.forEach((c, i) => say(`  ${String(i + 1).padStart(2)}. ${clock(c.t0).padStart(7)}  ${(c.t1 - c.t0).toFixed(1).padStart(6)} s  ${c.name}`));
@@ -334,7 +334,7 @@ function addLips(plan, speech, voices, meta, voiceDir, buildDir) {
     const b = speech[v.id], voice = lineVoice(b, voices, meta);
     // (British voices read with British sounds, as in tts.py)
     const lang = voice && voice.voice.trim().startsWith('b') ? 'en-gb' : 'en-us';
-    return { v, text: b.text, lang, key: `${lang}|${b.text}` };
+    return { v, text: b.text, lang, key: [lang, b.text, ...speechTag(b.text)].join('|') };
   });
   const need = [...new Map(lines.filter(l => !(l.key in cache)).map(l => [l.key, l])).values()], py = pythonPath();
   if (need.length && py) {

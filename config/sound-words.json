@@ -1,0 +1,26 @@
+{
+  "_about": "How the voice tool says sound-words it doesn't know. Without this list it spells some out letter by letter (\"Hm\" as H-M, \"Shh\" as S-H-H). Each entry: a pattern for one word (any capitals, any number of repeated letters) and the sounds to say instead. A word joined with hyphens (Hoo-hoo-hoo) is said piece by piece, with a small break between pieces. Changing a sound makes the lines that use it again.",
+  "version": 1,
+  "words": [
+    ["^(a{2,}h*|ah{2,})$", "ˈɑːɑː"],
+    ["^h+m+$", "hˈəm"],
+    ["^m+$", "ˈəm"],
+    ["^m+h+m+$", "əmhˈəm"],
+    ["^h+m+p+h+$", "hˈəmf"],
+    ["^s+h+$", "ʃʃ"],
+    ["^p+s+t+$", "psst"],
+    ["^t+s+k+$", "tˈɪsk"],
+    ["^z+$", "zˈɪzɪz"],
+    ["^b+r+$", "bɹˈɹɹ"],
+    ["^g+r+$", "ɡɹˈɹɹ"],
+    ["^o+w+$", "ˈaʊ"],
+    ["^h+o{2,}$", "hˈuː"],
+    ["^(he){2,}$", "hˈiː hˌiː"],
+    ["^h+e{2,}$", "hˈiː"],
+    ["^(ha){2,}$", "hˈɑː hˌɑː"],
+    ["^u+g+h+$", "ˈʌɡ"],
+    ["^e{2,}k+$", "ˈiːk"],
+    ["^e{2,}p+$", "ˈiːp"],
+    ["^p+f+t*$", "pfff"]
+  ]
+}

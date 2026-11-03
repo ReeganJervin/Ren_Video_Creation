@@ -65,10 +65,23 @@ function lineVoice(b, voices, meta = {}) {
   return v;
 }
 
+// Sound-words (Hm, Shh, Hoo-hoo) the voice tool says from config/sound-words.json (tools/sound_words.py), not
+// from their spelling. A line with one gets the list's version in its cache key, so it is made again when it changes.
+const SOUND_WORDS = JSON.parse(fs.readFileSync(path.join(ROOT, 'config/sound-words.json'), 'utf8'));
+const SOUND_RX = SOUND_WORDS.words.map(([p]) => new RegExp(p, 'i'));
+const WORD_RX = /[A-Za-z]+(?:['’-][A-Za-z]+)*/g;
+const isSoundWord = w => w.split('-').every(p => SOUND_RX.some(rx => rx.test(p)));
+const hasSoundWord = text => (text.match(WORD_RX) || []).some(isSoundWord);
+// words with no vowel the list doesn't know (like "Pfft" or "Hrrm"): the voice tool would spell them out letter by letter
+const unknownSoundWords = text => (text.match(WORD_RX) || []).filter(w => !isSoundWord(w) && w.split('-').some(p => p.length > 1 && !/[aeiouy]/i.test(p)));
+const soundWordNotes = speech => speech.map(b => [b, unknownSoundWords(b.text)]).filter(([, odd]) => odd.length)
+  .map(([b, odd]) => `Line ${b.line}: the voice may spell out ${odd.map(w => `"${w}"`).join(', ')} letter by letter. Add it to config/sound-words.json, or write it another way.`);
+const speechTag = text => (hasSoundWord(text) ? ['sw' + SOUND_WORDS.version] : []);
+
 // where a voice line is kept in cache/voices/: the raw clip and the levelled one (a line's mood and way of talking
 // are part of the key, so a line made again in another mood or way is a new clip; plain lines keep their old keys)
 const voiceKey = (text, v) => crypto.createHash('sha1').update(JSON.stringify([text, v.voice, v.speed, v.pitch,
-  ...(v.mood || v.style || v.breath || v.echo ? [v.mood || null, v.style || null, v.breath || 0, !!v.echo] : [])])).digest('hex').slice(0, 16);
+  ...(v.mood || v.style || v.breath || v.echo ? [v.mood || null, v.style || null, v.breath || 0, !!v.echo] : []), ...speechTag(text)])).digest('hex').slice(0, 16);
 const cachedVoice = (text, v) => path.join(ROOT, 'cache', 'voices', voiceKey(text, v) + '.wav');
 // gain: a voice's own level in dB from config/voices.json ("gain": -2 makes it 2 dB quieter than the others)
 const levelledVoice = (cached, gain = 0) => cached.replace(/\.wav$/, `.lv${-(VOICE_LUFS + gain)}s.wav`);
@@ -88,7 +101,9 @@ function checkStory(text, lens = {}, file = null) {
   if (parsed.errors.length) return { parsed, plan: null, speech: [], voices };
   const speech = parsed.beats.filter(b => b.type === 'say' && !b.silent);   // (a silent thought has no voice)
   addMissingVoices(parsed, voices);
-  return { parsed, plan: compileStory(parsed, lens), speech, voices };
+  const plan = compileStory(parsed, lens);
+  plan.warnings.push(...soundWordNotes(speech));
+  return { parsed, plan, speech, voices };
 }
 
-module.exports = { ROOT, VOICE_LUFS, readVoices, storyName, videoFolder, videoDir, videoRel, tidyOldVideos, addMissingVoices, lineVoice, voiceKey, cachedVoice, levelledVoice, overrideFile, checkStory, folderDefaults };
+module.exports = { ROOT, hasSoundWord, speechTag, soundWordNotes, VOICE_LUFS, readVoices, storyName, videoFolder, videoDir, videoRel, tidyOldVideos, addMissingVoices, lineVoice, voiceKey, cachedVoice, levelledVoice, overrideFile, checkStory, folderDefaults };
