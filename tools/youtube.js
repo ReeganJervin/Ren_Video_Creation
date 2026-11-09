@@ -103,7 +103,8 @@ async function thumbnail(page, plan, opts = {}) {
   if (want.scene && !plan.scenes[want.scene - 1]) throw new Error(`"thumbnail: scene ${want.scene}": this story has ${plan.scenes.length} scene(s).`);
   if (want.t !== undefined && want.t > plan.duration) throw new Error(`"thumbnail: ${want.t}": the story is only ${plan.duration.toFixed(1)} s long.`);
   // the framing: a medium shot unless the story says otherwise ("thumbnail shot: wide | medium | close")
-  const shot = plan.meta.thumbnailShot || 'medium';
+  // (a series of couple Shorts, like Couple Things, keeps both characters: the story's own camera frames them together)
+  const shot = plan.meta.thumbnailShot || (plan.meta.series ? 'wide' : 'medium');
   const vertical = plan.height > plan.width;
   const r = await page.evaluate(async ({ busy, mains, extras, want, duration, scenes, text, shot, vertical, PW, size: wh, top }) => {
     // a thumbnail is 1280×720; a vertical video's cover frame is 1080×1920

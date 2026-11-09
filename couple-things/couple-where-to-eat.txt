@@ -12,7 +12,6 @@ place: meadow
 time: sunset
 music: happy
 thumbnail: 16.6
-thumbnail shot: wide
 
 ren enters from left to left
 + yuki enters from right to right
