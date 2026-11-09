@@ -1,0 +1,13 @@
+@echo off
+cd /d "%~dp0"
+if "%~1"=="" (
+  echo.
+  echo  Usage:  make-social.bat stories\your-story.txt
+  echo  Makes the Instagram pictures and caption in videos\your-story\instagram\
+  echo  Tip:    you can also drag a story file onto make-social.bat
+  echo.
+  pause & exit /b 1
+)
+node tools\make-video.js "%~f1" --social
+echo.
+pause

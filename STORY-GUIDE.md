@@ -639,7 +639,7 @@ What changes in a vertical video:
 
 ## Shorts
 
-A Short is a vertical video of 15 seconds to 3 minutes. **30 to 60 seconds works best** (The Compliment is about 41 s): short enough that people watch to the end and it loops. Put Shorts in the `shorts` folder. There are two kinds.
+A Short is a vertical video of 15 seconds to 3 minutes. **30 to 60 seconds works best** (The Compliment is about 41 s): short enough that people watch to the end and it loops. Put Shorts in the `shorts` folder, and the **Couple Things** series in `shorts\couple-things` (see STORY-IDEAS.md: those get the series name, a playlist line and series hashtags in their YouTube description and Instagram caption). There are two kinds.
 
 **An independent Short** is a little story of its own. Write it like any story, with `type: short` at the top (an example: `shorts\standalone\uploaded\1-explorers-rules.txt`):
 
@@ -688,6 +688,25 @@ ending: Watch the full episode!
 In an episode Short, the music and sounds are cut from the story and fade in and out. You get a cover frame, subtitles and a description draft, as for any video.
 
 The check report has a **Short length** line: a warning if the Short is shorter than 15 s or longer than 3 minutes.
+
+## Instagram
+
+The same Ren & Yuki stories can also bring viewers from Instagram (Facebook is on hold for now). Drag a story (or a Short) onto **`make-social.bat`**, or run `node tools\make-video.js stories\my-story.txt --social`. It takes a few seconds (plus the voices, the first time) and doesn't make a video. Everything goes in the video's own folder, in `videos\my-story\instagram\`:
+
+| File | What it's for |
+|---|---|
+| `reel-cover.jpg` | 1080×1920 cover for the **Reel**. The title sits inside the middle part, which is what Instagram's profile grid shows |
+| `post.jpg` | 1080×1350 **picture post** (the tallest picture the feed shows): the best moment with the title |
+| `carousel-01.jpg` … | A **carousel** (people swipe through it, like a comic): the title, then up to 6 moments of the story with their speech bubbles or the narrator's words, then "What happens next? Watch the video: link in bio". It only shows the first part of the story, so the ending isn't spoiled |
+| `instagram.txt` | The Instagram caption, ready to copy (with a question that gets people commenting, a pointer to your YouTube channel, and 5 hashtags, Instagram's limit), and which file goes in which kind of post |
+
+The pictures are drawn fresh by the engine, standing up like a vertical video (never cut out of the wide video). The same `thumbnail` and `thumbnail text` lines choose the picture post and the cover; without `thumbnail text`, the story's hook or title is used.
+
+**The Reel itself** is the vertical video: a Short's own video, or `videos\my-story\my-story-vertical.mp4` for a wide story (see "Vertical videos" above). Reels work best under about 90 seconds (Instagram takes 3 minutes at most), so for a long story, make an episode Short from one scene and post that as the Reel. `instagram.txt` says so when a story is too long.
+
+Post the same vertical video as a **YouTube Short** too, with its cover and description from the YouTube files.
+
+The voices are made by a computer: check Instagram's "AI info" label before posting.
 
 ## Sounds you get automatically
 

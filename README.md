@@ -38,6 +38,8 @@ Every video gets its own folder, `videos\my-story\`, with all of its files toget
 
 Videos made before each video had its own folder are moved into their folders the next time you make them, or all at once with `node tools\tidy-videos.js` (only files named exactly after a story are moved).
 
+For **Instagram**, drag a story onto `make-social.bat`: in a few seconds you get a Reel cover, a picture post, a swipeable carousel and a ready-to-copy caption in `videos\my-story\instagram\` (see "Instagram" in STORY-GUIDE.md). Everything for the Instagram account itself (name, bio, profile picture, Highlights, the first posts) is in **`instagram\INSTAGRAM-PROFILE.md`**; `make-profile.bat` makes the profile pictures again.
+
 ### Still images (for checking)
 
 To save single pictures instead of the whole video, open a command window in the project folder and run:
@@ -69,6 +71,7 @@ The pieces that were already finished are kept. If you changed the story since t
 | Option | What it does |
 |---|---|
 | `--resume` | Carries on with a stopped video (this is what `resume-video.bat` does) |
+| `--social` | Makes only the Instagram files, without making the video: `videos\my-story\instagram\` (this is what `make-social.bat` does) |
 | `--format vertical` | Makes a vertical (9:16) version for Shorts: `videos\my-story\my-story-vertical.mp4` (see "Vertical videos" in STORY-GUIDE.md) |
 | `--workers 3` | Draws with 3 browser pages at once. The default is the number of processor threads minus 1. More workers are faster, until the computer is busy; the video looks exactly the same with any number of workers |
 | `--allow-placeholders` | Makes a test video even though the story uses things that don't exist yet (they appear as grey placeholders, and the report says so) |
@@ -106,7 +109,8 @@ The results are in `videos\<name>\<name>-report.txt`. Each line starts with `PAS
 | Folder or file | What it is |
 |---|---|
 | `stories\` | Your stories. New ones (and the studio's **New story**) start here. Inside: `episodes\` (the series: Episode 1, 2, 3...; the ones already on YouTube are in `episodes\uploaded\`), `early-stories\` (the first little films and drafts) and `demos-and-tests\` (demos, test stories and `_template.txt`, the starting point for a new story) |
-| `shorts\` | The Shorts: `standalone\` (little stories of their own) and `episode-shorts\` (a part of an episode, drawn standing up). Each has an `uploaded\` folder for the Shorts already on YouTube |
+| `shorts\` | The Shorts: `standalone\` (little stories of their own), `episode-shorts\` (a part of an episode, drawn standing up) and `couple-things\` (the "Couple Things" series, with its own template; Parts 1–3, how they met, come first; see STORY-IDEAS.md). Each has an `uploaded\` folder for the Shorts already on YouTube |
+| `instagram\` | The Instagram account guide, the profile pictures (`profile-kit\`) and the moments they show |
 | `config\voices.json` | The voices: the narrator, Ren, Yuki, and the owl (a Kokoro voice or a blend of two, with speed and pitch, and optionally `gain` in dB to make one voice quieter or louder than the others) |
 | `engine\characters.js` | The list of characters: their names, how they move, their sounds and how each mood looks on them |
 | `engine\ren.js` | Ren's fixed design (shape, colours, face, scarf) |
@@ -124,6 +128,8 @@ The results are in `videos\<name>\<name>-report.txt`. Each line starts with `PAS
 | `tools\youtube.js` | The YouTube files: thumbnail, subtitles and description draft |
 | `tools\channel-art.js` | The YouTube channel's profile picture, banner and watermark, plus the channel texts, in `channel\` (`node tools\channel-art.js`) |
 | `tools\tidy-videos.js` | Moves the files of videos made before each video had its own folder into `videos\<story>\` |
+| `tools\instagram-profile.js` | The Instagram profile pictures: profile picture, Highlight covers, "Meet Ren & Yuki" carousel |
+| `tools\social.js` | The Instagram files: Reel cover, picture post, carousel and caption |
 | `tools\end-screen-guide.js` | Draws `docs\youtube-end-screen.png`, which shows where YouTube's end-screen elements go |
 | `tools\scenes.js` | Chapters and the extra checks for stories with scenes |
 | `tools\render.js` | Draws the frames: several workers at once, scene by scene in pieces that `--resume` can keep |

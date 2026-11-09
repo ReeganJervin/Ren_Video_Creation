@@ -88,8 +88,11 @@ const levelledVoice = (cached, gain = 0) => cached.replace(/\.wav$/, `.lv${-(VOI
 const overrideFile = (name, line) => path.join(ROOT, 'voice-overrides', name, `line-${line}.wav`);
 
 // Settings that depend on the story's folder: stories in episodes/ start with the series intro (unless they say
-// "intro: none"). Shorts (shorts/) have no series intro.
+// "intro: none"). Shorts (shorts/) have no series intro. Stories in shorts/couple-things/ are "Couple Things" Shorts.
 function folderDefaults(parsed, file) {
+  // "Couple Things" (shorts/couple-things/): the series of couple Shorts (STORY-IDEAS.md, each says "type: short"); the
+  // YouTube description and the Instagram caption name the series and its playlist
+  if (file && /(^|[\\/])couple-things[\\/]/.test(path.relative(ROOT, path.resolve(ROOT, file)))) parsed.meta.series = 'Couple Things';
   if (file && /(^|[\\/])episodes[\\/]/.test(path.relative(ROOT, path.resolve(ROOT, file))) && !/(^|[\\/])shorts[\\/]/.test(path.relative(ROOT, path.resolve(ROOT, file))) && !/short/.test(parsed.meta.type || '') && !parsed.meta.intro) parsed.meta.intro = { at: 'start', line: 0 };
   return parsed;
 }

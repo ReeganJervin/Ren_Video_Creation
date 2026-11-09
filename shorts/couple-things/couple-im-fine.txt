@@ -1,0 +1,41 @@
+# ============================================================
+#  Ren & Yuki: Couple Things - I'm Fine   (~35 s, vertical)
+#  Fights and making up: when "I'm fine" is not fine.
+# ============================================================
+
+title: I'm Fine
+type: short
+hook: When she says "I'm fine"...
+thumbnail text: "I'm Fine."
+mood voices: on
+place: cottage garden
+time: day
+music: calm
+
+yuki enters from right to right
+yuki feels pouty
+yuki turns away
+ren enters from left to left
+ren (happy): Hey! Is everything okay?
+yuki (pouty): I'm fine.
+ren (thinks silently): That was not a fine "fine".
+ren (worried): Are you sure?
+yuki (pouty): I said I'm fine.
+music: tense
+ren counts on its paws
+ren (thinks): Her birthday? No. Did I eat her snacks? No... Did I forget to call?
+shot: close on ren
+ren (thinks): I forgot to call.
+shot: medium on both
+music: heartfelt
+ren walks to yuki
+ren (shy): I'm sorry I didn't call last night.
+yuki turns to ren
+yuki (pouty): ...You remembered.
+ren holds out its paw
+ren (shy): I'll call every night. Even when I'm sleepy.
+yuki (happy): Fine.
+hearts float up
+ren (whispers): Was that a good "fine"?
+yuki (playful): That was a good "fine".
+ending: Tag your "I'm fine" person!

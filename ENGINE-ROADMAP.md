@@ -1,4 +1,4 @@
-# Kitsu Studio: Engine Foundation Roadmap (F1–F14), version 3
+# Kitsu Studio: Engine Foundation Roadmap (F1–F15), version 3
 
 > **For Claude Code.** This is the implementation plan for upgrading Kitsu Studio into a production engine for the series **"Ren & Yuki: The Secrets Beyond the Enchanted Forest"**: 10 episodes of 8–10 minutes, plus Shorts.
 > **Read first:** `HANDOFF.md` (the current engine, status and way of working) and `PRODUCTION-SYSTEM.md` (the three video formats).
@@ -44,9 +44,11 @@ The goal is not a video maker with a fixed set of things. It's a **world-buildin
 
 ---
 
-## 0.6 Audience and tone: a family show
+## 0.6 Audience and tone: cute look, grown-up stories
 
-Ren & Yuki is for **kids and adults together**, like the best family films and animated series. The look stays cute and soft (STYLE-GUIDE.md); the **stories** can be deep.
+> **Owner's update (2026-11-09):** the animation stays cute, but the stories are now written **first for young adults and couples** (about 18–35, India first), like popular cute-couple series: everyday relationship moments people recognise and share with their partner. Ren and Yuki are a couple. Families can still enjoy them. The story recipe, the characters' roles and 30 ideas are in **`STORY-IDEAS.md`**. The episodes (mystery, lore, big feelings) keep the table below; the "Never" column applies to everything.
+
+Ren & Yuki is for **adults, and for kids watching with them**. The look stays cute and soft (STYLE-GUIDE.md); the **stories** can be deep.
 
 | Kids enjoy | Adults enjoy | Never |
 |---|---|---|
@@ -56,7 +58,7 @@ What this means for the engine:
 - **Real emotional range:** characters can be truly sad, scared, worried, determined or heartbroken, and the drawings, voices and music must support that convincingly, not only "cute" versions.
 - **Atmosphere and stakes:** mystery, suspense, danger and big magic are welcome: dark caves, storms, ancient ruins, a mysterious stranger. Danger is shown through suspense, chases, hiding, puzzles and courage, never through fighting (R11).
 - **Cinematic quality:** camera, lighting, music and timing should feel like a film, so adults stay for the whole episode.
-- **Romance** between Ren and Yuki stays sweet and innocent.
+- **Romance:** Ren and Yuki are a couple. Their love is affectionate and sweet (hugs, hearts, holding paws, teasing, sulking and making up), never explicit.
 - **YouTube:** whether a video is marked "Made for Kids" is the owner's decision for each video. The engine never assumes it.
 
 ---
@@ -146,6 +148,7 @@ Work through the steps **in this order**. The F-numbers are names, not the order
 | 17 | F10 World system | Not started | |
 | 18 | F8 Creature kit (new main characters) | Not started | |
 | 19 | **Milestone 4** | Not started | |
+| extra | **F15 Instagram kit** (owner's request, 2026-11-09; reuses F11 and F7; Facebook on hold) | In review | |
 | always | **F14 Library growth:** new places, animals and props in batches, between steps, when the owner's stories need them | Ongoing | |
 
 **Why this order:**
@@ -783,6 +786,23 @@ Each effect has its own sound and uses the lighting system from F5. All of them 
 - **Adventure places:** lake, cave entrance, mountain path, village market, the Enchanted Forest gate, rainbow forest
 - **Animal friends (extras):** squirrel, hedgehog, frog, butterflies, fish, songbirds
 - **Props:** picnic basket, apple, cookie, umbrella, kite, ball, backpack, map, book, blanket, bunch of flowers, leaf (Episode 1)
+
+---
+
+## F15: Instagram kit
+
+**Goal (owner's request, 2026-11-09):** get more views by posting the same Ren & Yuki stories on Instagram (with YouTube, the two platforms the owner focuses on). **Facebook is on hold** (owner, 2026-11-09): its caption and Facebook-named subtitles were removed from the kit; they are in commit `9c44ea0` if it comes back. Reuses F11 (thumbnail drawing, subtitles, summary) and F7 (vertical layout); nothing in the engine changes.
+
+### As built (in review)
+- `--social` (and `make-social.bat`) makes only these files, in `videos/<name>/instagram/` (the video's own folder), without a video: `reel-cover.jpg` (1080×1920; the title starts at y 290, inside the middle 3:4 that Instagram's profile grid shows), `post.jpg` (1080×1350, 4:5), `carousel-01.jpg`… (the title slide, up to 6 story moments with their bubbles or the narrator's caption box, from the first 75 % of the story only and only with a character in the picture, then "What happens next? / Watch the video: link in bio"; numbered "2/8"), and `instagram.txt` (caption, a question for comments chosen from the title, a pointer to the YouTube channel, 5 hashtags, which file goes in which post, and an "AI info" label reminder). Couple stories (Ren and Yuki together) get couple questions and hashtags; a Short without a narrator gets no summary sentence.
+- **Couple Things series (owner, 2026-11-09):** stories in `shorts/couple-things/` get `meta.series = 'Couple Things'` (`folderDefaults` in `tools/story-check.js`). Their YouTube description: title "<title> | Ren & Yuki: Couple Things", the hook as the summary (when there is no narrator), a PLAYLIST line, series hashtags; their Instagram caption: `#CoupleThings`; their covers and picture posts use the story's own camera (`thumbnail shot: wide` by default), which keeps the couple together, instead of the cover framing that shows one character alone when the pair is small. Other stories' YouTube files are unchanged. The studio app lists `shorts/` (with its subfolders, `STORY_DIRS`).
+- **Instagram account kit (owner, 2026-11-09):** `instagram/INSTAGRAM-PROFILE.md` (account, name, bio options, links, Highlights, launch order, pinned posts, Stories); `tools/instagram-profile.js` / `make-profile.bat` draws `instagram/profile-kit/` (profile picture 1080×1080 with both faces inside the circle, five 1080×1920 Highlight covers, a four-slide 1080×1350 "Meet Ren & Yuki" carousel) from `# moment: name +s` lines in `instagram/profile-moments.txt`, no voices needed. The series opens with Parts 1–3 in `shorts/couple-things/` (how they met).
+- A wide story is compiled in vertical for its pictures (as with `--format vertical`, same build folder). The 4:5 pictures are drawn by a second page with the same plan at 1080×1350, without a Short's hook, word captions and end card.
+- Title on every picture: `thumbnail text`, else the hook, else the title. The captions say when a story is too long for a Reel (over 90 s, or over 3 minutes) and suggest an episode Short.
+- `tools/youtube.js`: `thumbnail()` takes optional `size`, `top` and `text`; `summary()` is split out of `description()`. YouTube files are byte-identical (checked on `short-the-compliment`); `compare-engines`: all stories unchanged.
+- Later (with F9 Part B): a "Social" button in the studio app.
+
+**Commit message:** `F15: Instagram kit`
 
 ---
 

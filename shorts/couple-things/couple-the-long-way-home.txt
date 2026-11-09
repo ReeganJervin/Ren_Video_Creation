@@ -1,0 +1,36 @@
+# ============================================================
+#  Ren & Yuki: Couple Things - The Long Way Home   (~35 s, vertical)
+#  Sweet moments: when he doesn't want the day to end.
+# ============================================================
+
+title: The Long Way Home
+type: short
+hook: When he doesn't want the date to end
+thumbnail text: The Long Way Home
+mood voices: on
+place: forest
+time: sunset
+music: calm
+
+ren enters from left to left
++ yuki enters from right to right
+shot: medium on both
+yuki (happy): What a lovely day. Let's walk home.
+ren (playful): I know a shortcut. Follow me!
+place: river
+yuki (thinking): Ren, your house is the other way.
+ren (proud): This way is faster.
+place: forest
+time: dusk
+yuki (pouty): We're back in the forest. We passed this tree twice.
+ren (proud): It's a different tree. They just look the same.
+yuki (thinking): This isn't a shortcut, is it?
+music: heartfelt
+ren turns to yuki
+ren (shy): No. It's the long way. I didn't want today to end.
+yuki walks to ren
+yuki touches paws with ren
+yuki (shy): Then let's take the longest way.
+time: night
+hearts float up
+ending: Tag the one who takes the long way home!

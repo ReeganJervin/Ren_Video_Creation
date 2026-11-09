@@ -1,0 +1,40 @@
+# ============================================================
+#  Ren & Yuki: Couple Things - Part 3: I Like Your Ears   (~40 s, vertical)
+#  The beginning of the series: Ren tries to say "I love you", and Yuki says
+#  it first (the running joke in couple-who-said-it-first.txt). Post this third.
+# ============================================================
+
+title: I Like Your Ears
+type: short
+hook: Part 3: The day he tried to say it
+thumbnail text: "I Like Your... Ears?"
+mood voices: on
+place: river
+time: sunset
+music: calm
+
+ren enters from left to left
++ yuki enters from right to right
+shot: medium on both
+yuki (happy): These berries are so good.
+ren (thinks silently): Today is the day. Just say it, Ren.
+ren (shy): Yuki, I have something important to tell you.
+yuki (surprised): What is it?
+music: heartfelt
+shot: close on ren
+ren (shy): I... I like your ears.
+shot: medium on both
+yuki (surprised): My ears?
+ren (worried): And your laugh. And how you're always right. I mean...
+ren (shy): I think I really, really like you.
+beat
+yuki walks to ren
+yuki (shy): Ren. I love you.
+shot: close on ren
+ren (shouts, surprised): Wait! Did you just say it first?
+shot: medium on both
+yuki (playful): I did.
+ren hugs yuki
+hearts float up
+ren (thinks silently): I'm still saying I said it first.
+ending: And that's how it all began. Follow!

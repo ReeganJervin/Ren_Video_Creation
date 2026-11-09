@@ -1,0 +1,34 @@
+# ============================================================
+#  Ren & Yuki: Couple Things - What Day Is It?   (~30 s, vertical)
+#  The scariest question: "Do you know what day it is?"
+# ============================================================
+
+title: What Day Is It?
+type: short
+hook: The scariest question in a relationship
+thumbnail text: What Day Is It?!
+mood voices: on
+place: meadow
+time: day
+music: happy
+
+ren enters from left to left
++ yuki enters from right to right
+yuki (excited): Ren! Do you know what day it is today?
+music: tense
+shot: close on ren
+ren (thinks silently): Oh no. Oh no no no.
+ren (thinks): Her birthday? No, that's in May.
+ren (thinks): The day we met? That was in spring... It IS spring.
+ren (worried): Of course I know. It's a very special day.
+yuki (happy): It is!
+ren (scared): The most special day... of the whole year!
+shot: medium on both
+music: happy
+yuki (excited): It's Sunday! The pancake shop is open!
+beat
+ren (laughing): Pancakes. Of course. I knew that.
+yuki (playful): You didn't know.
+ren (shy): I did not know.
+hearts float up
+ending: Tag the one who panics at this question!

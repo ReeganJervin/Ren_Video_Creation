@@ -1,0 +1,38 @@
+# ============================================================
+#  Ren & Yuki: Couple Things - Five More Minutes   (~30 s, vertical)
+#  Sleep: "just five more minutes" is never five minutes.
+# ============================================================
+
+title: Five More Minutes
+type: short
+hook: POV: "Just five more minutes"
+thumbnail text: Five More Minutes...
+mood voices: on
+place: cottage garden
+time: day
+music: calm
+
+ren enters from left to left
++ yuki enters from right to right
+shot: medium on both
+ren sits down
+ren feels sleepy
+yuki (excited): Good morning! Get up, the picnic starts soon!
+ren (sleepy): Five more minutes.
+yuki (pouty): Okay. Five minutes.
+narrator: Five minutes later...
+yuki (happy): Ren! It's time!
+ren (sleepy): Five more minutes.
+narrator: Five hours later...
+time: sunset
+yuki (pouty): Ren. The picnic is over.
+beat
+shot: close on ren
+ren (shouts, surprised): What?! Why didn't you wake me up?
+shot: medium on both
+yuki (playful): I did. Twelve times.
+ren stands up
+ren (shy): Can we have a picnic tomorrow?
+yuki (laughing): Only if you wake up first.
+ren hugs yuki
+ending: Tag your "five more minutes" person!

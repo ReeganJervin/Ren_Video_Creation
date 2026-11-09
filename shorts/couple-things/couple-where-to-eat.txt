@@ -1,0 +1,38 @@
+# ============================================================
+#  Ren & Yuki: Couple Things - Where Should We Eat?   (~30 s, vertical)
+#  Everyday couple life: "anything is fine" never means anything.
+# ============================================================
+
+title: Where Should We Eat?
+type: short
+hook: POV: you ask her where to eat
+thumbnail text: "Anything Is Fine"
+mood voices: on
+place: meadow
+time: sunset
+music: happy
+thumbnail: 16.6
+
+ren enters from left to left
++ yuki enters from right to right
+ren (happy): I'm so hungry. Where should we eat?
+yuki (happy): Anything is fine.
+ren (excited): Pizza?
+yuki (pouty): Not pizza.
+ren (thinking): Noodles?
+yuki shakes its head
+yuki: We had noodles last week.
+ren (worried): Burgers?
+yuki (pouty): Too heavy.
+ren (thinks silently): "Anything is fine," she said.
+ren (determined): Okay. You choose.
+yuki (thinking): Hmm...
+beat
+yuki (excited): Pizza!
+shot: close on ren
+ren (shouts, surprised): I said pizza first!
+yuki (playful): But now I want it.
+shot: medium on both
+ren hugs yuki
+ren (laughing): Pizza it is.
+ending: Tag the one who says "anything"!

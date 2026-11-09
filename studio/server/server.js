@@ -15,7 +15,8 @@ const DIST = path.join(ROOT, 'studio', 'dist');
 // the studio's own files (jobs, preview plans); the tests use another folder so they never touch the real job list
 const STATE = path.join(ROOT, 'build', process.env.KITSU_STUDIO_STATE || '_studio');
 const PORT = +process.env.KITSU_PORT || 3000, HOST = '127.0.0.1';
-const STORY_DIRS = ['stories', 'episodes'];
+// (shorts/ holds the Shorts and the Couple Things series, shorts/couple-things/)
+const STORY_DIRS = ['stories', 'episodes', 'shorts'];
 // the template every new story starts from (it lives with the demos; a name starting with _ is never listed)
 const TEMPLATE = path.join(ROOT, 'stories', 'demos-and-tests', '_template.txt');
 // folders the browser may read files from
@@ -376,7 +377,7 @@ const api = {
   },
   // shows a file (or folder) of the project in Windows Explorer
   'POST /api/open-folder': async (q, req) => {
-    const b = await body(req), abs = inside(b.path || 'videos', ['videos', 'stories', 'episodes', 'build']);
+    const b = await body(req), abs = inside(b.path || 'videos', ['videos', ...STORY_DIRS, 'build']);
     if (process.platform === 'win32') {
       const args = fs.existsSync(abs) && fs.statSync(abs).isFile() ? [`/select,${abs}`] : [fs.existsSync(abs) ? abs : path.dirname(abs)];
       spawn('explorer.exe', args, { detached: true, stdio: 'ignore' }).unref();

@@ -1,0 +1,41 @@
+# ============================================================
+#  Ren & Yuki: Couple Things - Part 1: How We Met   (~40 s, vertical)
+#  The beginning of the series: the first hello, on Yuki's hill
+#  (as in stories\beginning-of-a-friendship.txt). Post this first.
+# ============================================================
+
+title: How We Met
+type: short
+hook: Part 1: The day we met
+thumbnail text: How We Met
+mood voices: on
+place: meadow
+time: sunset
+music: adventure
+
+yuki enters from right to right
+yuki sits down
+ren enters from left to left
+shot: close on ren
+ren (proud): The summit! I'm the first explorer ever to reach it!
+yuki (surprised): Huh? Who's talking?
+shot: medium on both
+music: happy
+ren (surprised): Oh! Hello!
+yuki stands up
+yuki (shy): Hello!
+ren (shy): I'm Ren.
+yuki (shy): I'm Yuki.
+ren (proud): I just conquered this summit. Very bravely.
+yuki (pouty): Summit? This is my hill. I sit here every day.
+ren (pouty): It looked like a summit.
+yuki (playful): You took the long way up. The whole meadow saw.
+beat
+music: heartfelt
+ren (shy): Okay. I'm not a great explorer. I just didn't want to explore alone.
+yuki (shy): I don't like sitting alone either.
+ren and yuki look at each other
+ren (shy): Same time tomorrow?
+yuki (happy): Same time tomorrow.
+sparkles
+ending: Part 2 is next. Follow!
