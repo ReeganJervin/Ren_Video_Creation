@@ -107,6 +107,8 @@ The results are in `videos\<name>-report.txt`. Each line starts with `PASS`, `FA
 | Folder or file | What it is |
 |---|---|
 | `stories\` | Your stories, plus the template and examples |
+| `shorts\` | Shorts (vertical, 15–60 s) |
+| `couple-things\` | The "Couple Things" series of couple Shorts, with its own template (see STORY-IDEAS.md) |
 | `config\voices.json` | The voices: the narrator, Ren, Yuki, and the owl (a Kokoro voice or a blend of two, with speed and pitch, and optionally `gain` in dB to make one voice quieter or louder than the others) |
 | `engine\characters.js` | The list of characters: their names, how they move, their sounds and how each mood looks on them |
 | `engine\ren.js` | Ren's fixed design (shape, colours, face, scarf) |

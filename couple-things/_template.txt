@@ -1,0 +1,40 @@
+# ============================================================
+#  Ren & Yuki: Couple Things - <name of the moment>   (25-40 s, vertical)
+#  Copy this file to a new name in couple-things\, for example
+#  couple-things\couple-blanket-thief.txt, and write your moment.
+#  The recipe and 30 ideas: STORY-IDEAS.md
+#  Every story in this folder is a "Couple Things" Short: the YouTube
+#  description and the Instagram caption name the series and its playlist.
+# ============================================================
+
+title: The Blanket Thief
+type: short
+hook: POV: you share a blanket with him
+thumbnail text: Blanket Thief!
+mood voices: on
+place: meadow
+time: night
+music: calm
+
+# 1. Both in the picture (keep this line)
+ren enters from left to left
++ yuki enters from right to right
+shot: medium on both
+
+# 2. The moment: short lines, big moods
+yuki (sleepy): Good night, Ren.
+ren (sleepy): Good night.
+
+# 3. The turn: a surprise or punchline
+beat
+shot: close on ren
+ren (shouts, surprised): Where did the blanket go?!
+shot: medium on both
+
+# 4. The sweet ending
+yuki (playful): Come here. We can share.
+ren hugs yuki
+hearts float up
+
+# 5. The ending card
+ending: Tag the blanket thief!

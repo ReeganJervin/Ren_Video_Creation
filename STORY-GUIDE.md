@@ -515,7 +515,7 @@ What changes in a vertical video:
 
 ## Shorts
 
-A Short is a vertical video of 15 to 60 seconds. Put Shorts in the `shorts` folder. There are two kinds.
+A Short is a vertical video of 15 to 60 seconds. Put Shorts in the `shorts` folder, and the **Couple Things** series in the `couple-things` folder (see STORY-IDEAS.md: those get the series name, a playlist line and series hashtags in their YouTube description and Instagram caption). There are two kinds.
 
 **An independent Short** is a little story of its own. Write it like any story, with `type: short` at the top (an example: `shorts\explorers-rules.txt`):
 

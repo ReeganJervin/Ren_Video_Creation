@@ -66,15 +66,18 @@ const tag = s => '#' + s.replace(/(^|\s)(\w)/g, (_, a, c) => c.toUpperCase()).re
 // The description draft: title, a 2–3 sentence summary from the story, chapters, credits, hashtags, and a reminder.
 function description(plan, credits) {
   const title = (plan.meta.title || 'A new story').trim();
-  const full = `${title} | ${SERIES}`;
+  // a story of a series (couple-things/: "Couple Things") says so in its title, hashtags and a playlist line
+  const series = plan.meta.series, full = series ? `${title} | ${SERIES}: ${series}` : `${title} | ${SERIES}`;
   const place = (plan.meta.place || 'meadow').replace(/-/g, ' ');
   const ch = chapters(plan);
-  const tags = ['#RenAndYuki', '#Animation', '#FamilyAnimation', '#Storytime', tag(place)];
+  const tags = series ? ['#RenAndYuki', tag(series), '#CoupleGoals', '#CuteCouple', '#Shorts'] : ['#RenAndYuki', '#Animation', '#FamilyAnimation', '#Storytime', tag(place)];
   return [
     'TITLE (draft, under 70 characters)', full.length <= 70 ? full : title.slice(0, 70), '',
-    'SUMMARY (draft)', summary(plan), '',
+    // (a series Short without a narrator: its hook says what it's about)
+    'SUMMARY (draft)', series && plan.hook && !plan.voice.some(v => v.who === 'narrator') ? plan.hook.text : summary(plan), '',
     ...(ch.text ? ['CHAPTERS', ch.text.trim(), ''] : []),
     'CREDITS', credits.trim(), '',
+    ...(series ? ['PLAYLIST', `More ${series}: [paste your "${SERIES}: ${series}" playlist link here]`, `(When uploading, choose the "${SERIES}: ${series}" playlist on the Details page.)`, ''] : []),
     'HASHTAGS', tags.join(' '), '',
     "Reminder: Check YouTube's 'altered or synthetic content' and 'Made for Kids' settings before publishing.", '',
   ].join('\n');

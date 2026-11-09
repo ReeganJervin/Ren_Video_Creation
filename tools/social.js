@@ -126,15 +126,15 @@ function reelNote(view) {
 function instagramText(view, f) {
   const title = (view.meta.title || 'A new story').trim(), hook = view.hook && view.hook.text || view.meta.thumbnailText || '';
   // Instagram uses at most 5 hashtags on a post
-  const tags = couple(view) ? ['#RenAndYuki', '#CoupleGoals', '#CuteCouple', '#Relatable', '#Animation'] : ['#RenAndYuki', '#Animation', '#Cartoon', '#Storytime', placeTag(view)];
+  const tags = view.meta.series ? ['#RenAndYuki', '#' + view.meta.series.replace(/\W/g, ''), '#CoupleGoals', '#CuteCouple', '#Relatable'] : couple(view) ? ['#RenAndYuki', '#CoupleGoals', '#CuteCouple', '#Relatable', '#Animation'] : ['#RenAndYuki', '#Animation', '#Cartoon', '#Storytime', placeTag(view)];
   return [
-    `INSTAGRAM: ${title}`, '',
+    `INSTAGRAM: ${title}${view.meta.series ? ` (${SERIES}: ${view.meta.series})` : ''}`, '',
     'CAPTION (copy everything between the lines, and change anything you like)',
     '------------------------------------------------------------',
     `${title} 🦊🐰${hook && hook !== title ? '\n' + hook : ''}`, '',
     ...about(view),
     question(view), '',
-    `Follow for more ${SERIES} stories! ✨`,
+    `Follow for more ${view.meta.series ? `${SERIES}: ${view.meta.series}` : `${SERIES} stories`}! ✨`,
     'More on our YouTube channel: link in bio ▶️', '',
     tags.join(' '),
     '------------------------------------------------------------', '',

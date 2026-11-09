@@ -35,7 +35,11 @@ This is the same idea that made cute-couple series like *Bubu Dudu* and *Milk & 
 
 Keep both of them in the picture with `shot: medium on both` near the top (otherwise the vertical camera shows only whoever is talking). Use `shot: close on ren` just for the punchline, then go back to `shot: medium on both`.
 
-## Examples (in `shorts\`, all rendered and checked)
+## The Couple Things folder
+
+Every Couple Things story goes in the folder **`couple-things\`**. Start a new one by copying `couple-things\_template.txt` (it shows the five steps of the recipe). Stories in this folder are the **"Couple Things" series**: their YouTube description says "Ren & Yuki: Couple Things" in the title, has the playlist line and series hashtags, and their Instagram caption gets `#CoupleThings`. Make them as usual: `make-video.bat` for the video and the YouTube files, `make-social.bat` for Instagram. They also show in the studio app.
+
+## Examples (in `couple-things\`, all rendered and checked)
 
 | File | The moment |
 |---|---|
@@ -92,8 +96,24 @@ Ideas marked ★ need a new prop or place first (ask Claude Code with `/new-asse
 
 ## Posting plan
 
-- **Series name:** "Ren & Yuki: Couple Things #1, #2…", so people come back for the next one.
-- **How often:** 4–7 Shorts a week, at about the same time each day. Evenings tend to suit couples, but check your own YouTube Analytics and Instagram insights to see when *your* viewers are online.
-- **Two places, one video:** each Short goes to **YouTube Shorts** and **Instagram Reels** (`make-social.bat` makes the Reel cover, the carousel and the caption; the YouTube files come with every video). Facebook is on hold for now.
-- **Language:** everything in English.
+**YouTube:** everything goes on as planned (the episodes, the Shorts and the series). In between, upload the **Couple Things** Shorts, all in their own playlist, **"Ren & Yuki: Couple Things"**.
+- Make the playlist once: in YouTube Studio, click **Create** (top right), then **New playlist**.
+- When you upload a Couple Things Short, choose that playlist on the **Details** page. The description draft (`videos\<name>-description.txt`) has a PLAYLIST line to remind you, with a place for the playlist link.
+
+**Instagram:** **Couple Things are the main Reels.** In between, post the other Shorts you already have (in `shorts\`), then the carousel of a Couple Things Short a day or two after its Reel.
+
+An example week:
+
+| Day | YouTube | Instagram |
+|---|---|---|
+| Mon | Couple Things Short | Couple Things Reel |
+| Tue | (as planned) | Carousel of Monday's Couple Things |
+| Wed | Couple Things Short | Couple Things Reel |
+| Thu | (as planned) | Another Short (from `shorts\`) |
+| Fri | Couple Things Short | Couple Things Reel |
+| Sat | (as planned) | Another Short (from `shorts\`) |
+| Sun | Episode or longer story, when one is ready | Picture post: "new episode on YouTube, link in bio" |
+
+- **Same time each day.** Evenings tend to suit couples, but check YouTube Analytics and Instagram insights to see when *your* viewers are online.
+- **Language:** everything in English. Facebook is on hold for now.
 - **Watch what works:** after 2–3 weeks, make more of the kind that got the most shares and saves.
