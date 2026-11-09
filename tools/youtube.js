@@ -50,11 +50,8 @@ function subtitles(plan) {
   return { cues: cues.length, text: cues.map((c, i) => `${i + 1}\n${srtTime(c.t0)} --> ${srtTime(c.t1)}\n${c.lines.join('\n')}\n`).join('\n') };
 }
 
-// The description draft: title, a 2–3 sentence summary from the story, chapters, credits, hashtags, and a reminder.
-function description(plan, credits) {
-  const title = (plan.meta.title || 'A new story').trim();
-  const full = `${title} | ${SERIES}`;
-  // the summary: the narrator's first sentences, or who is in it and where
+// the summary: the narrator's first sentences, or who is in it and where (2–3 sentences, up to 320 characters)
+function summary(plan) {
   const sentences = plan.voice.filter(v => v.who === 'narrator').map(v => v.text.replace(/^[.…\s]+|[.…\s]+$/g, '').trim()).filter(Boolean)
     .flatMap(t => t.match(/[^.!?]+[.!?]*/g) || []).map(s => s.trim()).filter(s => s.length > 3).map(s => (/[.!?]$/.test(s) ? s : s + '.'));
   const summary = [];
@@ -62,12 +59,20 @@ function description(plan, credits) {
   const stars = plan.cast.filter(id => WHO[id]).map(id => WHO[id]);
   const place = (plan.meta.place || 'meadow').replace(/-/g, ' ');
   if (summary.length < 2) summary.push(`${stars.length ? `A ${SERIES} story with ${stars.join(' and ')}` : `A ${SERIES} story`}, in the ${place}.`);
+  return summary.join(' ');
+}
+const tag = s => '#' + s.replace(/(^|\s)(\w)/g, (_, a, c) => c.toUpperCase()).replace(/[^\w]/g, '');
+
+// The description draft: title, a 2–3 sentence summary from the story, chapters, credits, hashtags, and a reminder.
+function description(plan, credits) {
+  const title = (plan.meta.title || 'A new story').trim();
+  const full = `${title} | ${SERIES}`;
+  const place = (plan.meta.place || 'meadow').replace(/-/g, ' ');
   const ch = chapters(plan);
-  const tag = s => '#' + s.replace(/(^|\s)(\w)/g, (_, a, c) => c.toUpperCase()).replace(/[^\w]/g, '');
   const tags = ['#RenAndYuki', '#Animation', '#FamilyAnimation', '#Storytime', tag(place)];
   return [
     'TITLE (draft, under 70 characters)', full.length <= 70 ? full : title.slice(0, 70), '',
-    'SUMMARY (draft)', summary.join(' '), '',
+    'SUMMARY (draft)', summary(plan), '',
     ...(ch.text ? ['CHAPTERS', ch.text.trim(), ''] : []),
     'CREDITS', credits.trim(), '',
     'HASHTAGS', tags.join(' '), '',
@@ -77,7 +82,9 @@ function description(plan, credits) {
 
 // The thumbnail, drawn in the engine's page (opened with &export=1). Picks the moment, draws it, adds the text,
 // and returns { jpg (Buffer), t, how, warnings }.
-async function thumbnail(page, plan) {
+// opts (for the Instagram and Facebook pictures, tools/social.js): size [W, H] of the picture (the page's film must
+// have the same shape), top (where the title starts), text (instead of the story's thumbnail text)
+async function thumbnail(page, plan, opts = {}) {
   // (the picture is drawn clean, without bubbles, captions and title cards, so those don't matter)
   const busy = [
     ...(plan.places || []).map(p => [p.t0 - 0.2, p.t1 + 0.3]),
@@ -95,9 +102,9 @@ async function thumbnail(page, plan) {
   // the framing: a medium shot unless the story says otherwise ("thumbnail shot: wide | medium | close")
   const shot = plan.meta.thumbnailShot || 'medium';
   const vertical = plan.height > plan.width;
-  const r = await page.evaluate(async ({ busy, mains, extras, want, duration, scenes, text, shot, vertical, PW }) => {
+  const r = await page.evaluate(async ({ busy, mains, extras, want, duration, scenes, text, shot, vertical, PW, size: wh, top }) => {
     // a thumbnail is 1280×720; a vertical video's cover frame is 1080×1920
-    const W = vertical ? 1080 : 1280, H = vertical ? 1920 : 720, S = W / PW, TOP = vertical ? 170 : 30;
+    const W = wh ? wh[0] : vertical ? 1080 : 1280, H = wh ? wh[1] : vertical ? 1920 : 720, S = W / PW, TOP = top !== undefined ? top : vertical ? 170 : 30;
     const cv = Object.assign(document.createElement('canvas'), { width: W, height: H }), g = cv.getContext('2d');
     // the title first: big, bold, rounded letters, on one line or two even ones, as big as fits
     let size = 118, lines = [];
@@ -177,7 +184,7 @@ async function thumbnail(page, plan) {
       do { url = cv.toDataURL('image/jpeg', q); q -= 0.08; } while (url.length * 0.75 > 1.9e6 && q > 0.4);
       return { url, t, how, warnings };
     } finally { StudioFilm.frame(null); }
-  }, { busy, mains, extras, want, duration: plan.duration, scenes: plan.scenes.map(c => ({ t0: c.t0, t1: c.t1 })), text: plan.meta.thumbnailText || plan.hook && plan.hook.text || '', shot, vertical, PW: plan.width });
+  }, { busy, mains, extras, want, duration: plan.duration, scenes: plan.scenes.map(c => ({ t0: c.t0, t1: c.t1 })), text: opts.text !== undefined ? opts.text : plan.meta.thumbnailText || plan.hook && plan.hook.text || '', shot, vertical, PW: plan.width, size: opts.size, top: opts.top });
   return { jpg: Buffer.from(r.url.split(',')[1], 'base64'), t: r.t, how: `${r.how}, ${shot} shot`, warnings: r.warnings };
 }
 
@@ -199,4 +206,4 @@ async function youtubeFiles(page, plan, name, outDir, credits) {
   return { ok: true, warn: warnings.length > 0, note: !warnings.length, name: 'YouTube files', detail: made.join(', ') + (warnings.length ? '. ' + warnings.join('; ') : '') };
 }
 
-module.exports = { youtubeFiles, subtitles, description, thumbnail, wrap, parts };
+module.exports = { youtubeFiles, subtitles, description, summary, thumbnail, wrap, parts, SERIES, WHO };

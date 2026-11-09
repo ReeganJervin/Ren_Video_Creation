@@ -11,6 +11,7 @@
 //   node tools/make-video.js stories/my-story.txt --voices   only make the voices (used by the studio app)
 //   node tools/make-video.js stories/my-story.txt --youtube  only make the YouTube files (thumbnail, subtitles, description)
 //   node tools/make-video.js stories/my-story.txt --format vertical   a vertical (9:16) version: videos/my-story-vertical.mp4
+//   node tools/make-video.js stories/my-story.txt --social   only the Instagram and Facebook files (videos/my-story-social/)
 // With the environment variable KITSU_PROGRESS=1, progress is also printed as "@@{json}" lines (for the studio app).
 const fs = require('fs'), path = require('path'), http = require('http'), crypto = require('crypto'), os = require('os');
 const { spawn, spawnSync } = require('child_process');
@@ -22,6 +23,7 @@ const { validate } = require('./validate');
 const { clock, hasScenes, chapters, sceneChecks } = require('./scenes');
 const { readVoices, storyName, addMissingVoices, lineVoice, cachedVoice, levelledVoice, overrideFile, VOICE_LUFS, folderDefaults } = require('./story-check');
 const { youtubeFiles } = require('./youtube');
+const { socialFiles, POST } = require('./social');
 const { episodeSource, applyWindow, sliceWav, shortLength } = require('./shorts');
 
 const ROOT = path.resolve(__dirname, '..');
@@ -39,12 +41,17 @@ async function main() {
   // "--format vertical" makes a separate vertical version next to the wide one
   const fi = args.indexOf('--format'), format = fi >= 0 ? String(args[fi + 1] || '').toLowerCase() : null;
   if (format && !['vertical', 'wide'].includes(format)) fail('--format needs wide or vertical, for example --format vertical');
-  const name = storyName(storyPath) + (format === 'vertical' ? '-vertical' : '');
   const opt = k => args.includes('--' + k);
 
   // 1. read + check the story
   let parsed = folderDefaults(parseStory(fs.readFileSync(storyPath, 'utf8')), storyPath);
+  // the Instagram and Facebook pictures are drawn in the vertical layout (a wide story is made vertical for them,
+  // as with --format vertical, so both share their voices and build folder)
+  const isVertical = m => m.format === 'vertical' || /short/.test(m.type || '') && m.format !== 'wide';
+  const nativeVertical = isVertical(parsed.meta);
   if (format) parsed.meta.format = format;
+  if (opt('social') && !isVertical(parsed.meta)) parsed.meta.format = 'vertical';
+  const name = storyName(storyPath) + (parsed.meta.format === 'vertical' && !nativeVertical || format === 'vertical' ? '-vertical' : '');
   if (parsed.errors.length) fail(`Please fix these lines in ${path.basename(storyPath)}:\n\n${parsed.errors.join('\n\n')}\n\nSee STORY-GUIDE.md for every line you can use.`);
   // an episode Short is made from part of another story: that story's lines, voices and timing (tools/shorts.js)
   let short = null;
@@ -119,7 +126,7 @@ async function main() {
   const plan = compileStory(parsed, lens);
   // a finished video needs every asset; stills, the preview and the YouTube files show placeholders instead
   // every picture in the video needs a credit (who made it), because the videos may be sold later
-  const draft = opt('stills') || opt('preview') || opt('youtube');
+  const draft = opt('stills') || opt('preview') || opt('youtube') || opt('social');
   if (!draft && pictureReport(plan).length) fail('The video can\'t be made until every picture it uses has a credit line.');
   if (plan.missing.length && !draft) {
     missingReport(plan, buildDir);
@@ -161,6 +168,26 @@ async function main() {
       await canvas.screenshot({ path: path.join(outDir, `${name}-still-${tag}${t.toFixed(1)}s.png`) });
     }
     say(`Saved ${shots.length} still(s) in videos/`);
+    await browser.close(); server.close(); return;
+  }
+  // only the Instagram and Facebook files, without drawing the video
+  if (opt('social')) {
+    say('Making the Instagram and Facebook files...');
+    // the 4:5 feed pictures: the same story drawn on a 1080×1350 picture, without a Short's hook, word captions and
+    // end card (the narrator's words show in the caption box instead)
+    const post = { ...plan, height: POST[1] };
+    delete post.wordCaps; delete post.hook; delete post.card;
+    fs.writeFileSync(path.join(buildDir, 'plan-social.json'), JSON.stringify(post));
+    const ppage = await browser.newPage({ viewport: { width: POST[0], height: POST[1] } });
+    ppage.on('pageerror', e => { console.error('[page error]', e.message); });
+    await ppage.goto(`http://127.0.0.1:${server.address().port}/engine/page.html?plan=/build/${name}/plan-social.json&export=1`);
+    await ppage.evaluate(() => FILM.ready);
+    const base = storyName(storyPath), dir = path.join(outDir, `${base}-social`);
+    // the Reel is the vertical video: the story's own video when it is vertical (a Short), otherwise its vertical version
+    const reelFile = `videos\\${name}.mp4`, wideFile = nativeVertical ? null : `videos\\${base}.mp4`;
+    const row = await socialFiles({ vpage: page, ppage, view, dir, base, reel: reelFile, reelMade: fs.existsSync(path.join(outDir, `${name}.mp4`)), reelHow: nativeVertical ? `make-video.bat ${path.relative(ROOT, storyPath)}` : `node tools\\make-video.js ${path.relative(ROOT, storyPath)} --format vertical`, wide: wideFile });
+    say(`${label(row)}  ${row.name}: ${row.detail}`);
+    say(`In videos/${base}-social/: reel-cover.jpg, post.jpg, the carousel pictures, instagram.txt, facebook.txt and ${base}.en_US.srt`);
     await browser.close(); server.close(); return;
   }
   // only the YouTube files, without drawing the video

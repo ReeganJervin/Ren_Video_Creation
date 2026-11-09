@@ -1,4 +1,4 @@
-# Kitsu Studio: Engine Foundation Roadmap (F1–F14), version 3
+# Kitsu Studio: Engine Foundation Roadmap (F1–F15), version 3
 
 > **For Claude Code.** This is the implementation plan for upgrading Kitsu Studio into a production engine for the series **"Ren & Yuki: The Secrets Beyond the Enchanted Forest"**: 10 episodes of 8–10 minutes, plus Shorts.
 > **Read first:** `HANDOFF.md` (the current engine, status and way of working) and `PRODUCTION-SYSTEM.md` (the three video formats).
@@ -145,6 +145,7 @@ Work through the steps **in this order**. The F-numbers are names, not the order
 | 17 | F10 World system | Not started | |
 | 18 | F8 Creature kit (new main characters) | Not started | |
 | 19 | **Milestone 4** | Not started | |
+| extra | **F15 Instagram and Facebook kit** (owner's request, 2026-11-09; reuses F11 and F7) | In review | |
 | always | **F14 Library growth:** new places, animals and props in batches, between steps, when the owner's stories need them | Ongoing | |
 
 **Why this order:**
@@ -763,6 +764,21 @@ Each effect has its own sound and uses the lighting system from F5. All of them 
 - **Adventure places:** lake, cave entrance, mountain path, village market, the Enchanted Forest gate, rainbow forest
 - **Animal friends (extras):** squirrel, hedgehog, frog, butterflies, fish, songbirds
 - **Props:** picnic basket, apple, cookie, umbrella, kite, ball, backpack, map, book, blanket, bunch of flowers, leaf (Episode 1)
+
+---
+
+## F15: Instagram and Facebook kit
+
+**Goal (owner's request, 2026-11-09):** get more views by posting the same Ren & Yuki stories on Instagram and Facebook. Reuses F11 (thumbnail drawing, subtitles, summary) and F7 (vertical layout); nothing in the engine changes.
+
+### As built (in review)
+- `--social` (and `make-social.bat`) makes only these files, in `videos/<name>-social/`, without a video: `reel-cover.jpg` (1080×1920; the title starts at y 290, inside the middle 3:4 that Instagram's profile grid shows), `post.jpg` (1080×1350, 4:5), `carousel-01.jpg`… (the title slide, up to 6 story moments with their bubbles or the narrator's caption box, from the first 75 % of the story only and only with a character in the picture, then "What happens next? / Watch the video: link in bio"; numbered "2/8"), `instagram.txt` and `facebook.txt` (caption, a question for comments chosen from the title, 5 hashtags for Instagram and 3 for Facebook, which file goes in which post, and an "AI info" label reminder), and `<name>.en_US.srt` (Facebook's subtitle file name).
+- A wide story is compiled in vertical for its pictures (as with `--format vertical`, same build folder). The 4:5 pictures are drawn by a second page with the same plan at 1080×1350, without a Short's hook, word captions and end card.
+- Title on every picture: `thumbnail text`, else the hook, else the title. The captions say when a story is too long for a Reel (over 90 s, or over 3 minutes) and suggest an episode Short.
+- `tools/youtube.js`: `thumbnail()` takes optional `size`, `top` and `text`; `summary()` is split out of `description()`. YouTube files are byte-identical (checked on `short-the-compliment`); `compare-engines`: all stories unchanged.
+- Later (with F9 Part B): a "Social" button in the studio app.
+
+**Commit message:** `F15: Instagram and Facebook kit`
 
 ---
 
