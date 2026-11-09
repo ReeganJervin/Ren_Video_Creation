@@ -1,0 +1,34 @@
+# ============================================================
+#  Ren & Yuki: Couple Things - Part 2: Our First Date   (~35 s, vertical)
+#  The beginning of the series: Ren says it's NOT a date. Post this second.
+# ============================================================
+
+title: Our First Date
+type: short
+hook: Part 2: Our first date
+thumbnail text: It's NOT a Date!
+mood voices: on
+place: river
+time: day
+music: happy
+
+ren enters from left to left
++ yuki enters from right to right
+shot: medium on both
+ren (excited): Welcome to the Great River Expedition!
+yuki (playful): Ren... is this a date?
+shot: close on ren
+ren (shouts, surprised): A date?! No! It's an expedition!
+shot: medium on both
+ren (proud): Very scientific. Explorers only.
+yuki (sad): Oh. Okay.
+ren (thinks silently): Oh no. She looks sad. Say something smart!
+ren (shy): Unless... you want it to be a date.
+yuki (thinking): Hmm...
+beat
+yuki (happy): It's a date.
+ren hops twice
+ren (excited): It's a date! The best expedition ever!
+yuki (laughing): You're so silly.
+yuki touches paws with ren
+ending: Part 3: the day he tried to say it

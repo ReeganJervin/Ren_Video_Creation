@@ -1,0 +1,44 @@
+# ============================================================
+#  The Instagram profile pictures (tools\instagram-profile.js, or make-profile.bat).
+#  Each "# moment: <name>" line marks a picture: the moment the next line starts,
+#  plus the seconds after "+" (for example "# moment: hug +1.4").
+#  Change the moods, places or times here and make the pictures again.
+# ============================================================
+
+title: Ren & Yuki profile pictures
+format: vertical
+place: meadow
+time: sunset
+music: none
+
+ren enters from left to left
++ yuki enters from right to right
+shot: medium on both
+ren and yuki feel happy
+ren (thinks silently): Smile!
+# moment: together +0.6
+wait 2
+ren and yuki look at each other
+# moment: look +0.8
+wait 2
+shot: close on ren
+ren feels laughing
+# moment: ren +1.2
+wait 2
+shot: close on yuki
+yuki feels playful
+# moment: yuki +1.2
+wait 2
+shot: medium on both
+ren feels happy
+ren hugs yuki
+ren turns to you
++ yuki turns to you
+# moment: hug +0.6
+hearts float up
+wait 2
+time: night
+star appears
+ren and yuki look up
+# moment: star +1.5
+wait 3

@@ -36,7 +36,7 @@ The command files below keep working exactly as before.
 
 The video appears in the `videos` folder as `my-story.mp4`, along with a check report, `my-story-report.txt`, and `my-story-credits.txt`, which lists everything in the video and who made it. A story with at least 3 scenes also gets `my-story-chapters.txt`, ready to paste into a YouTube description (see "Scenes" in STORY-GUIDE.md). For uploading, every video also gets `my-story-thumbnail.jpg`, `my-story.srt` (subtitles) and `my-story-description.txt` (a description draft); see "YouTube" in STORY-GUIDE.md.
 
-For **Instagram**, drag a story onto `make-social.bat`: in a few seconds you get a Reel cover, a picture post, a swipeable carousel and a ready-to-copy caption in `videos\my-story-social\` (see "Instagram" in STORY-GUIDE.md).
+For **Instagram**, drag a story onto `make-social.bat`: in a few seconds you get a Reel cover, a picture post, a swipeable carousel and a ready-to-copy caption in `videos\my-story-social\` (see "Instagram" in STORY-GUIDE.md). Everything for the Instagram account itself (name, bio, profile picture, Highlights, the first posts) is in **`instagram\INSTAGRAM-PROFILE.md`**; `make-profile.bat` makes the profile pictures again.
 
 ### Still images (for checking)
 
@@ -108,7 +108,8 @@ The results are in `videos\<name>-report.txt`. Each line starts with `PASS`, `FA
 |---|---|
 | `stories\` | Your stories, plus the template and examples |
 | `shorts\` | Shorts (vertical, 15–60 s) |
-| `couple-things\` | The "Couple Things" series of couple Shorts, with its own template (see STORY-IDEAS.md) |
+| `couple-things\` | The "Couple Things" series of couple Shorts, with its own template (see STORY-IDEAS.md). Parts 1–3 (how they met) come first |
+| `instagram\` | The Instagram account guide, the profile pictures (`profile-kit\`) and the moments they show |
 | `config\voices.json` | The voices: the narrator, Ren, Yuki, and the owl (a Kokoro voice or a blend of two, with speed and pitch, and optionally `gain` in dB to make one voice quieter or louder than the others) |
 | `engine\characters.js` | The list of characters: their names, how they move, their sounds and how each mood looks on them |
 | `engine\ren.js` | Ren's fixed design (shape, colours, face, scarf) |
@@ -124,6 +125,7 @@ The results are in `videos\<name>-report.txt`. Each line starts with `PASS`, `FA
 | `tools\story-check.js` | The story check and voice bookkeeping that `make-video.js` and the studio app share |
 | `studio\` | The studio app: `server\server.js` (the local server), `src\` (the screens, React + TypeScript), `tests\` (`node studio\tests\api.test.js` and `node studio\tests\e2e.test.js`) |
 | `tools\youtube.js` | The YouTube files: thumbnail, subtitles and description draft |
+| `tools\instagram-profile.js` | The Instagram profile pictures: profile picture, Highlight covers, "Meet Ren & Yuki" carousel |
 | `tools\social.js` | The Instagram files: Reel cover, picture post, carousel and caption |
 | `tools\end-screen-guide.js` | Draws `docs\youtube-end-screen.png`, which shows where YouTube's end-screen elements go |
 | `tools\scenes.js` | Chapters and the extra checks for stories with scenes |

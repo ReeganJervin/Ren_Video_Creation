@@ -41,6 +41,16 @@ Every Couple Things story goes in the folder **`couple-things\`**. Start a new o
 
 ## Examples (in `couple-things\`, all rendered and checked)
 
+The series starts with **how they met**, in three parts. Post these first, in order:
+
+| File | The moment |
+|---|---|
+| `couple-part1-how-we-met.txt` | **Part 1:** Ren "conquers" Yuki's hill; the first awkward hello; "Same time tomorrow?" |
+| `couple-part2-first-date.txt` | **Part 2:** "Is this a date?" "It's an expedition!" …"Unless you want it to be a date." |
+| `couple-part3-i-like-your-ears.txt` | **Part 3:** Ren tries to say it ("I like your ears"), and Yuki says "I love you" first |
+
+Then the Couple Things (start with *Who Said It First?*, which continues the joke from Part 3):
+
 | File | The moment |
 |---|---|
 | `couple-where-to-eat.txt` | "Anything is fine"… but not pizza… then pizza |
@@ -103,6 +113,8 @@ Ideas marked ★ need a new prop or place first (ask Claude Code with `/new-asse
 **YouTube:** everything goes on as planned (the episodes, the Shorts and the series). In between, upload the **Couple Things** Shorts, all in their own playlist, **"Ren & Yuki: Couple Things"**.
 - Make the playlist once: in YouTube Studio, click **Create** (top right), then **New playlist**.
 - When you upload a Couple Things Short, choose that playlist on the **Details** page. The description draft (`videos\<name>-description.txt`) has a PLAYLIST line to remind you, with a place for the playlist link.
+
+**Start with how they met:** on both YouTube and Instagram, post Parts 1, 2 and 3 first, then *Who Said It First?*. Setting up the Instagram account (name, bio, profile picture, Highlights, pinned posts): `instagram\INSTAGRAM-PROFILE.md`.
 
 **Instagram:** **Couple Things are the main Reels.** In between, post the other Shorts you already have (in `shorts\`), then the carousel of a Couple Things Short a day or two after its Reel.
 
