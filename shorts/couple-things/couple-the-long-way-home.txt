@@ -1,6 +1,14 @@
 # ============================================================
 #  Ren & Yuki: Couple Things - The Long Way Home   (~35 s, vertical)
 #  Sweet moments: when he doesn't want the day to end.
+#
+#  Commands (run them in the project folder, or drag the story onto the .bat file):
+#    Check it:            check-story.bat shorts\couple-things\couple-the-long-way-home.txt
+#    Watch it:            preview.bat shorts\couple-things\couple-the-long-way-home.txt
+#    Make the video:      make-video.bat shorts\couple-things\couple-the-long-way-home.txt
+#    If it stopped:       resume-video.bat shorts\couple-things\couple-the-long-way-home.txt
+#    YouTube files only:  node tools\make-video.js shorts\couple-things\couple-the-long-way-home.txt --youtube
+#    Instagram files:     make-social.bat shorts\couple-things\couple-the-long-way-home.txt
 # ============================================================
 
 title: The Long Way Home

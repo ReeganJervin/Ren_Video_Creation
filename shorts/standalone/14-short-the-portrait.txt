@@ -4,7 +4,14 @@
 #  Rewritten 2026-10-30 in The Compliment's style: the first line is
 #  the joke (no walking in), one joke that grows, and the last line
 #  points back to the start so it loops.
-#  Make it:  make-video.bat shorts\standalone\14-short-the-portrait.txt
+#
+#  Commands (run them in the project folder, or drag the story onto the .bat file):
+#    Check it:            check-story.bat shorts\standalone\14-short-the-portrait.txt
+#    Watch it:            preview.bat shorts\standalone\14-short-the-portrait.txt
+#    Make the video:      make-video.bat shorts\standalone\14-short-the-portrait.txt
+#    If it stopped:       resume-video.bat shorts\standalone\14-short-the-portrait.txt
+#    YouTube files only:  node tools\make-video.js shorts\standalone\14-short-the-portrait.txt --youtube
+#    Instagram files:     make-social.bat shorts\standalone\14-short-the-portrait.txt
 # ============================================================
 
 title: The Portrait

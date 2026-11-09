@@ -12,6 +12,15 @@
 #  end of Episode 7, the promise under the fruit tree (scary things
 #  together), rule five, "very local wind".
 #  This episode adds explorer's rule number twelve.
+#
+#  Commands (run them in the project folder, or drag the story onto the .bat file):
+#    Check it:            check-story.bat stories\episodes\episode-08-the-voice-in-the-dark.txt
+#    Watch it:            preview.bat stories\episodes\episode-08-the-voice-in-the-dark.txt
+#    Make the video:      make-video.bat stories\episodes\episode-08-the-voice-in-the-dark.txt
+#    If it stopped:       resume-video.bat stories\episodes\episode-08-the-voice-in-the-dark.txt
+#    Vertical version:    node tools\make-video.js stories\episodes\episode-08-the-voice-in-the-dark.txt --format vertical
+#    YouTube files only:  node tools\make-video.js stories\episodes\episode-08-the-voice-in-the-dark.txt --youtube
+#    Instagram files:     make-social.bat stories\episodes\episode-08-the-voice-in-the-dark.txt
 # ============================================================
 
 title: The Voice in the Dark

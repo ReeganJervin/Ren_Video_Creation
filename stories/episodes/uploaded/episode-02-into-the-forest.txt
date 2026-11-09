@@ -1,13 +1,21 @@
 # ============================================================
 #  Ren & Yuki - Episode 2: Into the Forest   (~7-8 min)
 #
-#  Save as:  stories\episodes\episode-02-into-the-forest.txt
 #  New in this episode: the FOREST and the OWL.
 #  Still saved for later: the fallen star, the cottage, the lantern,
 #  the river, the beach and the snowy hill.
 #  Callbacks to Episode 1: "what's beyond those trees", Yuki's
 #  condition ("sometimes I choose where we go"), the Forest of
 #  Things That Look Like Other Things, and the explorer's rules.
+#
+#  Commands (run them in the project folder, or drag the story onto the .bat file):
+#    Check it:            check-story.bat stories\episodes\uploaded\episode-02-into-the-forest.txt
+#    Watch it:            preview.bat stories\episodes\uploaded\episode-02-into-the-forest.txt
+#    Make the video:      make-video.bat stories\episodes\uploaded\episode-02-into-the-forest.txt
+#    If it stopped:       resume-video.bat stories\episodes\uploaded\episode-02-into-the-forest.txt
+#    Vertical version:    node tools\make-video.js stories\episodes\uploaded\episode-02-into-the-forest.txt --format vertical
+#    YouTube files only:  node tools\make-video.js stories\episodes\uploaded\episode-02-into-the-forest.txt --youtube
+#    Instagram files:     make-social.bat stories\episodes\uploaded\episode-02-into-the-forest.txt
 # ============================================================
 
 title: Into the Forest

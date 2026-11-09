@@ -2,6 +2,15 @@
 #  Test: the new moods (F12 Part A)
 #  Excited, proud, thinking and laughing, with the giggle, and
 #  the owl (an extra) borrowing its nearest mood.
+#
+#  Commands (run them in the project folder, or drag the story onto the .bat file):
+#    Check it:            check-story.bat stories\demos-and-tests\test-new-moods.txt
+#    Watch it:            preview.bat stories\demos-and-tests\test-new-moods.txt
+#    Make the video:      make-video.bat stories\demos-and-tests\test-new-moods.txt
+#    If it stopped:       resume-video.bat stories\demos-and-tests\test-new-moods.txt
+#    Vertical version:    node tools\make-video.js stories\demos-and-tests\test-new-moods.txt --format vertical
+#    YouTube files only:  node tools\make-video.js stories\demos-and-tests\test-new-moods.txt --youtube
+#    Instagram files:     make-social.bat stories\demos-and-tests\test-new-moods.txt
 # ============================================================
 
 title: The Biggest Acorn

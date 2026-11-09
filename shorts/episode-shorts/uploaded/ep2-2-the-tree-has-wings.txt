@@ -1,12 +1,19 @@
 # ============================================================
 #  Episode Short: "The Tree Has Wings!" from Episode 2, Into the Forest
 #  (the owl says hello, and they've walked past his tree five times)
-#  Make it:  make-video.bat shorts\episode-shorts\ep2-2-the-tree-has-wings.txt
+#
+#  Commands (run them in the project folder, or drag the story onto the .bat file):
+#    Check it:            check-story.bat shorts\episode-shorts\uploaded\ep2-2-the-tree-has-wings.txt
+#    Watch it:            preview.bat shorts\episode-shorts\uploaded\ep2-2-the-tree-has-wings.txt
+#    Make the video:      make-video.bat shorts\episode-shorts\uploaded\ep2-2-the-tree-has-wings.txt
+#    If it stopped:       resume-video.bat shorts\episode-shorts\uploaded\ep2-2-the-tree-has-wings.txt
+#    YouTube files only:  node tools\make-video.js shorts\episode-shorts\uploaded\ep2-2-the-tree-has-wings.txt --youtube
+#    Instagram files:     make-social.bat shorts\episode-shorts\uploaded\ep2-2-the-tree-has-wings.txt
 # ============================================================
 
 title: The Tree Has Wings!
 type: episode short
 from: episode-02-into-the-forest
-lines: 131-142
+lines: 139-150
 hook: Something in the forest is watching them...
 thumbnail text: The Tree Has Wings!

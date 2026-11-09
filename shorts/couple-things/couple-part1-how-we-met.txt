@@ -2,6 +2,14 @@
 #  Ren & Yuki: Couple Things - Part 1: How We Met   (~40 s, vertical)
 #  The beginning of the series: the first hello, on Yuki's hill
 #  (as in stories\beginning-of-a-friendship.txt). Post this first.
+#
+#  Commands (run them in the project folder, or drag the story onto the .bat file):
+#    Check it:            check-story.bat shorts\couple-things\couple-part1-how-we-met.txt
+#    Watch it:            preview.bat shorts\couple-things\couple-part1-how-we-met.txt
+#    Make the video:      make-video.bat shorts\couple-things\couple-part1-how-we-met.txt
+#    If it stopped:       resume-video.bat shorts\couple-things\couple-part1-how-we-met.txt
+#    YouTube files only:  node tools\make-video.js shorts\couple-things\couple-part1-how-we-met.txt --youtube
+#    Instagram files:     make-social.bat shorts\couple-things\couple-part1-how-we-met.txt
 # ============================================================
 
 title: How We Met

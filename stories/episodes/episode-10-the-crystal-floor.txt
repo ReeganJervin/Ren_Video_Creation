@@ -13,6 +13,15 @@
 #  Callbacks: rule twelve (never let go), the lantern that only
 #  works for Ren, the map Yuki memorised, "a legendary sword".
 #  This episode adds explorer's rule number fourteen (Yuki's).
+#
+#  Commands (run them in the project folder, or drag the story onto the .bat file):
+#    Check it:            check-story.bat stories\episodes\episode-10-the-crystal-floor.txt
+#    Watch it:            preview.bat stories\episodes\episode-10-the-crystal-floor.txt
+#    Make the video:      make-video.bat stories\episodes\episode-10-the-crystal-floor.txt
+#    If it stopped:       resume-video.bat stories\episodes\episode-10-the-crystal-floor.txt
+#    Vertical version:    node tools\make-video.js stories\episodes\episode-10-the-crystal-floor.txt --format vertical
+#    YouTube files only:  node tools\make-video.js stories\episodes\episode-10-the-crystal-floor.txt --youtube
+#    Instagram files:     make-social.bat stories\episodes\episode-10-the-crystal-floor.txt
 # ============================================================
 
 title: The Crystal Floor

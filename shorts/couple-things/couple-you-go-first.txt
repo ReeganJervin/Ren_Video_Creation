@@ -1,6 +1,14 @@
 # ============================================================
 #  Ren & Yuki: Couple Things - You Go First   (~35 s, vertical)
 #  Saying goodbye: nobody wants to leave first.
+#
+#  Commands (run them in the project folder, or drag the story onto the .bat file):
+#    Check it:            check-story.bat shorts\couple-things\couple-you-go-first.txt
+#    Watch it:            preview.bat shorts\couple-things\couple-you-go-first.txt
+#    Make the video:      make-video.bat shorts\couple-things\couple-you-go-first.txt
+#    If it stopped:       resume-video.bat shorts\couple-things\couple-you-go-first.txt
+#    YouTube files only:  node tools\make-video.js shorts\couple-things\couple-you-go-first.txt --youtube
+#    Instagram files:     make-social.bat shorts\couple-things\couple-you-go-first.txt
 # ============================================================
 
 title: You Go First

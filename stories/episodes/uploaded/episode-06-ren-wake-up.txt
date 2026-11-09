@@ -1,7 +1,6 @@
 # ============================================================
 #  Ren & Yuki - Episode 6: Ren, Wake Up!   (~7-8 min)
 #
-#  Save as:  stories\episodes\episode-06-ren-wake-up.txt
 #  The owner's story: Yuki waits a long time, searches, finds Ren
 #  under the fruit tree, thinks he's napping and scolds him; he wakes
 #  up, realises he fainted because he hadn't eaten or drunk anything
@@ -11,6 +10,15 @@
 #  Callbacks: Ren's "explorer's promise" (Ep 5), the big half (Ep 5),
 #  the Hill of Extremely Important Sitting (Ep 1).
 #  This episode adds explorer's rule number ten.
+#
+#  Commands (run them in the project folder, or drag the story onto the .bat file):
+#    Check it:            check-story.bat stories\episodes\uploaded\episode-06-ren-wake-up.txt
+#    Watch it:            preview.bat stories\episodes\uploaded\episode-06-ren-wake-up.txt
+#    Make the video:      make-video.bat stories\episodes\uploaded\episode-06-ren-wake-up.txt
+#    If it stopped:       resume-video.bat stories\episodes\uploaded\episode-06-ren-wake-up.txt
+#    Vertical version:    node tools\make-video.js stories\episodes\uploaded\episode-06-ren-wake-up.txt --format vertical
+#    YouTube files only:  node tools\make-video.js stories\episodes\uploaded\episode-06-ren-wake-up.txt --youtube
+#    Instagram files:     make-social.bat stories\episodes\uploaded\episode-06-ren-wake-up.txt
 # ============================================================
 
 title: Ren, Wake Up!

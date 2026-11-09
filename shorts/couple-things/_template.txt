@@ -3,6 +3,8 @@
 #  Copy this file to a new name in shorts\couple-things\, for example
 #  shorts\couple-things\couple-blanket-thief.txt, and write your moment.
 #  The recipe and 30 ideas: STORY-IDEAS.md
+#  When it's saved, run  node tools\story-commands.js  to put the
+#  commands for making it at its top.
 #  Every story in this folder is a "Couple Things" Short: the YouTube
 #  description and the Instagram caption name the series and its playlist.
 # ============================================================

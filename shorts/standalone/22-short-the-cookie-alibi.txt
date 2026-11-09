@@ -3,7 +3,14 @@
 #  Did Ren eat Yuki's cookie? Every excuse is worse than the last.
 #  In The Compliment's and Very Local Wind's style: the first line is the
 #  joke (no walking in), one joke that grows, a last line that loops.
-#  Make it:  make-video.bat shorts\standalone\22-short-the-cookie-alibi.txt
+#
+#  Commands (run them in the project folder, or drag the story onto the .bat file):
+#    Check it:            check-story.bat shorts\standalone\22-short-the-cookie-alibi.txt
+#    Watch it:            preview.bat shorts\standalone\22-short-the-cookie-alibi.txt
+#    Make the video:      make-video.bat shorts\standalone\22-short-the-cookie-alibi.txt
+#    If it stopped:       resume-video.bat shorts\standalone\22-short-the-cookie-alibi.txt
+#    YouTube files only:  node tools\make-video.js shorts\standalone\22-short-the-cookie-alibi.txt --youtube
+#    Instagram files:     make-social.bat shorts\standalone\22-short-the-cookie-alibi.txt
 # ============================================================
 
 title: The Cookie Alibi

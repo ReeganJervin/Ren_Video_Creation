@@ -1,12 +1,19 @@
 # ============================================================
 #  Episode Short: "Rule Number Ten" from Episode 6, Ren, Wake Up!
 #  (the biggest feast of their lives, and a rule that actually makes sense)
-#  Make it:  make-video.bat shorts\episode-shorts\ep6-2-rule-number-ten.txt
+#
+#  Commands (run them in the project folder, or drag the story onto the .bat file):
+#    Check it:            check-story.bat shorts\episode-shorts\ep6-2-rule-number-ten.txt
+#    Watch it:            preview.bat shorts\episode-shorts\ep6-2-rule-number-ten.txt
+#    Make the video:      make-video.bat shorts\episode-shorts\ep6-2-rule-number-ten.txt
+#    If it stopped:       resume-video.bat shorts\episode-shorts\ep6-2-rule-number-ten.txt
+#    YouTube files only:  node tools\make-video.js shorts\episode-shorts\ep6-2-rule-number-ten.txt --youtube
+#    Instagram files:     make-social.bat shorts\episode-shorts\ep6-2-rule-number-ten.txt
 # ============================================================
 
 title: Rule Number Ten
 type: episode short
 from: episode-06-ren-wake-up
-lines: 138-150
+lines: 146-158
 hook: The biggest feast of their lives
 thumbnail text: Rule Number Ten

@@ -3,7 +3,14 @@
 #  When Ren is scared, he sings his brave song. The owl is listening.
 #  In The Compliment's and Very Local Wind's style: the first line is the
 #  joke (no walking in), one joke that grows, a last line that loops.
-#  Make it:  make-video.bat shorts\standalone\29-short-the-brave-song.txt
+#
+#  Commands (run them in the project folder, or drag the story onto the .bat file):
+#    Check it:            check-story.bat shorts\standalone\29-short-the-brave-song.txt
+#    Watch it:            preview.bat shorts\standalone\29-short-the-brave-song.txt
+#    Make the video:      make-video.bat shorts\standalone\29-short-the-brave-song.txt
+#    If it stopped:       resume-video.bat shorts\standalone\29-short-the-brave-song.txt
+#    YouTube files only:  node tools\make-video.js shorts\standalone\29-short-the-brave-song.txt --youtube
+#    Instagram files:     make-social.bat shorts\standalone\29-short-the-brave-song.txt
 # ============================================================
 
 title: The Brave Song

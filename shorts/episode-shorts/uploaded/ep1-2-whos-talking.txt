@@ -1,12 +1,19 @@
 # ============================================================
 #  Episode Short: "Who's Talking?" from Episode 1, The Beginning of a Friendship
 #  (Ren and Yuki meet for the very first time, on the same hill)
-#  Make it:  make-video.bat shorts\episode-shorts\ep1-2-whos-talking.txt
+#
+#  Commands (run them in the project folder, or drag the story onto the .bat file):
+#    Check it:            check-story.bat shorts\episode-shorts\uploaded\ep1-2-whos-talking.txt
+#    Watch it:            preview.bat shorts\episode-shorts\uploaded\ep1-2-whos-talking.txt
+#    Make the video:      make-video.bat shorts\episode-shorts\uploaded\ep1-2-whos-talking.txt
+#    If it stopped:       resume-video.bat shorts\episode-shorts\uploaded\ep1-2-whos-talking.txt
+#    YouTube files only:  node tools\make-video.js shorts\episode-shorts\uploaded\ep1-2-whos-talking.txt --youtube
+#    Instagram files:     make-social.bat shorts\episode-shorts\uploaded\ep1-2-whos-talking.txt
 # ============================================================
 
 title: Who's Talking?
 type: episode short
 from: episode-01-the-beginning-of-a-friendship
-lines: 142-165
+lines: 148-171
 hook: He reached the summit... and it was taken
 thumbnail text: Who's Talking?!

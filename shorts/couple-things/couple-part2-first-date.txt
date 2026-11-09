@@ -1,6 +1,14 @@
 # ============================================================
 #  Ren & Yuki: Couple Things - Part 2: Our First Date   (~35 s, vertical)
 #  The beginning of the series: Ren says it's NOT a date. Post this second.
+#
+#  Commands (run them in the project folder, or drag the story onto the .bat file):
+#    Check it:            check-story.bat shorts\couple-things\couple-part2-first-date.txt
+#    Watch it:            preview.bat shorts\couple-things\couple-part2-first-date.txt
+#    Make the video:      make-video.bat shorts\couple-things\couple-part2-first-date.txt
+#    If it stopped:       resume-video.bat shorts\couple-things\couple-part2-first-date.txt
+#    YouTube files only:  node tools\make-video.js shorts\couple-things\couple-part2-first-date.txt --youtube
+#    Instagram files:     make-social.bat shorts\couple-things\couple-part2-first-date.txt
 # ============================================================
 
 title: Our First Date

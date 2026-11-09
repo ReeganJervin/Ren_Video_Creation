@@ -1,7 +1,14 @@
 # ============================================================
 #  Ren & Yuki Short - The Compliment   (~35 s, vertical)
-#  Save as: shorts\standalone\4-short-the-compliment.txt
 #  Uses: meadow, Ren, Yuki, hearts, new moods, whisper and shout bubbles.
+#
+#  Commands (run them in the project folder, or drag the story onto the .bat file):
+#    Check it:            check-story.bat shorts\standalone\uploaded\4-short-the-compliment.txt
+#    Watch it:            preview.bat shorts\standalone\uploaded\4-short-the-compliment.txt
+#    Make the video:      make-video.bat shorts\standalone\uploaded\4-short-the-compliment.txt
+#    If it stopped:       resume-video.bat shorts\standalone\uploaded\4-short-the-compliment.txt
+#    YouTube files only:  node tools\make-video.js shorts\standalone\uploaded\4-short-the-compliment.txt --youtube
+#    Instagram files:     make-social.bat shorts\standalone\uploaded\4-short-the-compliment.txt
 # ============================================================
 
 title: The Compliment

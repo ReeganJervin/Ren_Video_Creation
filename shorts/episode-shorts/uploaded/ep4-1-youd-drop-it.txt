@@ -1,12 +1,19 @@
 # ============================================================
 #  Episode Short: "You'd Drop It" from Episode 4, The Great Tree
 #  (Ren asks to carry the star, and the owl's feathers ache)
-#  Make it:  make-video.bat shorts\episode-shorts\ep4-1-youd-drop-it.txt
+#
+#  Commands (run them in the project folder, or drag the story onto the .bat file):
+#    Check it:            check-story.bat shorts\episode-shorts\uploaded\ep4-1-youd-drop-it.txt
+#    Watch it:            preview.bat shorts\episode-shorts\uploaded\ep4-1-youd-drop-it.txt
+#    Make the video:      make-video.bat shorts\episode-shorts\uploaded\ep4-1-youd-drop-it.txt
+#    If it stopped:       resume-video.bat shorts\episode-shorts\uploaded\ep4-1-youd-drop-it.txt
+#    YouTube files only:  node tools\make-video.js shorts\episode-shorts\uploaded\ep4-1-youd-drop-it.txt --youtube
+#    Instagram files:     make-social.bat shorts\episode-shorts\uploaded\ep4-1-youd-drop-it.txt
 # ============================================================
 
 title: You'd Drop It
 type: episode short
 from: episode-04-the-great-tree
-lines: 51-62
+lines: 59-70
 hook: Can Ren carry the star? No.
 thumbnail text: You'd Drop It!

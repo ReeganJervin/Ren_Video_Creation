@@ -1,13 +1,20 @@
 # ============================================================
 #  Episode Short: "The Big Half" from Episode 5, The Hungry Road
 #  (one cookie, two hungry explorers)
-#  Make it:  make-video.bat shorts\episode-shorts\ep5-1-the-big-half.txt
+#
+#  Commands (run them in the project folder, or drag the story onto the .bat file):
+#    Check it:            check-story.bat shorts\episode-shorts\uploaded\ep5-1-the-big-half.txt
+#    Watch it:            preview.bat shorts\episode-shorts\uploaded\ep5-1-the-big-half.txt
+#    Make the video:      make-video.bat shorts\episode-shorts\uploaded\ep5-1-the-big-half.txt
+#    If it stopped:       resume-video.bat shorts\episode-shorts\uploaded\ep5-1-the-big-half.txt
+#    YouTube files only:  node tools\make-video.js shorts\episode-shorts\uploaded\ep5-1-the-big-half.txt --youtube
+#    Instagram files:     make-social.bat shorts\episode-shorts\uploaded\ep5-1-the-big-half.txt
 # ============================================================
 
 title: The Big Half
 type: episode short
 from: episode-05-the-hungry-road
-lines: 119-128
+lines: 127-136
 hook: One cookie. Two hungry friends.
 thumbnail text: The Big Half
 ending: Watch the full episode!

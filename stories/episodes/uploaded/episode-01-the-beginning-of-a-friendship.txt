@@ -1,9 +1,6 @@
 # ============================================================
 #  Ren & Yuki - The Beginning of a Friendship   (first video, ~6-7 min)
 #
-#  Check:  check-story.bat stories\episodes\episode-01-the-beginning-of-a-friendship.txt
-#  Watch:  preview.bat stories\episodes\episode-01-the-beginning-of-a-friendship.txt
-#  Make:   make-video.bat stories\episodes\episode-01-the-beginning-of-a-friendship.txt
 #
 #  Uses ONLY: the meadow, Ren, Yuki, times of day, music, camera.
 #  Saved for later episodes: the star, the owl, the cottage, the
@@ -12,6 +9,15 @@
 #  The idea: a "mock epic". Ren plans a legendary expedition to the
 #  top of a tiny hill, forty steps away. When he finally gets there,
 #  someone is already sitting at the top.
+#
+#  Commands (run them in the project folder, or drag the story onto the .bat file):
+#    Check it:            check-story.bat stories\episodes\uploaded\episode-01-the-beginning-of-a-friendship.txt
+#    Watch it:            preview.bat stories\episodes\uploaded\episode-01-the-beginning-of-a-friendship.txt
+#    Make the video:      make-video.bat stories\episodes\uploaded\episode-01-the-beginning-of-a-friendship.txt
+#    If it stopped:       resume-video.bat stories\episodes\uploaded\episode-01-the-beginning-of-a-friendship.txt
+#    Vertical version:    node tools\make-video.js stories\episodes\uploaded\episode-01-the-beginning-of-a-friendship.txt --format vertical
+#    YouTube files only:  node tools\make-video.js stories\episodes\uploaded\episode-01-the-beginning-of-a-friendship.txt --youtube
+#    Instagram files:     make-social.bat stories\episodes\uploaded\episode-01-the-beginning-of-a-friendship.txt
 # ============================================================
 
 title: The Beginning of a Friendship

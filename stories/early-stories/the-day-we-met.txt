@@ -3,9 +3,14 @@
 #  Episode 1: The beginning of a friendship
 #  Target: approximately 7–8 minutes
 # ============================================================
-#  Check:  check-story.bat stories\early-stories\the-day-we-met.txt
-#  Watch:  preview.bat stories\early-stories\the-day-we-met.txt
-#  Make:   make-video.bat stories\early-stories\the-day-we-met.txt
+#  Commands (run them in the project folder, or drag the story onto the .bat file):
+#    Check it:            check-story.bat stories\early-stories\the-day-we-met.txt
+#    Watch it:            preview.bat stories\early-stories\the-day-we-met.txt
+#    Make the video:      make-video.bat stories\early-stories\the-day-we-met.txt
+#    If it stopped:       resume-video.bat stories\early-stories\the-day-we-met.txt
+#    Vertical version:    node tools\make-video.js stories\early-stories\the-day-we-met.txt --format vertical
+#    YouTube files only:  node tools\make-video.js stories\early-stories\the-day-we-met.txt --youtube
+#    Instagram files:     make-social.bat stories\early-stories\the-day-we-met.txt
 # ============================================================
 
 title: The Day We Met

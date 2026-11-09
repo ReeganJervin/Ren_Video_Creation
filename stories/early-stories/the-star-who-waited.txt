@@ -1,7 +1,6 @@
 # ============================================================
 #  Ren & Yuki - Episode 4: The Star Who Waited   (~8-9 min)
 #
-#  Save as:  stories\episodes\episode-04-the-star-who-waited.txt
 #  New in this episode: the FALLEN STAR, and the forest at night.
 #  Still saved for later: the cottage, the beach and the snowy hill.
 #  Callbacks: the old lantern (Episode 3), the owl's "a light that has
@@ -14,6 +13,15 @@
 #
 #  Props in paws (F4 Part D): Ren carries the lantern all episode
 #  (it goes with him from place to place).
+#
+#  Commands (run them in the project folder, or drag the story onto the .bat file):
+#    Check it:            check-story.bat stories\early-stories\the-star-who-waited.txt
+#    Watch it:            preview.bat stories\early-stories\the-star-who-waited.txt
+#    Make the video:      make-video.bat stories\early-stories\the-star-who-waited.txt
+#    If it stopped:       resume-video.bat stories\early-stories\the-star-who-waited.txt
+#    Vertical version:    node tools\make-video.js stories\early-stories\the-star-who-waited.txt --format vertical
+#    YouTube files only:  node tools\make-video.js stories\early-stories\the-star-who-waited.txt --youtube
+#    Instagram files:     make-social.bat stories\early-stories\the-star-who-waited.txt
 # ============================================================
 
 title: The Star Who Waited

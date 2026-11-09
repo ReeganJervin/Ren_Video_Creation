@@ -4,7 +4,14 @@
 #  Rewritten 2026-10-30 in The Compliment's style: the first line is
 #  the joke (no walking in), one joke that grows, and the last line
 #  points back to the start so it loops.
-#  Make it:  make-video.bat shorts\standalone\8-short-the-flower-says.txt
+#
+#  Commands (run them in the project folder, or drag the story onto the .bat file):
+#    Check it:            check-story.bat shorts\standalone\uploaded\8-short-the-flower-says.txt
+#    Watch it:            preview.bat shorts\standalone\uploaded\8-short-the-flower-says.txt
+#    Make the video:      make-video.bat shorts\standalone\uploaded\8-short-the-flower-says.txt
+#    If it stopped:       resume-video.bat shorts\standalone\uploaded\8-short-the-flower-says.txt
+#    YouTube files only:  node tools\make-video.js shorts\standalone\uploaded\8-short-the-flower-says.txt --youtube
+#    Instagram files:     make-social.bat shorts\standalone\uploaded\8-short-the-flower-says.txt
 # ============================================================
 
 title: The Flower Says

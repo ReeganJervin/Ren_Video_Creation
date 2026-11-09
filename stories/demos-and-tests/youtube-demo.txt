@@ -4,6 +4,15 @@
 #  description that come with every video. Under 1 minute.
 #  Make only the YouTube files:
 #    node tools\make-video.js stories\demos-and-tests\youtube-demo.txt --youtube
+#
+#  Commands (run them in the project folder, or drag the story onto the .bat file):
+#    Check it:            check-story.bat stories\demos-and-tests\youtube-demo.txt
+#    Watch it:            preview.bat stories\demos-and-tests\youtube-demo.txt
+#    Make the video:      make-video.bat stories\demos-and-tests\youtube-demo.txt
+#    If it stopped:       resume-video.bat stories\demos-and-tests\youtube-demo.txt
+#    Vertical version:    node tools\make-video.js stories\demos-and-tests\youtube-demo.txt --format vertical
+#    YouTube files only:  node tools\make-video.js stories\demos-and-tests\youtube-demo.txt --youtube
+#    Instagram files:     make-social.bat stories\demos-and-tests\youtube-demo.txt
 # ============================================================
 
 title: The Lantern in the Garden

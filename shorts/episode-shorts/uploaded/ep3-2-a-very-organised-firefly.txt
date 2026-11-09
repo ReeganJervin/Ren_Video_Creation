@@ -1,12 +1,19 @@
 # ============================================================
 #  Episode Short: "A Very Organised Firefly" from Episode 3, The Light in the Deep Forest
 #  (Ren has a theory about the light: a very big firefly, with a lantern)
-#  Make it:  make-video.bat shorts\episode-shorts\ep3-2-a-very-organised-firefly.txt
+#
+#  Commands (run them in the project folder, or drag the story onto the .bat file):
+#    Check it:            check-story.bat shorts\episode-shorts\uploaded\ep3-2-a-very-organised-firefly.txt
+#    Watch it:            preview.bat shorts\episode-shorts\uploaded\ep3-2-a-very-organised-firefly.txt
+#    Make the video:      make-video.bat shorts\episode-shorts\uploaded\ep3-2-a-very-organised-firefly.txt
+#    If it stopped:       resume-video.bat shorts\episode-shorts\uploaded\ep3-2-a-very-organised-firefly.txt
+#    YouTube files only:  node tools\make-video.js shorts\episode-shorts\uploaded\ep3-2-a-very-organised-firefly.txt --youtube
+#    Instagram files:     make-social.bat shorts\episode-shorts\uploaded\ep3-2-a-very-organised-firefly.txt
 # ============================================================
 
 title: A Very Organised Firefly
 type: episode short
 from: episode-03-the-light-in-the-deep-forest
-lines: 48-60
+lines: 56-68
 hook: What is that light in the forest?
 thumbnail text: Organised Firefly

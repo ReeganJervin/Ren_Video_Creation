@@ -1,7 +1,14 @@
 # ============================================================
 #  Episode Short: the opening of "The Beginning of a Friendship"
 #  (scene 1, drawn again for the vertical picture)
-#  Make it:  make-video.bat shorts\episode-shorts\ep1-1-the-summit.txt
+#
+#  Commands (run them in the project folder, or drag the story onto the .bat file):
+#    Check it:            check-story.bat shorts\episode-shorts\uploaded\ep1-1-the-summit.txt
+#    Watch it:            preview.bat shorts\episode-shorts\uploaded\ep1-1-the-summit.txt
+#    Make the video:      make-video.bat shorts\episode-shorts\uploaded\ep1-1-the-summit.txt
+#    If it stopped:       resume-video.bat shorts\episode-shorts\uploaded\ep1-1-the-summit.txt
+#    YouTube files only:  node tools\make-video.js shorts\episode-shorts\uploaded\ep1-1-the-summit.txt --youtube
+#    Instagram files:     make-social.bat shorts\episode-shorts\uploaded\ep1-1-the-summit.txt
 # ============================================================
 
 title: The Summit Is 40 Steps Away

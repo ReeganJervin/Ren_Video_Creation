@@ -1,7 +1,14 @@
 # ============================================================
 #  Ren & Yuki Short - The Staring Contest   (~30 s, vertical)
-#  Save as: shorts\standalone\3-short-staring-contest.txt
 #  Uses: meadow, Ren, Yuki, new moods, shout and thought bubbles.
+#
+#  Commands (run them in the project folder, or drag the story onto the .bat file):
+#    Check it:            check-story.bat shorts\standalone\uploaded\3-short-staring-contest.txt
+#    Watch it:            preview.bat shorts\standalone\uploaded\3-short-staring-contest.txt
+#    Make the video:      make-video.bat shorts\standalone\uploaded\3-short-staring-contest.txt
+#    If it stopped:       resume-video.bat shorts\standalone\uploaded\3-short-staring-contest.txt
+#    YouTube files only:  node tools\make-video.js shorts\standalone\uploaded\3-short-staring-contest.txt --youtube
+#    Instagram files:     make-social.bat shorts\standalone\uploaded\3-short-staring-contest.txt
 # ============================================================
 
 title: The Staring Contest

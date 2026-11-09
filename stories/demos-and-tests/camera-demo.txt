@@ -1,9 +1,16 @@
 # ============================================================
 #  Camera Demo  (automatic editing, comic timing, slow motion, reveals)
-#  Check:  check-story.bat stories\demos-and-tests\camera-demo.txt
-#  Make:   make-video.bat stories\demos-and-tests\camera-demo.txt
 #  With "editing: auto" the camera picks its own shots in
 #  conversations. Manual "shot:" lines still win.
+#
+#  Commands (run them in the project folder, or drag the story onto the .bat file):
+#    Check it:            check-story.bat stories\demos-and-tests\camera-demo.txt
+#    Watch it:            preview.bat stories\demos-and-tests\camera-demo.txt
+#    Make the video:      make-video.bat stories\demos-and-tests\camera-demo.txt
+#    If it stopped:       resume-video.bat stories\demos-and-tests\camera-demo.txt
+#    Vertical version:    node tools\make-video.js stories\demos-and-tests\camera-demo.txt --format vertical
+#    YouTube files only:  node tools\make-video.js stories\demos-and-tests\camera-demo.txt --youtube
+#    Instagram files:     make-social.bat stories\demos-and-tests\camera-demo.txt
 # ============================================================
 
 title: The Missing Cookie

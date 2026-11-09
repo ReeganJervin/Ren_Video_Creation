@@ -1,8 +1,15 @@
 # ============================================================
 #  Test Scenes  (three scenes, three music moods, two places)
-#  Check:  check-story.bat stories\demos-and-tests\test-scenes.txt
-#  Make:   make-video.bat stories\demos-and-tests\test-scenes.txt
 #  This also makes videos\test-scenes-chapters.txt for YouTube.
+#
+#  Commands (run them in the project folder, or drag the story onto the .bat file):
+#    Check it:            check-story.bat stories\demos-and-tests\test-scenes.txt
+#    Watch it:            preview.bat stories\demos-and-tests\test-scenes.txt
+#    Make the video:      make-video.bat stories\demos-and-tests\test-scenes.txt
+#    If it stopped:       resume-video.bat stories\demos-and-tests\test-scenes.txt
+#    Vertical version:    node tools\make-video.js stories\demos-and-tests\test-scenes.txt --format vertical
+#    YouTube files only:  node tools\make-video.js stories\demos-and-tests\test-scenes.txt --youtube
+#    Instagram files:     make-social.bat stories\demos-and-tests\test-scenes.txt
 # ============================================================
 
 title: Test Scenes

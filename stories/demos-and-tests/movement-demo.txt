@@ -1,7 +1,15 @@
 # ============================================================
 #  Movement: every action Ren and Yuki can do (F3)
 #  A morning of hide and seek in the meadow, about 2 minutes.
-#  Make it:  make-video.bat stories\demos-and-tests\movement-demo.txt
+#
+#  Commands (run them in the project folder, or drag the story onto the .bat file):
+#    Check it:            check-story.bat stories\demos-and-tests\movement-demo.txt
+#    Watch it:            preview.bat stories\demos-and-tests\movement-demo.txt
+#    Make the video:      make-video.bat stories\demos-and-tests\movement-demo.txt
+#    If it stopped:       resume-video.bat stories\demos-and-tests\movement-demo.txt
+#    Vertical version:    node tools\make-video.js stories\demos-and-tests\movement-demo.txt --format vertical
+#    YouTube files only:  node tools\make-video.js stories\demos-and-tests\movement-demo.txt --youtube
+#    Instagram files:     make-social.bat stories\demos-and-tests\movement-demo.txt
 # ============================================================
 
 title: Hide and Seek

@@ -3,7 +3,14 @@
 #  Yuki reads Ren's future in a glowing orb. The orb is never wrong.
 #  In The Compliment's and Very Local Wind's style: the first line is the
 #  joke (no walking in), one joke that grows, a last line that loops.
-#  Make it:  make-video.bat shorts\standalone\24-short-the-fortune-orb.txt
+#
+#  Commands (run them in the project folder, or drag the story onto the .bat file):
+#    Check it:            check-story.bat shorts\standalone\24-short-the-fortune-orb.txt
+#    Watch it:            preview.bat shorts\standalone\24-short-the-fortune-orb.txt
+#    Make the video:      make-video.bat shorts\standalone\24-short-the-fortune-orb.txt
+#    If it stopped:       resume-video.bat shorts\standalone\24-short-the-fortune-orb.txt
+#    YouTube files only:  node tools\make-video.js shorts\standalone\24-short-the-fortune-orb.txt --youtube
+#    Instagram files:     make-social.bat shorts\standalone\24-short-the-fortune-orb.txt
 # ============================================================
 
 title: The Fortune Orb

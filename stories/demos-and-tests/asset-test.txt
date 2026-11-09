@@ -2,7 +2,15 @@
 #  Asset Test  (the first four assets made with /new-asset)
 #  The cottage garden (place), the cottage (set piece), the lantern
 #  (prop) and the owl (extra, with its own voice), plus the star.
-#  Check:  check-story.bat stories\demos-and-tests\asset-test.txt
+#
+#  Commands (run them in the project folder, or drag the story onto the .bat file):
+#    Check it:            check-story.bat stories\demos-and-tests\asset-test.txt
+#    Watch it:            preview.bat stories\demos-and-tests\asset-test.txt
+#    Make the video:      make-video.bat stories\demos-and-tests\asset-test.txt
+#    If it stopped:       resume-video.bat stories\demos-and-tests\asset-test.txt
+#    Vertical version:    node tools\make-video.js stories\demos-and-tests\asset-test.txt --format vertical
+#    YouTube files only:  node tools\make-video.js stories\demos-and-tests\asset-test.txt --youtube
+#    Instagram files:     make-social.bat stories\demos-and-tests\asset-test.txt
 # ============================================================
 
 title: Asset Test

@@ -3,15 +3,20 @@
 #  (an earlier draft of a first episode; the real Episode 1 is
 #   stories\episodes\episode-01-the-beginning-of-a-friendship.txt)
 #
-#  Save as:  stories\early-stories\the-day-our-adventure-began.txt
-#  Check:    check-story.bat stories\early-stories\the-day-our-adventure-began.txt
-#  Watch:    preview.bat stories\early-stories\the-day-our-adventure-began.txt
-#  Make:     make-video.bat stories\early-stories\the-day-our-adventure-began.txt
 #
 #  Lines starting with "# LATER:" mark moments that are simplified
 #  for now. When the engine learns those actions (ENGINE-ROADMAP
 #  F3 movement, F4 props), change only those lines and make the
 #  video again. Everything else stays the same.
+#
+#  Commands (run them in the project folder, or drag the story onto the .bat file):
+#    Check it:            check-story.bat stories\early-stories\the-day-our-adventure-began.txt
+#    Watch it:            preview.bat stories\early-stories\the-day-our-adventure-began.txt
+#    Make the video:      make-video.bat stories\early-stories\the-day-our-adventure-began.txt
+#    If it stopped:       resume-video.bat stories\early-stories\the-day-our-adventure-began.txt
+#    Vertical version:    node tools\make-video.js stories\early-stories\the-day-our-adventure-began.txt --format vertical
+#    YouTube files only:  node tools\make-video.js stories\early-stories\the-day-our-adventure-began.txt --youtube
+#    Instagram files:     make-social.bat stories\early-stories\the-day-our-adventure-began.txt
 # ============================================================
 
 title: The Day Our Adventure Began

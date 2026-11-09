@@ -3,7 +3,14 @@
 #  Ren sees a very handsome fox in the river.
 #  In The Compliment's and Very Local Wind's style: the first line is the
 #  joke (no walking in), one joke that grows, a last line that loops.
-#  Make it:  make-video.bat shorts\standalone\28-short-the-handsome-fox.txt
+#
+#  Commands (run them in the project folder, or drag the story onto the .bat file):
+#    Check it:            check-story.bat shorts\standalone\28-short-the-handsome-fox.txt
+#    Watch it:            preview.bat shorts\standalone\28-short-the-handsome-fox.txt
+#    Make the video:      make-video.bat shorts\standalone\28-short-the-handsome-fox.txt
+#    If it stopped:       resume-video.bat shorts\standalone\28-short-the-handsome-fox.txt
+#    YouTube files only:  node tools\make-video.js shorts\standalone\28-short-the-handsome-fox.txt --youtube
+#    Instagram files:     make-social.bat shorts\standalone\28-short-the-handsome-fox.txt
 # ============================================================
 
 title: The Handsome Fox

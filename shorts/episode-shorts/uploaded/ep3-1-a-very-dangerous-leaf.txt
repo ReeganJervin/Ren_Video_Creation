@@ -1,13 +1,20 @@
 # ============================================================
 #  Episode Short: "A Very Dangerous Leaf" from Episode 3,
 #  The Light in the Deep Forest (sneaking into the deep forest)
-#  Make it:  make-video.bat shorts\episode-shorts\ep3-1-a-very-dangerous-leaf.txt
+#
+#  Commands (run them in the project folder, or drag the story onto the .bat file):
+#    Check it:            check-story.bat shorts\episode-shorts\uploaded\ep3-1-a-very-dangerous-leaf.txt
+#    Watch it:            preview.bat shorts\episode-shorts\uploaded\ep3-1-a-very-dangerous-leaf.txt
+#    Make the video:      make-video.bat shorts\episode-shorts\uploaded\ep3-1-a-very-dangerous-leaf.txt
+#    If it stopped:       resume-video.bat shorts\episode-shorts\uploaded\ep3-1-a-very-dangerous-leaf.txt
+#    YouTube files only:  node tools\make-video.js shorts\episode-shorts\uploaded\ep3-1-a-very-dangerous-leaf.txt --youtube
+#    Instagram files:     make-social.bat shorts\episode-shorts\uploaded\ep3-1-a-very-dangerous-leaf.txt
 # ============================================================
 
 title: A Very Dangerous Leaf
 type: episode short
 from: episode-03-the-light-in-the-deep-forest
-lines: 119-139
+lines: 127-147
 hook: Something is moving in the dark forest...
 thumbnail text: Dangerous Leaf!
 ending: Watch the full episode!

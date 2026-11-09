@@ -3,7 +3,14 @@
 #  Ren is not afraid of the ocean. The ocean has other ideas.
 #  In The Compliment's and Very Local Wind's style: the first line is the
 #  joke (no walking in), one joke that grows, a last line that loops.
-#  Make it:  make-video.bat shorts\standalone\27-short-ren-vs-the-ocean.txt
+#
+#  Commands (run them in the project folder, or drag the story onto the .bat file):
+#    Check it:            check-story.bat shorts\standalone\uploaded\27-short-ren-vs-the-ocean.txt
+#    Watch it:            preview.bat shorts\standalone\uploaded\27-short-ren-vs-the-ocean.txt
+#    Make the video:      make-video.bat shorts\standalone\uploaded\27-short-ren-vs-the-ocean.txt
+#    If it stopped:       resume-video.bat shorts\standalone\uploaded\27-short-ren-vs-the-ocean.txt
+#    YouTube files only:  node tools\make-video.js shorts\standalone\uploaded\27-short-ren-vs-the-ocean.txt --youtube
+#    Instagram files:     make-social.bat shorts\standalone\uploaded\27-short-ren-vs-the-ocean.txt
 # ============================================================
 
 title: Ren vs the Ocean

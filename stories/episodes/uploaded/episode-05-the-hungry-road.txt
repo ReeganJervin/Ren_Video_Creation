@@ -1,7 +1,6 @@
 # ============================================================
 #  Ren & Yuki - Episode 5: The Hungry Road   (~8 min)
 #
-#  Save as:  stories\episodes\episode-05-the-hungry-road.txt
 #  The owner's story: following the map, the river, getting hungry,
 #  the last cookie (Ren lets Yuki have the big piece), Ren goes to
 #  find fruit, tastes it to be sure it's safe for Yuki... and faints.
@@ -9,6 +8,15 @@
 #  the fruit (made in F4 Part D stop 2).
 #  Callbacks: "the big half" (the cookie Shorts), rule three "always
 #  bring a snack", rule nine "next time, we bring more snacks" (Ep 4).
+#
+#  Commands (run them in the project folder, or drag the story onto the .bat file):
+#    Check it:            check-story.bat stories\episodes\uploaded\episode-05-the-hungry-road.txt
+#    Watch it:            preview.bat stories\episodes\uploaded\episode-05-the-hungry-road.txt
+#    Make the video:      make-video.bat stories\episodes\uploaded\episode-05-the-hungry-road.txt
+#    If it stopped:       resume-video.bat stories\episodes\uploaded\episode-05-the-hungry-road.txt
+#    Vertical version:    node tools\make-video.js stories\episodes\uploaded\episode-05-the-hungry-road.txt --format vertical
+#    YouTube files only:  node tools\make-video.js stories\episodes\uploaded\episode-05-the-hungry-road.txt --youtube
+#    Instagram files:     make-social.bat stories\episodes\uploaded\episode-05-the-hungry-road.txt
 # ============================================================
 
 title: The Hungry Road

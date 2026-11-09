@@ -3,10 +3,15 @@
 # Part 2: The Day They Met
 # ============================================================
 #
-# Check:  check-story.bat stories\early-stories\stranger-in-the-meadow.txt
-# Watch:  preview\.bat stories\early-stories\stranger-in-the-meadow.txt
-# Make:   make-video.bat stories\early-stories\stranger-in-the-meadow.txt
 #
+#  Commands (run them in the project folder, or drag the story onto the .bat file):
+#    Check it:            check-story.bat stories\early-stories\stranger-in-the-meadow.txt
+#    Watch it:            preview.bat stories\early-stories\stranger-in-the-meadow.txt
+#    Make the video:      make-video.bat stories\early-stories\stranger-in-the-meadow.txt
+#    If it stopped:       resume-video.bat stories\early-stories\stranger-in-the-meadow.txt
+#    Vertical version:    node tools\make-video.js stories\early-stories\stranger-in-the-meadow.txt --format vertical
+#    YouTube files only:  node tools\make-video.js stories\early-stories\stranger-in-the-meadow.txt --youtube
+#    Instagram files:     make-social.bat stories\early-stories\stranger-in-the-meadow.txt
 # ============================================================
 
 title: A Stranger in the Meadow

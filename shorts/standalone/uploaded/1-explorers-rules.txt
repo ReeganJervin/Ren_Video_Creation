@@ -2,7 +2,14 @@
 #  Short: Ren's three explorer rules
 #  (an independent Short made from Ren's lines in
 #   stories\episodes\episode-01-the-beginning-of-a-friendship.txt, scene 2)
-#  Make it:  make-video.bat shorts\standalone\1-explorers-rules.txt
+#
+#  Commands (run them in the project folder, or drag the story onto the .bat file):
+#    Check it:            check-story.bat shorts\standalone\uploaded\1-explorers-rules.txt
+#    Watch it:            preview.bat shorts\standalone\uploaded\1-explorers-rules.txt
+#    Make the video:      make-video.bat shorts\standalone\uploaded\1-explorers-rules.txt
+#    If it stopped:       resume-video.bat shorts\standalone\uploaded\1-explorers-rules.txt
+#    YouTube files only:  node tools\make-video.js shorts\standalone\uploaded\1-explorers-rules.txt --youtube
+#    Instagram files:     make-social.bat shorts\standalone\uploaded\1-explorers-rules.txt
 # ============================================================
 
 title: Ren's Three Explorer Rules

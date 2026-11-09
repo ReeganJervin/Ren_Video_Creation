@@ -1,7 +1,6 @@
 # ============================================================
 #  Ren & Yuki - Episode 3: The Old Lantern   (~8 min)
 #
-#  Save as:  stories\episodes\episode-03-the-old-lantern.txt
 #  New in this episode: the RIVER and the OLD LANTERN.
 #  Still saved for later: the fallen star (Episode 4), the cottage,
 #  the beach and the snowy hill.
@@ -11,6 +10,15 @@
 #  Ren's "very local wind", and "always bring a snack".
 #
 #  Props in paws (F4 Part D): Ren's map, and Ren carrying the lantern.
+#
+#  Commands (run them in the project folder, or drag the story onto the .bat file):
+#    Check it:            check-story.bat stories\early-stories\the-old-lantern.txt
+#    Watch it:            preview.bat stories\early-stories\the-old-lantern.txt
+#    Make the video:      make-video.bat stories\early-stories\the-old-lantern.txt
+#    If it stopped:       resume-video.bat stories\early-stories\the-old-lantern.txt
+#    Vertical version:    node tools\make-video.js stories\early-stories\the-old-lantern.txt --format vertical
+#    YouTube files only:  node tools\make-video.js stories\early-stories\the-old-lantern.txt --youtube
+#    Instagram files:     make-social.bat stories\early-stories\the-old-lantern.txt
 # ============================================================
 
 title: The Old Lantern

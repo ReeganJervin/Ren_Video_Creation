@@ -1,13 +1,20 @@
 # ============================================================
 #  Episode Short: "Brave From Behind" from Episode 4, The Star Who Waited
 #  (something in the dark forest goes HOO!)
-#  Make it:  make-video.bat shorts\episode-shorts\ep4-brave-from-behind.txt
+#
+#  Commands (run them in the project folder, or drag the story onto the .bat file):
+#    Check it:            check-story.bat stories\early-stories\short-brave-from-behind.txt
+#    Watch it:            preview.bat stories\early-stories\short-brave-from-behind.txt
+#    Make the video:      make-video.bat stories\early-stories\short-brave-from-behind.txt
+#    If it stopped:       resume-video.bat stories\early-stories\short-brave-from-behind.txt
+#    YouTube files only:  node tools\make-video.js stories\early-stories\short-brave-from-behind.txt --youtube
+#    Instagram files:     make-social.bat stories\early-stories\short-brave-from-behind.txt
 # ============================================================
 
 title: Brave From Behind
 type: episode short
 from: the-star-who-waited
-lines: 100-117
+lines: 108-125
 hook: Something in the dark forest...
 thumbnail text: Brave From Behind
 ending: Watch the full episode!

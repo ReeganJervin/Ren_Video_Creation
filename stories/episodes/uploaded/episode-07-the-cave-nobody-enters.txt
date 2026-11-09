@@ -1,7 +1,6 @@
 # ============================================================
 #  Ren & Yuki - Episode 7: The Cave Nobody Enters   (~8 min)
 #
-#  Save as:  stories\episodes\episode-07-the-cave-nobody-enters.txt
 #  The owner's story: on the road they meet another owl, who laughs at
 #  the idea of treasure, reads the map, and tells them about the Dark
 #  Cave nobody has ever entered (too dark even for an owl, and fire
@@ -10,6 +9,15 @@
 #  New in this episode: the snowy hill (first time), the grey owl and
 #  the Dark Cave (made in F4 Part D stop 2).
 #  It ends at the cave: to be continued in Episode 8.
+#
+#  Commands (run them in the project folder, or drag the story onto the .bat file):
+#    Check it:            check-story.bat stories\episodes\uploaded\episode-07-the-cave-nobody-enters.txt
+#    Watch it:            preview.bat stories\episodes\uploaded\episode-07-the-cave-nobody-enters.txt
+#    Make the video:      make-video.bat stories\episodes\uploaded\episode-07-the-cave-nobody-enters.txt
+#    If it stopped:       resume-video.bat stories\episodes\uploaded\episode-07-the-cave-nobody-enters.txt
+#    Vertical version:    node tools\make-video.js stories\episodes\uploaded\episode-07-the-cave-nobody-enters.txt --format vertical
+#    YouTube files only:  node tools\make-video.js stories\episodes\uploaded\episode-07-the-cave-nobody-enters.txt --youtube
+#    Instagram files:     make-social.bat stories\episodes\uploaded\episode-07-the-cave-nobody-enters.txt
 # ============================================================
 
 title: The Cave Nobody Enters

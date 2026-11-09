@@ -29,6 +29,8 @@ The command files below keep working exactly as before.
 
 ## Making a video
 
+Every story file has the commands for making it in the box at its top (check it, watch it, make the video, its YouTube and Instagram files). After you write a new story, run `node tools\story-commands.js` to add its commands.
+
 1. Copy `stories\demos-and-tests\_template.txt` to a new name, for example `stories\my-story.txt`, and write your story. The full list of lines you can use is in **[STORY-GUIDE.md](STORY-GUIDE.md)**.
 2. Check it: `check-story.bat stories\my-story.txt`. This finds mistakes in seconds.
 3. Watch it live with sound (optional): `preview.bat stories\my-story.txt`. This opens in your browser. Press Ctrl+C in the window to stop.
@@ -129,6 +131,7 @@ The results are in `videos\<name>\<name>-report.txt`. Each line starts with `PAS
 | `tools\channel-art.js` | The YouTube channel's profile picture, banner and watermark, plus the channel texts, in `channel\` (`node tools\channel-art.js`) |
 | `tools\tidy-videos.js` | Moves the files of videos made before each video had its own folder into `videos\<story>\` |
 | `tools\instagram-profile.js` | The Instagram profile pictures: profile picture, Highlight covers, "Meet Ren & Yuki" carousel |
+| `tools\story-commands.js` | Puts the commands for making a story (check, watch, make, YouTube and Instagram files) at the top of every story file, and keeps episode Shorts' `lines:` pointing at the same lines (`node tools\story-commands.js`) |
 | `tools\social.js` | The Instagram files: Reel cover, picture post, carousel and caption |
 | `tools\end-screen-guide.js` | Draws `docs\youtube-end-screen.png`, which shows where YouTube's end-screen elements go |
 | `tools\scenes.js` | Chapters and the extra checks for stories with scenes |

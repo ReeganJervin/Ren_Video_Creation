@@ -37,7 +37,7 @@ Keep both of them in the picture with `shot: medium on both` near the top (other
 
 ## The Couple Things folder
 
-Every Couple Things story goes in the folder **`shorts\couple-things\`**. Start a new one by copying `shorts\couple-things\_template.txt` (it shows the five steps of the recipe). Stories in this folder are the **"Couple Things" series**: their YouTube description says "Ren & Yuki: Couple Things" in the title, has the playlist line and series hashtags, and their Instagram caption gets `#CoupleThings`. Make them as usual: `make-video.bat` for the video and the YouTube files, `make-social.bat` for Instagram. They also show in the studio app.
+Every Couple Things story goes in the folder **`shorts\couple-things\`**. Start a new one by copying `shorts\couple-things\_template.txt` (it shows the five steps of the recipe). Stories in this folder are the **"Couple Things" series**: their YouTube description says "Ren & Yuki: Couple Things" in the title, has the playlist line and series hashtags, and their Instagram caption gets `#CoupleThings`. Make them as usual: `make-video.bat` for the video and the YouTube files, `make-social.bat` for Instagram (each story has these commands at its top; for a new story, run `node tools\story-commands.js` once to add them). They also show in the studio app.
 
 ## Examples (in `shorts\couple-things\`, all rendered and checked)
 

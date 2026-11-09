@@ -1,7 +1,6 @@
 # ============================================================
 #  Ren & Yuki - Episode 3: The Light in the Deep Forest   (~8-9 min)
 #
-#  Save as:  stories\episodes\episode-03-the-light-in-the-deep-forest.txt
 #  The owner's story: the next day, the light in the deep forest,
 #  the owl who has never gone that deep, the fallen star, and the
 #  legend of the Great Tree.
@@ -9,6 +8,15 @@
 #  Callbacks: the little light at the end of Episode 2, "very local
 #  wind", rule five ("being scared is less scary together"), the owl.
 #  This episode adds explorer's rule number seven.
+#
+#  Commands (run them in the project folder, or drag the story onto the .bat file):
+#    Check it:            check-story.bat stories\episodes\uploaded\episode-03-the-light-in-the-deep-forest.txt
+#    Watch it:            preview.bat stories\episodes\uploaded\episode-03-the-light-in-the-deep-forest.txt
+#    Make the video:      make-video.bat stories\episodes\uploaded\episode-03-the-light-in-the-deep-forest.txt
+#    If it stopped:       resume-video.bat stories\episodes\uploaded\episode-03-the-light-in-the-deep-forest.txt
+#    Vertical version:    node tools\make-video.js stories\episodes\uploaded\episode-03-the-light-in-the-deep-forest.txt --format vertical
+#    YouTube files only:  node tools\make-video.js stories\episodes\uploaded\episode-03-the-light-in-the-deep-forest.txt --youtube
+#    Instagram files:     make-social.bat stories\episodes\uploaded\episode-03-the-light-in-the-deep-forest.txt
 # ============================================================
 
 title: The Light in the Deep Forest

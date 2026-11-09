@@ -1,13 +1,20 @@
 # ============================================================
 #  Episode Short: "Wake Up, Silly Fox!" from Episode 6, Ren, Wake Up!
 #  (Yuki finds Ren "napping" under the fruit tree)
-#  Make it:  make-video.bat shorts\episode-shorts\ep6-1-wake-up-silly-fox.txt
+#
+#  Commands (run them in the project folder, or drag the story onto the .bat file):
+#    Check it:            check-story.bat shorts\episode-shorts\ep6-1-wake-up-silly-fox.txt
+#    Watch it:            preview.bat shorts\episode-shorts\ep6-1-wake-up-silly-fox.txt
+#    Make the video:      make-video.bat shorts\episode-shorts\ep6-1-wake-up-silly-fox.txt
+#    If it stopped:       resume-video.bat shorts\episode-shorts\ep6-1-wake-up-silly-fox.txt
+#    YouTube files only:  node tools\make-video.js shorts\episode-shorts\ep6-1-wake-up-silly-fox.txt --youtube
+#    Instagram files:     make-social.bat shorts\episode-shorts\ep6-1-wake-up-silly-fox.txt
 # ============================================================
 
 title: Wake Up, Silly Fox!
 type: episode short
 from: episode-06-ren-wake-up
-lines: 87-98
+lines: 95-106
 hook: She searched all night... and found THIS
 thumbnail text: WAKE UP, REN!
 ending: Watch the full episode!

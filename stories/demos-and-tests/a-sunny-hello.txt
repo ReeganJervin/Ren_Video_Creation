@@ -1,4 +1,13 @@
 # A short daytime story that shows Ren's moods.
+#
+#  Commands (run them in the project folder, or drag the story onto the .bat file):
+#    Check it:            check-story.bat stories\demos-and-tests\a-sunny-hello.txt
+#    Watch it:            preview.bat stories\demos-and-tests\a-sunny-hello.txt
+#    Make the video:      make-video.bat stories\demos-and-tests\a-sunny-hello.txt
+#    If it stopped:       resume-video.bat stories\demos-and-tests\a-sunny-hello.txt
+#    Vertical version:    node tools\make-video.js stories\demos-and-tests\a-sunny-hello.txt --format vertical
+#    YouTube files only:  node tools\make-video.js stories\demos-and-tests\a-sunny-hello.txt --youtube
+#    Instagram files:     make-social.bat stories\demos-and-tests\a-sunny-hello.txt
 
 title: A Sunny Hello
 place: meadow

@@ -1,7 +1,6 @@
 # ============================================================
 #  Ren & Yuki - Episode 4: The Great Tree   (~8-9 min)
 #
-#  Save as:  stories\episodes\episode-04-the-great-tree.txt
 #  The owner's story: half a day's walk to the Great Tree, the full
 #  moon, the star goes home, the tree drops a map, the owl gives up,
 #  Ren refuses to, and Yuki chooses to follow the map with him.
@@ -10,6 +9,15 @@
 #  Callbacks: the legend (Episode 3), Yuki's condition "sometimes I
 #  choose where we go" (Episode 1), "very local wind".
 #  This episode adds explorer's rule number eight.
+#
+#  Commands (run them in the project folder, or drag the story onto the .bat file):
+#    Check it:            check-story.bat stories\episodes\uploaded\episode-04-the-great-tree.txt
+#    Watch it:            preview.bat stories\episodes\uploaded\episode-04-the-great-tree.txt
+#    Make the video:      make-video.bat stories\episodes\uploaded\episode-04-the-great-tree.txt
+#    If it stopped:       resume-video.bat stories\episodes\uploaded\episode-04-the-great-tree.txt
+#    Vertical version:    node tools\make-video.js stories\episodes\uploaded\episode-04-the-great-tree.txt --format vertical
+#    YouTube files only:  node tools\make-video.js stories\episodes\uploaded\episode-04-the-great-tree.txt --youtube
+#    Instagram files:     make-social.bat stories\episodes\uploaded\episode-04-the-great-tree.txt
 # ============================================================
 
 title: The Great Tree
