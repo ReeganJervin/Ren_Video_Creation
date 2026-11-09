@@ -68,12 +68,12 @@ The account opens with how Ren and Yuki met, so every new follower can start fro
 
 | Order | Post | Files |
 |---|---|---|
-| 1 | **Reel: Part 1, How We Met** | `shorts\couple-things\couple-part1-how-we-met.txt` |
+| 1 | **Reel: Part 1, How We Met** | `shorts\couple-things\1-couple-how-we-met.txt` |
 | 2 | **Carousel: Meet Ren & Yuki** | `meet-us-1.jpg` to `meet-us-4.jpg` (in this folder) |
-| 3 | **Reel: Part 2, Our First Date** | `couple-part2-first-date.txt` |
-| 4 | **Reel: Part 3, I Like Your Ears** | `couple-part3-i-like-your-ears.txt` |
-| 5 | Reel: Who Said It First? (continues the joke from Part 3) | `couple-who-said-it-first.txt` |
-| 6 on | The other Couple Things, with your other Shorts in between | see "Posting plan" in `STORY-IDEAS.md` |
+| 3 | **Reel: Part 2, Our First Date** | `2-couple-our-first-date.txt` |
+| 4 | **Reel: Part 3, I Like Your Ears** | `3-couple-i-like-your-ears.txt` |
+| 5 | Reel: Who Said It First? (continues the joke from Part 3) | `4-couple-who-said-it-first.txt` |
+| 6 on | The other Couple Things (5, 6, 7…, in file-number order), with your other Shorts in between | see "Posting plan" in `STORY-IDEAS.md` |
 
 For each Reel: make the video with `make-video.bat` and the Instagram files with `make-social.bat`. The caption, cover and carousel are in `videos\<name>\instagram\`, next to the video.
 

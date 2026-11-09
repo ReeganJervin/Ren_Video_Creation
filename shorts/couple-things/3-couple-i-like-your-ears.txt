@@ -1,15 +1,15 @@
 # ============================================================
 #  Ren & Yuki: Couple Things - Part 3: I Like Your Ears   (~40 s, vertical)
 #  The beginning of the series: Ren tries to say "I love you", and Yuki says
-#  it first (the running joke in couple-who-said-it-first.txt). Post this third.
+#  it first (the running joke in 4-couple-who-said-it-first.txt). Post this third.
 #
 #  Commands (run them in the project folder, or drag the story onto the .bat file):
-#    Check it:            check-story.bat shorts\couple-things\couple-part3-i-like-your-ears.txt
-#    Watch it:            preview.bat shorts\couple-things\couple-part3-i-like-your-ears.txt
-#    Make the video:      make-video.bat shorts\couple-things\couple-part3-i-like-your-ears.txt
-#    If it stopped:       resume-video.bat shorts\couple-things\couple-part3-i-like-your-ears.txt
-#    YouTube files only:  node tools\make-video.js shorts\couple-things\couple-part3-i-like-your-ears.txt --youtube
-#    Instagram files:     make-social.bat shorts\couple-things\couple-part3-i-like-your-ears.txt
+#    Check it:            check-story.bat shorts\couple-things\3-couple-i-like-your-ears.txt
+#    Watch it:            preview.bat shorts\couple-things\3-couple-i-like-your-ears.txt
+#    Make the video:      make-video.bat shorts\couple-things\3-couple-i-like-your-ears.txt
+#    If it stopped:       resume-video.bat shorts\couple-things\3-couple-i-like-your-ears.txt
+#    YouTube files only:  node tools\make-video.js shorts\couple-things\3-couple-i-like-your-ears.txt --youtube
+#    Instagram files:     make-social.bat shorts\couple-things\3-couple-i-like-your-ears.txt
 # ============================================================
 
 title: I Like Your Ears

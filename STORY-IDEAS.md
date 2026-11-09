@@ -41,26 +41,21 @@ Every Couple Things story goes in the folder **`shorts\couple-things\`**. Start 
 
 ## Examples (in `shorts\couple-things\`, all rendered and checked)
 
-The series starts with **how they met**, in three parts. Post these first, in order:
+The files are **numbered in posting order**. A new one gets the next number (`12-couple-...txt`). The series starts with **how they met**, in three parts, then *Who Said It First?*, which continues the joke from Part 3:
 
 | File | The moment |
 |---|---|
-| `couple-part1-how-we-met.txt` | **Part 1:** Ren "conquers" Yuki's hill; the first awkward hello; "Same time tomorrow?" |
-| `couple-part2-first-date.txt` | **Part 2:** "Is this a date?" "It's an expedition!" …"Unless you want it to be a date." |
-| `couple-part3-i-like-your-ears.txt` | **Part 3:** Ren tries to say it ("I like your ears"), and Yuki says "I love you" first |
-
-Then the Couple Things (start with *Who Said It First?*, which continues the joke from Part 3):
-
-| File | The moment |
-|---|---|
-| `couple-where-to-eat.txt` | "Anything is fine"… but not pizza… then pizza |
-| `couple-im-fine.txt` | "I'm fine" is not fine: Ren works out he forgot to call |
-| `couple-you-go-first.txt` | Neither will say goodbye first, until morning |
-| `couple-what-day-is-it.txt` | "Do you know what day it is?" Ren panics. It's pancake Sunday |
-| `couple-five-more-minutes.txt` | "Five more minutes"… and Ren sleeps through the whole picnic |
-| `couple-the-snore.txt` | Ren snores but "doesn't snore"; he blames the owl, and the owl answers |
-| `couple-who-said-it-first.txt` | Who said "I love you" first? They make up… and still both say "me" |
-| `couple-the-long-way-home.txt` | Ren's "shortcut" home is the long way, on purpose (forest, river, back to the forest) |
+| `1-couple-how-we-met.txt` | **Part 1:** Ren "conquers" Yuki's hill; the first awkward hello; "Same time tomorrow?" |
+| `2-couple-our-first-date.txt` | **Part 2:** "Is this a date?" "It's an expedition!" …"Unless you want it to be a date." |
+| `3-couple-i-like-your-ears.txt` | **Part 3:** Ren tries to say it ("I like your ears"), and Yuki says "I love you" first |
+| `4-couple-who-said-it-first.txt` | Who said "I love you" first? They make up… and still both say "me" |
+| `5-couple-where-to-eat.txt` | "Anything is fine"… but not pizza… then pizza |
+| `6-couple-im-fine.txt` | "I'm fine" is not fine: Ren works out he forgot to call |
+| `7-couple-you-go-first.txt` | Neither will say goodbye first, until morning |
+| `8-couple-what-day-is-it.txt` | "Do you know what day it is?" Ren panics. It's pancake Sunday |
+| `9-couple-five-more-minutes.txt` | "Five more minutes"… and Ren sleeps through the whole picnic |
+| `10-couple-the-snore.txt` | Ren snores but "doesn't snore"; he blames the owl, and the owl answers |
+| `11-couple-the-long-way-home.txt` | Ren's "shortcut" home is the long way, on purpose (forest, river, back to the forest) |
 
 ## 30 ideas to write next
 

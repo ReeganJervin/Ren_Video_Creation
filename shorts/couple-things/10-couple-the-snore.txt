@@ -3,12 +3,12 @@
 #  Sleep: he snores, and he will never admit it.
 #
 #  Commands (run them in the project folder, or drag the story onto the .bat file):
-#    Check it:            check-story.bat shorts\couple-things\couple-the-snore.txt
-#    Watch it:            preview.bat shorts\couple-things\couple-the-snore.txt
-#    Make the video:      make-video.bat shorts\couple-things\couple-the-snore.txt
-#    If it stopped:       resume-video.bat shorts\couple-things\couple-the-snore.txt
-#    YouTube files only:  node tools\make-video.js shorts\couple-things\couple-the-snore.txt --youtube
-#    Instagram files:     make-social.bat shorts\couple-things\couple-the-snore.txt
+#    Check it:            check-story.bat shorts\couple-things\10-couple-the-snore.txt
+#    Watch it:            preview.bat shorts\couple-things\10-couple-the-snore.txt
+#    Make the video:      make-video.bat shorts\couple-things\10-couple-the-snore.txt
+#    If it stopped:       resume-video.bat shorts\couple-things\10-couple-the-snore.txt
+#    YouTube files only:  node tools\make-video.js shorts\couple-things\10-couple-the-snore.txt --youtube
+#    Instagram files:     make-social.bat shorts\couple-things\10-couple-the-snore.txt
 # ============================================================
 
 title: The Snore
