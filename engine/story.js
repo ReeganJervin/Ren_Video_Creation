@@ -581,21 +581,46 @@
     const inside = x => x >= MINX && x <= MAXX;
     const toward = (a, o) => Math.sign(o.x - a.x) || 1;
     const nearestSpot = x => [spots().left, spots().center, spots().right].reduce((p, q) => (Math.abs(q - x) < Math.abs(p - x) ? q : p));
+    // a flying extra up in the air (until it lands): nobody on the ground steps aside for it; it keeps clear of them itself
+    const flying = a => !!a.def.fly && a.air !== false;
     // the other character a move to x would bump into, if any
-    const crowding = (a, x) => others(a).find(o => Math.abs(x - o.x) < GAP);
+    const crowding = (a, x) => others(a).find(o => !flying(o) && Math.abs(x - o.x) < GAP);
     // Two characters near each other stand as a pair centred on `c`: the mover keeps the side it comes from,
     // and the one already standing steps over (after finishing any move of its own). Returns how long it takes.
     function pairUp(a, o, s, c, gap, slow) {
       const side = Math.sign(a.x - o.x) || (a.x < c ? -1 : 1);
       c = Math.max(MINX + gap / 2, Math.min(MAXX - gap / 2, c));
       const at = o.free > s ? o.free - 0.15 : s;
-      const want = c - side * gap / 2, dO = moveTo(o, at, want, false) + (at - s);
+      const want = c - side * gap / 2;
+      // stepping over never pushes the one standing into its other neighbour (closer than they already are):
+      // then it stays where it is, and the mover stops beside it
+      const squeezed = others(o).some(q => q !== a && !flying(q) && Math.abs(want - q.x) < Math.min(gap, Math.abs(o.x - q.x)));
+      const dO = squeezed ? 0 : moveTo(o, at, want, false) + (at - s);
       // if the other couldn't get there (say a prop was in the way), keep the full gap from where they really are
       const dA = moveTo(a, s, Math.abs(o.x - want) > 4 ? o.x + side * gap : c + side * gap / 2, slow);
       return Math.max(dA, dO);
     }
+    // where a flying extra hovers: the spot itself, or else the nearest place beside it that is clear of everyone
+    // on the ground (never right above someone's head), preferring the side it comes from
+    function clearSky(a, x) {
+      const below = others(a).filter(o => !flying(o)), clear = y => below.every(o => Math.abs(y - o.x) >= GAP - 0.5);
+      if (clear(x)) return x;
+      const from = Math.sign(a.x - x) || -1, off = y => Math.round(Math.abs(y - x));
+      const near = below.flatMap(o => [o.x - GAP, o.x + GAP]).filter(y => y >= MINX && y <= MAXX && clear(y))
+        .sort((p, q) => off(p) - off(q) || (Math.sign(q - x) === from) - (Math.sign(p - x) === from));
+      return near.length ? near[0] : x;
+    }
+    // after a beat: a flying extra that someone on the ground now stands under moves aside
+    function makeRoom(s) {
+      cast.map(i => A[i]).filter(f => flying(f) && onStage(f)).forEach(f => {
+        const x = clearSky(f, f.x);
+        if (Math.abs(x - f.x) >= 4) moveTo(f, f.free > s ? f.free - 0.15 : s, x, false);
+      });
+    }
     // going to a stage spot: alone it is the spot itself; next to someone they share it as a centred pair
+    // (a flying extra finds a clear place in the air instead)
     function goToSpot(a, s, x, slow) {
+      if (flying(a)) return moveTo(a, s, clearSky(a, x), slow);
       const o = crowding(a, x);
       return o ? pairUp(a, o, s, x, GAP, slow) : moveTo(a, s, x, slow);
     }
@@ -773,11 +798,11 @@
           lookAtActor(a, o, s + Math.max(0.2, dur - 0.4), false);
           break;
         }
-        case 'exit': who.forEach(a => { if (a.ch.air) a.ch.air.push({ t: s, v: 1, dur: 0.6 }); dur = Math.max(dur, moveTo(a, s, OFF[b.to], false)); }); break;
+        case 'exit': who.forEach(a => { if (a.ch.air) { a.ch.air.push({ t: s, v: 1, dur: 0.6 }); a.air = true; } dur = Math.max(dur, moveTo(a, s, OFF[b.to], false)); }); break;
         // a flying extra lands where it is (wings folded) or takes off again; only made when a story uses it
         case 'land': who.forEach(a => {
           if (!a.def.fly) { errors.push(`Line ${b.line}: only things that fly can ${b.down ? 'land' : 'take off'}.`); return; }
-          (a.ch.air || (a.ch.air = [])).push({ t: s, v: b.down ? 0 : 1, dur: 0.9 });
+          (a.ch.air || (a.ch.air = [])).push({ t: s, v: b.down ? 0 : 1, dur: 0.9 }); a.air = !b.down;
           sfx('rustle', s, { dur: 0.8, gain: 0.5 }); dur = 1.0;
         }); break;
         // an extra swimming past: in from one side and out the other
@@ -1061,6 +1086,8 @@
           break;
         }
       }
+      // (once a group of "+" lines has finished moving)
+      if (!(beats[beats.indexOf(b) + 1] || {}).together) makeRoom(s);
       if (snap) {
         // the action takes about the asked-for time (never faster than normal)
         const k = dur > 0 ? Math.max(1, slow.secs / dur) : 1;

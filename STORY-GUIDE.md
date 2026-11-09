@@ -196,7 +196,7 @@ Extras can do the simple things characters do:
 | Line | What happens |
 |---|---|
 | `owl enters` / `owl enters from right` / `owl exits to left` | Comes in or goes out |
-| `owl flies in` / `owl flies away` | For flying extras (they stay up in the air) |
+| `owl flies in` / `owl flies away` | For flying extras (they stay up in the air). Nobody on the ground steps aside for a flying extra: it stops in a clear place beside them (never above someone's head), and moves aside when someone walks under it |
 | `owl lands` / `owl takes off` | A flying extra settles on the ground where it is (wings folded), for example during a long talk, and flies up again. `flies away` takes off by itself |
 | `fish swims by` | Swims across, from one side to the other |
 | `owl hops`, `owl looks at ren`, `owl feels happy` | Like the characters |

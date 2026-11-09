@@ -352,8 +352,11 @@
             shape(s => 0.025 + 0.06 * Math.pow(0.5 + 0.5 * Math.sin(s * 0.9 + 0.6), 2));
             break;
         }
+        // the place sound still going at the end of the video starts its fade at the same moment, but is silent for
+        // the video's last 0.3 s (a loud place, like the forest, could otherwise still be heard as the picture ends)
+        const quiet = Math.abs(t1 - T.duration) < 0.01 ? Math.min(0.3, c.fo / 2) : 0;
         out.gain.setValueAtTime(0, at(t0)); out.gain.linearRampToValueAtTime(1, at(t0 + c.fi));
-        out.gain.setValueAtTime(1, at(Math.max(t0 + c.fi, t1 - c.fo))); out.gain.linearRampToValueAtTime(0, at(t1));
+        out.gain.setValueAtTime(1, at(Math.max(t0 + c.fi, t1 - c.fo))); out.gain.linearRampToValueAtTime(0, at(t1 - quiet));
       },
       // a soft page-turn whoosh and a little chime when the story moves to a new place
       pageTurn(c) {
