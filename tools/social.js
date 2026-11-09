@@ -103,12 +103,17 @@ function question(view) {
   const both = ['ren', 'yuki'].every(id => view.cast.includes(id));
   const star = view.cast.filter(id => WHO[id]).map(id => WHO[id].split(' ')[0])[0];
   const qs = both
-    ? ['Who are you more like: Ren or Yuki? 🦊🐰', 'What should Ren and Yuki do next? Tell us in the comments! 👇', 'Tag a friend who is the Yuki to your Ren! 💛', 'Would you go on this adventure with them? 🌟']
+    // (couple stories: people send them to their partner, so the question asks for that; STORY-IDEAS.md)
+    ? ['Tag your partner who does this! 😂', 'Be honest: are you Ren or Yuki in your relationship? 🦊🐰', 'Has this ever happened to you two? Tell us in the comments! 👇', 'Send this to the Yuki in your life 💛']
     : star ? [`What should ${star} do next? Tell us in the comments! 👇`, `Have you ever felt like ${star}? 💛`, `Tag a friend who would love ${star}! 🌟`]
       : ['What should happen next? Tell us in the comments! 👇'];
   const h = [...(view.meta.title || '')].reduce((s, c) => (s * 31 + c.charCodeAt(0)) >>> 0, 7);
   return qs[h % qs.length];
 }
+// the story in a few sentences, from the narrator (a Short without a narrator needs none: the hook says it)
+const about = view => (view.voice.some(v => v.who === 'narrator') ? [summary(view), ''] : []);
+// a couple story: Ren and Yuki together (the stories are now about them as a couple, STORY-IDEAS.md)
+const couple = view => ['ren', 'yuki'].every(id => view.cast.includes(id));
 const placeTag = view => '#' + (view.meta.place || 'meadow').replace(/(^|-)(\w)/g, (_, a, c) => c.toUpperCase()).replace(/[^\w]/g, '');
 
 // A Reel should be short: Instagram takes up to 3 minutes, but under about 90 seconds works best
@@ -122,13 +127,13 @@ function reelNote(view) {
 function instagramText(view, f) {
   const title = (view.meta.title || 'A new story').trim(), hook = view.hook && view.hook.text || view.meta.thumbnailText || '';
   // Instagram uses at most 5 hashtags on a post
-  const tags = ['#RenAndYuki', '#Animation', '#Cartoon', '#Storytime', placeTag(view)];
+  const tags = couple(view) ? ['#RenAndYuki', '#CoupleGoals', '#CuteCouple', '#Relatable', '#Animation'] : ['#RenAndYuki', '#Animation', '#Cartoon', '#Storytime', placeTag(view)];
   return [
     `INSTAGRAM: ${title}`, '',
     'CAPTION (copy everything between the lines, and change anything you like)',
     '------------------------------------------------------------',
     `${title} 🦊🐰${hook && hook !== title ? '\n' + hook : ''}`, '',
-    summary(view), '',
+    ...about(view),
     question(view), '',
     `Follow for more ${SERIES} stories! ✨`, '',
     tags.join(' '),
@@ -150,16 +155,16 @@ function instagramText(view, f) {
 }
 
 function facebookText(view, f) {
-  const title = (view.meta.title || 'A new story').trim();
+  const title = (view.meta.title || 'A new story').trim(), hook = view.hook && view.hook.text || view.meta.thumbnailText || '';
   return [
     `FACEBOOK: ${title}`, '',
     'CAPTION (copy everything between the lines, and change anything you like)',
     '------------------------------------------------------------',
-    `${title} 🦊🐰`, '',
-    summary(view), '',
+    `${title} 🦊🐰${hook && hook !== title ? '\n' + hook : ''}`, '',
+    ...about(view),
     question(view), '',
     'Watch the full video: [paste your YouTube link here]', '',
-    '#RenAndYuki #FamilyAnimation #Storytime',
+    couple(view) ? '#RenAndYuki #CoupleGoals #Relatable' : '#RenAndYuki #FamilyAnimation #Storytime',
     '------------------------------------------------------------', '',
     'WHAT TO POST',
     `1. A Reel: the video ${f.reel}, with reel-cover.jpg as its cover${f.reelMade ? '' : `\n   (not made yet: ${f.reelHow})`}`,

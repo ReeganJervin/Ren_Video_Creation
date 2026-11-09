@@ -1,0 +1,38 @@
+# ============================================================
+#  Ren & Yuki: Couple Things - You Go First   (~35 s, vertical)
+#  Saying goodbye: nobody wants to leave first.
+# ============================================================
+
+title: You Go First
+type: short
+hook: Couples saying goodbye be like...
+thumbnail text: No, YOU Go First
+mood voices: on
+place: meadow
+time: night
+music: calm
+shot: medium on both
+
+ren enters from left to left
++ yuki enters from right to right
+yuki (sleepy): It's so late. I should go home.
+ren (happy): Okay. Good night!
+yuki (shy): Good night.
+beat
+ren and yuki look at each other
+ren (playful): You go first.
+yuki (playful): No, you go first.
+ren (shy): I can't leave first. You go.
+yuki (pouty): Then we'll stand here forever.
+ren (proud): Fine by me.
+yuki walks to ren
+yuki (laughing): You're so silly.
+ren sits down
++ yuki sits down
+narrator: Three hours later...
+time: day
+ren feels sleepy
++ yuki feels sleepy
+ren (sleepy): ...You go first.
+yuki (sleepy): ...No, you.
+ending: Tag the one who never says bye first!

@@ -43,9 +43,11 @@ The goal is not a video maker with a fixed set of things. It's a **world-buildin
 
 ---
 
-## 0.6 Audience and tone: a family show
+## 0.6 Audience and tone: cute look, grown-up stories
 
-Ren & Yuki is for **kids and adults together**, like the best family films and animated series. The look stays cute and soft (STYLE-GUIDE.md); the **stories** can be deep.
+> **Owner's update (2026-11-09):** the animation stays cute, but the stories are now written **first for young adults and couples** (about 18–35, India first), like popular cute-couple series: everyday relationship moments people recognise and share with their partner. Ren and Yuki are a couple. Families can still enjoy them. The story recipe, the characters' roles and 30 ideas are in **`STORY-IDEAS.md`**. The episodes (mystery, lore, big feelings) keep the table below; the "Never" column applies to everything.
+
+Ren & Yuki is for **adults, and for kids watching with them**. The look stays cute and soft (STYLE-GUIDE.md); the **stories** can be deep.
 
 | Kids enjoy | Adults enjoy | Never |
 |---|---|---|
@@ -55,7 +57,7 @@ What this means for the engine:
 - **Real emotional range:** characters can be truly sad, scared, worried, determined or heartbroken, and the drawings, voices and music must support that convincingly, not only "cute" versions.
 - **Atmosphere and stakes:** mystery, suspense, danger and big magic are welcome: dark caves, storms, ancient ruins, a mysterious stranger. Danger is shown through suspense, chases, hiding, puzzles and courage, never through fighting (R11).
 - **Cinematic quality:** camera, lighting, music and timing should feel like a film, so adults stay for the whole episode.
-- **Romance** between Ren and Yuki stays sweet and innocent.
+- **Romance:** Ren and Yuki are a couple. Their love is affectionate and sweet (hugs, hearts, holding paws, teasing, sulking and making up), never explicit.
 - **YouTube:** whether a video is marked "Made for Kids" is the owner's decision for each video. The engine never assumes it.
 
 ---
