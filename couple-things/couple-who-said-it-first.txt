@@ -1,0 +1,35 @@
+# ============================================================
+#  Ren & Yuki: Couple Things - Who Said It First?   (~35 s, vertical)
+#  Little fights: who said "I love you" first?
+# ============================================================
+
+title: Who Said It First?
+type: short
+hook: The debate every couple has
+thumbnail text: I Said It First!
+mood voices: on
+place: river
+time: sunset
+music: happy
+
+ren enters from left to left
++ yuki enters from right to right
+shot: medium on both
+ren (proud): I said "I love you" first.
+yuki (determined): No. I said it first.
+ren (proud): Here, at the river. You were eating berries.
+yuki (pouty): You said "I like your ears." That doesn't count.
+ren (thinking): It was a very romantic ear compliment.
+yuki (proud): I said it on the bridge. Clearly.
+ren (playful): You said you love berries.
+yuki (pouty): I was looking at you when I said it!
+beat
+ren walks to yuki
+ren (shy): Okay. You win. I love you.
+yuki (shy): I love you too.
+hearts float up
+beat
+yuki (playful): ...But I said it first.
+shot: close on ren
+ren (thinks silently): I definitely said it first.
+ending: Who said it first in your relationship?

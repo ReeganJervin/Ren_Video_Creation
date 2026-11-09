@@ -47,6 +47,10 @@ Every Couple Things story goes in the folder **`couple-things\`**. Start a new o
 | `couple-im-fine.txt` | "I'm fine" is not fine: Ren works out he forgot to call |
 | `couple-you-go-first.txt` | Neither will say goodbye first, until morning |
 | `couple-what-day-is-it.txt` | "Do you know what day it is?" Ren panics. It's pancake Sunday |
+| `couple-five-more-minutes.txt` | "Five more minutes"… and Ren sleeps through the whole picnic |
+| `couple-the-snore.txt` | Ren snores but "doesn't snore"; he blames the owl, and the owl answers |
+| `couple-who-said-it-first.txt` | Who said "I love you" first? They make up… and still both say "me" |
+| `couple-the-long-way-home.txt` | Ren's "shortcut" home is the long way, on purpose (forest, river, back to the forest) |
 
 ## 30 ideas to write next
 
@@ -62,9 +66,9 @@ Ideas marked ★ need a new prop or place first (ask Claude Code with `/new-asse
 
 **Sleep**
 7. Blanket thief at night ★ (blanket)
-8. "Five more minutes" (an hour later)
+8. "Five more minutes" (an hour later) ✓ (made)
 9. Yuki falls asleep in the middle of Ren's long story
-10. Ren snores; Yuki tries everything to stop it
+10. Ren snores; Yuki tries everything to stop it ✓ (made)
 
 **Missing you and texting**
 11. "Seen 2 hours ago": the late-reply sulk ★ (phone)
@@ -74,7 +78,7 @@ Ideas marked ★ need a new prop or place first (ask Claude Code with `/new-asse
 
 **Little fights and making up**
 15. Ren forgot the anniversary (and tries to hide it)
-16. Who said "I love you" first? Both say they did
+16. Who said "I love you" first? Both say they did ✓ (made)
 17. Jealous of a butterfly that Yuki thinks is pretty
 18. The silent treatment, broken by a single cookie ★ (cookie)
 19. "You never listen". Ren repeats everything she said, word for word
@@ -85,7 +89,7 @@ Ideas marked ★ need a new prop or place first (ask Claude Code with `/new-asse
 22. Ren practises a compliment and ruins it (like *The Compliment*)
 23. First meeting anniversary at the same meadow
 24. Yuki teaches Ren to dance; he steps on her paw
-25. Walking home; Ren makes the walk longer on purpose
+25. Walking home; Ren makes the walk longer on purpose ✓ (made)
 
 **India and festivals**
 26. Diwali: decorating with lanterns; Ren is very proud of one crooked lantern (the `lantern` prop exists)

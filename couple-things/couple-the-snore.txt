@@ -1,0 +1,40 @@
+# ============================================================
+#  Ren & Yuki: Couple Things - The Snore   (~35 s, vertical)
+#  Sleep: he snores, and he will never admit it.
+# ============================================================
+
+title: The Snore
+type: short
+hook: When he snores but "doesn't snore"
+thumbnail text: "I Don't Snore!"
+mood voices: on
+place: meadow
+time: night
+music: bedtime
+
+ren enters from left to left
++ yuki enters from right to right
+shot: medium on both
+ren sits down
++ yuki sits down
+ren (sleepy): Good night, Yuki.
+yuki (sleepy): Good night, Ren.
+ren feels sleepy
++ yuki feels sleepy
+beat
+ren (thinks silently): Zzz... zzz... ZZZ...
+yuki feels pouty
+yuki (whispers): Ren. You're snoring.
+ren (sleepy): I don't snore.
+ren (thinks silently): ZZZZZ... ZZZZZZZ...
+shot: close on yuki
+yuki (shouts, pouty): Ren!
+shot: medium on both
+ren (surprised): What? I was awake the whole time.
+yuki (thinking): Then who was snoring?
+ren (thinking): ...The owl?
+owl flies in from left to left
+owl (pouty): Hoo! It was not me.
+yuki (laughing): Even the owl knows.
+ren (shy): Good night, everyone.
+ending: Tag the one who "doesn't snore"!
