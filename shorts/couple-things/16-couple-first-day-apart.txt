@@ -1,0 +1,44 @@
+# ============================================================
+#  Ren & Yuki: Couple Things - First Day Apart   (~40 s, vertical)
+#  Missing you: Yuki is away for a little while. Ren is "totally fine".
+#
+#  Commands (run them in the project folder, or drag the story onto the .bat file):
+#    Check it:            check-story.bat shorts\couple-things\16-couple-first-day-apart.txt
+#    Watch it:            preview.bat shorts\couple-things\16-couple-first-day-apart.txt
+#    Make the video:      make-video.bat shorts\couple-things\16-couple-first-day-apart.txt
+#    If it stopped:       resume-video.bat shorts\couple-things\16-couple-first-day-apart.txt
+#    YouTube files only:  node tools\make-video.js shorts\couple-things\16-couple-first-day-apart.txt --youtube
+#    Instagram files:     make-social.bat shorts\couple-things\16-couple-first-day-apart.txt
+# ============================================================
+
+title: First Day Apart
+type: short
+hook: Our first day apart (he's "totally fine")
+thumbnail text: Totally Fine.
+mood voices: on
+place: meadow
+time: day
+music: calm
+
+ren enters from left to left
++ yuki enters from right to right
+shot: medium on both
+yuki (happy): I'm visiting my aunt today. Will you be okay?
+ren (proud): Me? Of course. I'm a very independent fox.
+yuki waves at ren
+yuki exits to right
+music: sad
+shot: close on ren
+ren (proud): Totally fine.
+ren sighs
+ren turns to you
+ren (sad): How long has she been gone? A week?
+narrator: Ten minutes.
+music: happy
+shot: medium on both
+yuki enters from right to right
+ren (shouts, excited): Yuki! You're back!
+yuki hugs ren
+yuki (laughing): I forgot my bag. I was gone for ten minutes.
+ren (shy): Longest ten minutes of my life.
+ending: Tag the one who misses you in ten minutes!

@@ -1,0 +1,41 @@
+# ============================================================
+#  Ren & Yuki: Couple Things - You Never Listen   (~40 s, vertical)
+#  Little fights: "You never listen." Oh, he listens.
+#
+#  Commands (run them in the project folder, or drag the story onto the .bat file):
+#    Check it:            check-story.bat shorts\couple-things\15-couple-you-never-listen.txt
+#    Watch it:            preview.bat shorts\couple-things\15-couple-you-never-listen.txt
+#    Make the video:      make-video.bat shorts\couple-things\15-couple-you-never-listen.txt
+#    If it stopped:       resume-video.bat shorts\couple-things\15-couple-you-never-listen.txt
+#    YouTube files only:  node tools\make-video.js shorts\couple-things\15-couple-you-never-listen.txt --youtube
+#    Instagram files:     make-social.bat shorts\couple-things\15-couple-you-never-listen.txt
+# ============================================================
+
+title: You Never Listen
+type: short
+hook: When she says "you never listen"
+thumbnail text: "You Never Listen!"
+mood voices: on
+place: river
+time: sunset
+music: happy
+
+ren enters from left to left
++ yuki enters from right to right
+shot: medium on both
+yuki (pouty): Ren, you never listen to me.
+ren (proud): Never listen? Let me see.
+ren counts on its paws
+ren (proud): This morning you said the clouds look like cotton candy.
+ren (proud): At lunch you said your left ear was itchy. The left one.
+ren (playful): And at four o'clock you said you wanted a cookie.
+yuki (surprised): You remember all of that?
+ren holds the cookie
+music: heartfelt
+ren gives the cookie to yuki
+ren (shy): I always listen. I just don't always answer.
+yuki (shy): ...That's actually really sweet.
+beat
+ren (playful): You also said I'm the most handsome fox in the meadow.
+yuki (laughing): I never said that!
+ending: Tag the one who never listens (or always does)!

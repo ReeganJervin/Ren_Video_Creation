@@ -45,7 +45,7 @@ Everything is scheduled during the upload night before, like the morning video.
 night before it's scheduled. Couple Things stay in their folder after posting (no `uploaded` folder); the numbers
 show what's next.
 
-**The calendar:** `calendar\ren-yuki-week-2026-11-09.ics` has all of this (every upload night with its list, and a
+**The calendar:** `calendar\ren-yuki-week-2026-11-09.md` (to read, with tick boxes) and `calendar\ren-yuki-week-2026-11-09.ics` (for Google Calendar) have all of this (every upload night with its list, and a
 reminder when each video goes live, to answer comments), in India time. To add it to Google Calendar: on a computer,
 open calendar.google.com, then the gear (Settings), **Import & export**, **Import**, choose the file, then **Import**.
 It then shows on your phone too.
@@ -66,4 +66,5 @@ and share it, so next week's plan is based on what worked.
 
 Left after this week: Episode 10, ep10-1, ep10-2, and standalone Shorts 10, 12–15, 17–21,
 23, 25, 26, 29.
-Couple Things left: 9 Five More Minutes, 10 The Snore, 11 The Long Way Home (then new ones).
+Couple Things left: 9 Five More Minutes, 10 The Snore, 11 The Long Way Home, 12 Forgot the Anniversary,
+13 Jealous of a Butterfly, 14 The Long Story, 15 You Never Listen, 16 First Day Apart, 17 The Yawn Move.

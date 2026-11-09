@@ -56,6 +56,12 @@ The files are **numbered in posting order**. A new one gets the next number (`12
 | `9-couple-five-more-minutes.txt` | "Five more minutes"… and Ren sleeps through the whole picnic |
 | `10-couple-the-snore.txt` | Ren snores but "doesn't snore"; he blames the owl, and the owl answers |
 | `11-couple-the-long-way-home.txt` | Ren's "shortcut" home is the long way, on purpose (forest, river, back to the forest) |
+| `12-couple-forgot-the-anniversary.txt` | Ren thinks he forgot the anniversary, runs for a flower… it's next month (he faints) |
+| `13-couple-jealous-of-a-butterfly.txt` | Yuki says a butterfly is pretty; Ren dances to prove he's prettier |
+| `14-couple-the-long-story.txt` | Ren's longest story (the angry leaf); Yuki falls asleep; "Please… no part two" |
+| `15-couple-you-never-listen.txt` | "You never listen." Ren repeats her whole day, and hands her the cookie she wanted |
+| `16-couple-first-day-apart.txt` | Yuki leaves; Ren is "totally fine"; she's back in ten minutes ("longest ten minutes of my life") |
+| `17-couple-the-yawn-move.txt` | Ren tries the yawn-and-stretch move to hold her paw; Yuki: "Do you want to hold my paw?" |
 
 ## 30 ideas to write next
 
@@ -72,21 +78,21 @@ Ideas marked ★ need a new prop or place first (ask Claude Code with `/new-asse
 **Sleep**
 7. Blanket thief at night ★ (blanket)
 8. "Five more minutes" (an hour later) ✓ (made)
-9. Yuki falls asleep in the middle of Ren's long story
+9. Yuki falls asleep in the middle of Ren's long story ✓ (made)
 10. Ren snores; Yuki tries everything to stop it ✓ (made)
 
 **Missing you and texting**
 11. "Seen 2 hours ago": the late-reply sulk ★ (phone)
 12. Long distance: both look at the same star at night (`star appears`, `music: heartfelt`)
 13. A whole call where neither says anything important, and both are happy ★ (phone)
-14. The first day apart: Ren pretends he's fine (he is not)
+14. The first day apart: Ren pretends he's fine (he is not) ✓ (made)
 
 **Little fights and making up**
-15. Ren forgot the anniversary (and tries to hide it)
+15. Ren forgot the anniversary (and tries to hide it) ✓ (made)
 16. Who said "I love you" first? Both say they did ✓ (made)
-17. Jealous of a butterfly that Yuki thinks is pretty
+17. Jealous of a butterfly that Yuki thinks is pretty ✓ (made)
 18. The silent treatment, broken by a single cookie ★ (cookie)
-19. "You never listen". Ren repeats everything she said, word for word
+19. "You never listen". Ren repeats everything she said, word for word ✓ (made)
 20. Saying sorry in the most dramatic way possible (`ren (shouts)`, hearts)
 
 **Sweet moments**

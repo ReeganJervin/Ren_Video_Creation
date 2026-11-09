@@ -1,0 +1,44 @@
+# ============================================================
+#  Ren & Yuki: Couple Things - Forgot the Anniversary   (~40 s, vertical)
+#  Little fights: Ren thinks he forgot the anniversary, and panics.
+#
+#  Commands (run them in the project folder, or drag the story onto the .bat file):
+#    Check it:            check-story.bat shorts\couple-things\12-couple-forgot-the-anniversary.txt
+#    Watch it:            preview.bat shorts\couple-things\12-couple-forgot-the-anniversary.txt
+#    Make the video:      make-video.bat shorts\couple-things\12-couple-forgot-the-anniversary.txt
+#    If it stopped:       resume-video.bat shorts\couple-things\12-couple-forgot-the-anniversary.txt
+#    YouTube files only:  node tools\make-video.js shorts\couple-things\12-couple-forgot-the-anniversary.txt --youtube
+#    Instagram files:     make-social.bat shorts\couple-things\12-couple-forgot-the-anniversary.txt
+# ============================================================
+
+title: Forgot the Anniversary
+type: short
+hook: POV: he thinks he forgot your anniversary
+thumbnail text: He Forgot?!
+mood voices: on
+place: cottage garden
+time: day
+music: happy
+
+ren enters from left to left
++ yuki enters from right to right
+shot: medium on both
+yuki (excited): Ren! Do you remember what's special about this month?
+music: tense
+shot: close on ren
+ren (thinks silently): The anniversary. I forgot the anniversary!
+ren (worried): Of course I remember! Wait right here!
+shot: medium on both
+ren runs to center
+flower appears at center
+ren picks up the flower
+ren runs to yuki
+ren (shouts, excited): Happy anniversary, my love!
+ren gives the flower to yuki
+music: happy
+yuki (surprised): Ren... our anniversary is next month.
+beat
+ren faints
+yuki (laughing): But I'm keeping the flower.
+hearts float up
+ending: Tag the one who panics like Ren!

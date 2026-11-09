@@ -1,0 +1,43 @@
+# ============================================================
+#  Ren & Yuki: Couple Things - The Yawn Move   (~35 s, vertical)
+#  Sweet moments: Ren wants to hold Yuki's paw, and tries the oldest trick.
+#
+#  Commands (run them in the project folder, or drag the story onto the .bat file):
+#    Check it:            check-story.bat shorts\couple-things\17-couple-the-yawn-move.txt
+#    Watch it:            preview.bat shorts\couple-things\17-couple-the-yawn-move.txt
+#    Make the video:      make-video.bat shorts\couple-things\17-couple-the-yawn-move.txt
+#    If it stopped:       resume-video.bat shorts\couple-things\17-couple-the-yawn-move.txt
+#    YouTube files only:  node tools\make-video.js shorts\couple-things\17-couple-the-yawn-move.txt --youtube
+#    Instagram files:     make-social.bat shorts\couple-things\17-couple-the-yawn-move.txt
+# ============================================================
+
+title: The Yawn Move
+type: short
+hook: When he tries "the yawn move"
+thumbnail text: The Yawn Move
+mood voices: on
+place: meadow
+time: sunset
+music: calm
+
+ren enters from left to left
++ yuki enters from right to right
+shot: medium on both
+yuki (happy): What a beautiful sunset.
+ren (thinks silently): Now's my chance. Hold her paw. Smoothly.
+ren yawns
+ren stretches its paws wide
+yuki looks at ren
+yuki (thinking): Are you sleepy?
+ren (worried): No! Just... stretching. Very normal stretching.
+ren (thinks silently): Abort! Try again!
+ren stretches
+shot: close on yuki
+yuki (playful): Ren. Do you want to hold my paw?
+shot: close on ren
+ren (shy): ...Only if you want to.
+shot: medium on both
+yuki (happy): Come here, silly.
+ren and yuki walk to right paw in paw
+hearts float up
+ending: Tag the one who still does the yawn move!

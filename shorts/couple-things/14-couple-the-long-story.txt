@@ -1,0 +1,42 @@
+# ============================================================
+#  Ren & Yuki: Couple Things - The Long Story   (~40 s, vertical)
+#  Sleep: Ren tells his longest story. Yuki doesn't make it to the end.
+#
+#  Commands (run them in the project folder, or drag the story onto the .bat file):
+#    Check it:            check-story.bat shorts\couple-things\14-couple-the-long-story.txt
+#    Watch it:            preview.bat shorts\couple-things\14-couple-the-long-story.txt
+#    Make the video:      make-video.bat shorts\couple-things\14-couple-the-long-story.txt
+#    If it stopped:       resume-video.bat shorts\couple-things\14-couple-the-long-story.txt
+#    YouTube files only:  node tools\make-video.js shorts\couple-things\14-couple-the-long-story.txt --youtube
+#    Instagram files:     make-social.bat shorts\couple-things\14-couple-the-long-story.txt
+# ============================================================
+
+title: The Long Story
+type: short
+hook: When he tells you his LONGEST story
+thumbnail text: The Longest Story
+mood voices: on
+place: meadow
+time: night
+music: bedtime
+
+ren enters from left to left
++ yuki enters from right to right
+shot: medium on both
+ren and yuki sit down
+ren (excited): Did I ever tell you how I fought the angry leaf?
+yuki (happy): No. Tell me.
+ren (proud): It was a dark and windy morning. Very windy. The windiest.
+ren (determined): The leaf looked at me. I looked at the leaf.
+yuki yawns
+ren (proud): Then the leaf moved. Just a little. Very suspicious.
+yuki feels sleepy
+ren (excited): So I jumped to the left! Then to the right! Then left again!
+yuki lies down
+beat
+ren (proud): And that is how I defeated the angry leaf. Yuki?
+shot: close on ren
+ren (whispers): ...Good night. Part two tomorrow.
+shot: medium on both
+yuki (sleepy): Please... no part two.
+ending: Tag the one with the longest stories!

@@ -1,0 +1,41 @@
+# ============================================================
+#  Ren & Yuki: Couple Things - Jealous of a Butterfly   (~35 s, vertical)
+#  Tiny jealousy: Yuki thinks a butterfly is pretty. Ren takes it personally.
+#
+#  Commands (run them in the project folder, or drag the story onto the .bat file):
+#    Check it:            check-story.bat shorts\couple-things\13-couple-jealous-of-a-butterfly.txt
+#    Watch it:            preview.bat shorts\couple-things\13-couple-jealous-of-a-butterfly.txt
+#    Make the video:      make-video.bat shorts\couple-things\13-couple-jealous-of-a-butterfly.txt
+#    If it stopped:       resume-video.bat shorts\couple-things\13-couple-jealous-of-a-butterfly.txt
+#    YouTube files only:  node tools\make-video.js shorts\couple-things\13-couple-jealous-of-a-butterfly.txt --youtube
+#    Instagram files:     make-social.bat shorts\couple-things\13-couple-jealous-of-a-butterfly.txt
+# ============================================================
+
+title: Jealous of a Butterfly
+type: short
+hook: When he gets jealous of... a butterfly
+thumbnail text: Jealous of a BUTTERFLY?
+mood voices: on
+place: cottage garden
+time: day
+music: happy
+
+ren enters from left to left
++ yuki enters from right to right
+shot: medium on both
+yuki (happy): Look at that butterfly. It's so pretty.
+ren (pouty): Prettier than me?
+yuki (playful): It has very pretty wings.
+ren (determined): I have very pretty ears.
+ren dances
+ren (proud): And I can dance. Can a butterfly dance?
+yuki (thinking): Butterflies dance all day.
+shot: close on ren
+ren (shouts, pouty): Show-offs!
+shot: medium on both
+yuki walks to ren
+yuki (shy): Ren. You're the prettiest fox I know.
+ren (shy): ...Prettier than the butterfly?
+yuki (playful): Don't push it.
+ren hugs yuki
+ending: Tag the one who gets jealous of anything!
