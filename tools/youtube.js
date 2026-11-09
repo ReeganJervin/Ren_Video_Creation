@@ -82,7 +82,7 @@ function description(plan, credits) {
 
 // The thumbnail, drawn in the engine's page (opened with &export=1). Picks the moment, draws it, adds the text,
 // and returns { jpg (Buffer), t, how, warnings }.
-// opts (for the Instagram and Facebook pictures, tools/social.js): size [W, H] of the picture (the page's film must
+// opts (for the Instagram pictures, tools/social.js): size [W, H] of the picture (the page's film must
 // have the same shape), top (where the title starts), text (instead of the story's thumbnail text)
 async function thumbnail(page, plan, opts = {}) {
   // (the picture is drawn clean, without bubbles, captions and title cards, so those don't matter)

@@ -3,7 +3,7 @@ cd /d "%~dp0"
 if "%~1"=="" (
   echo.
   echo  Usage:  make-social.bat stories\your-story.txt
-  echo  Makes the Instagram and Facebook pictures and captions in videos\your-story-social\
+  echo  Makes the Instagram pictures and caption in videos\your-story-social\
   echo  Tip:    you can also drag a story file onto make-social.bat
   echo.
   pause & exit /b 1

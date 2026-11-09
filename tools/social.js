@@ -1,18 +1,17 @@
-// The Instagram and Facebook kit (F15): the same Ren & Yuki story, ready for Reels, picture posts and carousels.
+// The Instagram kit (F15): the same Ren & Yuki story, ready for Reels, picture posts and carousels.
+// (Facebook is on hold, owner's decision 2026-11-09: its caption and subtitle files are in commit 9c44ea0, if it comes back.)
 // Made with  node tools/make-video.js stories/my-story.txt --social  (or make-social.bat), in videos/<name>-social/:
-//   reel-cover.jpg         1080×1920 cover for the Reel (Instagram and Facebook); the title sits inside the middle
+//   reel-cover.jpg         1080×1920 cover for the Reel; the title sits inside the middle
 //                          3:4 part, which is what Instagram's profile grid shows
 //   post.jpg               1080×1350 (4:5) picture post: the best moment with the title
 //   carousel-01.jpg ...    1080×1350 slides, like a comic: the title, then moments of the story with their speech
 //                          bubbles (the first part of the story only, so the ending isn't spoiled), then "What happens next?"
 //   instagram.txt          caption, hashtags and how to post (Reel, picture post, carousel)
-//   facebook.txt           caption, hashtags and how to post
-//   <name>.en_US.srt       the subtitles, named the way Facebook asks for when you upload them
 // Every picture is drawn fresh by the engine (never cropped from the video), in the vertical layout.
 const fs = require('fs'), path = require('path');
-const { thumbnail, subtitles, summary, SERIES, WHO } = require('./youtube');
+const { thumbnail, summary, SERIES, WHO } = require('./youtube');
 
-const POST = [1080, 1350];        // Instagram's and Facebook's tallest feed picture (4:5)
+const POST = [1080, 1350];        // Instagram's tallest feed picture (4:5)
 const GRID_TOP = 240;             // Instagram's profile grid shows a Reel's middle 1080×1440 (3:4): from y 240 to 1680
 const SLIDES = 6;                 // story moments in the carousel (plus the title slide and the last slide)
 
@@ -135,14 +134,15 @@ function instagramText(view, f) {
     `${title} 🦊🐰${hook && hook !== title ? '\n' + hook : ''}`, '',
     ...about(view),
     question(view), '',
-    `Follow for more ${SERIES} stories! ✨`, '',
+    `Follow for more ${SERIES} stories! ✨`,
+    'More on our YouTube channel: link in bio ▶️', '',
     tags.join(' '),
     '------------------------------------------------------------', '',
     'WHAT TO POST (three kinds of post, all made from this story)',
     `1. A Reel (the most views): the video ${f.reel}${f.reelMade ? '' : `\n   (not made yet: ${f.reelHow})`}`,
     ...reelNote(view),
     '   - When posting, tap "Edit cover", then "Add from camera roll", and choose reel-cover.jpg',
-    '   - Turn on "Share to Facebook" and the Reel goes to your Facebook page too',
+    '   - Post the same video as a YouTube Short too (with its cover and description from the YouTube files)',
     '2. A picture post: post.jpg (tell people a new video is out)',
     `3. A carousel (people swipe through, like a comic): carousel-01.jpg to carousel-${String(f.slides).padStart(2, '0')}.jpg, in that order`,
     '   (it shows only the first part of the story, so people watch the Reel to see the ending)', '',
@@ -154,38 +154,13 @@ function instagramText(view, f) {
   ].join('\n');
 }
 
-function facebookText(view, f) {
-  const title = (view.meta.title || 'A new story').trim(), hook = view.hook && view.hook.text || view.meta.thumbnailText || '';
-  return [
-    `FACEBOOK: ${title}`, '',
-    'CAPTION (copy everything between the lines, and change anything you like)',
-    '------------------------------------------------------------',
-    `${title} 🦊🐰${hook && hook !== title ? '\n' + hook : ''}`, '',
-    ...about(view),
-    question(view), '',
-    'Watch the full video: [paste your YouTube link here]', '',
-    couple(view) ? '#RenAndYuki #CoupleGoals #Relatable' : '#RenAndYuki #FamilyAnimation #Storytime',
-    '------------------------------------------------------------', '',
-    'WHAT TO POST',
-    `1. A Reel: the video ${f.reel}, with reel-cover.jpg as its cover${f.reelMade ? '' : `\n   (not made yet: ${f.reelHow})`}`,
-    ...reelNote(view),
-    '   (if you turned on "Share to Facebook" on Instagram, it is already there)',
-    `2. The wide video as a normal Facebook video${f.wide ? `: ${f.wide}` : ''}, with the YouTube thumbnail.`,
-    `   To add subtitles: in the video's settings, "Subtitles and captions", upload ${f.srt} (from this folder)`,
-    '3. A picture post: post.jpg, or all the carousel pictures together as one post (people swipe through them)', '',
-    'TIPS',
-    '- Facebook likes posts that start a conversation: keep the question at the end of the caption.',
-    '- Share the post to Facebook groups for families and animation fans (check each group\'s rules first).', '',
-    "Reminder: the voices are made by a computer. Check Facebook's \"AI info\" label setting before you post.", '',
-  ].join('\n');
-}
-
 // All the files. vpage: the engine's page for the vertical story (1080×1920); ppage: the same story with a
 // 1080×1350 picture. view: the story as it is seen (an episode Short's own time). Returns the summary line.
-async function socialFiles({ vpage, ppage, view, dir, base, reel, reelMade, reelHow, wide }) {
+async function socialFiles({ vpage, ppage, view, dir, reel, reelMade, reelHow }) {
   fs.mkdirSync(dir, { recursive: true });
   // old carousel slides from an earlier run go, so the folder only has this story's
-  for (const f of fs.readdirSync(dir)) if (/^carousel-\d+\.jpg$/.test(f)) fs.unlinkSync(path.join(dir, f));
+  // (and the Facebook files of an earlier version, now that Facebook is on hold)
+  for (const f of fs.readdirSync(dir)) if (/^carousel-\d+\.jpg$|^facebook\.txt$|\.en_US\.srt$/.test(f)) fs.unlinkSync(path.join(dir, f));
   const made = [], warnings = [];
   // (the title on every picture: the story's thumbnail text, or its hook, or its title)
   const title = (view.meta.thumbnailText || view.hook && view.hook.text || view.meta.title || '').trim();
@@ -209,14 +184,10 @@ async function socialFiles({ vpage, ppage, view, dir, base, reel, reelMade, reel
   fs.writeFileSync(path.join(dir, `carousel-${String(of).padStart(2, '0')}.jpg`), await slide(ppage, lastT, { clean: true, top: 'What happens next?', bottom: 'Watch the video: link in bio', n: of, of }));
   made.push(`carousel of ${of} slides`);
   if (!ms.length) warnings.push('the carousel has no story moments (the story has no speech bubbles in its first part)');
-  // the subtitles, named for Facebook, and the two captions
-  const srt = `${base}.en_US.srt`;
-  fs.writeFileSync(path.join(dir, srt), subtitles(view).text);
-  const f = { reel, reelMade, reelHow, wide, srt, slides: of };
-  fs.writeFileSync(path.join(dir, 'instagram.txt'), instagramText(view, f));
-  fs.writeFileSync(path.join(dir, 'facebook.txt'), facebookText(view, f));
-  made.push('Instagram and Facebook captions', 'subtitles for Facebook');
-  return { ok: true, warn: warnings.length > 0, note: !warnings.length, name: 'Instagram and Facebook files', detail: made.join(', ') + (warnings.length ? '. ' + warnings.join('; ') : '') };
+  // the caption
+  fs.writeFileSync(path.join(dir, 'instagram.txt'), instagramText(view, { reel, reelMade, reelHow, slides: of }));
+  made.push('Instagram caption');
+  return { ok: true, warn: warnings.length > 0, note: !warnings.length, name: 'Instagram files', detail: made.join(', ') + (warnings.length ? '. ' + warnings.join('; ') : '') };
 }
 
-module.exports = { socialFiles, moments, question, instagramText, facebookText, POST };
+module.exports = { socialFiles, moments, question, instagramText, POST };

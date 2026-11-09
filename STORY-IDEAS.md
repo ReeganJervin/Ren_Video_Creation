@@ -1,6 +1,6 @@
 # Story direction: cute look, grown-up stories
 
-> **Owner's decision (2026-11-09).** Ren & Yuki *look* cute, and the animation stays that way. What changes is **who the stories are for**: young adults and couples (about 18–35), with India as the first audience. Families can still enjoy them, but the jokes and feelings come from grown-up life: being in a relationship, missing someone, food, work, sleep, fights and making up.
+> **Owner's decision (2026-11-09).** Ren & Yuki *look* cute, and the animation stays that way. What changes is **who the stories are for**: young adults and couples (about 18–35), with India as the first audience. Everything is in English, for YouTube and Instagram. Families can still enjoy them, but the jokes and feelings come from grown-up life: being in a relationship, missing someone, food, work, sleep, fights and making up.
 
 This is the same idea that made cute-couple series like *Bubu Dudu* and *Milk & Mocha* popular: two soft, simple characters, and moments every couple recognises. People share them with their partner ("this is us 😂"), and that sharing brings the views.
 
@@ -93,7 +93,7 @@ Ideas marked ★ need a new prop or place first (ask Claude Code with `/new-asse
 ## Posting plan
 
 - **Series name:** "Ren & Yuki: Couple Things #1, #2…", so people come back for the next one.
-- **How often:** 4–7 Shorts a week, at about the same time each day. Evenings tend to suit couples, but check your own Instagram and Facebook insights to see when *your* viewers are online.
-- **Everywhere at once:** the same Short goes to YouTube Shorts, Instagram Reels and Facebook Reels (`make-social.bat` makes the covers, the carousel and the captions).
-- **Language:** English for now. Hindi or Hinglish voices are possible later: the voice model has Hindi voices, and the voice tool needs a small change to use them (ask Claude Code).
+- **How often:** 4–7 Shorts a week, at about the same time each day. Evenings tend to suit couples, but check your own YouTube Analytics and Instagram insights to see when *your* viewers are online.
+- **Two places, one video:** each Short goes to **YouTube Shorts** and **Instagram Reels** (`make-social.bat` makes the Reel cover, the carousel and the caption; the YouTube files come with every video). Facebook is on hold for now.
+- **Language:** everything in English.
 - **Watch what works:** after 2–3 weeks, make more of the kind that got the most shares and saves.

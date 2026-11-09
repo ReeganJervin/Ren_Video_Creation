@@ -36,7 +36,7 @@ The command files below keep working exactly as before.
 
 The video appears in the `videos` folder as `my-story.mp4`, along with a check report, `my-story-report.txt`, and `my-story-credits.txt`, which lists everything in the video and who made it. A story with at least 3 scenes also gets `my-story-chapters.txt`, ready to paste into a YouTube description (see "Scenes" in STORY-GUIDE.md). For uploading, every video also gets `my-story-thumbnail.jpg`, `my-story.srt` (subtitles) and `my-story-description.txt` (a description draft); see "YouTube" in STORY-GUIDE.md.
 
-For **Instagram and Facebook**, drag a story onto `make-social.bat`: in a few seconds you get a Reel cover, a picture post, a swipeable carousel and ready-to-copy captions in `videos\my-story-social\` (see "Instagram and Facebook" in STORY-GUIDE.md).
+For **Instagram**, drag a story onto `make-social.bat`: in a few seconds you get a Reel cover, a picture post, a swipeable carousel and a ready-to-copy caption in `videos\my-story-social\` (see "Instagram" in STORY-GUIDE.md).
 
 ### Still images (for checking)
 
@@ -69,7 +69,7 @@ The pieces that were already finished are kept. If you changed the story since t
 | Option | What it does |
 |---|---|
 | `--resume` | Carries on with a stopped video (this is what `resume-video.bat` does) |
-| `--social` | Makes only the Instagram and Facebook files, without making the video: `videos\my-story-social\` (this is what `make-social.bat` does) |
+| `--social` | Makes only the Instagram files, without making the video: `videos\my-story-social\` (this is what `make-social.bat` does) |
 | `--format vertical` | Makes a vertical (9:16) version for Shorts: `videos\my-story-vertical.mp4` (see "Vertical videos" in STORY-GUIDE.md) |
 | `--workers 3` | Draws with 3 browser pages at once. The default is the number of processor threads minus 1. More workers are faster, until the computer is busy; the video looks exactly the same with any number of workers |
 | `--allow-placeholders` | Makes a test video even though the story uses things that don't exist yet (they appear as grey placeholders, and the report says so) |
@@ -122,7 +122,7 @@ The results are in `videos\<name>-report.txt`. Each line starts with `PASS`, `FA
 | `tools\story-check.js` | The story check and voice bookkeeping that `make-video.js` and the studio app share |
 | `studio\` | The studio app: `server\server.js` (the local server), `src\` (the screens, React + TypeScript), `tests\` (`node studio\tests\api.test.js` and `node studio\tests\e2e.test.js`) |
 | `tools\youtube.js` | The YouTube files: thumbnail, subtitles and description draft |
-| `tools\social.js` | The Instagram and Facebook files: Reel cover, picture post, carousel and captions |
+| `tools\social.js` | The Instagram files: Reel cover, picture post, carousel and caption |
 | `tools\end-screen-guide.js` | Draws `docs\youtube-end-screen.png`, which shows where YouTube's end-screen elements go |
 | `tools\scenes.js` | Chapters and the extra checks for stories with scenes |
 | `tools\render.js` | Draws the frames: several workers at once, scene by scene in pieces that `--resume` can keep |
