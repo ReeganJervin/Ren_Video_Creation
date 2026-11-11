@@ -3,12 +3,12 @@
 #  (Ren reads the map, very confidently, upside down)
 #
 #  Commands (run them in the project folder, or drag the story onto the .bat file):
-#    Check it:            check-story.bat shorts\episode-shorts\ep5-2-the-upside-down-map.txt
-#    Watch it:            preview.bat shorts\episode-shorts\ep5-2-the-upside-down-map.txt
-#    Make the video:      make-video.bat shorts\episode-shorts\ep5-2-the-upside-down-map.txt
-#    If it stopped:       resume-video.bat shorts\episode-shorts\ep5-2-the-upside-down-map.txt
-#    YouTube files only:  node tools\make-video.js shorts\episode-shorts\ep5-2-the-upside-down-map.txt --youtube
-#    Instagram files:     make-social.bat shorts\episode-shorts\ep5-2-the-upside-down-map.txt
+#    Check it:            check-story.bat shorts\episode-shorts\uploaded\ep5-2-the-upside-down-map.txt
+#    Watch it:            preview.bat shorts\episode-shorts\uploaded\ep5-2-the-upside-down-map.txt
+#    Make the video:      make-video.bat shorts\episode-shorts\uploaded\ep5-2-the-upside-down-map.txt
+#    If it stopped:       resume-video.bat shorts\episode-shorts\uploaded\ep5-2-the-upside-down-map.txt
+#    YouTube files only:  node tools\make-video.js shorts\episode-shorts\uploaded\ep5-2-the-upside-down-map.txt --youtube
+#    Instagram files:     make-social.bat shorts\episode-shorts\uploaded\ep5-2-the-upside-down-map.txt
 # ============================================================
 
 title: The Upside-Down Map
