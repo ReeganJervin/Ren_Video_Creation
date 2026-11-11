@@ -1,0 +1,42 @@
+# ============================================================
+#  Ren & Yuki: Couple Things - Dance With Me   (~40 s, vertical)
+#  Romantic: a little dance under the fireflies.
+#
+#  Commands (run them in the project folder, or drag the story onto the .bat file):
+#    Check it:            check-story.bat shorts\couple-things\22-couple-dance-with-me.txt
+#    Watch it:            preview.bat shorts\couple-things\22-couple-dance-with-me.txt
+#    Make the video:      make-video.bat shorts\couple-things\22-couple-dance-with-me.txt
+#    If it stopped:       resume-video.bat shorts\couple-things\22-couple-dance-with-me.txt
+#    YouTube files only:  node tools\make-video.js shorts\couple-things\22-couple-dance-with-me.txt --youtube
+#    Instagram files:     make-social.bat shorts\couple-things\22-couple-dance-with-me.txt
+# ============================================================
+
+title: Dance With Me
+type: short
+hook: When she says "dance with me"
+thumbnail text: Dance With Me
+mood voices: on
+place: meadow
+time: night
+music: magical
+
+ren enters from left to left
++ yuki enters from right to right
+shot: medium on both
+yuki (happy): Listen. Even the fireflies are dancing.
+yuki holds out its paw to ren
+yuki (shy): Dance with me?
+ren (worried): I'm a very bad dancer.
+yuki (playful): I know. I've seen you.
+ren dances
+ren trips
+ren (shy): See? Terrible.
+yuki walks to ren
+yuki (happy): It's easy. Just follow me.
+ren and yuki look at each other
+yuki dances
++ ren dances
+ren (happy): Hey! I'm doing it!
+yuki (laughing): You're doing it!
+hearts float up
+ending: Tag your dance partner!

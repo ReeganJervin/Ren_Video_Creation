@@ -112,7 +112,7 @@ The results are in `videos\<name>\<name>-report.txt`. Each line starts with `PAS
 |---|---|
 | `stories\` | Your stories. New ones (and the studio's **New story**) start here. Inside: `episodes\` (the series: Episode 1, 2, 3...; the ones already on YouTube are in `episodes\uploaded\`), `early-stories\` (the first little films and drafts) and `demos-and-tests\` (demos, test stories and `_template.txt`, the starting point for a new story) |
 | `shorts\` | The Shorts: `standalone\` (little stories of their own), `episode-shorts\` (a part of an episode, drawn standing up) and `couple-things\` (the "Couple Things" series, with its own template; Parts 1–3, how they met, come first; see STORY-IDEAS.md). Each has an `uploaded\` folder for the Shorts already on YouTube |
-| `calendar\` | The posting calendar for each week (`.md` to read, `.ics` for Google Calendar; see UPLOAD-SCHEDULE.md) and the Instagram plan, `instagram-plan.md` |
+| `calendar\` | The posting plan: `couple-things-plan.md` (to read, with tick boxes) and `couple-things-plan.ics` (for Google Calendar) |
 | `instagram\` | The Instagram account guide, the profile pictures (`profile-kit\`) and the moments they show |
 | `config\voices.json` | The voices: the narrator, Ren, Yuki, and the owl (a Kokoro voice or a blend of two, with speed and pitch, and optionally `gain` in dB to make one voice quieter or louder than the others) |
 | `engine\characters.js` | The list of characters: their names, how they move, their sounds and how each mood looks on them |

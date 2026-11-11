@@ -41,7 +41,7 @@ Every Couple Things story goes in the folder **`shorts\couple-things\`**. Start 
 
 ## Examples (in `shorts\couple-things\`, all rendered and checked)
 
-The files are **numbered in posting order**. A new one gets the next number (`12-couple-...txt`). The series starts with **how they met**, in three parts, then *Who Said It First?*, which continues the joke from Part 3:
+The files are **numbered in posting order**; posted ones move into `shorts\couple-things\uploaded\`. A new one gets the next number (`12-couple-...txt`). The series starts with **how they met**, in three parts, then *Who Said It First?*, which continues the joke from Part 3:
 
 | File | The moment |
 |---|---|
@@ -62,6 +62,14 @@ The files are **numbered in posting order**. A new one gets the next number (`12
 | `15-couple-you-never-listen.txt` | "You never listen." Ren repeats her whole day, and hands her the cookie she wanted |
 | `16-couple-first-day-apart.txt` | Yuki leaves; Ren is "totally fine"; she's back in ten minutes ("longest ten minutes of my life") |
 | `17-couple-the-yawn-move.txt` | Ren tries the yawn-and-stretch move to hold her paw; Yuki: "Do you want to hold my paw?" |
+| `18-couple-a-star-for-you.txt` | Romantic: Ren "catches" Yuki a star, then lets it float back to the sky. "But you'll stay?" "Every night." |
+| `19-couple-first-snow.txt` | Romantic: their first snow; "Hold my paw. Paws are warmer together." |
+| `20-couple-same-time-forever.txt` | Romantic: back on the hill where they met (Part 1). "Same time tomorrow?" "Same time forever." |
+| `21-couple-rens-poem.txt` | Romantic: Ren's love poem ("Nothing rhymes with orange"), then the real words |
+| `22-couple-dance-with-me.txt` | Romantic: a dance under the fireflies; Ren trips, then Yuki teaches him |
+| `23-couple-names-in-the-sand.txt` | Romantic: the sea washes their names away; "Then I'll write it again. Every time." |
+| `24-couple-dont-move.txt` | Romantic: Yuki falls asleep on his shoulder; Ren doesn't move for three hours |
+| `25-couple-the-wish.txt` | Romantic: a wish by lantern light. "It already came true. I'm looking at it." |
 
 ## 30 ideas to write next
 
@@ -114,6 +122,8 @@ Ideas marked ★ need a new prop or place first (ask Claude Code with `/new-asse
 **YouTube:** everything goes on as planned (the episodes, the Shorts and the series). In between, upload the **Couple Things** Shorts, all in their own playlist, **"Ren & Yuki: Couple Things"**.
 - Make the playlist once: in YouTube Studio, click **Create** (top right), then **New playlist**.
 - When you upload a Couple Things Short, choose that playlist on the **Details** page. The description draft (`videos\<name>-description.txt`) has a PLAYLIST line to remind you, with a place for the playlist link.
+
+**From 11 November (owner):** for a few weeks, YouTube and Instagram both post the same Couple Things at 7 PM every evening, and the original YouTube plan waits: `calendar\couple-things-plan.md`.
 
 **Start with how they met:** on both YouTube and Instagram, post Parts 1, 2 and 3 first, then *Who Said It First?*. Setting up the Instagram account (name, bio, profile picture, Highlights, pinned posts): `instagram\INSTAGRAM-PROFILE.md`.
 

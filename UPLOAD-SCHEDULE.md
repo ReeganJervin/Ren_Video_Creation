@@ -1,5 +1,9 @@
 # Upload schedule
 
+> **On hold (owner, 11 November 2026), for a few weeks:** the plan below is paused. YouTube and Instagram both post
+> **Couple Things**, the same video at 7:00 PM every evening: **`calendar\couple-things-plan.md`** (and `.ics` for
+> Google Calendar). Pick the plan below up again from where it stopped (Tue 10 Nov night: ep7-2 was next).
+
 Uploads happen at night. Each night: upload two videos.
 - the **evening** video: publish it **now** (Visibility: Public)
 - the **next morning's** video: Visibility: **Schedule**, tomorrow morning (for example 8:00 AM)
@@ -42,10 +46,10 @@ Everything is scheduled during the upload night before, like the morning video.
 **Before Monday night:** make Couple Things 1–8 (`make-video.bat`, then `make-social.bat` for each), and run
 `make-social.bat` on `shorts\standalone\uploaded\4-short-the-compliment.txt` and
 `shorts\episode-shorts\uploaded\ep2-1-very-local-wind.txt` (their videos are made already). Or make each one the
-night before it's scheduled. Couple Things stay in their folder after posting (no `uploaded` folder); the numbers
-show what's next.
+night before it's scheduled. After posting, Couple Things move into `shorts\couple-things\uploaded\`, like the others;
+the numbers show what's next.
 
-**The calendar:** `calendar\ren-yuki-week-2026-11-09.md` (to read, with tick boxes) and `calendar\ren-yuki-week-2026-11-09.ics` (for Google Calendar) have all of this (every upload night with its list, and a
+**The calendar** for this week was replaced on 11 Nov by `calendar\couple-things-plan.md`; it had all of this (every upload night with its list, and a
 reminder when each video goes live, to answer comments), in India time. To add it to Google Calendar: on a computer,
 open calendar.google.com, then the gear (Settings), **Import & export**, **Import**, choose the file, then **Import**.
 It then shows on your phone too.

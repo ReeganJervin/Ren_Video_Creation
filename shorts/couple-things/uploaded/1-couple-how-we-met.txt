@@ -4,12 +4,12 @@
 #  (as in Episode 1, stories\episodes\uploaded\episode-01-the-beginning-of-a-friendship.txt). Post this first.
 #
 #  Commands (run them in the project folder, or drag the story onto the .bat file):
-#    Check it:            check-story.bat shorts\couple-things\1-couple-how-we-met.txt
-#    Watch it:            preview.bat shorts\couple-things\1-couple-how-we-met.txt
-#    Make the video:      make-video.bat shorts\couple-things\1-couple-how-we-met.txt
-#    If it stopped:       resume-video.bat shorts\couple-things\1-couple-how-we-met.txt
-#    YouTube files only:  node tools\make-video.js shorts\couple-things\1-couple-how-we-met.txt --youtube
-#    Instagram files:     make-social.bat shorts\couple-things\1-couple-how-we-met.txt
+#    Check it:            check-story.bat shorts\couple-things\uploaded\1-couple-how-we-met.txt
+#    Watch it:            preview.bat shorts\couple-things\uploaded\1-couple-how-we-met.txt
+#    Make the video:      make-video.bat shorts\couple-things\uploaded\1-couple-how-we-met.txt
+#    If it stopped:       resume-video.bat shorts\couple-things\uploaded\1-couple-how-we-met.txt
+#    YouTube files only:  node tools\make-video.js shorts\couple-things\uploaded\1-couple-how-we-met.txt --youtube
+#    Instagram files:     make-social.bat shorts\couple-things\uploaded\1-couple-how-we-met.txt
 # ============================================================
 
 title: How We Met

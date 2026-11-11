@@ -1,0 +1,38 @@
+# ============================================================
+#  Ren & Yuki: Couple Things - First Snow   (~35 s, vertical)
+#  Romantic: their first snow together.
+#
+#  Commands (run them in the project folder, or drag the story onto the .bat file):
+#    Check it:            check-story.bat shorts\couple-things\19-couple-first-snow.txt
+#    Watch it:            preview.bat shorts\couple-things\19-couple-first-snow.txt
+#    Make the video:      make-video.bat shorts\couple-things\19-couple-first-snow.txt
+#    If it stopped:       resume-video.bat shorts\couple-things\19-couple-first-snow.txt
+#    YouTube files only:  node tools\make-video.js shorts\couple-things\19-couple-first-snow.txt --youtube
+#    Instagram files:     make-social.bat shorts\couple-things\19-couple-first-snow.txt
+# ============================================================
+
+title: First Snow
+type: short
+hook: Our first snow together
+thumbnail text: First Snow
+mood voices: on
+place: snowy hill
+time: day
+music: calm
+
+ren enters from left to left
++ yuki enters from right to right
+shot: medium on both
+yuki (excited): Ren, look! It snowed last night! Our first snow together!
+ren (excited): It's beautiful!
+ren and yuki hop
+yuki (shy): It's a little cold, though.
+ren (thinking): I would give you my scarf, but it's very important to my look.
+yuki (pouty): Ren.
+ren (shy): Okay, okay. I have a better idea.
+ren holds out its paw to yuki
+ren (shy): Hold my paw. Paws are warmer together.
+yuki (happy): Much warmer.
+ren and yuki walk to right paw in paw
+hearts float up
+ending: Tag your winter cuddle buddy!

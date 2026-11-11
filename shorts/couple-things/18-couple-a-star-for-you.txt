@@ -1,0 +1,43 @@
+# ============================================================
+#  Ren & Yuki: Couple Things - A Star for You   (~40 s, vertical)
+#  Romantic: Ren tries to catch Yuki a star.
+#
+#  Commands (run them in the project folder, or drag the story onto the .bat file):
+#    Check it:            check-story.bat shorts\couple-things\18-couple-a-star-for-you.txt
+#    Watch it:            preview.bat shorts\couple-things\18-couple-a-star-for-you.txt
+#    Make the video:      make-video.bat shorts\couple-things\18-couple-a-star-for-you.txt
+#    If it stopped:       resume-video.bat shorts\couple-things\18-couple-a-star-for-you.txt
+#    YouTube files only:  node tools\make-video.js shorts\couple-things\18-couple-a-star-for-you.txt --youtube
+#    Instagram files:     make-social.bat shorts\couple-things\18-couple-a-star-for-you.txt
+# ============================================================
+
+title: A Star for You
+type: short
+hook: When he tries to give you a star
+thumbnail text: A Star for You
+mood voices: on
+place: meadow
+time: night
+music: magical
+
+ren enters from left to left
++ yuki enters from right to right
+shot: medium on both
+star appears
+yuki (happy): Look, Ren. That star is so bright tonight.
+ren (determined): Then I'll get it for you.
+yuki (surprised): Ren, you can't catch a star.
+ren stretches its paws wide
+ren (determined): Watch me.
+star falls
+ren (surprised): It... it worked?
+music: heartfelt
+ren points at the star
+ren (shy): For you.
+yuki (shy): Ren... it belongs in the sky.
+ren (thinking): You're right. Some things are too bright to keep.
+star rises
+yuki (shy): But you'll stay, right?
+ren (happy): Every night.
+hearts float up
+ending: Tag the one who'd catch you a star!

@@ -1,0 +1,41 @@
+# ============================================================
+#  Ren & Yuki: Couple Things - Names in the Sand   (~40 s, vertical)
+#  Romantic: Ren writes their names in the sand. The sea has other plans.
+#
+#  Commands (run them in the project folder, or drag the story onto the .bat file):
+#    Check it:            check-story.bat shorts\couple-things\23-couple-names-in-the-sand.txt
+#    Watch it:            preview.bat shorts\couple-things\23-couple-names-in-the-sand.txt
+#    Make the video:      make-video.bat shorts\couple-things\23-couple-names-in-the-sand.txt
+#    If it stopped:       resume-video.bat shorts\couple-things\23-couple-names-in-the-sand.txt
+#    YouTube files only:  node tools\make-video.js shorts\couple-things\23-couple-names-in-the-sand.txt --youtube
+#    Instagram files:     make-social.bat shorts\couple-things\23-couple-names-in-the-sand.txt
+# ============================================================
+
+title: Names in the Sand
+type: short
+hook: When he writes your names in the sand
+thumbnail text: Names in the Sand
+mood voices: on
+place: beach
+time: sunset
+music: calm
+
+ren enters from left to left
++ yuki enters from right to right
+shot: medium on both
+ren (excited): Yuki, look! I'm writing our names in the sand.
+ren crouches
+ren writes in the air
+ren (proud): Ren and Yuki. With a heart in the middle.
+yuki (shy): That's so sweet.
+narrator: Then a wave came, and washed the names away.
+ren stands up
+ren (sad): Oh. It's gone.
+yuki (sad): The sea took it.
+music: heartfelt
+ren walks to yuki
+ren (determined): Then I'll write it again. Every time the sea takes it, I'll write it again.
+yuki (shy): Even if it takes forever?
+ren (happy): Especially then.
+hearts float up
+ending: Tag the one who'd write your name again!

@@ -1,0 +1,41 @@
+# ============================================================
+#  Ren & Yuki: Couple Things - Don't Move   (~35 s, vertical)
+#  Romantic: Yuki falls asleep on Ren's shoulder. He will not move. Ever.
+#
+#  Commands (run them in the project folder, or drag the story onto the .bat file):
+#    Check it:            check-story.bat shorts\couple-things\24-couple-dont-move.txt
+#    Watch it:            preview.bat shorts\couple-things\24-couple-dont-move.txt
+#    Make the video:      make-video.bat shorts\couple-things\24-couple-dont-move.txt
+#    If it stopped:       resume-video.bat shorts\couple-things\24-couple-dont-move.txt
+#    YouTube files only:  node tools\make-video.js shorts\couple-things\24-couple-dont-move.txt --youtube
+#    Instagram files:     make-social.bat shorts\couple-things\24-couple-dont-move.txt
+# ============================================================
+
+title: Don't Move
+type: short
+hook: When she falls asleep on your shoulder
+thumbnail text: Don't. Move.
+mood voices: on
+place: meadow
+time: night
+music: bedtime
+
+ren enters from left to left
++ yuki enters from right to right
+shot: medium on both
+ren and yuki sit down
+yuki (sleepy): The stars are so pretty tonight.
+ren (happy): Not as pretty as you.
+yuki (shy): Ren...
+yuki yawns
+yuki leans closer to ren
+yuki feels sleepy
+beat
+shot: close on ren
+ren (thinks silently): She's asleep. On my shoulder. Don't move, Ren.
+ren (thinks silently): My paw is asleep too. Still not moving.
+narrator: Ren didn't move for three hours.
+time: day
+yuki (sleepy): ...Good morning. Did you sleep?
+ren (shy): Not even a little. Best night ever.
+ending: Tag the one you'd stay still for!

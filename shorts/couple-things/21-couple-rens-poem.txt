@@ -1,0 +1,42 @@
+# ============================================================
+#  Ren & Yuki: Couple Things - Ren's Poem   (~40 s, vertical)
+#  Romantic (and a little funny): Ren writes Yuki a love poem.
+#
+#  Commands (run them in the project folder, or drag the story onto the .bat file):
+#    Check it:            check-story.bat shorts\couple-things\21-couple-rens-poem.txt
+#    Watch it:            preview.bat shorts\couple-things\21-couple-rens-poem.txt
+#    Make the video:      make-video.bat shorts\couple-things\21-couple-rens-poem.txt
+#    If it stopped:       resume-video.bat shorts\couple-things\21-couple-rens-poem.txt
+#    YouTube files only:  node tools\make-video.js shorts\couple-things\21-couple-rens-poem.txt --youtube
+#    Instagram files:     make-social.bat shorts\couple-things\21-couple-rens-poem.txt
+# ============================================================
+
+title: Ren's Poem
+type: short
+hook: He wrote you a love poem...
+thumbnail text: Ren's Love Poem
+mood voices: on
+place: cottage garden
+time: sunset
+music: calm
+
+ren enters from left to left
++ yuki enters from right to right
+shot: medium on both
+ren (shy): Yuki, I wrote you a poem.
+yuki (excited): A poem? For me?
+ren writes in the air
+ren (proud): Roses are red. Foxes are orange.
+ren (thinking): Nothing rhymes with orange.
+yuki (laughing): That's the poem?
+ren (determined): Wait. There's more.
+music: heartfelt
+shot: close on ren
+ren (shy): I'm not good with words. But every day with you is my favourite day.
+shot: medium on both
+yuki walks to ren
+yuki (shy): That's the best poem I've ever heard.
+ren (shy): Even the orange part?
+yuki (playful): Especially the orange part.
+yuki hugs ren
+ending: Tag the one who'd write you a bad poem!

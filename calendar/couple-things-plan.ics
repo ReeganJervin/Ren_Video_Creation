@@ -1,0 +1,1054 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Kitsu Studio//Ren & Yuki Couple Things plan//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:Ren & Yuki: Couple Things
+X-WR-TIMEZONE:Asia/Kolkata
+BEGIN:VTIMEZONE
+TZID:Asia/Kolkata
+BEGIN:STANDARD
+DTSTART:19700101T000000
+TZOFFSETFROM:+0530
+TZOFFSETTO:+0530
+TZNAME:IST
+END:STANDARD
+END:VTIMEZONE
+BEGIN:VEVENT
+UID:f8206531e3eede8b@ren-yuki
+DTSTAMP:20261111T000000Z
+DTSTART;TZID=Asia/Kolkata:20261111T190000
+DTEND;TZID=Asia/Kolkata:20261111T193000
+SUMMARY:Live: CT3 I Like Your Ears (YouTube + Instagram)
+DESCRIPTION:shorts\\couple-things\\3-couple-i-like-your-ears.txt. Check bo
+ th went live\, share the Reel to your Story (Couple Things Highlight)\, a
+ dd a Story sticker (Question box: "Send us your couple moment!")\, answer
+  comments for the first hour.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Live: CT3 I Like Your Ears (YouTube + Instagram)
+TRIGGER:PT0M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:f19423f4760d6ef3@ren-yuki
+DTSTAMP:20261111T000000Z
+DTSTART;TZID=Asia/Kolkata:20261111T210000
+DTEND;TZID=Asia/Kolkata:20261111T214500
+SUMMARY:Upload night: schedule CT4 Who Said It First?
+DESCRIPTION:Schedule for tomorrow 7:00 PM: CT4 Who Said It First? (shorts\
+ \couple-things\\4-couple-who-said-it-first.txt).\nYOUTUBE: upload videos\
+ \4-couple-who-said-it-first\\4-couple-who-said-it-first.mp4\, title/descr
+ iption from 4-couple-who-said-it-first-description.txt\, playlist "Ren & 
+ Yuki: Couple Things"\, Related video: How We Met\, Schedule 7:00 PM.\nINS
+ TAGRAM: Reel with the same video\, cover and caption from videos\\4-coupl
+ e-who-said-it-first\\instagram\\\, Schedule 7:00 PM.\nINSTAGRAM 12:00 PM 
+ tomorrow: Reel The Compliment (shorts\\standalone\\uploaded\\4-short-the-
+ compliment.txt).\nMove CT3 I Like Your Ears into shorts\\couple-things\\u
+ ploaded\\.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Upload night: schedule CT4 Who Said It First?
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:56d944d2a6f61d2c@ren-yuki
+DTSTAMP:20261111T000000Z
+DTSTART;TZID=Asia/Kolkata:20261112T120000
+DTEND;TZID=Asia/Kolkata:20261112T121500
+SUMMARY:Live on Instagram: Reel The Compliment
+DESCRIPTION:Scheduled the night before. Answer comments.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Live on Instagram: Reel The Compliment
+TRIGGER:PT0M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:5a3aa91db5bedba9@ren-yuki
+DTSTAMP:20261111T000000Z
+DTSTART;TZID=Asia/Kolkata:20261112T190000
+DTEND;TZID=Asia/Kolkata:20261112T193000
+SUMMARY:Live: CT4 Who Said It First? (YouTube + Instagram)
+DESCRIPTION:shorts\\couple-things\\4-couple-who-said-it-first.txt. Check b
+ oth went live\, share the Reel to your Story (Couple Things Highlight)\, 
+ add a Story sticker (Emoji slider: "How much is this you? 😂")\, answer
+  comments for the first hour.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Live: CT4 Who Said It First? (YouTube + Instagram)
+TRIGGER:PT0M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:9235820948648dca@ren-yuki
+DTSTAMP:20261111T000000Z
+DTSTART;TZID=Asia/Kolkata:20261112T210000
+DTEND;TZID=Asia/Kolkata:20261112T214500
+SUMMARY:Upload night: schedule CT5 Where Should We Eat?
+DESCRIPTION:Schedule for tomorrow 7:00 PM: CT5 Where Should We Eat? (short
+ s\\couple-things\\5-couple-where-to-eat.txt).\nYOUTUBE: upload videos\\5-
+ couple-where-to-eat\\5-couple-where-to-eat.mp4\, title/description from 5
+ -couple-where-to-eat-description.txt\, playlist "Ren & Yuki: Couple Thing
+ s"\, Related video: How We Met\, Schedule 7:00 PM.\nINSTAGRAM: Reel with 
+ the same video\, cover and caption from videos\\5-couple-where-to-eat\\in
+ stagram\\\, Schedule 7:00 PM.\nINSTAGRAM 12:00 PM tomorrow: Carousel CT1 
+ How We Met (carousel-01 to 08.jpg from its instagram folder).\nMove CT4 W
+ ho Said It First? into shorts\\couple-things\\uploaded\\.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Upload night: schedule CT5 Where Should We Eat?
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:f589d2abeb0486a6@ren-yuki
+DTSTAMP:20261111T000000Z
+DTSTART;TZID=Asia/Kolkata:20261113T120000
+DTEND;TZID=Asia/Kolkata:20261113T121500
+SUMMARY:Live on Instagram: Carousel CT1 How We Met
+DESCRIPTION:Scheduled the night before. Answer comments.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Live on Instagram: Carousel CT1 How We Met
+TRIGGER:PT0M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:7a16fecf95c336b3@ren-yuki
+DTSTAMP:20261111T000000Z
+DTSTART;TZID=Asia/Kolkata:20261113T190000
+DTEND;TZID=Asia/Kolkata:20261113T193000
+SUMMARY:Live: CT5 Where Should We Eat? (YouTube + Instagram)
+DESCRIPTION:shorts\\couple-things\\5-couple-where-to-eat.txt. Check both w
+ ent live\, share the Reel to your Story (Couple Things Highlight)\, add a
+  Story sticker (Poll: "Favourite this week?" (two Reels))\, answer commen
+ ts for the first hour.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Live: CT5 Where Should We Eat? (YouTube + Instagram)
+TRIGGER:PT0M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:3a85810a280786fb@ren-yuki
+DTSTAMP:20261111T000000Z
+DTSTART;TZID=Asia/Kolkata:20261113T210000
+DTEND;TZID=Asia/Kolkata:20261113T214500
+SUMMARY:Upload night: schedule CT6 I'm Fine
+DESCRIPTION:Schedule for tomorrow 7:00 PM: CT6 I'm Fine (shorts\\couple-th
+ ings\\6-couple-im-fine.txt).\nYOUTUBE: upload videos\\6-couple-im-fine\\6
+ -couple-im-fine.mp4\, title/description from 6-couple-im-fine-description
+ .txt\, playlist "Ren & Yuki: Couple Things"\, Related video: How We Met\,
+  Schedule 7:00 PM.\nINSTAGRAM: Reel with the same video\, cover and capti
+ on from videos\\6-couple-im-fine\\instagram\\\, Schedule 7:00 PM.\nINSTAG
+ RAM 12:00 PM tomorrow: Reel Very Local Wind (shorts\\episode-shorts\\uplo
+ aded\\ep2-1-very-local-wind.txt).\nMove CT5 Where Should We Eat? into sho
+ rts\\couple-things\\uploaded\\.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Upload night: schedule CT6 I'm Fine
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:987f5a4b5c9572ee@ren-yuki
+DTSTAMP:20261111T000000Z
+DTSTART;TZID=Asia/Kolkata:20261114T120000
+DTEND;TZID=Asia/Kolkata:20261114T121500
+SUMMARY:Live on Instagram: Reel Very Local Wind
+DESCRIPTION:Scheduled the night before. Answer comments.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Live on Instagram: Reel Very Local Wind
+TRIGGER:PT0M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:d276958b40df40a7@ren-yuki
+DTSTAMP:20261111T000000Z
+DTSTART;TZID=Asia/Kolkata:20261114T190000
+DTEND;TZID=Asia/Kolkata:20261114T193000
+SUMMARY:Live: CT6 I'm Fine (YouTube + Instagram)
+DESCRIPTION:shorts\\couple-things\\6-couple-im-fine.txt. Check both went l
+ ive\, share the Reel to your Story (Couple Things Highlight)\, add a Stor
+ y sticker (Countdown: "Next Couple Things tomorrow!")\, answer comments f
+ or the first hour.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Live: CT6 I'm Fine (YouTube + Instagram)
+TRIGGER:PT0M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:fdb7fad4b8af844b@ren-yuki
+DTSTAMP:20261111T000000Z
+DTSTART;TZID=Asia/Kolkata:20261114T210000
+DTEND;TZID=Asia/Kolkata:20261114T214500
+SUMMARY:Upload night: schedule CT7 You Go First
+DESCRIPTION:Schedule for tomorrow 7:00 PM: CT7 You Go First (shorts\\coupl
+ e-things\\7-couple-you-go-first.txt).\nYOUTUBE: upload videos\\7-couple-y
+ ou-go-first\\7-couple-you-go-first.mp4\, title/description from 7-couple-
+ you-go-first-description.txt\, playlist "Ren & Yuki: Couple Things"\, Rel
+ ated video: How We Met\, Schedule 7:00 PM.\nINSTAGRAM: Reel with the same
+  video\, cover and caption from videos\\7-couple-you-go-first\\instagram\
+ \\, Schedule 7:00 PM.\nINSTAGRAM 12:00 PM tomorrow: Carousel CT5 Where Sh
+ ould We Eat? (carousel-01 to 08.jpg from its instagram folder).\nMove CT6
+  I'm Fine into shorts\\couple-things\\uploaded\\.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Upload night: schedule CT7 You Go First
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:99e593a38102f862@ren-yuki
+DTSTAMP:20261111T000000Z
+DTSTART;TZID=Asia/Kolkata:20261115T120000
+DTEND;TZID=Asia/Kolkata:20261115T121500
+SUMMARY:Live on Instagram: Carousel CT5 Where Should We Eat?
+DESCRIPTION:Scheduled the night before. Answer comments.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Live on Instagram: Carousel CT5 Where Should We Eat?
+TRIGGER:PT0M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:36f25bf4da79d9e8@ren-yuki
+DTSTAMP:20261111T000000Z
+DTSTART;TZID=Asia/Kolkata:20261115T190000
+DTEND;TZID=Asia/Kolkata:20261115T193000
+SUMMARY:Live: CT7 You Go First (YouTube + Instagram)
+DESCRIPTION:shorts\\couple-things\\7-couple-you-go-first.txt. Check both w
+ ent live\, share the Reel to your Story (Couple Things Highlight)\, add a
+  Story sticker (Poll: "Cute or romantic? 💛")\, answer comments for the
+  first hour.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Live: CT7 You Go First (YouTube + Instagram)
+TRIGGER:PT0M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:1a0229b42828810a@ren-yuki
+DTSTAMP:20261111T000000Z
+DTSTART;TZID=Asia/Kolkata:20261115T210000
+DTEND;TZID=Asia/Kolkata:20261115T214500
+SUMMARY:Upload night: schedule CT8 What Day Is It?
+DESCRIPTION:Schedule for tomorrow 7:00 PM: CT8 What Day Is It? (shorts\\co
+ uple-things\\8-couple-what-day-is-it.txt).\nYOUTUBE: upload videos\\8-cou
+ ple-what-day-is-it\\8-couple-what-day-is-it.mp4\, title/description from 
+ 8-couple-what-day-is-it-description.txt\, playlist "Ren & Yuki: Couple Th
+ ings"\, Related video: How We Met\, Schedule 7:00 PM.\nINSTAGRAM: Reel wi
+ th the same video\, cover and caption from videos\\8-couple-what-day-is-i
+ t\\instagram\\\, Schedule 7:00 PM.\nMove CT7 You Go First into shorts\\co
+ uple-things\\uploaded\\.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Upload night: schedule CT8 What Day Is It?
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:635a07f00e81e933@ren-yuki
+DTSTAMP:20261111T000000Z
+DTSTART;TZID=Asia/Kolkata:20261116T100000
+DTEND;TZID=Asia/Kolkata:20261116T101500
+SUMMARY:Monday check: YouTube Analytics + Instagram Insights
+DESCRIPTION:Which Couple Things got the most views\, shares and saves? Pin
+  the best on Instagram\; tell Claude Code.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Monday check: YouTube Analytics + Instagram Insights
+TRIGGER:-PT10M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:8ee68d7d18e9ccba@ren-yuki
+DTSTAMP:20261111T000000Z
+DTSTART;TZID=Asia/Kolkata:20261116T190000
+DTEND;TZID=Asia/Kolkata:20261116T193000
+SUMMARY:Live: CT8 What Day Is It? (YouTube + Instagram)
+DESCRIPTION:shorts\\couple-things\\8-couple-what-day-is-it.txt. Check both
+  went live\, share the Reel to your Story (Couple Things Highlight)\, add
+  a Story sticker (Poll: "Who's right? 🦊 Ren / 🐰 Yuki")\, answer com
+ ments for the first hour.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Live: CT8 What Day Is It? (YouTube + Instagram)
+TRIGGER:PT0M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:d05e1d51a58dcd8b@ren-yuki
+DTSTAMP:20261111T000000Z
+DTSTART;TZID=Asia/Kolkata:20261116T210000
+DTEND;TZID=Asia/Kolkata:20261116T214500
+SUMMARY:Upload night: schedule CT9 Five More Minutes
+DESCRIPTION:Schedule for tomorrow 7:00 PM: CT9 Five More Minutes (shorts\\
+ couple-things\\9-couple-five-more-minutes.txt).\nYOUTUBE: upload videos\\
+ 9-couple-five-more-minutes\\9-couple-five-more-minutes.mp4\, title/descri
+ ption from 9-couple-five-more-minutes-description.txt\, playlist "Ren & Y
+ uki: Couple Things"\, Related video: How We Met\, Schedule 7:00 PM.\nINST
+ AGRAM: Reel with the same video\, cover and caption from videos\\9-couple
+ -five-more-minutes\\instagram\\\, Schedule 7:00 PM.\nMove CT8 What Day Is
+  It? into shorts\\couple-things\\uploaded\\.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Upload night: schedule CT9 Five More Minutes
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:978f574781e6cf5b@ren-yuki
+DTSTAMP:20261111T000000Z
+DTSTART;TZID=Asia/Kolkata:20261117T190000
+DTEND;TZID=Asia/Kolkata:20261117T193000
+SUMMARY:Live: CT9 Five More Minutes (YouTube + Instagram)
+DESCRIPTION:shorts\\couple-things\\9-couple-five-more-minutes.txt. Check b
+ oth went live\, share the Reel to your Story (Couple Things Highlight)\, 
+ add a Story sticker (Quiz about today's Reel)\, answer comments for the f
+ irst hour.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Live: CT9 Five More Minutes (YouTube + Instagram)
+TRIGGER:PT0M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:29af0c6ca056184d@ren-yuki
+DTSTAMP:20261111T000000Z
+DTSTART;TZID=Asia/Kolkata:20261117T210000
+DTEND;TZID=Asia/Kolkata:20261117T214500
+SUMMARY:Upload night: schedule CT10 The Snore
+DESCRIPTION:Schedule for tomorrow 7:00 PM: CT10 The Snore (shorts\\couple-
+ things\\10-couple-the-snore.txt).\nYOUTUBE: upload videos\\10-couple-the-
+ snore\\10-couple-the-snore.mp4\, title/description from 10-couple-the-sno
+ re-description.txt\, playlist "Ren & Yuki: Couple Things"\, Related video
+ : How We Met\, Schedule 7:00 PM.\nINSTAGRAM: Reel with the same video\, c
+ over and caption from videos\\10-couple-the-snore\\instagram\\\, Schedule
+  7:00 PM.\nMove CT9 Five More Minutes into shorts\\couple-things\\uploade
+ d\\.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Upload night: schedule CT10 The Snore
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:e4e0ec2b9b3b8e88@ren-yuki
+DTSTAMP:20261111T000000Z
+DTSTART;TZID=Asia/Kolkata:20261118T190000
+DTEND;TZID=Asia/Kolkata:20261118T193000
+SUMMARY:Live: CT10 The Snore (YouTube + Instagram)
+DESCRIPTION:shorts\\couple-things\\10-couple-the-snore.txt. Check both wen
+ t live\, share the Reel to your Story (Couple Things Highlight)\, add a S
+ tory sticker (Question box: "Send us your couple moment!")\, answer comme
+ nts for the first hour.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Live: CT10 The Snore (YouTube + Instagram)
+TRIGGER:PT0M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:69244566e68fba1b@ren-yuki
+DTSTAMP:20261111T000000Z
+DTSTART;TZID=Asia/Kolkata:20261118T210000
+DTEND;TZID=Asia/Kolkata:20261118T214500
+SUMMARY:Upload night: schedule CT11 The Long Way Home
+DESCRIPTION:Schedule for tomorrow 7:00 PM: CT11 The Long Way Home (shorts\
+ \couple-things\\11-couple-the-long-way-home.txt).\nYOUTUBE: upload videos
+ \\11-couple-the-long-way-home\\11-couple-the-long-way-home.mp4\, title/de
+ scription from 11-couple-the-long-way-home-description.txt\, playlist "Re
+ n & Yuki: Couple Things"\, Related video: How We Met\, Schedule 7:00 PM.\
+ nINSTAGRAM: Reel with the same video\, cover and caption from videos\\11-
+ couple-the-long-way-home\\instagram\\\, Schedule 7:00 PM.\nINSTAGRAM 12:0
+ 0 PM tomorrow: Reel Staring Contest (shorts\\standalone\\uploaded\\3-shor
+ t-staring-contest.txt).\nMove CT10 The Snore into shorts\\couple-things\\
+ uploaded\\.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Upload night: schedule CT11 The Long Way Home
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:104004fd3219d1f0@ren-yuki
+DTSTAMP:20261111T000000Z
+DTSTART;TZID=Asia/Kolkata:20261119T120000
+DTEND;TZID=Asia/Kolkata:20261119T121500
+SUMMARY:Live on Instagram: Reel Staring Contest
+DESCRIPTION:Scheduled the night before. Answer comments.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Live on Instagram: Reel Staring Contest
+TRIGGER:PT0M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:3edec0652c0acff8@ren-yuki
+DTSTAMP:20261111T000000Z
+DTSTART;TZID=Asia/Kolkata:20261119T190000
+DTEND;TZID=Asia/Kolkata:20261119T193000
+SUMMARY:Live: CT11 The Long Way Home (YouTube + Instagram)
+DESCRIPTION:shorts\\couple-things\\11-couple-the-long-way-home.txt. Check 
+ both went live\, share the Reel to your Story (Couple Things Highlight)\,
+  add a Story sticker (Emoji slider: "How much is this you? 😂")\, answe
+ r comments for the first hour.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Live: CT11 The Long Way Home (YouTube + Instagram)
+TRIGGER:PT0M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:0f984a0f2ba23213@ren-yuki
+DTSTAMP:20261111T000000Z
+DTSTART;TZID=Asia/Kolkata:20261119T210000
+DTEND;TZID=Asia/Kolkata:20261119T214500
+SUMMARY:Upload night: schedule CT12 Forgot the Anniversary
+DESCRIPTION:Schedule for tomorrow 7:00 PM: CT12 Forgot the Anniversary (sh
+ orts\\couple-things\\12-couple-forgot-the-anniversary.txt).\nYOUTUBE: upl
+ oad videos\\12-couple-forgot-the-anniversary\\12-couple-forgot-the-annive
+ rsary.mp4\, title/description from 12-couple-forgot-the-anniversary-descr
+ iption.txt\, playlist "Ren & Yuki: Couple Things"\, Related video: How We
+  Met\, Schedule 7:00 PM.\nINSTAGRAM: Reel with the same video\, cover and
+  caption from videos\\12-couple-forgot-the-anniversary\\instagram\\\, Sch
+ edule 7:00 PM.\nINSTAGRAM 12:00 PM tomorrow: Carousel CT6 I'm Fine (carou
+ sel-01 to 08.jpg from its instagram folder).\nMove CT11 The Long Way Home
+  into shorts\\couple-things\\uploaded\\.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Upload night: schedule CT12 Forgot the Anniversary
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:8b26c36b2543b566@ren-yuki
+DTSTAMP:20261111T000000Z
+DTSTART;TZID=Asia/Kolkata:20261120T120000
+DTEND;TZID=Asia/Kolkata:20261120T121500
+SUMMARY:Live on Instagram: Carousel CT6 I'm Fine
+DESCRIPTION:Scheduled the night before. Answer comments.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Live on Instagram: Carousel CT6 I'm Fine
+TRIGGER:PT0M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:8d28d9aafb65b8d7@ren-yuki
+DTSTAMP:20261111T000000Z
+DTSTART;TZID=Asia/Kolkata:20261120T190000
+DTEND;TZID=Asia/Kolkata:20261120T193000
+SUMMARY:Live: CT12 Forgot the Anniversary (YouTube + Instagram)
+DESCRIPTION:shorts\\couple-things\\12-couple-forgot-the-anniversary.txt. C
+ heck both went live\, share the Reel to your Story (Couple Things Highlig
+ ht)\, add a Story sticker (Poll: "Favourite this week?" (two Reels))\, an
+ swer comments for the first hour.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Live: CT12 Forgot the Anniversary (YouTube + Instagram)
+TRIGGER:PT0M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:9fc7db38dd41990b@ren-yuki
+DTSTAMP:20261111T000000Z
+DTSTART;TZID=Asia/Kolkata:20261120T210000
+DTEND;TZID=Asia/Kolkata:20261120T214500
+SUMMARY:Upload night: schedule CT13 Jealous of a Butterfly
+DESCRIPTION:Schedule for tomorrow 7:00 PM: CT13 Jealous of a Butterfly (sh
+ orts\\couple-things\\13-couple-jealous-of-a-butterfly.txt).\nYOUTUBE: upl
+ oad videos\\13-couple-jealous-of-a-butterfly\\13-couple-jealous-of-a-butt
+ erfly.mp4\, title/description from 13-couple-jealous-of-a-butterfly-descr
+ iption.txt\, playlist "Ren & Yuki: Couple Things"\, Related video: How We
+  Met\, Schedule 7:00 PM.\nINSTAGRAM: Reel with the same video\, cover and
+  caption from videos\\13-couple-jealous-of-a-butterfly\\instagram\\\, Sch
+ edule 7:00 PM.\nINSTAGRAM 12:00 PM tomorrow: Reel Who's Taller? (shorts\\
+ standalone\\uploaded\\7-short-whos-taller.txt).\nMove CT12 Forgot the Ann
+ iversary into shorts\\couple-things\\uploaded\\.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Upload night: schedule CT13 Jealous of a Butterfly
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:fb01015bd82dfc6f@ren-yuki
+DTSTAMP:20261111T000000Z
+DTSTART;TZID=Asia/Kolkata:20261121T120000
+DTEND;TZID=Asia/Kolkata:20261121T121500
+SUMMARY:Live on Instagram: Reel Who's Taller?
+DESCRIPTION:Scheduled the night before. Answer comments.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Live on Instagram: Reel Who's Taller?
+TRIGGER:PT0M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:bc92a414263f8711@ren-yuki
+DTSTAMP:20261111T000000Z
+DTSTART;TZID=Asia/Kolkata:20261121T190000
+DTEND;TZID=Asia/Kolkata:20261121T193000
+SUMMARY:Live: CT13 Jealous of a Butterfly (YouTube + Instagram)
+DESCRIPTION:shorts\\couple-things\\13-couple-jealous-of-a-butterfly.txt. C
+ heck both went live\, share the Reel to your Story (Couple Things Highlig
+ ht)\, add a Story sticker (Countdown: "Next Couple Things tomorrow!")\, a
+ nswer comments for the first hour.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Live: CT13 Jealous of a Butterfly (YouTube + Instagram)
+TRIGGER:PT0M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:e83d79dae852029d@ren-yuki
+DTSTAMP:20261111T000000Z
+DTSTART;TZID=Asia/Kolkata:20261121T210000
+DTEND;TZID=Asia/Kolkata:20261121T214500
+SUMMARY:Upload night: schedule CT14 The Long Story
+DESCRIPTION:Schedule for tomorrow 7:00 PM: CT14 The Long Story (shorts\\co
+ uple-things\\14-couple-the-long-story.txt).\nYOUTUBE: upload videos\\14-c
+ ouple-the-long-story\\14-couple-the-long-story.mp4\, title/description fr
+ om 14-couple-the-long-story-description.txt\, playlist "Ren & Yuki: Coupl
+ e Things"\, Related video: How We Met\, Schedule 7:00 PM.\nINSTAGRAM: Ree
+ l with the same video\, cover and caption from videos\\14-couple-the-long
+ -story\\instagram\\\, Schedule 7:00 PM.\nINSTAGRAM 12:00 PM tomorrow: Car
+ ousel CT10 The Snore (carousel-01 to 08.jpg from its instagram folder).\n
+ Move CT13 Jealous of a Butterfly into shorts\\couple-things\\uploaded\\.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Upload night: schedule CT14 The Long Story
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:e36ded33452ea5d7@ren-yuki
+DTSTAMP:20261111T000000Z
+DTSTART;TZID=Asia/Kolkata:20261122T120000
+DTEND;TZID=Asia/Kolkata:20261122T121500
+SUMMARY:Live on Instagram: Carousel CT10 The Snore
+DESCRIPTION:Scheduled the night before. Answer comments.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Live on Instagram: Carousel CT10 The Snore
+TRIGGER:PT0M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:7f8db0d323ce0443@ren-yuki
+DTSTAMP:20261111T000000Z
+DTSTART;TZID=Asia/Kolkata:20261122T190000
+DTEND;TZID=Asia/Kolkata:20261122T193000
+SUMMARY:Live: CT14 The Long Story (YouTube + Instagram)
+DESCRIPTION:shorts\\couple-things\\14-couple-the-long-story.txt. Check bot
+ h went live\, share the Reel to your Story (Couple Things Highlight)\, ad
+ d a Story sticker (Poll: "Cute or romantic? 💛")\, answer comments for 
+ the first hour.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Live: CT14 The Long Story (YouTube + Instagram)
+TRIGGER:PT0M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:64b19f4556c10bfe@ren-yuki
+DTSTAMP:20261111T000000Z
+DTSTART;TZID=Asia/Kolkata:20261122T210000
+DTEND;TZID=Asia/Kolkata:20261122T214500
+SUMMARY:Upload night: schedule CT15 You Never Listen
+DESCRIPTION:Schedule for tomorrow 7:00 PM: CT15 You Never Listen (shorts\\
+ couple-things\\15-couple-you-never-listen.txt).\nYOUTUBE: upload videos\\
+ 15-couple-you-never-listen\\15-couple-you-never-listen.mp4\, title/descri
+ ption from 15-couple-you-never-listen-description.txt\, playlist "Ren & Y
+ uki: Couple Things"\, Related video: How We Met\, Schedule 7:00 PM.\nINST
+ AGRAM: Reel with the same video\, cover and caption from videos\\15-coupl
+ e-you-never-listen\\instagram\\\, Schedule 7:00 PM.\nMove CT14 The Long S
+ tory into shorts\\couple-things\\uploaded\\.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Upload night: schedule CT15 You Never Listen
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:8308252d5f97aabc@ren-yuki
+DTSTAMP:20261111T000000Z
+DTSTART;TZID=Asia/Kolkata:20261123T100000
+DTEND;TZID=Asia/Kolkata:20261123T101500
+SUMMARY:Monday check: YouTube Analytics + Instagram Insights
+DESCRIPTION:Which Couple Things got the most views\, shares and saves? Pin
+  the best on Instagram\; tell Claude Code.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Monday check: YouTube Analytics + Instagram Insights
+TRIGGER:-PT10M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:6f5cd20a5e82b3bd@ren-yuki
+DTSTAMP:20261111T000000Z
+DTSTART;TZID=Asia/Kolkata:20261123T190000
+DTEND;TZID=Asia/Kolkata:20261123T193000
+SUMMARY:Live: CT15 You Never Listen (YouTube + Instagram)
+DESCRIPTION:shorts\\couple-things\\15-couple-you-never-listen.txt. Check b
+ oth went live\, share the Reel to your Story (Couple Things Highlight)\, 
+ add a Story sticker (Poll: "Who's right? 🦊 Ren / 🐰 Yuki")\, answer 
+ comments for the first hour.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Live: CT15 You Never Listen (YouTube + Instagram)
+TRIGGER:PT0M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:fc56f84bd7aa33ea@ren-yuki
+DTSTAMP:20261111T000000Z
+DTSTART;TZID=Asia/Kolkata:20261123T210000
+DTEND;TZID=Asia/Kolkata:20261123T214500
+SUMMARY:Upload night: schedule CT16 First Day Apart
+DESCRIPTION:Schedule for tomorrow 7:00 PM: CT16 First Day Apart (shorts\\c
+ ouple-things\\16-couple-first-day-apart.txt).\nYOUTUBE: upload videos\\16
+ -couple-first-day-apart\\16-couple-first-day-apart.mp4\, title/descriptio
+ n from 16-couple-first-day-apart-description.txt\, playlist "Ren & Yuki: 
+ Couple Things"\, Related video: How We Met\, Schedule 7:00 PM.\nINSTAGRAM
+ : Reel with the same video\, cover and caption from videos\\16-couple-fir
+ st-day-apart\\instagram\\\, Schedule 7:00 PM.\nMove CT15 You Never Listen
+  into shorts\\couple-things\\uploaded\\.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Upload night: schedule CT16 First Day Apart
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:8fb3286c0ddb15a9@ren-yuki
+DTSTAMP:20261111T000000Z
+DTSTART;TZID=Asia/Kolkata:20261124T190000
+DTEND;TZID=Asia/Kolkata:20261124T193000
+SUMMARY:Live: CT16 First Day Apart (YouTube + Instagram)
+DESCRIPTION:shorts\\couple-things\\16-couple-first-day-apart.txt. Check bo
+ th went live\, share the Reel to your Story (Couple Things Highlight)\, a
+ dd a Story sticker (Quiz about today's Reel)\, answer comments for the fi
+ rst hour.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Live: CT16 First Day Apart (YouTube + Instagram)
+TRIGGER:PT0M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:e20edc115e26d49b@ren-yuki
+DTSTAMP:20261111T000000Z
+DTSTART;TZID=Asia/Kolkata:20261124T210000
+DTEND;TZID=Asia/Kolkata:20261124T214500
+SUMMARY:Upload night: schedule CT17 The Yawn Move
+DESCRIPTION:Schedule for tomorrow 7:00 PM: CT17 The Yawn Move (shorts\\cou
+ ple-things\\17-couple-the-yawn-move.txt).\nYOUTUBE: upload videos\\17-cou
+ ple-the-yawn-move\\17-couple-the-yawn-move.mp4\, title/description from 1
+ 7-couple-the-yawn-move-description.txt\, playlist "Ren & Yuki: Couple Thi
+ ngs"\, Related video: How We Met\, Schedule 7:00 PM.\nINSTAGRAM: Reel wit
+ h the same video\, cover and caption from videos\\17-couple-the-yawn-move
+ \\instagram\\\, Schedule 7:00 PM.\nMove CT16 First Day Apart into shorts\
+ \couple-things\\uploaded\\.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Upload night: schedule CT17 The Yawn Move
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:4293f6ea88133486@ren-yuki
+DTSTAMP:20261111T000000Z
+DTSTART;TZID=Asia/Kolkata:20261125T190000
+DTEND;TZID=Asia/Kolkata:20261125T193000
+SUMMARY:Live: CT17 The Yawn Move (YouTube + Instagram)
+DESCRIPTION:shorts\\couple-things\\17-couple-the-yawn-move.txt. Check both
+  went live\, share the Reel to your Story (Couple Things Highlight)\, add
+  a Story sticker (Question box: "Send us your couple moment!")\, answer c
+ omments for the first hour.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Live: CT17 The Yawn Move (YouTube + Instagram)
+TRIGGER:PT0M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:96c1c549f129e0c5@ren-yuki
+DTSTAMP:20261111T000000Z
+DTSTART;TZID=Asia/Kolkata:20261125T210000
+DTEND;TZID=Asia/Kolkata:20261125T214500
+SUMMARY:Upload night: schedule CT18 A Star for You
+DESCRIPTION:Schedule for tomorrow 7:00 PM: CT18 A Star for You (shorts\\co
+ uple-things\\18-couple-a-star-for-you.txt).\nYOUTUBE: upload videos\\18-c
+ ouple-a-star-for-you\\18-couple-a-star-for-you.mp4\, title/description fr
+ om 18-couple-a-star-for-you-description.txt\, playlist "Ren & Yuki: Coupl
+ e Things"\, Related video: How We Met\, Schedule 7:00 PM.\nINSTAGRAM: Ree
+ l with the same video\, cover and caption from videos\\18-couple-a-star-f
+ or-you\\instagram\\\, Schedule 7:00 PM.\nINSTAGRAM 12:00 PM tomorrow: Ree
+ l Copycat (shorts\\standalone\\uploaded\\9-short-copycat.txt).\nMove CT17
+  The Yawn Move into shorts\\couple-things\\uploaded\\.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Upload night: schedule CT18 A Star for You
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:f5290518752ac647@ren-yuki
+DTSTAMP:20261111T000000Z
+DTSTART;TZID=Asia/Kolkata:20261126T120000
+DTEND;TZID=Asia/Kolkata:20261126T121500
+SUMMARY:Live on Instagram: Reel Copycat
+DESCRIPTION:Scheduled the night before. Answer comments.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Live on Instagram: Reel Copycat
+TRIGGER:PT0M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:d9870a54f57aaa60@ren-yuki
+DTSTAMP:20261111T000000Z
+DTSTART;TZID=Asia/Kolkata:20261126T190000
+DTEND;TZID=Asia/Kolkata:20261126T193000
+SUMMARY:Live: CT18 A Star for You (YouTube + Instagram)
+DESCRIPTION:shorts\\couple-things\\18-couple-a-star-for-you.txt. Check bot
+ h went live\, share the Reel to your Story (Couple Things Highlight)\, ad
+ d a Story sticker (Emoji slider: "How much is this you? 😂")\, answer c
+ omments for the first hour.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Live: CT18 A Star for You (YouTube + Instagram)
+TRIGGER:PT0M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:9900b0eecac5e832@ren-yuki
+DTSTAMP:20261111T000000Z
+DTSTART;TZID=Asia/Kolkata:20261126T210000
+DTEND;TZID=Asia/Kolkata:20261126T214500
+SUMMARY:Upload night: schedule CT19 First Snow
+DESCRIPTION:Schedule for tomorrow 7:00 PM: CT19 First Snow (shorts\\couple
+ -things\\19-couple-first-snow.txt).\nYOUTUBE: upload videos\\19-couple-fi
+ rst-snow\\19-couple-first-snow.mp4\, title/description from 19-couple-fir
+ st-snow-description.txt\, playlist "Ren & Yuki: Couple Things"\, Related 
+ video: How We Met\, Schedule 7:00 PM.\nINSTAGRAM: Reel with the same vide
+ o\, cover and caption from videos\\19-couple-first-snow\\instagram\\\, Sc
+ hedule 7:00 PM.\nINSTAGRAM 12:00 PM tomorrow: Carousel CT18 A Star for Yo
+ u (carousel-01 to 08.jpg from its instagram folder).\nMove CT18 A Star fo
+ r You into shorts\\couple-things\\uploaded\\.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Upload night: schedule CT19 First Snow
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:a67de1d5a30be7e0@ren-yuki
+DTSTAMP:20261111T000000Z
+DTSTART;TZID=Asia/Kolkata:20261127T120000
+DTEND;TZID=Asia/Kolkata:20261127T121500
+SUMMARY:Live on Instagram: Carousel CT18 A Star for You
+DESCRIPTION:Scheduled the night before. Answer comments.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Live on Instagram: Carousel CT18 A Star for You
+TRIGGER:PT0M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:c4df23bdf61d113e@ren-yuki
+DTSTAMP:20261111T000000Z
+DTSTART;TZID=Asia/Kolkata:20261127T190000
+DTEND;TZID=Asia/Kolkata:20261127T193000
+SUMMARY:Live: CT19 First Snow (YouTube + Instagram)
+DESCRIPTION:shorts\\couple-things\\19-couple-first-snow.txt. Check both we
+ nt live\, share the Reel to your Story (Couple Things Highlight)\, add a 
+ Story sticker (Poll: "Favourite this week?" (two Reels))\, answer comment
+ s for the first hour.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Live: CT19 First Snow (YouTube + Instagram)
+TRIGGER:PT0M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:bfc3b372a8efba13@ren-yuki
+DTSTAMP:20261111T000000Z
+DTSTART;TZID=Asia/Kolkata:20261127T210000
+DTEND;TZID=Asia/Kolkata:20261127T214500
+SUMMARY:Upload night: schedule CT20 Same Time Forever
+DESCRIPTION:Schedule for tomorrow 7:00 PM: CT20 Same Time Forever (shorts\
+ \couple-things\\20-couple-same-time-forever.txt).\nYOUTUBE: upload videos
+ \\20-couple-same-time-forever\\20-couple-same-time-forever.mp4\, title/de
+ scription from 20-couple-same-time-forever-description.txt\, playlist "Re
+ n & Yuki: Couple Things"\, Related video: How We Met\, Schedule 7:00 PM.\
+ nINSTAGRAM: Reel with the same video\, cover and caption from videos\\20-
+ couple-same-time-forever\\instagram\\\, Schedule 7:00 PM.\nINSTAGRAM 12:0
+ 0 PM tomorrow: Reel Ren vs the Ocean (shorts\\standalone\\uploaded\\27-sh
+ ort-ren-vs-the-ocean.txt).\nMove CT19 First Snow into shorts\\couple-thin
+ gs\\uploaded\\.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Upload night: schedule CT20 Same Time Forever
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:242de4042d933df5@ren-yuki
+DTSTAMP:20261111T000000Z
+DTSTART;TZID=Asia/Kolkata:20261128T120000
+DTEND;TZID=Asia/Kolkata:20261128T121500
+SUMMARY:Live on Instagram: Reel Ren vs the Ocean
+DESCRIPTION:Scheduled the night before. Answer comments.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Live on Instagram: Reel Ren vs the Ocean
+TRIGGER:PT0M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:05ce1f2ac14e0b5d@ren-yuki
+DTSTAMP:20261111T000000Z
+DTSTART;TZID=Asia/Kolkata:20261128T190000
+DTEND;TZID=Asia/Kolkata:20261128T193000
+SUMMARY:Live: CT20 Same Time Forever (YouTube + Instagram)
+DESCRIPTION:shorts\\couple-things\\20-couple-same-time-forever.txt. Check 
+ both went live\, share the Reel to your Story (Couple Things Highlight)\,
+  add a Story sticker (Countdown: "Next Couple Things tomorrow!")\, answer
+  comments for the first hour.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Live: CT20 Same Time Forever (YouTube + Instagram)
+TRIGGER:PT0M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:22995ea6f79fbb5e@ren-yuki
+DTSTAMP:20261111T000000Z
+DTSTART;TZID=Asia/Kolkata:20261128T210000
+DTEND;TZID=Asia/Kolkata:20261128T214500
+SUMMARY:Upload night: schedule CT21 Ren's Poem
+DESCRIPTION:Schedule for tomorrow 7:00 PM: CT21 Ren's Poem (shorts\\couple
+ -things\\21-couple-rens-poem.txt).\nYOUTUBE: upload videos\\21-couple-ren
+ s-poem\\21-couple-rens-poem.mp4\, title/description from 21-couple-rens-p
+ oem-description.txt\, playlist "Ren & Yuki: Couple Things"\, Related vide
+ o: How We Met\, Schedule 7:00 PM.\nINSTAGRAM: Reel with the same video\, 
+ cover and caption from videos\\21-couple-rens-poem\\instagram\\\, Schedul
+ e 7:00 PM.\nINSTAGRAM 12:00 PM tomorrow: Carousel CT20 Same Time Forever 
+ (carousel-01 to 08.jpg from its instagram folder).\nMove CT20 Same Time F
+ orever into shorts\\couple-things\\uploaded\\.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Upload night: schedule CT21 Ren's Poem
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:2700c1d5cf90f8c2@ren-yuki
+DTSTAMP:20261111T000000Z
+DTSTART;TZID=Asia/Kolkata:20261129T120000
+DTEND;TZID=Asia/Kolkata:20261129T121500
+SUMMARY:Live on Instagram: Carousel CT20 Same Time Forever
+DESCRIPTION:Scheduled the night before. Answer comments.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Live on Instagram: Carousel CT20 Same Time Forever
+TRIGGER:PT0M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:8c227ea1bc61a9f2@ren-yuki
+DTSTAMP:20261111T000000Z
+DTSTART;TZID=Asia/Kolkata:20261129T190000
+DTEND;TZID=Asia/Kolkata:20261129T193000
+SUMMARY:Live: CT21 Ren's Poem (YouTube + Instagram)
+DESCRIPTION:shorts\\couple-things\\21-couple-rens-poem.txt. Check both wen
+ t live\, share the Reel to your Story (Couple Things Highlight)\, add a S
+ tory sticker (Poll: "Cute or romantic? 💛")\, answer comments for the f
+ irst hour.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Live: CT21 Ren's Poem (YouTube + Instagram)
+TRIGGER:PT0M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:a2ed2ad3db84733b@ren-yuki
+DTSTAMP:20261111T000000Z
+DTSTART;TZID=Asia/Kolkata:20261129T210000
+DTEND;TZID=Asia/Kolkata:20261129T214500
+SUMMARY:Upload night: schedule CT22 Dance With Me
+DESCRIPTION:Schedule for tomorrow 7:00 PM: CT22 Dance With Me (shorts\\cou
+ ple-things\\22-couple-dance-with-me.txt).\nYOUTUBE: upload videos\\22-cou
+ ple-dance-with-me\\22-couple-dance-with-me.mp4\, title/description from 2
+ 2-couple-dance-with-me-description.txt\, playlist "Ren & Yuki: Couple Thi
+ ngs"\, Related video: How We Met\, Schedule 7:00 PM.\nINSTAGRAM: Reel wit
+ h the same video\, cover and caption from videos\\22-couple-dance-with-me
+ \\instagram\\\, Schedule 7:00 PM.\nMove CT21 Ren's Poem into shorts\\coup
+ le-things\\uploaded\\.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Upload night: schedule CT22 Dance With Me
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:6088e717887b7d87@ren-yuki
+DTSTAMP:20261111T000000Z
+DTSTART;TZID=Asia/Kolkata:20261130T100000
+DTEND;TZID=Asia/Kolkata:20261130T101500
+SUMMARY:Monday check: YouTube Analytics + Instagram Insights
+DESCRIPTION:Which Couple Things got the most views\, shares and saves? Pin
+  the best on Instagram\; tell Claude Code.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Monday check: YouTube Analytics + Instagram Insights
+TRIGGER:-PT10M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:dacf1448454809d4@ren-yuki
+DTSTAMP:20261111T000000Z
+DTSTART;TZID=Asia/Kolkata:20261130T190000
+DTEND;TZID=Asia/Kolkata:20261130T193000
+SUMMARY:Live: CT22 Dance With Me (YouTube + Instagram)
+DESCRIPTION:shorts\\couple-things\\22-couple-dance-with-me.txt. Check both
+  went live\, share the Reel to your Story (Couple Things Highlight)\, add
+  a Story sticker (Poll: "Who's right? 🦊 Ren / 🐰 Yuki")\, answer com
+ ments for the first hour.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Live: CT22 Dance With Me (YouTube + Instagram)
+TRIGGER:PT0M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:2673144e4fe62a54@ren-yuki
+DTSTAMP:20261111T000000Z
+DTSTART;TZID=Asia/Kolkata:20261130T210000
+DTEND;TZID=Asia/Kolkata:20261130T214500
+SUMMARY:Upload night: schedule CT23 Names in the Sand
+DESCRIPTION:Schedule for tomorrow 7:00 PM: CT23 Names in the Sand (shorts\
+ \couple-things\\23-couple-names-in-the-sand.txt).\nYOUTUBE: upload videos
+ \\23-couple-names-in-the-sand\\23-couple-names-in-the-sand.mp4\, title/de
+ scription from 23-couple-names-in-the-sand-description.txt\, playlist "Re
+ n & Yuki: Couple Things"\, Related video: How We Met\, Schedule 7:00 PM.\
+ nINSTAGRAM: Reel with the same video\, cover and caption from videos\\23-
+ couple-names-in-the-sand\\instagram\\\, Schedule 7:00 PM.\nMove CT22 Danc
+ e With Me into shorts\\couple-things\\uploaded\\.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Upload night: schedule CT23 Names in the Sand
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:b56fae3958b70396@ren-yuki
+DTSTAMP:20261111T000000Z
+DTSTART;TZID=Asia/Kolkata:20261201T190000
+DTEND;TZID=Asia/Kolkata:20261201T193000
+SUMMARY:Live: CT23 Names in the Sand (YouTube + Instagram)
+DESCRIPTION:shorts\\couple-things\\23-couple-names-in-the-sand.txt. Check 
+ both went live\, share the Reel to your Story (Couple Things Highlight)\,
+  add a Story sticker (Quiz about today's Reel)\, answer comments for the 
+ first hour.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Live: CT23 Names in the Sand (YouTube + Instagram)
+TRIGGER:PT0M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:af42ca557a98f46c@ren-yuki
+DTSTAMP:20261111T000000Z
+DTSTART;TZID=Asia/Kolkata:20261201T210000
+DTEND;TZID=Asia/Kolkata:20261201T214500
+SUMMARY:Upload night: schedule CT24 Don't Move
+DESCRIPTION:Schedule for tomorrow 7:00 PM: CT24 Don't Move (shorts\\couple
+ -things\\24-couple-dont-move.txt).\nYOUTUBE: upload videos\\24-couple-don
+ t-move\\24-couple-dont-move.mp4\, title/description from 24-couple-dont-m
+ ove-description.txt\, playlist "Ren & Yuki: Couple Things"\, Related vide
+ o: How We Met\, Schedule 7:00 PM.\nINSTAGRAM: Reel with the same video\, 
+ cover and caption from videos\\24-couple-dont-move\\instagram\\\, Schedul
+ e 7:00 PM.\nMove CT23 Names in the Sand into shorts\\couple-things\\uploa
+ ded\\.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Upload night: schedule CT24 Don't Move
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:7d508b4f1e69e9d6@ren-yuki
+DTSTAMP:20261111T000000Z
+DTSTART;TZID=Asia/Kolkata:20261202T190000
+DTEND;TZID=Asia/Kolkata:20261202T193000
+SUMMARY:Live: CT24 Don't Move (YouTube + Instagram)
+DESCRIPTION:shorts\\couple-things\\24-couple-dont-move.txt. Check both wen
+ t live\, share the Reel to your Story (Couple Things Highlight)\, add a S
+ tory sticker (Question box: "Send us your couple moment!")\, answer comme
+ nts for the first hour.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Live: CT24 Don't Move (YouTube + Instagram)
+TRIGGER:PT0M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:a78376bcf948a04b@ren-yuki
+DTSTAMP:20261111T000000Z
+DTSTART;TZID=Asia/Kolkata:20261202T210000
+DTEND;TZID=Asia/Kolkata:20261202T214500
+SUMMARY:Upload night: schedule CT25 The Wish
+DESCRIPTION:Schedule for tomorrow 7:00 PM: CT25 The Wish (shorts\\couple-t
+ hings\\25-couple-the-wish.txt).\nYOUTUBE: upload videos\\25-couple-the-wi
+ sh\\25-couple-the-wish.mp4\, title/description from 25-couple-the-wish-de
+ scription.txt\, playlist "Ren & Yuki: Couple Things"\, Related video: How
+  We Met\, Schedule 7:00 PM.\nINSTAGRAM: Reel with the same video\, cover 
+ and caption from videos\\25-couple-the-wish\\instagram\\\, Schedule 7:00 
+ PM.\nINSTAGRAM 12:00 PM tomorrow: Reel The Echo (shorts\\standalone\\uplo
+ aded\\5-short-the-echo.txt).\nMove CT24 Don't Move into shorts\\couple-th
+ ings\\uploaded\\.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Upload night: schedule CT25 The Wish
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:ae6ab0370eb80d29@ren-yuki
+DTSTAMP:20261111T000000Z
+DTSTART;TZID=Asia/Kolkata:20261203T120000
+DTEND;TZID=Asia/Kolkata:20261203T121500
+SUMMARY:Live on Instagram: Reel The Echo
+DESCRIPTION:Scheduled the night before. Answer comments.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Live on Instagram: Reel The Echo
+TRIGGER:PT0M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:43535d4ee2f57a80@ren-yuki
+DTSTAMP:20261111T000000Z
+DTSTART;TZID=Asia/Kolkata:20261203T190000
+DTEND;TZID=Asia/Kolkata:20261203T193000
+SUMMARY:Live: CT25 The Wish (YouTube + Instagram)
+DESCRIPTION:shorts\\couple-things\\25-couple-the-wish.txt. Check both went
+  live\, share the Reel to your Story (Couple Things Highlight)\, add a St
+ ory sticker (Emoji slider: "How much is this you? 😂")\, answer comment
+ s for the first hour.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Live: CT25 The Wish (YouTube + Instagram)
+TRIGGER:PT0M
+END:VALARM
+END:VEVENT
+END:VCALENDAR

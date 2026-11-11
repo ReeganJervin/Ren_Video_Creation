@@ -1,0 +1,42 @@
+# ============================================================
+#  Ren & Yuki: Couple Things - The Wish   (~35 s, vertical)
+#  Romantic: a wish by lantern light.
+#
+#  Commands (run them in the project folder, or drag the story onto the .bat file):
+#    Check it:            check-story.bat shorts\couple-things\25-couple-the-wish.txt
+#    Watch it:            preview.bat shorts\couple-things\25-couple-the-wish.txt
+#    Make the video:      make-video.bat shorts\couple-things\25-couple-the-wish.txt
+#    If it stopped:       resume-video.bat shorts\couple-things\25-couple-the-wish.txt
+#    YouTube files only:  node tools\make-video.js shorts\couple-things\25-couple-the-wish.txt --youtube
+#    Instagram files:     make-social.bat shorts\couple-things\25-couple-the-wish.txt
+# ============================================================
+
+title: The Wish
+type: short
+hook: When you ask what they wished for
+thumbnail text: What Did You Wish For?
+mood voices: on
+place: river
+time: night
+music: magical
+
+ren enters from left to left
++ yuki enters from right to right
+ren holds the lantern
+shot: medium on both
+the lantern glows
+yuki (happy): They say if you make a wish by lantern light, it comes true.
+ren (excited): Then let's make one! Close your eyes.
+ren covers its eyes
++ yuki covers its eyes
+beat
+ren (playful): What did you wish for?
+yuki (shy): I can't tell you. Then it won't come true.
+ren (pouty): Not even a little hint?
+music: heartfelt
+yuki walks to ren
+yuki (shy): Okay. A tiny hint. It already came true.
+ren (surprised): Already? How?
+yuki (shy): I'm looking at it.
+hearts float up
+ending: Tag your wish come true!

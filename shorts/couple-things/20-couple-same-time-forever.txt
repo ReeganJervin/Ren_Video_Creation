@@ -1,0 +1,38 @@
+# ============================================================
+#  Ren & Yuki: Couple Things - Same Time Forever   (~40 s, vertical)
+#  Romantic: back on Yuki's hill, where they first met (Part 1).
+#
+#  Commands (run them in the project folder, or drag the story onto the .bat file):
+#    Check it:            check-story.bat shorts\couple-things\20-couple-same-time-forever.txt
+#    Watch it:            preview.bat shorts\couple-things\20-couple-same-time-forever.txt
+#    Make the video:      make-video.bat shorts\couple-things\20-couple-same-time-forever.txt
+#    If it stopped:       resume-video.bat shorts\couple-things\20-couple-same-time-forever.txt
+#    YouTube files only:  node tools\make-video.js shorts\couple-things\20-couple-same-time-forever.txt --youtube
+#    Instagram files:     make-social.bat shorts\couple-things\20-couple-same-time-forever.txt
+# ============================================================
+
+title: Same Time Forever
+type: short
+hook: Back where we first met
+thumbnail text: Same Time Forever
+mood voices: on
+place: meadow
+time: sunset
+music: heartfelt
+
+ren enters from left to left
++ yuki enters from right to right
+shot: medium on both
+yuki (happy): Do you remember this hill?
+ren (proud): Of course. The summit I conquered. Very bravely.
+yuki (playful): You took the long way up.
+ren (shy): I still do. It's longer with you.
+ren and yuki sit down
+narrator: Every evening since that day, they had come back to the same hill.
+yuki (shy): Ren... the first day, you asked "same time tomorrow?"
+ren (shy): And you said yes.
+ren leans closer to yuki
+ren (shy): So... same time tomorrow?
+yuki (happy): Same time forever.
+hearts float up
+ending: Tag the one you'd meet at the same time forever!
