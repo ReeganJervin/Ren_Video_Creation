@@ -29,6 +29,7 @@ yuki (shy): Dance with me?
 ren (worried): I'm a very bad dancer.
 yuki (playful): I know. I've seen you.
 ren dances
+pop: OOPS! near ren
 ren trips
 ren (shy): See? Terrible.
 yuki walks to ren
@@ -36,7 +37,30 @@ yuki (happy): It's easy. Just follow me.
 ren and yuki look at each other
 yuki dances
 + ren dances
+pop: YAY! near ren
 ren (happy): Hey! I'm doing it!
 yuki (laughing): You're doing it!
 hearts float up
 ending: Tag your dance partner!
+
+# --- Upload texts (YouTube + Instagram; see "Upload texts" in STORY-GUIDE.md) ---
+upload:
+youtube title: Dance With Me 💃 | Ren & Yuki: Couple Things
+youtube description:
+A little dance under the fireflies.
+
+Tag your dance partner!
+
+Follow for more Ren & Yuki: Couple Things! 🦊🐰
+
+#RenAndYuki #CoupleThings #CoupleGoals #CuteCouple #Shorts
+youtube tags: ren and yuki, ren and yuki couple things, couple things, cute couple, couple goals, relatable couple, dance with me, fireflies, bad dancer, cute animation, fox and bunny, couple shorts
+instagram caption:
+Dance With Me 💃
+A little dance under the fireflies.
+
+Who's the better dancer in your relationship? 💃
+
+Follow for more Ren & Yuki: Couple Things! ✨
+More on our YouTube channel: link in bio ▶️
+instagram hashtags: #RenAndYuki #CoupleThings #CoupleGoals #CuteCouple #Romantic

@@ -24,6 +24,7 @@ ren enters from left to left
 + yuki enters from right to right
 shot: medium on both
 yuki (happy): Look at that butterfly. It's so pretty.
+pop: HMPH! near ren
 ren (pouty): Prettier than me?
 yuki (playful): It has very pretty wings.
 ren (determined): I have very pretty ears.
@@ -31,6 +32,7 @@ ren dances
 ren (proud): And I can dance. Can a butterfly dance?
 yuki (thinking): Butterflies dance all day.
 shot: close on ren
+impact on ren
 ren (shouts, pouty): Show-offs!
 shot: medium on both
 yuki walks to ren
@@ -39,3 +41,25 @@ ren (shy): ...Prettier than the butterfly?
 yuki (playful): Don't push it.
 ren hugs yuki
 ending: Tag the one who gets jealous of anything!
+
+# --- Upload texts (YouTube + Instagram; see "Upload texts" in STORY-GUIDE.md) ---
+upload:
+youtube title: Jealous of a Butterfly 🦋 | Ren & Yuki: Couple Things
+youtube description:
+When he gets jealous of... a butterfly.
+
+Tag the one who gets jealous of anything!
+
+Follow for more Ren & Yuki: Couple Things! 🦊🐰
+
+#RenAndYuki #CoupleThings #CoupleGoals #CuteCouple #Shorts
+youtube tags: ren and yuki, ren and yuki couple things, couple things, cute couple, couple goals, relatable couple, jealous boyfriend, cute jealousy, butterfly, cute animation, fox and bunny, couple shorts
+instagram caption:
+Jealous of a Butterfly 🦋
+When he gets jealous of... a butterfly.
+
+What's the silliest thing your person got jealous of? 🦋
+
+Follow for more Ren & Yuki: Couple Things! ✨
+More on our YouTube channel: link in bio ▶️
+instagram hashtags: #RenAndYuki #CoupleThings #CoupleGoals #CuteCouple #Relatable

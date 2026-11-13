@@ -548,6 +548,29 @@ yuki (happy): Then close your eyes and count to ten!
 
 Moves happen while the story carries on, like `camera: close`. The old lines `camera: close`, `closer` and `wide` still work, and in a story with shots they glide too. Background layers move at different speeds as the camera moves, so the picture has depth.
 
+### Comic emphasis: impact and pop words
+
+Two lines for the funny (or dramatic) beat of a scene, the way comics and anime Shorts land a punchline. They take no time: write them just **before** the line they belong to.
+
+| Line | What it does |
+|---|---|
+| `impact` | **The big beat.** The whole picture punches in toward the face of whoever speaks next and springs back, with a little shake, bright speed lines around them (never over their face), a quick soft flash and a soft cartoon "whomp". It's over in about half a second |
+| `impact: small` / `impact: big` | A lighter or a bigger version |
+| `impact on yuki` | On Yuki, whoever speaks next (`impact: big on ren` works too) |
+| `pop: ZZZ!` | **A comic sound word:** bold warm letters on a little burst, beside the head of whoever speaks next. They spring in with a wobble, then swell and pop away (about 1.3 s), with a little "pop" sound. 14 characters at most, like `POOF!`, `GASP!`, `HMPH!`, `!!` or `♥` |
+| `pop: HOO! near owl` | Beside the owl (any name in the story) |
+
+```
+pop: ZZZ! near ren
+ren (thinks silently): Zzz... zzz... ZZZ...
+yuki (whispers): Ren. You're snoring.
+ren (sleepy): I don't snore.
+impact on yuki
+yuki (shouts, pouty): Ren!
+```
+
+Use them for one or two moments per Short: the beat that should land hardest. Used everywhere, they stop being special. They are left out of thumbnails, covers and the picture post; a carousel slide can show a pop word, like a speech bubble (never an impact). An example: `stories\demos-and-tests\comic-demo.txt`.
+
 ### Automatic editing
 
 Write `editing: auto` at the top of the story (next to `title:`), and the camera chooses the shots by itself, like a TV editor:
@@ -587,13 +610,51 @@ star falls
 
 ## YouTube
 
-Every video comes with three files for uploading it, next to it in its own folder, `videos\<story>\`:
+Every video comes with these files for uploading it, next to it in its own folder, `videos\<story>\`:
 
 | File | What it is |
 |---|---|
-| `my-story-thumbnail.jpg` | The thumbnail: 1280×720, drawn fresh from the story (sharper than a frame of the video) |
+| `UPLOAD.txt` | **Start here.** The steps for uploading to YouTube and Instagram, one by one, naming this video's own files |
+| `my-story-youtube.txt` | The **title**, **description** and **tags**, ready to paste, each under its own heading (with the title's and tags' length against YouTube's limits). They are the story's own (see "Upload texts" below) or, if the story doesn't write them, made from the story |
+| `my-story-description.txt` | Only the description, the same as in `my-story-youtube.txt` (the studio's **Copy description** button copies this) |
+| `my-story-thumbnail.jpg` | The thumbnail: 1280×720, drawn fresh from the story (sharper than a frame of the video). A Short gets `my-story-cover.jpg` instead |
 | `my-story.srt` | English subtitles of every spoken line (the narrator too), timed to the voices. Upload it in YouTube Studio under "Subtitles" |
-| `my-story-description.txt` | A **draft** to edit: a title, a short summary, the chapters (if any), the credits and some hashtags. Nothing is ever published automatically |
+
+The credits (`my-story-credits.txt`) stay out of the description. Nothing is ever published automatically.
+
+### Upload texts: the story's own title, description, tags and caption
+
+To write the YouTube and Instagram texts yourself, put them at the **end of the story file**, after a line that says only `upload:`. Nothing after that line is part of the story, so it never changes the video:
+
+```
+ren (shy): Good night, everyone.
+ending: Tag the one who "doesn't snore"!
+
+upload:
+youtube title: The Snore 😴 Ren & Yuki: Couple Things #shorts
+youtube description:
+He snores. He will NEVER admit it. 😴🦊🐰
+
+Tag the one who "doesn't snore"!
+
+#RenAndYuki #CoupleThings #CoupleGoals #Shorts
+youtube tags: ren and yuki, couple things, cute couple, couple goals, snoring, relatable
+instagram caption:
+He snores... but he "doesn't snore". 😴
+
+Tag the one who does this! 😂
+instagram hashtags: #RenAndYuki #CoupleThings #CoupleGoals #CuteCouple #Relatable
+```
+
+| Field | What it is |
+|---|---|
+| `youtube title:` | The title (YouTube allows 100 characters; phones show about the first 70) |
+| `youtube description:` | The description: everything on the lines below it, until the next field. Blank lines stay. A story with scenes gets its chapters added at the end (unless you wrote them yourself) |
+| `youtube tags:` | Tags, separated by commas (500 characters together at most) |
+| `instagram caption:` | The caption: the lines below it, until the next field |
+| `instagram hashtags:` | Hashtags, separated by spaces. They go under the caption. Instagram uses at most 5 |
+
+Every field is optional: whatever you leave out is made from the story, as before. In the upload part, `#RenAndYuki` is text (a hashtag); a line starting with `#` and a space is still a comment. `check-story.bat` lists which texts the story writes, and says if one is too long for YouTube or Instagram, or if a line isn't a field. The studio shows the same under **Notes**.
 
 Two lines choose the thumbnail. Put them anywhere in the story; they take no time:
 
@@ -619,7 +680,7 @@ To add YouTube's end-screen elements: in YouTube Studio, open the video's **Edit
 
 The check report has a line about these files. It warns you if the thumbnail shows a speech bubble or a face cut off at the edge, so you can choose another moment.
 
-To make only these three files, without making the video again (the voices are made if needed): `node tools\make-video.js stories\my-story.txt --youtube`. An example: `stories\demos-and-tests\youtube-demo.txt`. In the studio app, the finished video shows the thumbnail, with **Open subtitles** and **Copy description**. The subtitles are off in the app's player (the narrator's words are already on screen); the **CC** button turns them on.
+To make only these files, without making the video again (the voices are made if needed): `node tools\make-video.js stories\my-story.txt --youtube`. An example: `stories\demos-and-tests\youtube-demo.txt`. In the studio app, the finished video shows the thumbnail, with **Open subtitles** and **Copy description**. The subtitles are off in the app's player (the narrator's words are already on screen); the **CC** button turns them on.
 
 Before publishing, check YouTube's "altered or synthetic content" and "Made for Kids" settings. Whether a video is "Made for Kids" is your choice for each video.
 
@@ -698,7 +759,7 @@ The same Ren & Yuki stories can also bring viewers from Instagram (Facebook is o
 | `reel-cover.jpg` | 1080×1920 cover for the **Reel**. The title sits inside the middle part, which is what Instagram's profile grid shows |
 | `post.jpg` | 1080×1350 **picture post** (the tallest picture the feed shows): the best moment with the title |
 | `carousel-01.jpg` … | A **carousel** (people swipe through it, like a comic): the title, then up to 6 moments of the story with their speech bubbles or the narrator's words, then "What happens next? Watch the video: link in bio". It only shows the first part of the story, so the ending isn't spoiled |
-| `instagram.txt` | The Instagram caption, ready to copy (with a question that gets people commenting, a pointer to your YouTube channel, and 5 hashtags, Instagram's limit), and which file goes in which kind of post |
+| `instagram.txt` | The Instagram caption, ready to copy: the story's own (`instagram caption:` and `instagram hashtags:`, see "Upload texts" above), or one made from the story (with a question that gets people commenting, a pointer to your YouTube channel, and 5 hashtags, Instagram's limit). It also says which file goes in which kind of post. `UPLOAD.txt`, next to the video, is updated with the Instagram steps |
 
 The pictures are drawn fresh by the engine, standing up like a vertical video (never cut out of the wide video). The same `thumbnail` and `thumbnail text` lines choose the picture post and the cover; without `thumbnail text`, the story's hook or title is used.
 
@@ -726,6 +787,8 @@ A few sounds don't come from an action, so you write them on their own line, rig
 |---|---|
 | `sound: clink` | Something small and metal knocked over on stone (the lantern in the dark, Episode 8) |
 | `sound: bump` | A soft, low knock, for an "Ow!" when someone bumps into something |
+| `sound: whomp` | A soft cartoon hit: an airy swish into a round, low "whomp" (the sound of `impact`) |
+| `sound: pop` | A short, bubbly pop (the sound of `pop:` words) |
 
 ## Using your own voice recording for a line
 

@@ -1,0 +1,33 @@
+# ============================================================
+#  Comic emphasis demo   (~25 s, wide)
+#  "impact" and "pop:" words (see "Comic emphasis" in STORY-GUIDE.md): Ren is sure he can catch a falling leaf.
+#
+#  Commands (run them in the project folder, or drag the story onto the .bat file):
+#    Check it:            check-story.bat stories\demos-and-tests\comic-demo.txt
+#    Watch it:            preview.bat stories\demos-and-tests\comic-demo.txt
+#    Make the video:      make-video.bat stories\demos-and-tests\comic-demo.txt
+#    If it stopped:       resume-video.bat stories\demos-and-tests\comic-demo.txt
+#    Vertical version:    node tools\make-video.js stories\demos-and-tests\comic-demo.txt --format vertical
+#    YouTube files only:  node tools\make-video.js stories\demos-and-tests\comic-demo.txt --youtube
+#    Instagram files:     make-social.bat stories\demos-and-tests\comic-demo.txt
+# ============================================================
+
+title: Comic Demo
+place: meadow
+time: day
+music: happy
+
+ren enters from left to left
++ yuki enters from right to right
+ren (proud): Watch this, Yuki. I can catch anything.
+yuki (thinking): Anything?
+ren (determined): Anything!
+pop: WHOOSH!
+ren jumps
+ren (surprised): Wait. Where did it go?
+impact on yuki
+yuki (laughing): It's on your head, Ren!
+pop: GASP! near ren
+ren (shy): ...I meant to do that.
+impact: small on yuki
+yuki (playful): Of course you did.

@@ -1096,6 +1096,77 @@
     c.restore();
     return { x0: cx - w / 2, x1: cx + w / 2, y0: y, y1: y + h };
   }
+  // ---------- comic emphasis: "pop: ZZZ!" and "impact" (only in stories that use them) ----------
+  // a pop word: small rounded letters in the story's own text style (cream with a warm brown outline, like the
+  // speech bubbles and thumbnails), just beside someone's head with three little motion marks. It springs in with a
+  // small overshoot and wobble, then swells a little and fades away.
+  function drawPops(c, t, cam, heads) {
+    for (const p of P.pops) {
+      if (t < p.t0 || t > p.t1) continue;
+      const u = t - p.t0, D = p.t1 - p.t0, size = VERT ? 64 : 54;
+      const h = heads[p.on] ? toScreen(cam, heads[p.on]) : { x: W / 2, y: H * 0.35 };
+      const side = h.x > W / 2 ? -1 : 1;
+      c.save(); c.setTransform(1, 0, 0, 1, 0, 0);
+      c.font = `700 ${size}px ${FONT}`; wordGap(c, size);
+      const w = c.measureText(p.text).width;
+      const x = clamp(h.x + side * (w / 2 + (VERT ? 110 : 135) * cam.z), w / 2 + 70, W - w / 2 - 70);
+      const y = clamp(h.y - (VERT ? 120 : 95) * cam.z, size + (VERT ? 240 : 80), H * (VERT ? 0.62 : 0.7));
+      const pin = easeOutBack(clamp(u / 0.26)), out = clamp((D - u) / 0.25);
+      const sc = (0.4 + 0.6 * pin) * (1 + 0.12 * (1 - out)), rot = side * -0.1 + Math.sin(u * 11) * 0.05 * (1 - clamp(u / 0.7));
+      c.globalAlpha = clamp(u / 0.06) * out;
+      c.translate(x, y); c.rotate(rot); c.scale(sc, sc);
+      c.textAlign = 'center'; c.textBaseline = 'middle'; c.lineJoin = 'round'; c.lineCap = 'round';
+      // three little motion marks on the side toward the character
+      c.strokeStyle = '#4a2616'; c.lineWidth = size * 0.09;
+      const mx = -side * (w / 2 + size * 0.22);
+      [[-0.42, -0.5], [0, -0.62], [0.42, -0.5]].forEach(([dy, k]) => {
+        c.beginPath(); c.moveTo(mx, dy * size); c.lineTo(mx + side * size * 0.22 * k, dy * size * 1.25); c.stroke();
+      });
+      c.fillStyle = 'rgba(40,20,10,0.28)'; c.fillText(p.text, size * 0.04, size * 0.07);
+      c.lineWidth = size * 0.17; c.strokeStyle = '#4a2616'; c.strokeText(p.text, 0, 0);
+      c.fillStyle = '#fff4e4'; c.fillText(p.text, 0, 0);
+      c.restore();
+    }
+  }
+  // the big beat of a gag: the whole picture punches in toward the face and springs back, with a little shake, speed
+  // lines around the face (never over it) and a quick soft flash. "impact: small" and "impact: big" scale it.
+  let impCv = null;
+  function drawImpacts(c, t, cam, heads, tau = 0) {
+    for (const m of P.impacts) {
+      const u = t - m.t; if (u < 0 || u > 0.55) continue;
+      const k = { small: 0.6, big: 1.5 }[m.size] || 1;
+      const h = heads[m.on] ? toScreen(cam, heads[m.on]) : { x: W / 2, y: H / 2 };
+      const fx = clamp(h.x, W * 0.2, W * 0.8), fy = clamp(h.y, H * 0.2, H * 0.8);
+      const z = 1 + 0.085 * k * Math.max(0, u < 0.06 ? u / 0.06 : Math.exp(-(u - 0.06) * 8) * Math.cos((u - 0.06) * 15));
+      const sh = 11 * k * Math.pow(Math.max(0, 1 - u / 0.32), 2), dx = sh * Math.sin(u * 95), dy = sh * Math.sin(u * 71 + 1);
+      if (!impCv) { impCv = document.createElement('canvas'); impCv.width = W; impCv.height = H; }
+      const g = impCv.getContext('2d'); g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, W, H); g.drawImage(c.canvas, 0, 0);
+      c.save(); c.setTransform(1, 0, 0, 1, 0, 0);
+      c.drawImage(impCv, fx - fx * z + dx, fy - fy * z + dy, W * z, H * z);
+      // speed lines: thin bright wedges from the edges toward the face, stopping well clear of it
+      const a = Math.pow(1 - u / 0.55, 1.6), inner = Math.min(W, H) * (0.4 + 0.05 * k), far = Math.hypot(W, H);
+      // bright lines at dusk and night; soft ink lines in daylight, where bright ones would vanish into the sky
+      c.fillStyle = tau >= 1.5 ? `rgba(255,250,238,${0.4 * a})` : `rgba(58,29,14,${0.22 * a})`;
+      // (no line crosses anyone else's face either: the directions toward other faces are left out)
+      const clear = Object.keys(heads).filter(id => id !== m.on).map(id => {
+        const q = toScreen(cam, heads[id]), d = Math.hypot(q.x - fx, q.y - fy);
+        return { a: Math.atan2(q.y - fy, q.x - fx), w: Math.atan2(150 * KS * cam.z, Math.max(d, 1)) };
+      });
+      const crosses = ang => clear.some(o => Math.abs(Math.atan2(Math.sin(ang - o.a), Math.cos(ang - o.a))) < o.w);
+      for (let i = 0; i < 40; i++) {
+        const ang = (i / 40) * Math.PI * 2 + (hash(i + m.line * 3) - 0.5) * 0.1, r0 = inner * (1 + 0.35 * hash(i * 5 + m.line)), wd = 0.012 + 0.012 * hash(i * 11 + m.line);
+        if (crosses(ang)) continue;
+        c.beginPath();
+        c.moveTo(fx + Math.cos(ang) * r0, fy + Math.sin(ang) * r0);
+        c.lineTo(fx + Math.cos(ang - wd) * far, fy + Math.sin(ang - wd) * far);
+        c.lineTo(fx + Math.cos(ang + wd) * far, fy + Math.sin(ang + wd) * far);
+        c.closePath(); c.fill();
+      }
+      const fl = 0.24 * Math.min(1, k) * Math.max(0, 1 - u / 0.12);
+      if (fl > 0) { c.fillStyle = `rgba(255,250,240,${fl})`; c.fillRect(0, 0, W, H); }
+      c.restore();
+    }
+  }
   function drawShort(c, local, t) {
     const cx = VERT ? W * 0.43 : W / 2, maxW = VERT ? W * 0.76 : W * 0.6;
     for (const q of P.wordCaps || []) {
@@ -1394,6 +1465,8 @@
     if (!clean) P.bubbles.forEach(b => { const q = talkAt(b); if (q) drawBubble(c, b, t, q, cam, F); });
     if (P.youtube) drawYouTube(c, t);
     if ((P.wordCaps || P.hook || P.card) && !clean) drawShort(c, local, t);
+    if (P.pops && !clean) drawPops(c, t, cam, heads);
+    if (P.impacts && !clean) drawImpacts(c, t, cam, heads, tau);
     c.setTransform(1, 0, 0, 1, 0, 0);
     const vg = c.createRadialGradient(W / 2, H / 2, H * 0.45, W / 2, H / 2, H * 1.05);
     vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, `rgba(20,10,30,${0.12 + 0.07 * tau})`);

@@ -39,3 +39,15 @@ ren (happy): Of course, Yuki!
 ren and yuki hop
 yuki hugs ren
 narrator: And that was the start of a wonderful adventure.
+
+# --- Upload texts (optional: delete what you don't need; see "Upload texts" in STORY-GUIDE.md) ---
+upload:
+youtube title: My Story | Ren & Yuki
+youtube description:
+One or two sentences about the story.
+
+#RenAndYuki #Animation
+youtube tags: ren and yuki, cute animation, fox and bunny
+instagram caption:
+One or two sentences about the story. 🦊🐰
+instagram hashtags: #RenAndYuki #Animation #Cartoon

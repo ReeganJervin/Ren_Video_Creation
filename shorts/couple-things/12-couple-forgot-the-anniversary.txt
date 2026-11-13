@@ -26,6 +26,7 @@ shot: medium on both
 yuki (excited): Ren! Do you remember what's special about this month?
 music: tense
 shot: close on ren
+pop: GULP! near ren
 ren (thinks silently): The anniversary. I forgot the anniversary!
 ren (worried): Of course I remember! Wait right here!
 shot: medium on both
@@ -36,9 +37,32 @@ ren runs to yuki
 ren (shouts, excited): Happy anniversary, my love!
 ren gives the flower to yuki
 music: happy
+impact on yuki
 yuki (surprised): Ren... our anniversary is next month.
 beat
 ren faints
 yuki (laughing): But I'm keeping the flower.
 hearts float up
 ending: Tag the one who panics like Ren!
+
+# --- Upload texts (YouTube + Instagram; see "Upload texts" in STORY-GUIDE.md) ---
+upload:
+youtube title: Forgot the Anniversary 🌸 | Ren & Yuki: Couple Things
+youtube description:
+He thinks he forgot your anniversary. Panic mode: on.
+
+Tag the one who panics like Ren!
+
+Follow for more Ren & Yuki: Couple Things! 🦊🐰
+
+#RenAndYuki #CoupleThings #CoupleGoals #CuteCouple #Shorts
+youtube tags: ren and yuki, ren and yuki couple things, couple things, cute couple, couple goals, relatable couple, forgot the anniversary, anniversary panic, boyfriend panic, cute animation, fox and bunny, couple shorts
+instagram caption:
+Forgot the Anniversary 🌸
+He thinks he forgot your anniversary. Panic mode: on.
+
+Would you panic like Ren? 😂
+
+Follow for more Ren & Yuki: Couple Things! ✨
+More on our YouTube channel: link in bio ▶️
+instagram hashtags: #RenAndYuki #CoupleThings #CoupleGoals #CuteCouple #Relatable

@@ -32,13 +32,37 @@ shot: close on ren
 ren (proud): Totally fine.
 ren sighs
 ren turns to you
+pop: SIGH... near ren
 ren (sad): How long has she been gone? A week?
 narrator: Ten minutes.
 music: happy
 shot: medium on both
 yuki enters from right to right
+impact on ren
 ren (shouts, excited): Yuki! You're back!
 yuki hugs ren
 yuki (laughing): I forgot my bag. I was gone for ten minutes.
 ren (shy): Longest ten minutes of my life.
 ending: Tag the one who misses you in ten minutes!
+
+# --- Upload texts (YouTube + Instagram; see "Upload texts" in STORY-GUIDE.md) ---
+upload:
+youtube title: First Day Apart 🥺 | Ren & Yuki: Couple Things
+youtube description:
+Our first day apart. He's "totally fine".
+
+Tag the one who misses you in ten minutes!
+
+Follow for more Ren & Yuki: Couple Things! 🦊🐰
+
+#RenAndYuki #CoupleThings #CoupleGoals #CuteCouple #Shorts
+youtube tags: ren and yuki, ren and yuki couple things, couple things, cute couple, couple goals, relatable couple, first day apart, missing you, clingy boyfriend, cute animation, fox and bunny, couple shorts
+instagram caption:
+First Day Apart 🥺
+Our first day apart. He's "totally fine".
+
+How fast do you start missing your person? 🥺
+
+Follow for more Ren & Yuki: Couple Things! ✨
+More on our YouTube channel: link in bio ▶️
+instagram hashtags: #RenAndYuki #CoupleThings #CoupleGoals #CuteCouple #MissYou

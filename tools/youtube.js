@@ -1,9 +1,13 @@
 // The YouTube kit (F11 Part A): everything needed to upload a video, made next to it in videos/:
 //   <name>-thumbnail.jpg   1280×720, under 2 MB: a moment of the story drawn fresh (not taken from the video)
 //   <name>.srt             English subtitles from every voice line, timed to the real voice clips
-//   <name>-description.txt a draft title, summary, chapters, credits and hashtags, for the owner to edit
+//   <name>-youtube.txt     the title, description and tags, ready to paste (the story's own, from its "upload:" part,
+//                          or made from the story)
+//   <name>-description.txt only the description (what the studio's "Copy description" button copies)
+//   UPLOAD.txt             the steps for uploading to YouTube and Instagram (tools/upload.js)
 const fs = require('fs'), path = require('path');
 const { chapters } = require('./scenes');
+const { parseUpload, writeGuide } = require('./upload');
 
 const SERIES = 'Ren & Yuki';
 const WHO = { ren: 'Ren the fox', yuki: 'Yuki the bunny' };
@@ -63,32 +67,51 @@ function summary(plan) {
 }
 const tag = s => '#' + s.replace(/(^|\s)(\w)/g, (_, a, c) => c.toUpperCase()).replace(/[^\w]/g, '');
 
-// The description draft: title, a 2–3 sentence summary from the story, chapters, credits, hashtags, and a reminder.
-function description(plan, credits) {
-  const title = (plan.meta.title || 'A new story').trim();
-  // a story of a series (shorts/couple-things/: "Couple Things") says so in its title, hashtags and a playlist line
-  const series = plan.meta.series, full = series ? `${title} | ${SERIES}: ${series}` : `${title} | ${SERIES}`;
+// The YouTube texts, ready to paste: { title, description, tags, own } (own: which ones the story wrote itself, under
+// "upload:"; the rest are made from the story). A story's own description gets the chapters added when it has
+// scenes and doesn't list them itself.
+function youtubeTexts(plan, upload = parseUpload('')) {
+  const title0 = (plan.meta.title || 'A new story').trim();
+  // a story of a series (shorts/couple-things/: "Couple Things") says so in its title and hashtags
+  const series = plan.meta.series, full = series ? `${title0} | ${SERIES}: ${series}` : `${title0} | ${SERIES}`;
   const place = (plan.meta.place || 'meadow').replace(/-/g, ' ');
-  const ch = chapters(plan);
-  const tags = series ? ['#RenAndYuki', tag(series), '#CoupleGoals', '#CuteCouple', '#Shorts'] : ['#RenAndYuki', '#Animation', '#FamilyAnimation', '#Storytime', tag(place)];
-  // YouTube does not make links clickable in a Short's description; the "Related video" setting is the clickable way
   const isShort = /short/.test(plan.meta.type || '');
-  const from = (plan.meta.from || '').trim();
-  const shortNote = !isShort ? [] : [
-    "SHORTS LINK: Links typed in a Short's description are NOT clickable (YouTube blocks them).",
-    `To link ${from ? `the full episode (${from})` : 'a full episode'}: YouTube Studio > Content > Shorts > this Short > Details >`,
-    "'Related video', then pick the episode. It shows as a tappable link above the title in the Shorts player.", '',
+  const ch = chapters(plan);
+  const hashtags = series ? ['#RenAndYuki', tag(series), '#CoupleGoals', '#CuteCouple', '#Shorts'] : ['#RenAndYuki', '#Animation', '#FamilyAnimation', '#Storytime', tag(place)];
+  // (a series Short without a narrator: its hook says what it's about)
+  const about = series && plan.hook && !plan.voice.some(v => v.who === 'narrator') ? plan.hook.text : summary(plan);
+  const made = [
+    about, '',
+    ...(ch.text ? [ch.text.trim(), ''] : []),
+    `Follow for more ${series ? `${SERIES}: ${series}` : `${SERIES} stories`}!`, '',
+    hashtags.join(' '),
+  ].join('\n');
+  let description = upload.description || made;
+  if (upload.description && ch.text && !/\b0:00\b/.test(upload.description)) description = `${upload.description}\n\n${ch.text.trim()}`;
+  const castTags = plan.cast.filter(id => WHO[id]).map(id => WHO[id].toLowerCase());
+  const tags = upload.tags.length ? upload.tags : [
+    'ren and yuki', ...(series ? [`ren and yuki ${series.toLowerCase()}`, series.toLowerCase(), 'cute couple', 'couple goals', 'relatable'] : ['animation', 'cartoon', 'storytime', 'family animation']),
+    ...castTags, 'cute animation', 'fox and bunny', ...(isShort ? ['shorts'] : []),
   ];
+  return {
+    title: upload.title || ([...full].length <= 70 ? full : [...title0].slice(0, 70).join('')),
+    description, tags: [...new Set(tags)],
+    own: { title: !!upload.title, description: !!upload.description, tags: upload.tags.length > 0 },
+  };
+}
+
+// <name>-youtube.txt: the three things to paste, each under its own heading
+function youtubeTxt(t) {
+  const made = Object.entries(t.own).filter(([, v]) => !v).map(([k]) => k);
   return [
-    'TITLE (draft, under 70 characters)', full.length <= 70 ? full : title.slice(0, 70), '',
-    // (a series Short without a narrator: its hook says what it's about)
-    'SUMMARY (draft)', series && plan.hook && !plan.voice.some(v => v.who === 'narrator') ? plan.hook.text : summary(plan), '',
-    ...(ch.text ? ['CHAPTERS', ch.text.trim(), ''] : []),
-    'CREDITS', credits.trim(), '',
-    ...(series ? ['PLAYLIST', `More ${series}: [paste your "${SERIES}: ${series}" playlist link here]`, `(When uploading, choose the "${SERIES}: ${series}" playlist on the Details page.)`, ''] : []),
-    'HASHTAGS', tags.join(' '), '',
-    ...shortNote,
-    "Reminder: Check YouTube's 'altered or synthetic content' and 'Made for Kids' settings before publishing.", '',
+    `===== TITLE (${[...t.title].length}/100) =====`, t.title, '',
+    '===== DESCRIPTION =====', t.description, '',
+    `===== TAGS (${t.tags.join(',').length}/500) =====`, t.tags.join(', '), '',
+    ...(made.length ? [
+      '===== NOTE (not for YouTube) =====',
+      `The ${made.length > 1 ? `${made.slice(0, -1).join(', ')} and ${made[made.length - 1]}` : made[0]} ${made.length > 1 ? 'were' : 'was'} made from the story. To write your own, add them at the end of the story file`,
+      'after a line "upload:" (see "Upload texts" in STORY-GUIDE.md).', '',
+    ] : []),
   ].join('\n');
 }
 
@@ -210,8 +233,8 @@ async function thumbnail(page, plan, opts = {}) {
   return { jpg: Buffer.from(r.url.split(',')[1], 'base64'), t: r.t, how: `${r.how}, ${shot} shot`, warnings: r.warnings };
 }
 
-// All three files for a plan; returns the report row.
-async function youtubeFiles(page, plan, name, outDir, credits) {
+// All the YouTube files for a plan (and UPLOAD.txt); returns the report row. upload: the story's own texts (tools/upload.js).
+async function youtubeFiles(page, plan, name, outDir, credits, upload = parseUpload('')) {
   const made = [], warnings = [];
   try {
     // (a vertical video gets a 1080×1920 cover frame instead of a thumbnail)
@@ -223,9 +246,19 @@ async function youtubeFiles(page, plan, name, outDir, credits) {
   const srt = subtitles(plan);
   fs.writeFileSync(path.join(outDir, `${name}.srt`), srt.text);
   made.push(`subtitles (${srt.cues} parts)`);
-  fs.writeFileSync(path.join(outDir, `${name}-description.txt`), description(plan, credits));
-  made.push('description draft');
+  // the texts: <name>-youtube.txt (title, description, tags) and <name>-description.txt (only the description,
+  // for the studio's "Copy description" button)
+  const t = youtubeTexts(plan, upload);
+  fs.writeFileSync(path.join(outDir, `${name}-youtube.txt`), youtubeTxt(t));
+  fs.writeFileSync(path.join(outDir, `${name}-description.txt`), t.description + '\n');
+  const own = Object.values(t.own).filter(Boolean).length;
+  made.push(`title, description and tags (${own === 3 ? 'all from the story\'s upload part' : own ? 'some from the story\'s upload part' : 'made from the story'})`);
+  warnings.push(...upload.problems);
+  if ([...t.title].length > 100) warnings.push(`the title is ${[...t.title].length} characters; YouTube allows 100`);
+  if (t.description.length > 5000) warnings.push(`the description is ${t.description.length} characters; YouTube allows 5000`);
+  writeGuide(outDir, name, plan);
+  made.push('UPLOAD.txt');
   return { ok: true, warn: warnings.length > 0, note: !warnings.length, name: 'YouTube files', detail: made.join(', ') + (warnings.length ? '. ' + warnings.join('; ') : '') };
 }
 
-module.exports = { youtubeFiles, subtitles, description, summary, thumbnail, wrap, parts, SERIES, WHO };
+module.exports = { youtubeFiles, subtitles, youtubeTexts, youtubeTxt, summary, thumbnail, wrap, parts, SERIES, WHO };

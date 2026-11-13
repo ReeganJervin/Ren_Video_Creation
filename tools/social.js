@@ -10,6 +10,7 @@
 // Every picture is drawn fresh by the engine (never cropped from the video), in the vertical layout.
 const fs = require('fs'), path = require('path');
 const { thumbnail, summary, SERIES, WHO } = require('./youtube');
+const { parseUpload, instagramCaption } = require('./upload');
 
 const POST = [1080, 1350];        // Instagram's tallest feed picture (4:5)
 const GRID_TOP = 240;             // Instagram's profile grid shows a Reel's middle 1080×1440 (3:4): from y 240 to 1680
@@ -24,6 +25,8 @@ async function moments(view, seen = async () => true) {
     ...Object.values(view.youtube || {}).map(y => [y.t0 - 0.5, y.t1 + 0.5]),
     ...[view.card].filter(Boolean).map(y => [y.t0 - 0.2, y.t1 + 0.2]),
     ...(view.props || []).flatMap(p => [[p.t0 - 0.1, p.t0 + 1.2], ...(p.t1 !== undefined && p.t1 !== null ? [[p.t1 - 1.2, p.t1 + 0.1]] : [])]),
+    // an impact's half second (the picture is punched in and shaking)
+    ...(view.impacts || []).map(m => [m.t - 0.05, m.t + 0.6]),
   ];
   const inBusy = t => busy.some(([a, b]) => t >= a && t <= b), end = view.duration * 0.75;
   // the bubble has popped in after 0.4 s and starts to go 0.3 s before its end; the narrator's caption box takes
@@ -123,21 +126,32 @@ function reelNote(view) {
     '   Make a Short from one scene instead ("type: episode short", see "Shorts" in STORY-GUIDE.md) and post that as the Reel.'];
 }
 
-function instagramText(view, f) {
+// The caption made from the story (when the story doesn't write its own under "upload:")
+function madeCaption(view) {
   const title = (view.meta.title || 'A new story').trim(), hook = view.hook && view.hook.text || view.meta.thumbnailText || '';
   // Instagram uses at most 5 hashtags on a post
   const tags = view.meta.series ? ['#RenAndYuki', '#' + view.meta.series.replace(/\W/g, ''), '#CoupleGoals', '#CuteCouple', '#Relatable'] : couple(view) ? ['#RenAndYuki', '#CoupleGoals', '#CuteCouple', '#Relatable', '#Animation'] : ['#RenAndYuki', '#Animation', '#Cartoon', '#Storytime', placeTag(view)];
   return [
-    `INSTAGRAM: ${title}${view.meta.series ? ` (${SERIES}: ${view.meta.series})` : ''}`, '',
-    'CAPTION (copy everything between the lines, and change anything you like)',
-    '------------------------------------------------------------',
     `${title} 🦊🐰${hook && hook !== title ? '\n' + hook : ''}`, '',
     ...about(view),
     question(view), '',
     `Follow for more ${view.meta.series ? `${SERIES}: ${view.meta.series}` : `${SERIES} stories`}! ✨`,
     'More on our YouTube channel: link in bio ▶️', '',
     tags.join(' '),
+  ].join('\n');
+}
+
+function instagramText(view, f, upload = parseUpload('')) {
+  const title = (view.meta.title || 'A new story').trim();
+  const own = instagramCaption(upload);
+  return [
+    `INSTAGRAM: ${title}${view.meta.series ? ` (${SERIES}: ${view.meta.series})` : ''}`, '',
+    own ? 'CAPTION (the story\'s own, from its "upload:" part: copy everything between the lines)'
+      : 'CAPTION (made from the story: copy everything between the lines, and change anything you like)',
+    '------------------------------------------------------------',
+    own || madeCaption(view),
     '------------------------------------------------------------', '',
+    ...(own ? [] : ['(To write your own caption, add "instagram caption:" and "instagram hashtags:" after "upload:" at the end of', ' the story file; see "Upload texts" in STORY-GUIDE.md.)', '']),
     'WHAT TO POST (three kinds of post, all made from this story)',
     `1. A Reel (the most views): the video ${f.reel}${f.reelMade ? '' : `\n   (not made yet: ${f.reelHow})`}`,
     ...reelNote(view),
@@ -156,7 +170,7 @@ function instagramText(view, f) {
 
 // All the files. vpage: the engine's page for the vertical story (1080×1920); ppage: the same story with a
 // 1080×1350 picture. view: the story as it is seen (an episode Short's own time). Returns the summary line.
-async function socialFiles({ vpage, ppage, view, dir, reel, reelMade, reelHow }) {
+async function socialFiles({ vpage, ppage, view, dir, reel, reelMade, reelHow, upload = parseUpload('') }) {
   fs.mkdirSync(dir, { recursive: true });
   // old carousel slides from an earlier run go, so the folder only has this story's
   // (and the Facebook files of an earlier version, now that Facebook is on hold)
@@ -185,9 +199,10 @@ async function socialFiles({ vpage, ppage, view, dir, reel, reelMade, reelHow })
   made.push(`carousel of ${of} slides`);
   if (!ms.length) warnings.push('the carousel has no story moments (the story has no speech bubbles in its first part)');
   // the caption
-  fs.writeFileSync(path.join(dir, 'instagram.txt'), instagramText(view, { reel, reelMade, reelHow, slides: of }));
-  made.push('Instagram caption');
+  fs.writeFileSync(path.join(dir, 'instagram.txt'), instagramText(view, { reel, reelMade, reelHow, slides: of }, upload));
+  made.push(instagramCaption(upload) ? "Instagram caption (the story's own)" : 'Instagram caption (made from the story)');
+  warnings.push(...upload.problems.filter(p => /Instagram/.test(p)));
   return { ok: true, warn: warnings.length > 0, note: !warnings.length, name: 'Instagram files', detail: made.join(', ') + (warnings.length ? '. ' + warnings.join('; ') : '') };
 }
 
-module.exports = { socialFiles, moments, question, instagramText, POST };
+module.exports = { socialFiles, moments, question, instagramText, madeCaption, POST };

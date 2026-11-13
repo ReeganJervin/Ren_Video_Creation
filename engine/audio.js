@@ -454,6 +454,22 @@
         n.connect(lp); lp.connect(ng); ng.connect(sfx); env(ng, t, 0.06, 0.002, 0.05);
       },
       sting(c) { [72, 76, 79, 84, 88].forEach((m, i) => chime(at(c.t + i * 0.055), m, 0.2 - i * 0.02, 1.1)); },
+      // "impact" (and "sound: whomp"): a soft comic hit, a quick airy swish into a round, low "whomp" (cartoon, not a blow)
+      whomp(c) {
+        const t = at(c.t), k = { small: 0.65, big: 1.3 }[c.size] || 1;
+        const n = noiseSrc(t - 0.1, 0.14), bp = ctx.createBiquadFilter(), ng = ctx.createGain();
+        bp.type = 'bandpass'; bp.Q.value = 0.9; bp.frequency.setValueAtTime(2200, t - 0.1); bp.frequency.exponentialRampToValueAtTime(500, t + 0.02);
+        n.connect(bp); bp.connect(ng); ng.connect(sfx); env(ng, t - 0.1, 0.05 * k, 0.06, 0.08);
+        const o = ctx.createOscillator(), g = ctx.createGain();
+        o.type = 'sine'; o.frequency.setValueAtTime(190, t); o.frequency.exponentialRampToValueAtTime(52, t + 0.26);
+        o.connect(g); g.connect(sfx); env(g, t, 0.3 * k, 0.005, 0.3); o.start(t); o.stop(t + 0.36);
+      },
+      // "pop: ZZZ!" (and "sound: pop"): a short, bubbly pop as the word springs in
+      pop(c) {
+        const t = at(c.t), o = ctx.createOscillator(), g = ctx.createGain();
+        o.type = 'sine'; o.frequency.setValueAtTime(520, t); o.frequency.exponentialRampToValueAtTime(1500, t + 0.06);
+        o.connect(g); g.connect(sfx); env(g, t, 0.13, 0.003, 0.08); o.start(t); o.stop(t + 0.12);
+      },
       // laughing: a soft little "hee-hee-hee" (Yuki's higher than Ren's), quiet, after the line
       giggle(c) {
         const t0 = at(c.t), base = c.who === 'yuki' ? 760 : c.who === 'ren' ? 560 : 650;

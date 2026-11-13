@@ -31,12 +31,36 @@ ren (determined): The leaf looked at me. I looked at the leaf.
 yuki yawns
 ren (proud): Then the leaf moved. Just a little. Very suspicious.
 yuki feels sleepy
+impact: small on ren
 ren (excited): So I jumped to the left! Then to the right! Then left again!
 yuki lies down
 beat
+pop: ZZZ! near yuki
 ren (proud): And that is how I defeated the angry leaf. Yuki?
 shot: close on ren
 ren (whispers): ...Good night. Part two tomorrow.
 shot: medium on both
 yuki (sleepy): Please... no part two.
 ending: Tag the one with the longest stories!
+
+# --- Upload texts (YouTube + Instagram; see "Upload texts" in STORY-GUIDE.md) ---
+upload:
+youtube title: The Long Story 📖 | Ren & Yuki: Couple Things
+youtube description:
+When he tells you his LONGEST story.
+
+Tag the one with the longest stories!
+
+Follow for more Ren & Yuki: Couple Things! 🦊🐰
+
+#RenAndYuki #CoupleThings #CoupleGoals #CuteCouple #Shorts
+youtube tags: ren and yuki, ren and yuki couple things, couple things, cute couple, couple goals, relatable couple, long story, bedtime story, falling asleep, cute animation, fox and bunny, couple shorts
+instagram caption:
+The Long Story 📖
+When he tells you his LONGEST story.
+
+Who tells the longest stories in your relationship? 📖
+
+Follow for more Ren & Yuki: Couple Things! ✨
+More on our YouTube channel: link in bio ▶️
+instagram hashtags: #RenAndYuki #CoupleThings #CoupleGoals #CuteCouple #Relatable

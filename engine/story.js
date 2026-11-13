@@ -23,7 +23,7 @@
   const POS = { left: 560, center: 960, right: 1360 };
   const OFF = { left: -280, right: 2200 };
   const TIMES = { day: 0, sunset: 1, dusk: 2, night: 3 };
-  const SOUNDS = ['clink', 'bump'];
+  const SOUNDS = ['clink', 'bump', 'whomp', 'pop'];
   const MUSIC = ['happy', 'calm', 'magical', 'mystery', 'adventure', 'tense', 'sad', 'bedtime', 'epic', 'heartfelt', 'none'];
   // ways of talking, written with a mood or alone: "ren (shouts, excited): …", "yuki (thinks silently): …"
   const STYLES = { thinks: 'think', think: 'think', 'thinks silently': 'think', whispers: 'whisper', whisper: 'whisper', shouts: 'shout', shout: 'shout' };
@@ -57,7 +57,7 @@
     'hearts float up', 'heart floats down', 'sparkles [around <name>]', 'title card: <WORD>',
     `place: ${PLACES.names().join('|')}`, 'time: day|sunset|dusk|night', 'moon: full|crescent', 'camera: wide|close|closer', 'wait <seconds>',
     'scene: <name>', `music: ${MUSIC.join('|')}`, 'music: deep tense|deep sad', 'thumbnail: auto|<seconds>|scene <number>', 'thumbnail shot: wide|medium|close', 'thumbnail text: <text>',
-    'format: wide|vertical', 'type: short|episode short', 'captions: narrator|all|off', 'loop: on', 'sting', 'sound: clink|bump', 'hook: <text>', 'framing: close|medium|wide',
+    'format: wide|vertical', 'type: short|episode short', 'captions: narrator|all|off', 'loop: on', 'sting', 'impact [: small|big] [on <name>]', 'pop: <WORD> [near <name>]', 'sound: clink|bump|whomp|pop', 'hook: <text>', 'framing: close|medium|wide',
     'from: <story>', 'scenes: <number>|<number>-<number>', 'lines: <number>-<number>', 'ending: <text> (the end card of a Short)', 'intro: series|none|after scene <number>', 'ending: end screen|none', 'ending text: <text>',
     'shot: wide|medium|close|extreme close [on <name>|both|the star]', 'shot: over the shoulder of <name>',
     'camera: push in|pull out|pan to <name|the star|left|center|right>|follow <name>|shake|hold',
@@ -185,7 +185,7 @@
 
   // Extras: names in the story that enter, fly, swim, hop or talk but aren't characters. Known extras come from
   // the asset registry; unknown ones are missing extras, shown as placeholders. Typos of known names are errors.
-  const KEYS = /^(title|title card|place|time|moon|camera|shot|scene|music|editing|reveal|narrator|wait|pause|weather|light|format|type|thumbnail|thumbnail text|thumbnail shot|intro|ending|ending text|type|captions|loop|from|scenes|lines|hook|framing|sting|sound|mood voices)$/;
+  const KEYS = /^(title|title card|place|time|moon|camera|shot|scene|music|editing|reveal|narrator|wait|pause|weather|light|format|type|thumbnail|thumbnail text|thumbnail shot|intro|ending|ending text|type|captions|loop|from|scenes|lines|hook|framing|sting|sound|mood voices|pop|impact)$/;
   function findExtras(lines, errors) {
     const found = {};
     lines.forEach((raw, i) => {
@@ -211,6 +211,10 @@
     const meta = { title: 'Untitled story', place: 'meadow', time: 'sunset' };
     const beats = [], errors = [];
     const lines = text.replace(/\r/g, '').split('\n');
+    // "upload:" on its own line starts the YouTube and Instagram texts (tools/upload.js reads them): nothing from
+    // there to the end is part of the story. (The lines stay, empty, so line numbers in messages don't change.)
+    const upload = lines.findIndex(l => /^\s*upload\s*:\s*$/i.test(l));
+    if (upload >= 0) lines.fill('', upload);
     // the extras this story uses become names that can act, like the characters
     const found = findExtras(lines, errors), extras = {};
     // lines already reported as typos are not read again
@@ -297,6 +301,22 @@
       if ((m = line.match(/^scenes?\s*:\s*(\d+)\s*(?:-\s*(\d+))?\s*$/i))) { meta.window = { scenes: [+m[1], +(m[2] || m[1])], line: lineNo }; return; }
       if ((m = line.match(/^lines\s*:\s*(\d+)\s*-\s*(\d+)\s*$/i))) { meta.window = { lines: [+m[1], +m[2]], line: lineNo }; return; }
       if (/^sting$/i.test(line)) return beat('sting', {});
+      // comic emphasis (take no time, like "sting"): "impact" is the big beat of a gag (a quick camera punch-in that
+      // springs back, a little shake, a flash, speed lines around the face and a soft "whomp"); "pop: ZZZ!" is a
+      // comic sound word that springs in beside someone and pops away. Without "on"/"near", they go to whoever
+      // speaks next (or acted last).
+      if ((m = line.match(/^impact(?:\s*:\s*(small|big))?(?:\s+on\s+(.+?))?$/i))) {
+        const on = m[2] && m[2].trim().toLowerCase();
+        if (on && !new RegExp(`^(${NAME})$`, 'i').test(on)) return err(`"impact on ${m[2].trim()}": I don't know "${m[2].trim()}". Use a name in the story, like ren or yuki.`);
+        return beat('impact', { size: (m[1] || 'normal').toLowerCase(), ...(on ? { on } : {}) });
+      }
+      if ((m = line.match(/^impact\b/i))) return err('Write "impact", "impact: small", "impact: big", or add "on <name>", like "impact on yuki".');
+      if ((m = line.match(/^pop\s*:\s*(.+?)(?:\s+near\s+([a-z][a-z' ]*))?$/i))) {
+        const text = m[1].trim(), near = m[2] && m[2].trim().toLowerCase();
+        if (near && !new RegExp(`^(${NAME})$`, 'i').test(near)) return err(`"near ${m[2].trim()}": I don't know "${m[2].trim()}". Use a name in the story, like ren or yuki.`);
+        if ([...text].length > 14) return err('A pop word must be 14 characters or fewer (like "ZZZ!", "POOF!" or "GASP!").');
+        return beat('pop', { text, ...(near ? { on: near } : {}) });
+      }
       // a one-off sound: "sound: clink" (something metal knocked in the dark), "sound: bump" (a soft knock, for an "Ow!")
       if ((m = line.match(/^sound\s*:\s*([a-z]+)$/i))) {
         const k = m[1].toLowerCase();
@@ -937,6 +957,19 @@
         case 'wait': dur = b.secs * PACE; break;
         case 'sting': sfx('sting', s); break;
         case 'sound': sfx(b.kind, s); break;
+        case 'impact': case 'pop': {
+          // on whom: the name given, else whoever speaks next (within the next few lines), else whoever acted last
+          const i = beats.indexOf(b), next = beats.slice(i + 1, i + 4).find(x => x.type === 'say' && A[x.who]);
+          const on = b.on && A[b.on] ? b.on : next ? next.who : focus;
+          if (b.type === 'impact') {
+            (P.impacts || (P.impacts = [])).push({ t: s, size: b.size, on, line: b.line });
+            sfx('whomp', s, { size: b.size });
+          } else {
+            (P.pops || (P.pops = [])).push({ t0: s, t1: s + 1.35, text: b.text, on, i: P.pops ? P.pops.length : 0, line: b.line });
+            sfx('pop', s);
+          }
+          break;
+        }
         case 'enter': case 'walk': {
           if (b.type === 'enter') who.forEach(a => { a.x = OFF[b.from]; });
           let c = spots()[b.to];

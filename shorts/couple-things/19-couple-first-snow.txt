@@ -26,6 +26,7 @@ shot: medium on both
 yuki (excited): Ren, look! It snowed last night! Our first snow together!
 ren (excited): It's beautiful!
 ren and yuki hop
+pop: BRRR! near yuki
 yuki (shy): It's a little cold, though.
 ren (thinking): I would give you my scarf, but it's very important to my look.
 yuki (pouty): Ren.
@@ -36,3 +37,25 @@ yuki (happy): Much warmer.
 ren and yuki walk to right paw in paw
 hearts float up
 ending: Tag your winter cuddle buddy!
+
+# --- Upload texts (YouTube + Instagram; see "Upload texts" in STORY-GUIDE.md) ---
+upload:
+youtube title: First Snow ❄️ | Ren & Yuki: Couple Things
+youtube description:
+Our first snow together.
+
+Tag your winter cuddle buddy!
+
+Follow for more Ren & Yuki: Couple Things! 🦊🐰
+
+#RenAndYuki #CoupleThings #CoupleGoals #CuteCouple #Shorts
+youtube tags: ren and yuki, ren and yuki couple things, couple things, cute couple, couple goals, relatable couple, first snow, winter couple, cozy couple, cute animation, fox and bunny, couple shorts
+instagram caption:
+First Snow ❄️
+Our first snow together.
+
+Who's your winter cuddle buddy? ❄️
+
+Follow for more Ren & Yuki: Couple Things! ✨
+More on our YouTube channel: link in bio ▶️
+instagram hashtags: #RenAndYuki #CoupleThings #CoupleGoals #CuteCouple #FirstSnow

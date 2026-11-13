@@ -41,6 +41,29 @@ narrator: Three hours later...
 time: day
 ren feels sleepy
 + yuki feels sleepy
+pop: YAWN! near ren
 ren (sleepy): ...You go first.
 yuki (sleepy): ...No, you.
 ending: Tag the one who never says bye first!
+
+# --- Upload texts (YouTube + Instagram; see "Upload texts" in STORY-GUIDE.md) ---
+upload:
+youtube title: You Go First 👋 | Ren & Yuki: Couple Things
+youtube description:
+Nobody wants to say goodbye first.
+
+Tag the one who never says bye first!
+
+Follow for more Ren & Yuki: Couple Things! 🦊🐰
+
+#RenAndYuki #CoupleThings #CoupleGoals #CuteCouple #Shorts
+youtube tags: ren and yuki, ren and yuki couple things, couple things, cute couple, couple goals, relatable couple, you go first, saying goodbye, couple goodbye, cute animation, fox and bunny, couple shorts
+instagram caption:
+You Go First 👋
+Nobody wants to say goodbye first.
+
+Who says goodbye first in your relationship? 👋
+
+Follow for more Ren & Yuki: Couple Things! ✨
+More on our YouTube channel: link in bio ▶️
+instagram hashtags: #RenAndYuki #CoupleThings #CoupleGoals #CuteCouple #Relatable

@@ -22,9 +22,10 @@ const { readWav } = require('./wav');
 const LIPSYNC = require('../engine/lipsync.js');
 const { validate } = require('./validate');
 const { clock, hasScenes, chapters, sceneChecks } = require('./scenes');
-const { readVoices, storyName, videoDir, videoRel, tidyOldVideos, addMissingVoices, lineVoice, cachedVoice, levelledVoice, overrideFile, VOICE_LUFS, folderDefaults, speechTag, soundWordNotes } = require('./story-check');
+const { readVoices, storyName, videoDir, videoFolder, videoRel, tidyOldVideos, addMissingVoices, lineVoice, cachedVoice, levelledVoice, overrideFile, VOICE_LUFS, folderDefaults, speechTag, soundWordNotes } = require('./story-check');
 const { youtubeFiles } = require('./youtube');
 const { socialFiles, POST } = require('./social');
+const { readUpload, writeGuide } = require('./upload');
 const { episodeSource, applyWindow, sliceWav, shortLength } = require('./shorts');
 
 const ROOT = path.resolve(__dirname, '..');
@@ -46,6 +47,8 @@ async function main() {
 
   // 1. read + check the story
   let parsed = folderDefaults(parseStory(fs.readFileSync(storyPath, 'utf8')), storyPath);
+  // the story's own YouTube and Instagram texts (after "upload:"; an episode Short's own file has its own)
+  const upload = readUpload(storyPath);
   // the Instagram pictures are drawn in the vertical layout (a wide story is made vertical for them,
   // as with --format vertical, so both share their voices and build folder)
   const isVertical = m => m.format === 'vertical' || /short/.test(m.type || '') && m.format !== 'wide';
@@ -75,6 +78,12 @@ async function main() {
     say(`\n"${plan.meta.title}" looks good! Estimated length: ${plan.duration.toFixed(1)} s (exact length is known after voices are made).\n`);
     plan.voice.forEach(v => say(`  ${v.t.toFixed(1).padStart(6)} s  ${v.who.padEnd(8)} ${v.text}`));
     [...plan.warnings, ...soundWordNotes(speech)].forEach(w => say('  note: ' + w));
+    // the upload texts: what the story writes itself, and anything a platform would refuse
+    const own = ['title', 'description', 'tags', 'caption', 'hashtags'].filter(k => (Array.isArray(upload[k]) ? upload[k].length : upload[k]));
+    say(upload.present ? `\n  Upload texts (from line ${upload.line}): ${own.length ? own.join(', ') : 'none written yet'}${own.length < 5 ? '; the rest are made from the story' : ''}`
+      : '\n  Upload texts: made from the story (to write your own, add "upload:" at the end of the story; see "Upload texts" in STORY-GUIDE.md)');
+    upload.problems.forEach(p => say('  PROBLEM: ' + p));
+    upload.notes.forEach(n => say('  note: ' + n));
     if (hasScenes(plan)) {
       say(`\nScenes (estimated):`);
       plan.scenes.forEach((c, i) => say(`  ${String(i + 1).padStart(2)}. ${clock(c.t0).padStart(7)}  ${(c.t1 - c.t0).toFixed(1).padStart(6)} s  ${c.name}`));
@@ -190,16 +199,18 @@ async function main() {
     const dir = path.join(outDir, 'instagram');
     // the Reel is the vertical video: the story's own video when it is vertical (a Short), otherwise its vertical version
     const reelFile = videoRel(name, `${name}.mp4`).replace(/\//g, '\\');
-    const row = await socialFiles({ vpage: page, ppage, view, dir, reel: reelFile, reelMade: fs.existsSync(path.join(outDir, `${name}.mp4`)), reelHow: nativeVertical ? `make-video.bat ${path.relative(ROOT, storyPath)}` : `node tools\\make-video.js ${path.relative(ROOT, storyPath)} --format vertical` });
+    const row = await socialFiles({ vpage: page, ppage, view, dir, reel: reelFile, reelMade: fs.existsSync(path.join(outDir, `${name}.mp4`)), reelHow: nativeVertical ? `make-video.bat ${path.relative(ROOT, storyPath)}` : `node tools\\make-video.js ${path.relative(ROOT, storyPath)} --format vertical`, upload });
+    // UPLOAD.txt again, now that the Instagram files are there (about the story's own video: a wide story's is wide)
+    writeGuide(outDir, videoFolder(name), nativeVertical ? view : { ...view, width: Math.max(view.width, view.height), height: Math.min(view.width, view.height) });
     say(`${label(row)}  ${row.name}: ${row.detail}`);
-    say(`In ${videoRel(name, 'instagram/')}: reel-cover.jpg, post.jpg, the carousel pictures and instagram.txt`);
+    say(`In ${videoRel(name, 'instagram/')}: reel-cover.jpg, post.jpg, the carousel pictures and instagram.txt (and ${videoRel(name)}UPLOAD.txt)`);
     await browser.close(); server.close(); return;
   }
   // only the YouTube files, without drawing the video
   if (opt('youtube')) {
-    const row = await youtubeFiles(page, view, name, outDir, creditsText(plan));
+    const row = await youtubeFiles(page, view, name, outDir, creditsText(plan), upload);
     say(`${label(row)}  ${row.name}: ${row.detail}`);
-    say(`In ${videoRel(name)}: ${name}-${view.height > view.width ? 'cover' : 'thumbnail'}.jpg, ${name}.srt and ${name}-description.txt`);
+    say(`In ${videoRel(name)}: ${name}-${view.height > view.width ? 'cover' : 'thumbnail'}.jpg, ${name}.srt, ${name}-youtube.txt, ${name}-description.txt and UPLOAD.txt`);
     await browser.close(); server.close(); return;
   }
 
@@ -246,7 +257,7 @@ async function main() {
   const safeArea = view.height > view.width ? await safeAreaCheck(page, view) : null;
   // the YouTube files: thumbnail, subtitles and description draft
   say('Making the thumbnail, subtitles and description...');
-  const youtube = await youtubeFiles(page, view, name, outDir, creditsText(plan));
+  const youtube = await youtubeFiles(page, view, name, outDir, creditsText(plan), upload);
   await page.close();
 
   const mp4 = path.join(outDir, `${name}.mp4`);

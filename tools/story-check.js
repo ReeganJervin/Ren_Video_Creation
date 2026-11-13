@@ -21,7 +21,7 @@ function tidyOldVideos(name) {
   if (!fs.existsSync(loose)) return 0;
   const base = videoFolder(name), mine = new Set();
   for (const n of [base, base + '-vertical']) {
-    for (const s of ['.mp4', '.srt', '-thumbnail.jpg', '-cover.jpg', '-description.txt', '-chapters.txt', '-credits.txt', '-report.txt']) mine.add(n + s);
+    for (const s of ['.mp4', '.srt', '-thumbnail.jpg', '-cover.jpg', '-description.txt', '-youtube.txt', '-chapters.txt', '-credits.txt', '-report.txt']) mine.add(n + s);
   }
   let moved = 0;
   for (const f of fs.readdirSync(loose)) {
@@ -106,6 +106,9 @@ function checkStory(text, lens = {}, file = null) {
   addMissingVoices(parsed, voices);
   const plan = compileStory(parsed, lens);
   plan.warnings.push(...soundWordNotes(speech));
+  // the upload texts at the end of the story (tools/upload.js): too long for YouTube or Instagram, or a stray line
+  const upload = require('./upload').parseUpload(text);
+  plan.warnings.push(...upload.problems.map(p => 'Upload: ' + p), ...upload.notes.map(n => 'Upload: ' + n));
   return { parsed, plan, speech, voices };
 }
 

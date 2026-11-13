@@ -32,6 +32,7 @@ place: forest
 time: dusk
 yuki (pouty): We're back in the forest. We passed this tree twice.
 ren (proud): It's a different tree. They just look the same.
+pop: HMM? near yuki
 yuki (thinking): This isn't a shortcut, is it?
 music: heartfelt
 ren turns to yuki
@@ -42,3 +43,25 @@ yuki (shy): Then let's take the longest way.
 time: night
 hearts float up
 ending: Tag the one who takes the long way home!
+
+# --- Upload texts (YouTube + Instagram; see "Upload texts" in STORY-GUIDE.md) ---
+upload:
+youtube title: The Long Way Home 🌅 | Ren & Yuki: Couple Things
+youtube description:
+When he doesn't want the date to end.
+
+Tag the one who takes the long way home!
+
+Follow for more Ren & Yuki: Couple Things! 🦊🐰
+
+#RenAndYuki #CoupleThings #CoupleGoals #CuteCouple #Shorts
+youtube tags: ren and yuki, ren and yuki couple things, couple things, cute couple, couple goals, relatable couple, long way home, sweet date, romantic walk, date night, cute animation, fox and bunny, couple shorts
+instagram caption:
+The Long Way Home 🌅
+When he doesn't want the date to end.
+
+Do you take the long way home too? 💛
+
+Follow for more Ren & Yuki: Couple Things! ✨
+More on our YouTube channel: link in bio ▶️
+instagram hashtags: #RenAndYuki #CoupleThings #CoupleGoals #CuteCouple #DateNight

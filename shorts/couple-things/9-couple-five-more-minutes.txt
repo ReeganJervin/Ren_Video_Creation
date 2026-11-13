@@ -26,6 +26,7 @@ shot: medium on both
 ren sits down
 ren feels sleepy
 yuki (excited): Good morning! Get up, the picnic starts soon!
+pop: ZZZ! near ren
 ren (sleepy): Five more minutes.
 yuki (pouty): Okay. Five minutes.
 narrator: Five minutes later...
@@ -36,6 +37,7 @@ time: sunset
 yuki (pouty): Ren. The picnic is over.
 beat
 shot: close on ren
+impact on ren
 ren (shouts, surprised): What?! Why didn't you wake me up?
 shot: medium on both
 yuki (playful): I did. Twelve times.
@@ -44,3 +46,25 @@ ren (shy): Can we have a picnic tomorrow?
 yuki (laughing): Only if you wake up first.
 ren hugs yuki
 ending: Tag your "five more minutes" person!
+
+# --- Upload texts (YouTube + Instagram; see "Upload texts" in STORY-GUIDE.md) ---
+upload:
+youtube title: Five More Minutes 😴 | Ren & Yuki: Couple Things
+youtube description:
+"Just five more minutes" is never five minutes.
+
+Tag your "five more minutes" person!
+
+Follow for more Ren & Yuki: Couple Things! 🦊🐰
+
+#RenAndYuki #CoupleThings #CoupleGoals #CuteCouple #Shorts
+youtube tags: ren and yuki, ren and yuki couple things, couple things, cute couple, couple goals, relatable couple, five more minutes, sleepy boyfriend, oversleeping, cute animation, fox and bunny, couple shorts
+instagram caption:
+Five More Minutes 😴
+"Just five more minutes" is never five minutes.
+
+Who's the "five more minutes" one in your relationship? ⏰
+
+Follow for more Ren & Yuki: Couple Things! ✨
+More on our YouTube channel: link in bio ▶️
+instagram hashtags: #RenAndYuki #CoupleThings #CoupleGoals #CuteCouple #Relatable

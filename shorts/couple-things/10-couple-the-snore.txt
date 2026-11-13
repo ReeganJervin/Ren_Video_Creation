@@ -30,19 +30,44 @@ yuki (sleepy): Good night, Ren.
 ren feels sleepy
 + yuki feels sleepy
 beat
+pop: ZZZ! near ren
 ren (thinks silently): Zzz... zzz... ZZZ...
 yuki feels pouty
 yuki (whispers): Ren. You're snoring.
 ren (sleepy): I don't snore.
 ren (thinks silently): ZZZZZ... ZZZZZZZ...
 shot: close on yuki
+impact on yuki
 yuki (shouts, pouty): Ren!
 shot: medium on both
 ren (surprised): What? I was awake the whole time.
 yuki (thinking): Then who was snoring?
 ren (thinking): ...The owl?
 owl flies in from left to left
+pop: HOO! near owl
 owl (pouty): Hoo! It was not me.
 yuki (laughing): Even the owl knows.
 ren (shy): Good night, everyone.
 ending: Tag the one who "doesn't snore"!
+
+# --- Upload texts (YouTube + Instagram; see "Upload texts" in STORY-GUIDE.md) ---
+upload:
+youtube title: The Snore 😴 | Ren & Yuki: Couple Things
+youtube description:
+He snores. He will never admit it.
+
+Tag the one who "doesn't snore"!
+
+Follow for more Ren & Yuki: Couple Things! 🦊🐰
+
+#RenAndYuki #CoupleThings #CoupleGoals #CuteCouple #Shorts
+youtube tags: ren and yuki, ren and yuki couple things, couple things, cute couple, couple goals, relatable couple, snoring, i dont snore, sleepy couple, cute animation, fox and bunny, couple shorts
+instagram caption:
+The Snore 😴
+He snores. He will never admit it.
+
+Who snores but "doesn't snore"? 😂
+
+Follow for more Ren & Yuki: Couple Things! ✨
+More on our YouTube channel: link in bio ▶️
+instagram hashtags: #RenAndYuki #CoupleThings #CoupleGoals #CuteCouple #Relatable

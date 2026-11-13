@@ -27,7 +27,9 @@ ren (shy): Yuki, I wrote you a poem.
 yuki (excited): A poem? For me?
 ren writes in the air
 ren (proud): Roses are red. Foxes are orange.
+pop: HMM... near ren
 ren (thinking): Nothing rhymes with orange.
+impact: small on yuki
 yuki (laughing): That's the poem?
 ren (determined): Wait. There's more.
 music: heartfelt
@@ -40,3 +42,25 @@ ren (shy): Even the orange part?
 yuki (playful): Especially the orange part.
 yuki hugs ren
 ending: Tag the one who'd write you a bad poem!
+
+# --- Upload texts (YouTube + Instagram; see "Upload texts" in STORY-GUIDE.md) ---
+upload:
+youtube title: Ren's Poem 📝 | Ren & Yuki: Couple Things
+youtube description:
+He wrote you a love poem. Nothing rhymes with orange.
+
+Tag the one who'd write you a bad poem!
+
+Follow for more Ren & Yuki: Couple Things! 🦊🐰
+
+#RenAndYuki #CoupleThings #CoupleGoals #CuteCouple #Shorts
+youtube tags: ren and yuki, ren and yuki couple things, couple things, cute couple, couple goals, relatable couple, love poem, roses are red, funny poem, cute animation, fox and bunny, couple shorts
+instagram caption:
+Ren's Poem 📝
+He wrote you a love poem. Nothing rhymes with orange.
+
+Help Ren out: what rhymes with orange? 👇😂
+
+Follow for more Ren & Yuki: Couple Things! ✨
+More on our YouTube channel: link in bio ▶️
+instagram hashtags: #RenAndYuki #CoupleThings #CoupleGoals #CuteCouple #LovePoem

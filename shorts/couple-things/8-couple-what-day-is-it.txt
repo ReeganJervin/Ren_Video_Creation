@@ -25,6 +25,7 @@ ren enters from left to left
 yuki (excited): Ren! Do you know what day it is today?
 music: tense
 shot: close on ren
+pop: GULP! near ren
 ren (thinks silently): Oh no. Oh no no no.
 ren (thinks): Her birthday? No, that's in May.
 ren (thinks): The day we met? That was in spring... It IS spring.
@@ -33,6 +34,7 @@ yuki (happy): It is!
 ren (scared): The most special day... of the whole year!
 shot: medium on both
 music: happy
+impact on yuki
 yuki (excited): It's Sunday! The pancake shop is open!
 beat
 ren (laughing): Pancakes. Of course. I knew that.
@@ -40,3 +42,25 @@ yuki (playful): You didn't know.
 ren (shy): I did not know.
 hearts float up
 ending: Tag the one who panics at this question!
+
+# --- Upload texts (YouTube + Instagram; see "Upload texts" in STORY-GUIDE.md) ---
+upload:
+youtube title: What Day Is It? 😱 | Ren & Yuki: Couple Things
+youtube description:
+The scariest question in a relationship.
+
+Tag the one who panics at this question!
+
+Follow for more Ren & Yuki: Couple Things! 🦊🐰
+
+#RenAndYuki #CoupleThings #CoupleGoals #CuteCouple #Shorts
+youtube tags: ren and yuki, ren and yuki couple things, couple things, cute couple, couple goals, relatable couple, what day is it, do you know what day it is, boyfriend panic, cute animation, fox and bunny, couple shorts
+instagram caption:
+What Day Is It? 😱
+The scariest question in a relationship.
+
+Would you have known what day it was? 😅
+
+Follow for more Ren & Yuki: Couple Things! ✨
+More on our YouTube channel: link in bio ▶️
+instagram hashtags: #RenAndYuki #CoupleThings #CoupleGoals #CuteCouple #Relatable

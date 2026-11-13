@@ -28,6 +28,7 @@ ren crouches
 ren writes in the air
 ren (proud): Ren and Yuki. With a heart in the middle.
 yuki (shy): That's so sweet.
+pop: SPLASH! near ren
 narrator: Then a wave came, and washed the names away.
 ren stands up
 ren (sad): Oh. It's gone.
@@ -39,3 +40,25 @@ yuki (shy): Even if it takes forever?
 ren (happy): Especially then.
 hearts float up
 ending: Tag the one who'd write your name again!
+
+# --- Upload texts (YouTube + Instagram; see "Upload texts" in STORY-GUIDE.md) ---
+upload:
+youtube title: Names in the Sand 🌊 | Ren & Yuki: Couple Things
+youtube description:
+He writes your names in the sand. The sea has other plans.
+
+Tag the one who'd write your name again!
+
+Follow for more Ren & Yuki: Couple Things! 🦊🐰
+
+#RenAndYuki #CoupleThings #CoupleGoals #CuteCouple #Shorts
+youtube tags: ren and yuki, ren and yuki couple things, couple things, cute couple, couple goals, relatable couple, names in the sand, beach date, sunset beach, cute animation, fox and bunny, couple shorts
+instagram caption:
+Names in the Sand 🌊
+He writes your names in the sand. The sea has other plans.
+
+Would your person write your name again and again? 🌊
+
+Follow for more Ren & Yuki: Couple Things! ✨
+More on our YouTube channel: link in bio ▶️
+instagram hashtags: #RenAndYuki #CoupleThings #CoupleGoals #CuteCouple #Romantic
